@@ -45,12 +45,8 @@ class UsersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('MailingLists', [
+        $this->belongsTo('MailingList', [
             'foreignKey' => 'mailing_list_id'
-        ]);
-        $this->belongsTo('Facebooks', [
-            'foreignKey' => 'facebook_id',
-            'joinType' => 'INNER'
         ]);
         $this->hasMany('EventSeries', [
             'foreignKey' => 'user_id'
@@ -112,8 +108,8 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
-        $rules->add($rules->existsIn(['mailing_list_id'], 'MailingLists'));
-        $rules->add($rules->existsIn(['facebook_id'], 'Facebooks'));
+        #$rules->add($rules->existsIn(['mailing_list_id'], 'MailingList'));
+        #$rules->add($rules->existsIn(['facebook_id'], 'Facebooks'));
 
         return $rules;
     }

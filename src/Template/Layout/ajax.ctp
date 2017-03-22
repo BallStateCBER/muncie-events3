@@ -1,16 +1,16 @@
-<?php
-/**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
-?>
-<?= $this->fetch('content') ?>
+<?php 
+	if (! empty($flash_messages)) {
+		foreach ($flash_messages as $msg) {
+			$msg['message'] = str_replace('"', '\"', $msg['message']);
+			$this->Js->buffer('insertFlashMessage("'.str_replace("\n", "\\n", $msg['message']).'", "'.$msg['class'].'");');
+		}
+	}
+	
+	// Only invoke Google Analytics if an ID is found and the page is not being served from the development server 
+	$google_analytics_id = Configure::read('google_analytics_id');
+	$not_localhost = isset($_SERVER['SERVER_NAME']) && stripos($_SERVER['SERVER_NAME'], 'localhost') === false;
+	if ($google_analytics_id && $not_localhost) {
+		$this->Js->buffer("_gaq.push(['_trackPageview', '".$this->request->here."']);");
+	}
+	echo $this->fetch('content');
+	echo $this->Js->writeBuffer();

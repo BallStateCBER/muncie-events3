@@ -15,6 +15,7 @@
 namespace App\Controller;
 
 use Cake\Core\Configure;
+use Cake\Mailer\Email;
 use Cake\Network\Exception\ForbiddenException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
@@ -29,41 +30,70 @@ use Cake\View\Exception\MissingTemplateException;
 class PagesController extends AppController
 {
 
-    /**
-     * Displays a view
-     *
-     * @param string ...$path Path segments.
-     * @return void|\Cake\Network\Response
-     * @throws \Cake\Network\Exception\ForbiddenException When a directory traversal attempt.
-     * @throws \Cake\Network\Exception\NotFoundException When the view file could not
-     *   be found or \Cake\View\Exception\MissingTemplateException in debug mode.
-     */
-    public function display(...$path)
+    public function initialize()
     {
-        $count = count($path);
-        if (!$count) {
-            return $this->redirect('/');
-        }
-        if (in_array('..', $path, true) || in_array('.', $path, true)) {
-            throw new ForbiddenException();
-        }
-        $page = $subpage = null;
-
-        if (!empty($path[0])) {
-            $page = $path[0];
-        }
-        if (!empty($path[1])) {
-            $subpage = $path[1];
-        }
-        $this->set(compact('page', 'subpage'));
-
-        try {
-            $this->render(implode('/', $path));
-        } catch (MissingTemplateException $e) {
-            if (Configure::read('debug')) {
-                throw $e;
-            }
-            throw new NotFoundException();
-        }
+         parent::initialize();
+         // you don't need to log in to access pages
+         $this->Auth->allow([
+             'about', 'contact', 'terms'
+         ]);
     }
+
+    public function about()
+    {
+         $this->set('titleForLayout', 'About Us');
+    }
+
+    public function contact()
+    {
+         $this->set('titleForLayout', 'Contact Us');
+         $this->validate = [
+             'name' => [
+                 'rule'    => 'notEmpty',
+                 'message' => 'Please tell us who you are.'
+             ],
+             'email' => [
+                 'rule' => 'email',
+                 'message' => 'Please provide a valid email address. Otherwise, we can\'t respond back.'
+             ],
+             'body' => [
+                 'rule'    => 'notEmpty',
+                 'message' => 'This field cannot be left blank.'
+             ]
+         ];
+	     $categories = ['General', 'Website errors'];
+         if ($this->request->is('post')) {
+             $this->set($this->request->data);
+
+             if ($this->validate) {
+                 $email = new Email('contact_form');
+                 $category = $categories[$this->request->data['category']];
+                 $email->setFrom([$this->request->data['email'] => $this->request->data['name']])
+                     ->setTo(Configure::read('admin_email'))
+                     ->setSubject('Muncie Events contact form: '.$category);
+                 if ($email->send($this->request->data['body'])) {
+                     return $this->renderMessage([
+                         'title' => 'Message Sent',
+                         'message' => 'Thanks for contacting us. We will try to respond to your message soon.',
+                         'class' => 'success'
+                     ]);
+                 } else {
+                     $this->Flash->error('There was some problem sending your email.
+                         It could be a random glitch, or something could be permanently
+                         broken. Please contact <a href="mailto:'.Configure::read('admin_email').'">'
+                         .Configure::read('admin_email').'</a> for assistance.');
+                 }
+             }
+         }
+         $this->set([
+             'titleForLayout' => 'Contact Us',
+             'categories' => $categories
+         ]);
+    }
+
+    public function terms()
+    {
+         $this->set('titleForLayout', 'Terms of Use and Privacy Policy');
+    }
+
 }

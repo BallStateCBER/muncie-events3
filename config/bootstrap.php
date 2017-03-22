@@ -152,6 +152,7 @@ Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
 Email::setConfigTransport(Configure::consume('EmailTransport'));
 Email::setConfig(Configure::consume('Email'));
+Configure::write('admin_email', 'admin@muncieevents.com');
 Log::setConfig(Configure::consume('Log'));
 Security::salt(Configure::consume('Security.salt'));
 
@@ -220,3 +221,4 @@ Type::build('timestamp')
 if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
+Plugin::load('CakeJs');

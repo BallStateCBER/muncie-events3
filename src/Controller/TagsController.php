@@ -10,12 +10,14 @@ use App\Controller\AppController;
  */
 class TagsController extends AppController
 {
-
-    /**
-     * Index method
-     *
-     * @return \Cake\Network\Response|null
-     */
+    public function initialize()
+    {
+        parent::initialize();
+        // non-users can still view tags
+        $this->Auth->allow([
+            'index', 'view'
+        ]);
+    }
     public function index()
     {
         $this->paginate = [
