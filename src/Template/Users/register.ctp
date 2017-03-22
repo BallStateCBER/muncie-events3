@@ -1,20 +1,32 @@
-<?php
-/**
-  * @var \App\View\AppView $this
-  */
-?>
-<div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($user) ?>
-    <fieldset>
-        <legend><?= __('Add User') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('role');
-            echo $this->Form->control('bio');
-            echo $this->Form->control('email');
-            echo $this->Form->control('password');
-        ?>
-    </fieldset>
+<div class='form-group'>
+	<?= $this->Form->create($user); ?>
+	<h1 class="page_title">
+		<?php echo $titleForLayout; ?>
+	</h1>
+	<div class="col-lg-6">
+		<?= $this->Form->control('name', ['class' => 'form-control']); ?>
+	</div>
+	<div class="col-lg-6">
+		<?= $this->Form->control('password', ['class' => 'form-control']); ?>
+	</div>
+	<div class="col-lg-6">
+		<?= $this->Form->control('confirm_password', ['class' => 'form-control']); ?>
+	</div>
+	<div class="col-lg-6">
+		<?= $this->Form->control('email', ['class' => 'form-control']); ?>
+	</div>
+	<div class="col-lg-6">
+		<?= $this->Form->control('role', [
+            'class' => 'form-control',
+        	'options' => $roles
+        ]); ?>
+	</div>
+	<div class="col-lg-9">
+		<?= $this->Form->control('bio', [
+			'class' => 'form-control',
+			'type' => 'textarea'
+		]); ?>
+	</div>
     <?= $this->Form->button(__('Submit')) ?>
     <?= $this->Form->end() ?>
 </div>

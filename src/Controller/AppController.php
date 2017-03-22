@@ -62,11 +62,14 @@ class AppController extends Controller
                         'username' => 'email',
                         'password' => 'password'
                     ],
-                ],
-            ],
-            'storage' => 'Session',
-            'authorize' => ['Controller']
-        ]);
+                    'passwordHasher' => [
+                        'className' => 'Fallback',
+                        'hashers' => ['Default', 'Legacy']
+                        ]
+                    ]
+                ]
+            ]
+        );
     }
 
     /**

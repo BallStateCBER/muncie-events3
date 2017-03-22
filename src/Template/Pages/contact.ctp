@@ -28,14 +28,14 @@ use Cake\Core\Configure\Engine\PhpConfig;
 	'options' => $categories
 ]); ?>
 <?php echo $this->Form->input('name', [
-	#'default' => $this->request->session->read('Users.name'),
+	'default' => $this->request->session()->read('Auth.User.name'),
 	'class' => 'form-control',
 	'div' => [
 		'class'=>'form-group col-lg-8 col-xs-12'
 	]
 ]); ?>
 <?php echo $this->Form->input('email', [
-	#'default' => $this->request->session->read('Users.email'),
+	'default' => $this->request->session()->read('Auth.User.email'),
 	'class' => 'form-control',
 	'div' => [
 		'class'=>'form-group col-lg-8 col-xs-12'
@@ -49,7 +49,7 @@ use Cake\Core\Configure\Engine\PhpConfig;
 		'class'=>'form-group col-lg-8 col-xs-12'
 	]
 ]); ?>
-<?php if (!$AuthUser): ?>
+<?php if (!$this->request->session()->read('Auth.User')): ?>
 	<div class="g-recaptcha" data-sitekey="YOUR-SITEKEY"></div>
 <?php endif; ?>
 <?php echo $this->Form->submit('Send', [
