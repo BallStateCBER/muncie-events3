@@ -4,11 +4,11 @@
 <div id="login">
 	<?= $this->Form->create('User', ['url' => ['controller' => 'Users', 'action' => 'login']]); ?>
 	<div class='form-group col-lg-4 col-xs-12'>
-		<?= $this->Form->control('username', ['class' => 'form-control']); ?>
+		<?= $this->Form->control('email', ['class' => 'form-control']); ?>
 	</div>
 	<div class='form-group col-lg-4 col-xs-12'>
 		<?= $this->Form->control('password', ['class' => 'form-control']); ?>
-		<?= $this->Html->link(__('Forgot password?'), ['controller' => 'Users', 'action' => 'forgot_password'], ['class' => 'nav-link']); ?>
+		<?= $this->Html->link(__('Forgot password?'), ['controller' => 'Users', 'action' => 'forgotPassword'], ['class' => 'nav-link']); ?>
 	</div>
 	<?= $this->Form->input('remember_me', [
 			'type' => 'checkbox',

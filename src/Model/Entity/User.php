@@ -2,29 +2,11 @@
 namespace App\Model\Entity;
 
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\Core\Configure;
+use Cake\Mailer\Email;
 use Cake\ORM\Entity;
+use Cake\Routing\Router;
 
-/**
- * User Entity
- *
- * @property int $id
- * @property string $name
- * @property string $role
- * @property string $bio
- * @property string $email
- * @property string $password
- * @property int $mailing_list_id
- * @property int $facebook_id
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
- *
- * @property \App\Model\Entity\MailingList $mailing_list
- * @property \App\Model\Entity\Facebook $facebook
- * @property \App\Model\Entity\EventSeries[] $event_series
- * @property \App\Model\Entity\Event[] $events
- * @property \App\Model\Entity\Image[] $images
- * @property \App\Model\Entity\Tag[] $tags
- */
 class User extends Entity
 {
 
@@ -51,4 +33,47 @@ class User extends Entity
      {
          return (new DefaultPasswordHasher)->hash($password);
      }
+
+     public function getIdFromEmail($email) {
+        $email = strtolower(trim($email));
+        $query = $this->find('all', [
+            'conditions' => ['Users.email' => $email],
+            'limit' => 1
+        ]);
+        $result = $query->first();
+        if (!$result) {
+            return false;
+        } else {
+            return $result['id'];
+        }
+    }
+
+    public function getResetPasswordHash($user_id, $email = null) {
+        $salt = Configure::read('password_reset_salt');
+        $month = date('my');
+        return md5($user_id.$email.$salt.$month);
+    }
+
+    public function sendPasswordResetEmail($user_id, $email_address) {
+        $reset_password_hash = $this->getResetPasswordHash($user_id, $email_address);
+        $email = new Email('default');
+        $titleForLayout = 'Reset Password';
+        $reset_url = Router::url([
+            'controller' => 'Users',
+            'action' => 'resetPassword',
+            $user_id,
+            $reset_password_hash
+        ], true);
+        $email->to($email_address)
+            ->subject('Muncie Events: Reset Password')
+            ->template('forgot_password')
+            ->emailFormat('both')
+            ->helpers(['Html', 'Text'])
+            ->viewVars(compact(
+                'titleForLayout',
+                'email_address',
+                'reset_url'
+            ));
+        return $email->send();
+    }
 }
