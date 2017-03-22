@@ -11,6 +11,14 @@ use App\Controller\AppController;
 class UsersController extends AppController
 {
 
+    public function initialize()
+    {
+        parent::initialize();
+        // we should probably allow people to register
+        $this->Auth->allow([
+            'register'
+        ]);
+    }
     /**
      * Index method
      *
@@ -19,7 +27,7 @@ class UsersController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['MailingLists', 'Facebooks']
+            'contain' => ['MailingList']
         ];
         $users = $this->paginate($this->Users);
 
@@ -37,11 +45,45 @@ class UsersController extends AppController
     public function view($id = null)
     {
         $user = $this->Users->get($id, [
-            'contain' => ['MailingLists', 'Facebooks', 'EventSeries', 'Events', 'Images', 'Tags']
+            'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
+    }
+
+    public function login()
+    {
+        $this->set('titleForLayout', 'Log In');
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                if ($this->Auth->authenticationProvider()->needsPasswordRehash()) {
+                    $user = $this->Users->get($this->Auth->user('id'));
+                    $user->password = $this->request->getData('password');
+                    $this->Users->save($user);
+                }
+                // Remember login information
+                if ($this->request->data('auto_login')) {
+                    $this->Cookie->configKey('CookieAuth', [
+                        'expires' => '+1 year',
+                        'httpOnly' => true
+                    ]);
+                    $this->Cookie->write('CookieAuth', [
+                        'email' => $this->request->data('email'),
+                        'password' => $this->request->data('password')
+                    ]);
+                }
+                return $this->redirect($this->Auth->redirectUrl());
+            } else {
+                $this->Flash->error(__('Username or password is incorrect'));
+            }
+        }
+    }
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
     }
 
     /**
@@ -49,8 +91,9 @@ class UsersController extends AppController
      *
      * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function register()
     {
+        $this->set('titleForLayout', 'Register');
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -61,9 +104,8 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $mailingLists = $this->Users->MailingLists->find('list', ['limit' => 200]);
-        $facebooks = $this->Users->Facebooks->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'mailingLists', 'facebooks'));
+        $mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
+        $this->set(compact('user'));
         $this->set('_serialize', ['user']);
     }
 
@@ -88,8 +130,7 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $mailingLists = $this->Users->MailingLists->find('list', ['limit' => 200]);
-        $facebooks = $this->Users->Facebooks->find('list', ['limit' => 200]);
+        $mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
         $this->set(compact('user', 'mailingLists', 'facebooks'));
         $this->set('_serialize', ['user']);
     }

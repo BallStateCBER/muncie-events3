@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Categories
- * @property \Cake\ORM\Association\BelongsTo $Series
+ * @property \Cake\ORM\Association\BelongsTo $EventSeries
  * @property \Cake\ORM\Association\BelongsToMany $Images
  * @property \Cake\ORM\Association\BelongsToMany $Tags
  *
@@ -51,7 +51,7 @@ class EventsTable extends Table
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Series', [
+        $this->belongsTo('EventSeries', [
             'foreignKey' => 'series_id'
         ]);
         $this->belongsToMany('Images', [
@@ -147,7 +147,7 @@ class EventsTable extends Table
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['category_id'], 'Categories'));
-        $rules->add($rules->existsIn(['series_id'], 'Series'));
+        $rules->add($rules->existsIn(['series_id'], 'EventSeries'));
 
         return $rules;
     }

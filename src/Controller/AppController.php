@@ -37,19 +37,36 @@ class AppController extends Controller
      *
      * @return void
      */
+
+    public $helpers = ['CakeJs.Js'];
+
     public function initialize()
     {
         parent::initialize();
-
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
-
-        /*
-         * Enable the following components for recommended CakePHP security settings.
-         * see http://book.cakephp.org/3.0/en/controllers/components/security.html
-         */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
+        $this->loadComponent('Auth', [
+            'loginAction' => [
+                'prefix' => false,
+                'controller' => 'Users',
+                'action' => 'login'
+            ],
+            'logoutRedirect' => [
+                'prefix' => false,
+                'controller' => 'Events',
+                'action' => 'index'
+            ],
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'email',
+                        'password' => 'password'
+                    ],
+                ],
+            ],
+            'storage' => 'Session',
+            'authorize' => ['Controller']
+        ]);
     }
 
     /**

@@ -1,0 +1,446 @@
+html,
+body {
+  background-color: #ffffff;
+  font-family: "Lucida Sans", Arial, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  color: #000000;
+}
+div.header {
+  color: #666666;
+  font-size: 80%;
+  text-align: center;
+}
+div.header a {
+  color: #666666;
+  text-decoration: underline;
+}
+ul.header {
+  margin: 0;
+  padding: 0;
+}
+ul.header li {
+  border-right: 1px solid #666666;
+  display: inline-block;
+  list-style-type: none;
+  margin: 0 10px 0 0;
+  padding: 0 10px 0 0;
+}
+ul.header li:last-child {
+  border-right: 0;
+  margin-right: 0;
+  padding-right: 0;
+}
+ul.header i.icon {
+  font-size: 140%;
+  line-height: 0;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+#widget_filters {
+  background-color: #f0f0f0;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  color: #666666;
+  font-size: 80%;
+  margin: 5px;
+  text-align: left;
+}
+#widget_filters > div {
+  padding: 10px;
+}
+#widget_filters ul {
+  margin: 0;
+  padding-left: 15px;
+}
+#widget_filters a {
+  display: block;
+  text-align: center;
+}
+a {
+  color: #0b54a6;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a.thumbnail {
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  display: inline-block;
+}
+a.thumbnail img {
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+}
+a.back {
+  display: block;
+  font-size: 150%;
+  text-align: left;
+}
+p {
+  margin: 0;
+  padding: 0 5px;
+}
+#loading {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+#loading div {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+#loading div:nth-child(1) {
+  background-color: #ffffff;
+  opacity: 0.5;
+  z-index: 3;
+}
+#loading div:nth-child(2) {
+  background-image: url("/img/loading.gif");
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: 4;
+}
+.event h1.title {
+  font-size: 120%;
+}
+.event table.details th {
+  color: #666666;
+  font-weight: normal;
+  text-align: left;
+  vertical-align: top;
+}
+.event table.details td {
+  font-size: 90%;
+}
+.event .description {
+  border-top: 1px solid #aaaaaa;
+  line-height: 1.6;
+  margin-top: 5px;
+  padding-top: 5px;
+}
+.event .footer {
+  color: #666666;
+  font-size: 80%;
+  margin-top: 15px;
+}
+.event .what .icon:before {
+  cursor: default;
+  font-size: 120%;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+.event .actions {
+  font-size: 80%;
+  margin-bottom: 10px;
+}
+.event .actions a {
+  margin-right: 15px;
+  vertical-align: top;
+}
+.event .actions a:last-child {
+  margin-right: 0;
+}
+.event .actions img {
+  margin-right: 5px;
+  vertical-align: text-bottom;
+}
+.event .actions iframe {
+  vertical-align: bottom;
+}
+.event .actions .fb_iframe_widget {
+  vertical-align: top;
+}
+.event .actions .open {
+  border-color: #aaa;
+}
+.export_options_container {
+  border: 1px solid transparent;
+  display: inline-block;
+  transition: all .3s;
+}
+.export_options {
+  padding: 0 5px;
+}
+.tags {
+  font-size: 80%;
+}
+#events a.back:first-child {
+  border-bottom: 1px solid #aaaaaa;
+}
+#events a.back:last-child {
+  border-top: 1px solid #aaaaaa;
+}
+#fb-root {
+  display: none;
+}
+@font-face {
+  font-family: 'MuncieEventsIcons';
+  src: url('/fonts/icons/muncie_events_icons.ttf');
+  src: url('/fonts/icons/muncie_events_icons.eot?#iefix') format('embedded-opentype'), url('/fonts/icons/muncie_events_icons.woff') format('woff'), url('/fonts/icons/muncie_events_icons.ttf') format('truetype'), url('/fonts/icons/muncie_events_icons.svg#muncie_events_iconsregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  background-image: none;
+  background-position: 0 0;
+  background-repeat: repeat;
+  cursor: default;
+  display: inline-block;
+  font-family: 'MuncieEventsIcons';
+  font-style: normal;
+  font-weight: normal;
+  height: auto;
+  line-height: normal;
+  margin-top: 0;
+  text-decoration: inherit;
+  vertical-align: baseline;
+  width: auto;
+}
+a [class^="icon-"]:before,
+a [class*=" icon-"]:before {
+  cursor: pointer;
+}
+i.icon-me-logo:before {
+  content: '\F000';
+}
+i.icon-activism:before {
+  content: '\F001';
+}
+i.icon-art:before {
+  content: '\F002';
+}
+i.icon-theater:before {
+  content: '\F003';
+}
+i.icon-education:before {
+  content: '\F004';
+}
+i.icon-film:before {
+  content: '\F005';
+}
+i.icon-government:before {
+  content: '\F006';
+}
+i.icon-music:before {
+  content: '\F007';
+}
+i.icon-religion:before {
+  content: '\F008';
+}
+i.icon-sports:before {
+  content: '\F009';
+}
+i.icon-general-events:before {
+  content: '\F00A';
+}
+/* MEDIA POPUPS */
+/**
+ * Fade-zoom animation 
+ */
+/* start state */
+.my-mfp-zoom-in .mfp-figure {
+  opacity: 0;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  -webkit-transform: scale(0.8);
+  -moz-transform: scale(0.8);
+  -ms-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  transform: scale(0.8);
+}
+/* animate in */
+.my-mfp-zoom-in.mfp-ready .mfp-figure {
+  opacity: 1;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1);
+}
+/* animate out */
+.my-mfp-zoom-in.mfp-removing .mfp-figure {
+  -webkit-transform: scale(0.8);
+  -moz-transform: scale(0.8);
+  -ms-transform: scale(0.8);
+  -o-transform: scale(0.8);
+  transform: scale(0.8);
+  opacity: 0;
+}
+/* Dark overlay, start state */
+.my-mfp-zoom-in.mfp-bg {
+  opacity: 0;
+  -webkit-transition: opacity 0.3s ease-out;
+  -moz-transition: opacity 0.3s ease-out;
+  -o-transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s ease-out;
+}
+/* animate in */
+.my-mfp-zoom-in.mfp-ready.mfp-bg {
+  opacity: 0.8;
+}
+/* animate out */
+.my-mfp-zoom-in.mfp-removing.mfp-bg {
+  opacity: 0;
+}
+/* media query & responsive design vars */
+table.calendar {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  margin: 5px 0 0 0;
+  position: absolute;
+  table-layout: fixed;
+  width: 100%;
+}
+table.calendar thead {
+  border: 1px solid #000000;
+}
+table.calendar tbody td {
+  padding: 0;
+}
+table.calendar tbody td > div {
+  min-height: 50px;
+}
+table.calendar tbody td.today a.date {
+  color: red;
+}
+table.calendar tbody td:hover .add {
+  display: block;
+}
+table.calendar tbody td a.date {
+  display: inline-block;
+  font-weight: bold;
+  margin: 5px 0 0 5px;
+  text-decoration: none;
+}
+table.calendar tbody td .add {
+  display: none;
+  float: right;
+  font-size: 15px;
+}
+table.calendar tbody td .more {
+  display: block;
+  font-size: 0.8em;
+  text-align: right;
+}
+table.calendar tbody ul {
+  margin: 0;
+  padding: 0;
+}
+table.calendar tbody li {
+  font-size: 11px;
+  list-style-type: none;
+  overflow: hidden;
+  padding: 5px 2px;
+  white-space: normal;
+}
+@media (max-width: 576px) {
+  table.calendar tbody li {
+    max-height: 10px;
+  }
+}
+table.calendar tbody li:nth-child(even) {
+  background-color: #f0f0f0;
+}
+table.calendar tbody li img {
+  height: 12px;
+  float: left;
+  margin-left: -14px;
+  margin-top: 1px;
+  vertical-align: text-bottom;
+  width: 12px;
+}
+table.calendar th.month_name {
+  border: medium none;
+  cursor: default;
+  font-size: 1.2em;
+  font-weight: bold;
+  letter-spacing: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+table.calendar th.day_header {
+  font-size: 70%;
+  text-align: center;
+}
+table.calendar td {
+  border: 1px solid #000000;
+  cursor: default;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+table.calendar td.prev_month,
+table.calendar td.next_month {
+  border: none;
+  text-align: center;
+}
+table.calendar td.prev_month a,
+table.calendar td.next_month a {
+  text-decoration: none;
+}
+table.calendar a {
+  text-decoration: none;
+}
+table.calendar a:hover {
+  text-decoration: underline;
+}
+table.calendar .no_events {
+  font-size: 11px;
+}
+table.calendar .icon:before {
+  font-size: 130%;
+  line-height: 100%;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+#event_lists h2 {
+  margin-top: 0;
+}
+#event_lists a.event {
+  display: block;
+  margin-bottom: 5px;
+  padding-left: 85px;
+}
+#event_lists a.event:nth-child(even) {
+  background-color: #f0f0f0;
+}
+#event_lists .close {
+  background-color: #f0f0f0;
+  border: 1px solid #aaaaaa;
+  display: block;
+  float: right;
+  font-size: 10px;
+  padding: 5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+#event_lists .close:hover {
+  text-decoration: none;
+}
+#event_lists .close .x {
+  display: block;
+  font-size: 15px;
+  text-transform: uppercase;
+}
+#event_lists .time {
+  color: #000000;
+  display: inline-block;
+  margin-left: -85px;
+  width: 85px;
+}
+#event_lists .icon:before {
+  margin-right: 5px;
+}

@@ -11,11 +11,15 @@ use App\Controller\AppController;
 class CategoriesController extends AppController
 {
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Network\Response|null
-     */
+    public function initialize()
+    {
+        parent::initialize();
+        // non-users can still view categories
+        $this->Auth->allow([
+            'index', 'view'
+        ]);
+    }
+
     public function index()
     {
         $categories = $this->paginate($this->Categories);

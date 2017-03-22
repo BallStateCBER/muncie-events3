@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6c4259a637e1a94c27717e0e28e87bab",
-    "content-hash": "a422d3ad905a0a1ef8b7ddbd1b1843d2",
+    "hash": "a67244b64f6168fde4e91e16cdb95bf1",
+    "content-hash": "1fcecee7b396b3c1c37c38bbcfe88eeb",
     "packages": [
         {
             "name": "aura/intl",
@@ -277,6 +277,56 @@
             "time": "2016-04-28 03:01:34"
         },
         {
+            "name": "dereuromark/cakephp-tinyauth",
+            "version": "1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dereuromark/cakephp-tinyauth.git",
+                "reference": "c4d121c3a7214ba52476517810d555685973ef7e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dereuromark/cakephp-tinyauth/zipball/c4d121c3a7214ba52476517810d555685973ef7e",
+                "reference": "c4d121c3a7214ba52476517810d555685973ef7e",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": "^3.2",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "fig-r/psr2r-sniffer": "dev-master"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "TinyAuth\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Scherer",
+                    "homepage": "http://www.dereuromark.de",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A CakePHP plugin to handle user authentication and authorization the easy way.",
+            "homepage": "https://github.com/dereuromark/cakephp-tinyauth",
+            "keywords": [
+                "Authentication",
+                "authorization",
+                "cakephp",
+                "plugin",
+                "roles",
+                "tinyauth"
+            ],
+            "time": "2017-02-25 17:37:50"
+        },
+        {
             "name": "josegonzalez/dotenv",
             "version": "dev-master",
             "source": {
@@ -440,6 +490,38 @@
                 "php mobile detect"
             ],
             "time": "2016-11-11 14:56:25"
+        },
+        {
+            "name": "oldskool/cakephp-js",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/oldskool/cakephp-js.git",
+                "reference": "05964d5b20bf72f7c07f651c4755d66435aedb0f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/oldskool/cakephp-js/zipball/05964d5b20bf72f7c07f651c4755d66435aedb0f",
+                "reference": "05964d5b20bf72f7c07f651c4755d66435aedb0f",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": ">=3.0",
+                "php": ">=5.4.16"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "CakeJs\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "JsHelper for CakePHP 3.x",
+            "homepage": "http://github.com/oldskool/cakephp-js",
+            "time": "2016-08-02 08:57:13"
         },
         {
             "name": "psr/http-message",
@@ -2029,6 +2111,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "josegonzalez/dotenv": 20,
+        "oldskool/cakephp-js": 20,
         "psy/psysh": 0
     },
     "prefer-stable": true,

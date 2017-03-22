@@ -11,11 +11,17 @@ use App\Controller\AppController;
 class EventsController extends AppController
 {
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Network\Response|null
-     */
+    public function initialize()
+    {
+        parent::initialize();
+        // you don't need to log in to view events,
+        // just to add & edit them
+        $this->Auth->allow([
+            'index', 'view'
+        ]);
+    }
+
+    // home page
     public function index()
     {
         $this->paginate = [
@@ -63,10 +69,10 @@ class EventsController extends AppController
         }
         $users = $this->Events->Users->find('list', ['limit' => 200]);
         $categories = $this->Events->Categories->find('list', ['limit' => 200]);
-        $series = $this->Events->Series->find('list', ['limit' => 200]);
+        $series = $this->Events->EventSeries->find('list', ['limit' => 200]);
         $images = $this->Events->Images->find('list', ['limit' => 200]);
         $tags = $this->Events->Tags->find('list', ['limit' => 200]);
-        $this->set(compact('event', 'users', 'categories', 'series', 'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
         $this->set('_serialize', ['event']);
     }
 
@@ -93,10 +99,10 @@ class EventsController extends AppController
         }
         $users = $this->Events->Users->find('list', ['limit' => 200]);
         $categories = $this->Events->Categories->find('list', ['limit' => 200]);
-        $series = $this->Events->Series->find('list', ['limit' => 200]);
+        $series = $this->Events->EventSeries->find('list', ['limit' => 200]);
         $images = $this->Events->Images->find('list', ['limit' => 200]);
         $tags = $this->Events->Tags->find('list', ['limit' => 200]);
-        $this->set(compact('event', 'users', 'categories', 'series', 'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
         $this->set('_serialize', ['event']);
     }
 
