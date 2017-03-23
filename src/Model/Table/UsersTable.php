@@ -1,9 +1,13 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Core\Configure;
+use Cake\Mailer\Email;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use Cake\Validation\Validator;
 
 /**
@@ -79,10 +83,6 @@ class UsersTable extends Table
             ->notEmpty('name');
 
         $validator
-            ->requirePresence('role', 'create')
-            ->notEmpty('role');
-
-        $validator
             ->requirePresence('bio', 'create')
             ->notEmpty('bio');
 
@@ -93,7 +93,15 @@ class UsersTable extends Table
 
         $validator
             ->requirePresence('password', 'create')
-            ->notEmpty('password');
+            ->notEmpty(['password', 'confirm_password']);
+
+        $validator
+            ->add('confirm_password', [
+                'compare' => [
+                    'rule' => ['compareWith', 'password'],
+                    'message' => 'Your passwords do not match'
+                ]
+            ]);
 
         return $validator;
     }
@@ -107,10 +115,50 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['email'],
+            ['message' => 'This email address is already in use.']
+        ));
         #$rules->add($rules->existsIn(['mailing_list_id'], 'MailingList'));
         #$rules->add($rules->existsIn(['facebook_id'], 'Facebooks'));
 
         return $rules;
+    }
+
+    public function getIdFromEmail($email) {
+        $query = TableRegistry::get('Users')->find()->select(['id'])->where(['email' => $email]);
+        $result = $query->all();
+        $id = $result->toArray();
+        $id = implode($id);
+
+        if ($id) {
+            return $id;
+        }
+    }
+
+    public function getResetPasswordHash($user_id, $email) {
+        $salt = Configure::read('password_reset_salt');
+        $month = date('my');
+        return md5($user_id.$email.$salt.$month);
+    }
+
+    public function sendPasswordResetEmail($user_id, $email) {
+        $reset_password_hash = $this->getResetPasswordHash($user_id, $email);
+        $reset_email = new Email('default');
+        $reset_url = Router::url([
+            'controller' => 'users',
+            'action' => 'resetPassword',
+            $user_id,
+            $reset_password_hash
+        ], true);
+        $reset_email->to($email)
+            ->subject('Muncie Events: Reset Password')
+            ->template('forgot_password')
+            ->emailFormat('both')
+            ->helpers(['Html', 'Text'])
+            ->viewVars(compact(
+                'email_address',
+                'reset_url'
+            ));
+        return $reset_email->send();
     }
 }

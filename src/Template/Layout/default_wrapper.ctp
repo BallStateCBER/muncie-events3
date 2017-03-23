@@ -27,12 +27,11 @@
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body class="layout_<?php echo $this->layout; ?>">
-	<?php echo $this->element('flash_messages'); ?>
-		<div class="clearfix" id="header">
-			<div class="container">
-				<?php echo $this->element('header'); ?>
-			</div>
+	<div class="clearfix" id="header">
+		<div class="container">
+			<?php echo $this->element('header'); ?>
 		</div>
+	</div>
 
 	<div id="divider"></div>
 

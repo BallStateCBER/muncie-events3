@@ -64,7 +64,10 @@ class AppController extends Controller
                     ],
                     'passwordHasher' => [
                         'className' => 'Fallback',
-                        'hashers' => ['Default', 'Legacy']
+                        'hashers' => [
+                            'Default',
+                            'Weak' => ['hashType' => 'sha1']
+                            ]
                         ]
                     ]
                 ]

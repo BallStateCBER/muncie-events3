@@ -10,16 +10,13 @@
 		<?= $this->Form->control('password', ['class' => 'form-control']); ?>
 	</div>
 	<div class="col-lg-6">
-		<?= $this->Form->control('confirm_password', ['class' => 'form-control']); ?>
+		<?= $this->Form->control('confirm_password', [
+            'class' => 'form-control',
+            'type' => 'password'
+        ]); ?>
 	</div>
 	<div class="col-lg-6">
 		<?= $this->Form->control('email', ['class' => 'form-control']); ?>
-	</div>
-	<div class="col-lg-6">
-		<?= $this->Form->control('role', [
-            'class' => 'form-control',
-        	'options' => $roles
-        ]); ?>
 	</div>
 	<div class="col-lg-9">
 		<?= $this->Form->control('bio', [
