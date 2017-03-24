@@ -11,7 +11,8 @@
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "*",
         "josegonzalez/dotenv": "dev-master",
-        "oldskool/cakephp-js": "dev-master"
+        "oldskool/cakephp-js": "dev-master",
+        "facebook/graph-sdk": "^5.4"
     },
     "require-dev": {
         "psy/psysh": "@stable",

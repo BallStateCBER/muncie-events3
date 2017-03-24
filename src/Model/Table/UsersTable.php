@@ -124,15 +124,26 @@ class UsersTable extends Table
         return $rules;
     }
 
+    public function getEmailFromId($user_id) {
+        $query = TableRegistry::get('Users')->find()->select(['email'])->where(['id' => $user_id]);
+        $result = $query->all();
+        $email = $result->toArray();
+        $email = implode($email);
+        $email = trim($email, '{}');
+        $email = str_replace('"email": ', '', $email);
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+
+        return $email;
+    }
+
     public function getIdFromEmail($email) {
         $query = TableRegistry::get('Users')->find()->select(['id'])->where(['email' => $email]);
         $result = $query->all();
         $id = $result->toArray();
         $id = implode($id);
 
-        if ($id) {
-            return $id;
-        }
+        preg_match_all('!\d+!', $id, $user_id);
+        return implode($user_id[0]);
     }
 
     public function getResetPasswordHash($user_id, $email) {
@@ -156,7 +167,7 @@ class UsersTable extends Table
             ->emailFormat('both')
             ->helpers(['Html', 'Text'])
             ->viewVars(compact(
-                'email_address',
+                'email',
                 'reset_url'
             ));
         return $reset_email->send();

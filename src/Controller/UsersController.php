@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 
 /**
  * Users Controller
@@ -48,7 +49,6 @@ class UsersController extends AppController
         $this->set('titleForLayout', 'Log In');
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
-            $user['email'] = strtolower(trim($user['email']));
             if ($user) {
                 $this->Auth->setUser($user);
 
@@ -107,7 +107,19 @@ class UsersController extends AppController
         $this->set('titleForLayout', 'Your Account');
 
         $id = $this->Auth->user('id');
+        $email = $this->Auth->user('email');
         $user = $this->Users->get($id);
+
+        $reset_password_hash = $this->Users->getResetPasswordHash($id, $email);
+
+        $reset_url = Router::url([
+            'controller' => 'users',
+            'action' => 'resetPassword',
+            $id,
+            $reset_password_hash
+        ], true);
+
+        $this->set('reset_url', $reset_url);
 
         if ($this->request->is(['post'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -149,32 +161,37 @@ class UsersController extends AppController
     }
 
     public function resetPassword($user_id, $reset_password_hash) {
+        $email = $this->Users->getEmailFromId($user_id);
+        $user = $this->Users->get($user_id);
+
         $this->set([
             'titleForLayout' => 'Reset Password',
             'user_id' => $user_id,
+            'email' => $email,
             'reset_password_hash' => $reset_password_hash
         ]);
-        $this->User->id = $user_id;
-        $email = $this->User->field('email');
-        $expected_hash = $this->User->getResetPasswordHash($user_id, $email);
+
+        $expected_hash = $this->Users->getResetPasswordHash($user_id, $email);
+
         if ($reset_password_hash != $expected_hash) {
             $this->Flash->error('Invalid password-resetting code. Make sure that you entered the correct address and that the link emailed to you hasn\'t expired.');
             $this->redirect('/');
         }
+
         if ($this->request->is('post')) {
-            $this->User->set($this->request->data);
-            if ($this->User->validates()) {
-                $hash = $this->Auth->password($this->request->data->User['new_password']);
-                $this->User->set('password', $hash);
-                if ($this->User->save()) {
-                    $this->Flash->success('Password changed. You may now log in.');
-                    $this->redirect(['controller' => 'users', 'action' => 'login']);
-                } else {
-                    $this->Flash->error('There was an error changing your password.');
-                }
+            $user = $this->Users->patchEntity($user, [
+                'password' => $this->request->data['new_password'],
+                'confirm_password' => $this->request->data['new_confirm_password']
+            ]);
+
+            if ($this->Users->save($user)) {
+                $data = $user->toArray();
+                $this->Auth->setUser($data);
+                $this->Flash->success('Password changed. You are now logged in.');
+                $this->redirect('/');
+            } else {
+                $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
             }
-            unset($this->request->data->User['new_password']);
-            unset($this->request->data->User['confirm_password']);
         }
     }
 

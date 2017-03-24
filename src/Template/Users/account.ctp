@@ -15,6 +15,7 @@
 			'default' => $this->request->session()->read('Auth.User.bio'),
 			'type' => 'textarea'
 		]); ?>
+		<?= $this->Html->link(__('Do you want to change your password?'), $reset_url, ['class' => 'nav-link']); ?>
 	</div>
     <?= $this->Form->button(__('Submit')) ?>
     <?= $this->Form->end() ?>
