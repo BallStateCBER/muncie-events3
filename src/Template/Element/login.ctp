@@ -1,6 +1,3 @@
-<?php
-	$password_error = isset($password_error) ? '<div class="alert alert-danger">'.$password_error.'</div>' : '';
-?>
 <div id="login">
 	<?= $this->Form->create('User', ['url' => ['controller' => 'Users', 'action' => 'login']]); ?>
 	<div class='form-group col-lg-4 col-xs-12'>

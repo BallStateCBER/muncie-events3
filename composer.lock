@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a67244b64f6168fde4e91e16cdb95bf1",
-    "content-hash": "1fcecee7b396b3c1c37c38bbcfe88eeb",
+    "hash": "f3c53db4a42aa054507ac805b222f829",
+    "content-hash": "347afdf75830e0cbdc646eaa2ccb0aac",
     "packages": [
         {
             "name": "aura/intl",
@@ -277,54 +277,62 @@
             "time": "2016-04-28 03:01:34"
         },
         {
-            "name": "dereuromark/cakephp-tinyauth",
-            "version": "1.6.4",
+            "name": "facebook/graph-sdk",
+            "version": "5.4.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dereuromark/cakephp-tinyauth.git",
-                "reference": "c4d121c3a7214ba52476517810d555685973ef7e"
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "5d0c4865e80e231d48a4571841bd018828fe58e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dereuromark/cakephp-tinyauth/zipball/c4d121c3a7214ba52476517810d555685973ef7e",
-                "reference": "c4d121c3a7214ba52476517810d555685973ef7e",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/5d0c4865e80e231d48a4571841bd018828fe58e1",
+                "reference": "5d0c4865e80e231d48a4571841bd018828fe58e1",
                 "shasum": ""
             },
             "require": {
-                "cakephp/cakephp": "^3.2",
-                "php": ">=5.5"
+                "php": "^5.4|^7.0"
             },
             "require-dev": {
-                "fig-r/psr2r-sniffer": "dev-master"
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
             },
-            "type": "cakephp-plugin",
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "TinyAuth\\": "src"
-                }
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "Facebook Platform"
             ],
             "authors": [
                 {
-                    "name": "Mark Scherer",
-                    "homepage": "http://www.dereuromark.de",
-                    "role": "Maintainer"
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
                 }
             ],
-            "description": "A CakePHP plugin to handle user authentication and authorization the easy way.",
-            "homepage": "https://github.com/dereuromark/cakephp-tinyauth",
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
             "keywords": [
-                "Authentication",
-                "authorization",
-                "cakephp",
-                "plugin",
-                "roles",
-                "tinyauth"
+                "facebook",
+                "sdk"
             ],
-            "time": "2017-02-25 17:37:50"
+            "time": "2017-01-19 15:42:20"
         },
         {
             "name": "josegonzalez/dotenv",
