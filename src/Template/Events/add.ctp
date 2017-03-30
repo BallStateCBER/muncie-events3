@@ -1,28 +1,303 @@
-<div class="events form large-9 medium-8 columns content">
-    <?= $this->Form->create($event) ?>
-    <fieldset>
-        <legend><?= __('Add Event') ?></legend>
-        <?php
-            echo $this->Form->control('title');
-            echo $this->Form->control('description');
-            echo $this->Form->control('location');
-            echo $this->Form->control('location_details');
-            echo $this->Form->control('address');
-            echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
-            echo $this->Form->control('category_id', ['options' => $categories]);
-            echo $this->Form->control('series_id');
-            echo $this->Form->control('date');
-            echo $this->Form->control('time_start');
-            echo $this->Form->control('time_end', ['empty' => true]);
-            echo $this->Form->control('age_restriction');
-            echo $this->Form->control('cost');
-            echo $this->Form->control('source');
-            echo $this->Form->control('published');
-            echo $this->Form->control('approved_by');
-            echo $this->Form->control('images._ids', ['options' => $images]);
-            echo $this->Form->control('tags._ids', ['options' => $tags]);
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<?php
+	$multiple_dates_allowed = ($this->request->action == 'add' || $this->request->action == 'edit_series');
+	echo $this->Html->script('event_form.js', ['inline' => false]);
+?>
+
+<?= $this->Form->create($event) ?>
+<fieldset>
+    <h1 class="page_title">
+        <?php echo $titleForLayout; ?>
+    </h1>
+    <a href="#posting_rules" id="posting_rules_toggler" data-toggle="collapse">
+        Rules for Posting Events
+    </a>
+
+    <div id="posting_rules" class="alert alert-info collapse" aria-expanded="false">
+        <?php echo $this->element('rules'); ?>
+    </div>
+    <table class="event_form">
+    	<tbody>
+    		<tr>
+                <th>
+                    Event
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+                        <?= $this->Form->control('title', [
+                            'class' => 'form-control',
+                            'label' => false
+                        ]); ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Category
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+                        <?= $this->Form->control('category_id', [
+                            'class' => 'form-control',
+                            'label' => false,
+                            'options' => $categories
+                        ]); ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Date(s)
+                </th>
+                <td>
+                    <div class="col-xs-12 col-lg-8">
+    					<div id="datepicker" class="<?php echo ($multiple_dates_allowed ? 'multi' : 'single'); ?>"></div>
+    					<?php
+    						if ($multiple_dates_allowed) {
+                                // Multiple dates can be selected
+    							echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
+    							$this->Js->buffer("
+    								var default_date = $default_date;
+    								var preselected_dates = $datepicker_preselected_dates;
+    								setupDatepickerMultiple(default_date, preselected_dates);
+    							");
+                                echo $this->Js->writeBuffer();
+
+    						} else {
+                                // Only one date can be selected
+    							$this->Js->buffer("
+    								var default_date = '".$event['date']."';
+    								setupDatepickerSingle(default_date);
+    							");
+                                echo $this->Js->writeBuffer();
+    						}
+    						echo $this->Form->input('date', [
+    							'type' => 'hidden',
+    							'id' => 'datepicker_hidden'
+    						]);
+    					?>
+    					<?php if ($multiple_dates_allowed): ?>
+    						<div class="text-muted">
+    							Select more than one date to create multiple events connected by a series.
+    						</div>
+    					<?php endif; ?>
+    			</div>
+                </td>
+            </tr>
+            <?php if ($multiple_dates_allowed): ?>
+                <tr id="series_row" <?php if (! $has['series']): ?>style="display: none;"<?php endif; ?>>
+                    <th>Series Name</th>
+                    <td>
+                        <div class="form-group col-lg-8 col-xs-12">
+                            <?php echo $this->Form->input('EventSeries.title', [
+                                'label' => false,
+                                'class' => 'form-control',
+                                'div' => [
+                                    'class'=>'form-group col-lg-8 col-xs-12'
+                                ]
+                            ]); ?>
+                            <div class="text-muted">
+                                By default, the series and its events have the same title.
+                            </div>
+                            <?php echo $this->Form->input('series_id', [
+                                'type' => 'hidden'
+                            ]); ?>
+                        </div>
+                    </td>
+                </tr>
+            <?php endif; ?>
+            <tr>
+                <th>
+                    Time
+                </th>
+                <td>
+                    <div id="eventform_timestart_div" class="form-group col-md-10 col-xs-12">
+                        <?= $this->Form->time('time_start', [
+                            'label' => false,
+                            'interval' => 5,
+                            'timeFormat' => '12',
+                            'hour' => [
+                                'class' => 'form-control event_time_form'
+                            ],
+                            'minute' => [
+                                'class' => 'form-control event_time_form'
+                            ],
+                            'meridian' => [
+                                'class' => 'form-control event_time_form'
+                            ]
+                        ],
+                        'form-control event_time_form'); ?>
+                        <span id="eventform_noendtime"<?=$has['end_time'] ? ' style="display: none;"' : ''?>>
+                            <a id="add_end_time" href="#">Add end time</a>
+                        </span>
+                    </div>
+                    <div id="eventform_hasendtime" class="form-group col-md-10 col-xs-12" <?php if (! $has['end_time']): ?>style="display: none;"<?php endif; ?>>
+                        <?php
+                            if (isset($event['time_end'])) {
+                                $selected_end_time = ($event['time_end'] == '00:00:00')
+                                    ? '24:00:00'	// Fixes bug where midnight is represented as noon
+                                    : $event['time_end'];
+                            }
+                            echo $this->Form->input('time_end', [
+                                'label' => false,
+                                'interval' => 5,
+                                'timeFormat' => '12',
+                                'hour' => [
+                                    'class' => 'form-control event_time_form'
+                                ],
+                                'minute' => [
+                                    'class' => 'form-control event_time_form'
+                                ],
+                                'meridian' => [
+                                    'class' => 'form-control event_time_form'
+                                ]
+                            ]);
+                        ?>
+                        <?php echo $this->Form->hidden('has_end_time', [
+                            'id' => 'eventform_hasendtime_boolinput',
+                            'value' => $has['end_time'] ? 1 : 0
+                        ]); ?>
+                        <a href="#" id="remove_end_time">Remove end time</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Location
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+                        <?= $this->Form->control('location', [
+                            'class' => 'form-control',
+                            'label' => false
+                        ]); ?>
+                        <?= $this->Form->control('location_details', [
+                            'class' => 'form-control',
+                            'label' => false,
+                            'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
+                        ]); ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Address
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+                        <?= $this->Form->control('address', [
+                            'class' => 'form-control',
+                            'label' => false
+                        ]); ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Description
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+						<?php echo $this->CKEditor->loadJs(); ?>
+						<?php echo $this->Form->control('description',
+							['label' => false]
+						); ?>
+						<?php echo $this->CKEditor->replace('description',
+							['language' => 'fr']
+						); ?>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Tags
+                </th>
+				<td id="eventform_tags">
+					<div class="form-group col-lg-8 col-xs-12">
+						<?= $this->element('tags/tag_editing', [
+							'available_tags' => $available_tags,
+							'selected_tags' => isset($this->request->data['Tag']) ? $this->request->data['Tag'] : [],
+							'hide_label' => true,
+						]); ?>
+					</div>
+				</td>
+            </tr>
+            <tr>
+                <th>
+                    Images
+                </th>
+                <td>
+                    <div class="form-group col-lg-8 col-xs-12">
+                        <?= $this->element('images/form'); ?>
+                    </div>
+                </td>
+            </tr>
+			<tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : ''; ?>>
+				<td>
+					<a href="#" id="event_add_cost">
+						Add cost
+					</a>
+				</td>
+				<td></td>
+			</tr>
+			<tr id="eventform_hascost"<?= (! $has['cost']) ? ' style="display: none;"' : ''; ?>>
+				<th>Cost</th>
+				<td>
+					<div class="form-group col-lg-8 col-xs-12">
+						<?php echo $this->Form->input('cost', [
+							'maxLength' => 200,
+							'label' => false,
+							'class' => 'form-control'
+						]); ?>
+					</div>
+					<a href="#" id="event_remove_cost">Remove</a>
+					<div class="text-muted">Just leave this blank if the event is free.</div>
+				</td>
+			</tr>
+			<tr id="eventform_noages"<?= ($has['ages']) ? ' style="display: none;"' : ''; ?>>
+				<td>
+					<a href="#" id="event_add_age_restriction">
+						Add age restriction
+					</a>
+				</td>
+				<td></td>
+			</tr>
+			<tr id="eventform_hasages"<?= (! $has['ages']) ? ' style="display: none;"' : ''; ?>>
+				<th>Age Restriction</th>
+				<td>
+					<div class="form-group col-lg-8 col-xs-12">
+						<?php echo $this->Form->input('age_restriction', [
+							'label' => false,
+							'class' => 'form-control',
+							'maxLength' => 30
+						]); ?>
+					</div>
+					<a href="#" id="event_remove_age_restriction">Remove</a>
+					<div class="text-muted">Leave this blank if this event has no age restrictions.</div>
+				</td>
+			</tr>
+			<tr id="eventform_nosource"<?= ($has['source']) ? ' style="display: none;"' : ''; ?>>
+				<td>
+					<a href="#" id="event_add_source">
+						Add info source
+					</a>
+				</td>
+				<td></td>
+			</tr>
+			<tr id="eventform_hassource"<?= (! $has['source']) ? ' style="display: none;"' : ''; ?>>
+				<th>Source</th>
+				<td>
+					<div class="form-group col-lg-8 col-xs-12">
+						<?php echo $this->Form->input('source', [
+							'label' => false,
+							'class' => 'form-control'
+						]); ?>
+						<a href="#" id="event_remove_source">Remove</a>
+						<div class="text-muted">Did you get this information from a website, newspaper, flyer, etc?</div>
+					</div>
+				</td>
+			</tr>
+        </tbody>
+    </table>
+</fieldset>
+<?= $this->Form->button(__('Submit')) ?>
+<?= $this->Form->end() ?>

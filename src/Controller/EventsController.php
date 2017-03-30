@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 /**
  * Events Controller
@@ -10,6 +12,44 @@ use App\Controller\AppController;
  */
 class EventsController extends AppController
 {
+    public $name = 'Events';
+	//public $helpers = ['Tag'];
+	//public $components = [
+	//	'Calendar',
+	//	'Search.Prg',
+	//	'RequestHandler'
+	//];
+	public $uses = ['Event'];
+	public $paginate = [
+		'order' => [
+			'Event.date' => 'asc',
+			'Event.time_start' => 'asc'
+		],
+		'limit' => 15,
+		'contain' => [
+			'User' => [
+				'fields' => ['id', 'name']
+			],
+			'Category' => [
+				'fields' => ['id', 'name', 'slug']
+			],
+			'EventSeries' => [
+				'fields' => ['id', 'title']
+			],
+			'EventsImage' => [
+				'fields' => ['id', 'caption'],
+				'Image' => [
+					'fields' => ['id', 'filename']
+				]
+			],
+			'Tag' => [
+				'fields' => ['id', 'name']
+			]
+		]
+	];
+	public $auto_publish = false; // false puts new additions into moderation queue
+	public $event_filter = [];
+	public $admin_actions = ['publish', 'approve', 'moderate'];
 
     public function initialize()
     {
@@ -21,25 +61,169 @@ class EventsController extends AppController
         ]);
     }
 
+    private function __formatFormData()
+    {
+        $event = $this->request->getData('Event');
+
+		if (! $event['time_start']) {
+			// Fixes bug where midnight is saved as null
+			$event['time_start'] = '00:00:00';
+		}
+		/* $event['description'] = strip_tags(
+			$event['description'],
+			$event['allowed_tags']
+		); */
+
+		// Fixes bug that prevents CakePHP from deleting all tags
+		if (null !== $this->request->getData('Tag')) {
+			$this->set('Tag', []);
+		}
+	}
+
+    private function __processCustomTags() {
+        if (! isset($this->request->data['Events.custom_tags'])) {
+            return;
+        }
+        $custom_tags = trim($this->request->data['Events.custom_tags']);
+        if (empty($custom_tags)) {
+            return;
+        }
+        $custom_tags = explode(',', $custom_tags);
+
+        // Force lowercase and remove leading/trailing whitespace
+        foreach ($custom_tags as &$ct) {
+            $ct = strtolower(trim($ct));
+        }
+        unset($ct);
+
+        // Remove duplicates
+        $custom_tags = array_unique($custom_tags);
+
+        $this->Event->Tag = $this->Event->Tag;
+        foreach ($custom_tags as $ct) {
+            // Skip over blank tags
+            if ($ct == '') {
+                continue;
+            }
+
+            // Get ID of existing tag, if it exists
+            $tag_id = $this->Event->Tag->field('id', ['name' => $ct]);
+
+            // Include this tag if it exists and is selectable
+            if ($tag_id) {
+                $selectable = $this->Event->Tag->field('selectable', ['id' => $tag_id]);
+                if ($selectable) {
+                    $this->request->data['Tag'][] = $tag_id;
+                } else {
+                    continue;
+                }
+
+            // Create the custom tag if it does not already exist
+            } else {
+                $this->Event->Tag->create();
+                $this->Event->Tag->set([
+                    'name' => $ct,
+                    'user_id' => $this->Auth->user('id'),
+                    'parent_id' => $this->Event->Tag->getUnlistedGroupId(), // 'Unlisted' group
+                    'listed' => 0,
+                    'selectable' => 1
+                ]);
+                $this->Event->Tag->save();
+                $this->request->data['Tag'][] = $this->Event->Tag->id;
+            }
+        }
+        $this->request->data['Tag'] = array_unique($this->request->data['Tag']);
+        $this->request->data['Events.custom_tags'] = '';
+    }
+
+    private function __prepareEventForm()
+    {
+        $event = $this->request->getData('Event');
+        $available_tags = $this->Events->Tags->find('all', [
+            'order' => ['parent_id' => 'ASC']
+            ])
+            ->toArray();
+		$this->set([
+            'available_tags' => $available_tags
+		]);
+
+        if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
+            $has_series = count(explode(',', $event['date'])) > 1;
+            $has_end_time = isset($event['has_end_time']) ? $event['has_end_time'] : false;
+        } elseif ($this->request->action == 'edit') {
+            $has_series = isset($event['series_id']) ? (bool) $event['series_id'] : false;
+            $has_end_time = isset($event['time_end']) && $event['time_end'];
+        }
+
+        $this->set([
+            'has' => [
+                'series' => $has_series,
+                'end_time' => $has_end_time,
+                'address' => isset($event['address']) && $event['address'],
+                'cost' => isset($event['cost']) && $event['cost'],
+                'ages' => isset($event['age_restriction']) && $event['age_restriction'],
+                'source' => isset($event['source']) && $event['source']
+            ]
+        ]);
+
+        // Fixes bug where midnight is saved as null
+        if ($event['has_end_time']) {
+            if (! $event['time_end']) {
+                $event['time_end'] = '00:00:00';
+            }
+        } else {
+            $event['time_end'] = null;
+        }
+
+        // Prepare date picker
+        if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
+            $date_field_values = [];
+            if (empty($event['date'])) {
+                $default_date = 0; // Today
+                $datepicker_preselected_dates = '[]';
+            } else {
+                $dates = explode(',', $event['date']);
+                foreach ($dates as $date) {
+                    list($year, $month, $day) = explode('-', $date);
+                    if (! isset($default_date)) {
+                        $default_date = "$month/$day/$year";
+                    }
+                    $date_field_values[] = "$month/$day/$year";
+                }
+                $dates_for_js = [];
+                foreach ($date_field_values as $date) {
+                    $dates_for_js[] = "'".$date."'";
+                }
+                $dates_for_js = implode(',', $dates_for_js);
+                $datepicker_preselected_dates = "[$dates_for_js]";
+            }
+            $this->set(compact('default_date', 'datepicker_preselected_dates'));
+            $event['date'] = implode(',', $date_field_values);
+        } elseif ($this->action == 'edit') {
+            list($year, $month, $day) = explode('-', $event['date']);
+            $event['date'] = "$month/$day/$year";
+        }
+    }
+
     // home page
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Users', 'Categories', 'EventSeries']
-        ];
-        $events = $this->paginate($this->Events);
-
-        $this->set(compact('events'));
-        $this->set('_serialize', ['events']);
+        $now = Time::now();
+        $events = $this->Events
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => $now])
+            ->toArray();
+        $dates = array_column($events, 'date');
+        $this->set([
+            'dates' => $dates,
+            'events' => $events
+        ]);
+        $this->set('titleForLayout', '');
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Event id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
     public function view($id = null)
     {
         $event = $this->Events->get($id, [
@@ -50,15 +234,13 @@ class EventsController extends AppController
         $this->set('_serialize', ['event']);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
-     */
     public function add()
     {
         $event = $this->Events->newEntity();
+
         if ($this->request->is('post')) {
+            $this->__formatFormData();
+            $this->__processCustomTags();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
@@ -74,6 +256,9 @@ class EventsController extends AppController
         $tags = $this->Events->Tags->find('list', ['limit' => 200]);
         $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
         $this->set('_serialize', ['event']);
+
+        $this->__prepareEventForm();
+        $this->set('titleForLayout', 'Submit an Event');
     }
 
     /**
