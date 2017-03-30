@@ -5,7 +5,7 @@
 				No upcoming events found.
 			</p>
 		<?php else: ?>
-			<?php echo $this->element('events/accordion', array('events' => $events)); ?>
+			<?php echo $this->element('events/accordion', ['events' => $events]); ?>
 		<?php endif; ?>
 	</div>
 	<?php if (! empty($events)): ?>

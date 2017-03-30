@@ -75,28 +75,8 @@ class EventsTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
-
-        $validator
-            ->requirePresence('title', 'create')
-            ->notEmpty('title');
-
-        $validator
-            ->requirePresence('description', 'create')
-            ->notEmpty('description');
-
-        $validator
-            ->requirePresence('location', 'create')
-            ->notEmpty('location');
-
-        $validator
-            ->requirePresence('location_details', 'create')
-            ->notEmpty('location_details');
-
-        $validator
-            ->requirePresence('address', 'create')
-            ->notEmpty('address');
+        ->requirePresence('title', 'create')
+        ->notEmpty('title');
 
         $validator
             ->date('date')
@@ -104,45 +84,27 @@ class EventsTable extends Table
             ->notEmpty('date');
 
         $validator
-            ->time('time_start')
-            ->requirePresence('time_start', 'create')
-            ->notEmpty('time_start');
+            ->requirePresence('location', 'create')
+            ->notEmpty('location');
 
         $validator
-            ->time('time_end')
-            ->allowEmpty('time_end');
+            ->requirePresence('description', 'create')
+            ->notEmpty('description');
 
         $validator
-            ->requirePresence('age_restriction', 'create')
-            ->notEmpty('age_restriction');
-
-        $validator
-            ->requirePresence('cost', 'create')
-            ->notEmpty('cost');
-
-        $validator
-            ->requirePresence('source', 'create')
-            ->notEmpty('source');
-
-        $validator
-            ->boolean('published')
-            ->requirePresence('published', 'create')
-            ->notEmpty('published');
-
-        $validator
-            ->integer('approved_by')
-            ->allowEmpty('approved_by');
+            ->integer('category_id')
+            ->allowEmpty('id', 'create');
 
         return $validator;
     }
 
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
+    public $delete_series = null;
+
+    public $findMethods = [
+        'upcomingWithTag' => true,
+        'pastWithTag' => true
+    ];
+
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));

@@ -12,7 +12,9 @@
         "cakephp/plugin-installer": "*",
         "josegonzalez/dotenv": "dev-master",
         "oldskool/cakephp-js": "dev-master",
-        "facebook/graph-sdk": "^5.4"
+        "facebook/graph-sdk": "^5.4",
+        "ivanamat/cakephp3-captcha": "^1.0",
+        "akkaweb/cakephp-ckeditor": "dev-master"
     },
     "require-dev": {
         "psy/psysh": "@stable",

@@ -156,6 +156,9 @@ Configure::write('admin_email', 'admin@muncieevents.com');
 Log::setConfig(Configure::consume('Log'));
 Security::salt(Configure::consume('Security.salt'));
 
+Configure::write('Captcha.secret', env('RECAPTCHA_KEY'));
+Configure::write('password_reset_salt', env('RESET_SALT'));
+
 /*
  * The default crypto extension in 3.0 is OpenSSL.
  * If you are migrating from 2.x uncomment this code to
@@ -222,4 +225,4 @@ if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
 Plugin::load('CakeJs');
-Plugin::load('Facebook');
+Plugin::load('AkkaCKEditor', ['bootstrap' => false, 'routes' => true]);

@@ -50,7 +50,7 @@ use Cake\Core\Configure\Engine\PhpConfig;
 	]
 ]); ?>
 <?php if (!$this->request->session()->read('Auth.User')): ?>
-	<div class="g-recaptcha" data-sitekey="YOUR-SITEKEY"></div>
+	<div class="g-recaptcha" data-sitekey="6Lcg6tkSAAAAALkenFi1dIQ5B-4BVLJur5hYl-2J"></div>
 <?php endif; ?>
 <?php echo $this->Form->submit('Send', [
 	'class'=>'btn btn-secondary btn-sm',

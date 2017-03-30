@@ -1,9 +1,12 @@
 <?php
+	use Cake\Core\Configure;
+
+	$helpers = ['Html'];
 	$upload_max = ini_get('upload_max_filesize');
 	$post_max = ini_get('post_max_size');
     $server_filesize_limit = min($upload_max, $post_max);
     $manual_filesize_limit = min('10M', $server_filesize_limit);
-	$this->Html->script('image_manager.js', array('inline' => false));
+	echo $this->Html->script('/js/image_manager.js', ['inline' => false]);
 ?>
 
 <div id="image_form">
@@ -102,17 +105,16 @@
 </div>
 
 <?php
-	echo $this->Html->script('/uploadifive/jquery.uploadifive.min.js', array('inline' => false));
-	echo $this->Html->css('/uploadifive/uploadifive.css', null, array('inline' => false));
+	echo $this->Html->script('/uploadifive/jquery.uploadifive.min.js', ['inline' => false]);
+	echo $this->Html->css('/uploadifive/uploadifive.css', ['inline' => false]);
 	$this->Js->buffer("
 		ImageManager.setupUpload({
 			token: '".md5(Configure::read('upload_verify_token').time())."',
-			user_id: '".$this->Session->read('Auth.User.id')."',
+			user_id: '".$this->request->session()->read('Auth.User.id')."',
 			event_id: ".(isset($event_id) ? $event_id : 'null').",
 			filesize_limit: '{$manual_filesize_limit}B',
 			timestamp: ".time()."
 		});
-		ImageManager.user_id = $user_id;
 		ImageManager.setupManager();
 	");
 ?>

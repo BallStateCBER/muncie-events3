@@ -38,11 +38,14 @@ class AppController extends Controller
      * @return void
      */
 
-    public $helpers = ['CakeJs.Js'];
+    public $helpers = ['AkkaCKEditor.CKEditor' =>
+        ['distribution' => 'basic'],
+    'CakeJs.Js', 'Form', 'Html'];
 
     public function initialize()
     {
         parent::initialize();
+        $this->loadComponent('Captcha.Captcha');
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
         $this->loadComponent('Auth', [
