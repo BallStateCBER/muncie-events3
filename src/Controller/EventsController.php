@@ -197,12 +197,26 @@ class EventsController extends AppController
                 $dates_for_js = implode(',', $dates_for_js);
                 $datepicker_preselected_dates = "[$dates_for_js]";
             }
-            $this->set(compact('default_date', 'datepicker_preselected_dates'));
+            $this->set([
+                'default_date' => $default_date,
+                'datepicker_preselected_dates' => $datepicker_preselected_dates
+            ]);
             $event['date'] = implode(',', $date_field_values);
         } elseif ($this->action == 'edit') {
             list($year, $month, $day) = explode('-', $event['date']);
             $event['date'] = "$month/$day/$year";
         }
+    }
+
+    public function datepicker_populated_dates() {
+        $results = $this->Event->getPopulatedDates();
+        $dates = [];
+        foreach ($results as $result) {
+            list($year, $month, $day) = explode('-', $result->Event['date']);
+            $dates["$month-$year"][] = $day;
+        }
+        $this->set(compact('dates'));
+        $this->layout = 'blank';
     }
 
     // home page
@@ -232,28 +246,43 @@ class EventsController extends AppController
 
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
+        $this->set('titleForLayout', $event['title']);
     }
 
     public function add()
     {
         $event = $this->Events->newEntity();
 
-        if ($this->request->is('post')) {
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            //$dates = explode(',', $this->request->Event['date']);
+			//$is_series = count($dates) > 1;
+
+            // process data
             $this->__formatFormData();
             $this->__processCustomTags();
+
+            // Correct date format
+            /*foreach ($dates as &$date) {
+                $date = trim($date);
+                $timestamp = strtotime($date);
+                $date = date('Y-m-d', $timestamp);
+            }
+            unset($date);*/
+
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                #return $this->redirect(['action' => 'index']);
+            } else {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
-        $users = $this->Events->Users->find('list', ['limit' => 200]);
-        $categories = $this->Events->Categories->find('list', ['limit' => 200]);
-        $series = $this->Events->EventSeries->find('list', ['limit' => 200]);
-        $images = $this->Events->Images->find('list', ['limit' => 200]);
-        $tags = $this->Events->Tags->find('list', ['limit' => 200]);
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        $series = $this->Events->EventSeries->find('list');
+        $images = $this->Events->Images->find('list');
+        $tags = $this->Events->Tags->find('list');
         $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
         $this->set('_serialize', ['event']);
 
@@ -278,17 +307,21 @@ class EventsController extends AppController
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                //return $this->redirect(['action' => 'index']);
+            } else {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
-        $users = $this->Events->Users->find('list', ['limit' => 200]);
-        $categories = $this->Events->Categories->find('list', ['limit' => 200]);
-        $series = $this->Events->EventSeries->find('list', ['limit' => 200]);
-        $images = $this->Events->Images->find('list', ['limit' => 200]);
-        $tags = $this->Events->Tags->find('list', ['limit' => 200]);
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        $series = $this->Events->EventSeries->find('list');
+        $images = $this->Events->Images->find('list');
+        $tags = $this->Events->Tags->find('list');
         $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
         $this->set('_serialize', ['event']);
+
+        $this->__prepareEventForm();
+        $this->set('titleForLayout', 'Edit Event');
     }
 
     /**

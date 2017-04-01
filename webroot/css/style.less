@@ -29,7 +29,6 @@
 }
 
 /* media query & responsive design vars */
-@awful: ~"(max-width: 320px)";
 @x-small: ~"(max-width: 576px)";
 @small: ~"(min-width: 576px) and (max-width: 768px)";
 @medium: ~"(min-width: 768px) and (max-width: 992px)";
@@ -327,7 +326,7 @@ body {
     position: absolute;
     text-shadow: none;
     top: 100%;
-    width: 350px;
+    width: auto;
     z-index: 4;
     @media @x-small {
         left: 0px;
@@ -956,9 +955,6 @@ ul.event_accordion {
                     float: right;
                 }
             }
-            a.more_info_handle {
-                min-height: 50px;
-            }
         }
         &:first-child {
             border-color: @EventAccordionBorderColor;
@@ -1063,25 +1059,12 @@ ul.event_accordion {
         display: inline-block;
         padding-left: 5px;
     }
-    .location_details {
-        margin-top: -10px;
-    }
     .location_details,
     .address {
         color: #333;
-        display: block;
         max-width: 600px;
         overflow: auto;
-        margin-left: 111px;
-        @media @x-large {
-            margin-left: 137px;
-        }
-        @media @large {
-            margin-left: 137px;
-        }
-        @media @awful {
-            margin-left: 4px;
-        }
+        display: none;
     }
     .more_info {
         overflow: hidden;
@@ -1764,9 +1747,13 @@ table.calendar {
         display: inline-block;
         margin-left: 10px;
     }
+    #EventLocationDetails {
+        display: inline-block;
+    }
     #eventform_noaddress {
-        float: left;
-        margin-top: 10px;
+        display: inline-block;
+        margin-left: 10px;
+        vertical-align: bottom;
     }
     #eventform_tags .input {
         margin: 0;

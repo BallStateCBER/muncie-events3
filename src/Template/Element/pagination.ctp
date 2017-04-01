@@ -1,4 +1,7 @@
 <?php
+
+	use Cake\Routing\Router;
+
 	$total_pages = $this->Paginator->counter(array('format' => '{:pages}'));
 	$current_page = $this->Paginator->counter(array('format' => '{:page}'));
 	$paginator_url = urldecode(Router::url(array_merge(
@@ -50,5 +53,5 @@
 		</li>
 
 	</ul>
-	
+
 <?php endif; ?>

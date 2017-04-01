@@ -44,28 +44,34 @@ use Cake\Routing\Route\DashedRoute;
 Router::defaultRouteClass(DashedRoute::class);
 
 Router::scope('/', function (RouteBuilder $routes) {
-    /**
-     * main event page
-     */
+    // home
     $routes->connect('/', ['controller' => 'Events', 'action' => 'index']);
 
-    /**
-     * pages
-     */
+    // events actions
+    foreach (['edit', 'edit_series', 'publish', 'approve', 'delete'] as $action) {
+    	Router::connect(
+    		"/event/$action/:id",
+    		['controller' => 'events', 'action' => $action],
+    		['id' => '[0-9]+', 'pass' => ['id']]
+    	);
+    }
+    // viewing events
+    Router::connect("event/:id",
+        ['controller' => 'events', 'action' => 'view'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
+
+    // pages
     $routes->connect('/about', ['controller' => 'Pages', 'action' => 'about']);
     $routes->connect('/contact', ['controller' => 'Pages', 'action' => 'contact']);
     $routes->connect('/terms', ['controller' => 'Pages', 'action' => 'terms']);
 
-    /**
-     * user actions
-     */
+    // users actions
     $routes->connect('/login', ['controller' => 'Users', 'action' => 'login']);
     $routes->connect('/register', ['controller' => 'Users', 'action' => 'register']);
     $routes->connect('/user/*', ['controller' => 'Users', 'action' => 'view']);
 
-    /**
-     * widgets
-     */
+    // widgets
     $routes->connect('/widgets', ['controller' => 'Widgets', 'action' => 'index']);
 
     /**
