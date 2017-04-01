@@ -3,18 +3,19 @@
 	echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
-<?= $this->Form->create($event) ?>
-<fieldset>
-    <h1 class="page_title">
-        <?php echo $titleForLayout; ?>
-    </h1>
-    <a href="#posting_rules" id="posting_rules_toggler" data-toggle="collapse">
-        Rules for Posting Events
-    </a>
+<h1 class="page_title">
+	<?php echo $titleForLayout; ?>
+</h1>
 
-    <div id="posting_rules" class="alert alert-info collapse" aria-expanded="false">
-        <?php echo $this->element('rules'); ?>
-    </div>
+<a href="#posting_rules" id="posting_rules_toggler" data-toggle="collapse">
+	Rules for Posting Events
+</a>
+
+<div id="posting_rules" class="alert alert-info collapse" aria-expanded="false">
+	<?php echo $this->element('rules'); ?>
+</div>
+
+<?= $this->Form->create($event) ?>
     <table class="event_form">
     	<tbody>
     		<tr>
@@ -50,37 +51,31 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-    					<div id="datepicker" class="<?php echo ($multiple_dates_allowed ? 'multi' : 'single'); ?>"></div>
+    					<!--div id="datepicker" class="multi"></div-->
     					<?php
-    						if ($multiple_dates_allowed) {
-                                // Multiple dates can be selected
-    							echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
-    							$this->Js->buffer("
-    								var default_date = $default_date;
-    								var preselected_dates = $datepicker_preselected_dates;
-    								setupDatepickerMultiple(default_date, preselected_dates);
-    							");
-                                echo $this->Js->writeBuffer();
-
-    						} else {
-                                // Only one date can be selected
-    							$this->Js->buffer("
-    								var default_date = '".$event['date']."';
-    								setupDatepickerSingle(default_date);
-    							");
-                                echo $this->Js->writeBuffer();
-    						}
-    						echo $this->Form->input('date', [
-    							'type' => 'hidden',
-    							'id' => 'datepicker_hidden'
+						if ($multiple_dates_allowed) {
+    						echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
+    						$this->Js->buffer("
+    							var default_date = $default_date;
+    							var preselected_dates = $datepicker_preselected_dates;
+    							setupDatepickerMultiple(default_date, preselected_dates);
+    						");
+						} else {
+							$this->Js->buffer("
+								var default_date = '".$this->request->Event['date']."';
+								setupDatepickerSingle(default_date);
+							");
+						}
+                            echo $this->Js->writeBuffer();
+    						echo $this->Form->control('date', [
+    							'id' => 'datepicker',
+								'label' => false
     						]);
     					?>
-    					<?php if ($multiple_dates_allowed): ?>
-    						<div class="text-muted">
-    							Select more than one date to create multiple events connected by a series.
-    						</div>
-    					<?php endif; ?>
-    			</div>
+    					<div class="text-muted">
+    						Select more than one date to create multiple events connected by a series.
+    					</div>
+    				</div>
                 </td>
             </tr>
             <?php if ($multiple_dates_allowed): ?>
@@ -91,9 +86,7 @@
                             <?php echo $this->Form->input('EventSeries.title', [
                                 'label' => false,
                                 'class' => 'form-control',
-                                'div' => [
-                                    'class'=>'form-group col-lg-8 col-xs-12'
-                                ]
+                                'id' => 'EventSeriesTitle'
                             ]); ?>
                             <div class="text-muted">
                                 By default, the series and its events have the same title.
@@ -175,10 +168,11 @@
                             'label' => false,
                             'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
                         ]); ?>
+						<a href="#" id="eventform_noaddress" <?php echo $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr id="eventform_address" <?php if (! $has['address']): ?>style="display: none;"<?php endif; ?>>
                 <th>
                     Address
                 </th>
@@ -186,7 +180,8 @@
                     <div class="form-group col-lg-8 col-xs-12">
                         <?= $this->Form->control('address', [
                             'class' => 'form-control',
-                            'label' => false
+                            'label' => false,
+							'id' => 'EventAddress'
                         ]); ?>
                     </div>
                 </td>
@@ -198,12 +193,11 @@
                 <td>
                     <div class="form-group col-lg-8 col-xs-12">
 						<?php echo $this->CKEditor->loadJs(); ?>
-						<?php echo $this->Form->control('description',
-							['label' => false]
-						); ?>
-						<?php echo $this->CKEditor->replace('description',
-							['language' => 'fr']
-						); ?>
+						<?php echo $this->Form->control('description', [
+							'label' => false,
+							'id' => 'EventDescription'
+						]); ?>
+						<?php echo $this->CKEditor->replace('description'); ?>
                     </div>
                 </td>
             </tr>
@@ -232,12 +226,12 @@
                 </td>
             </tr>
 			<tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : ''; ?>>
+				<td></td>
 				<td>
 					<a href="#" id="event_add_cost">
 						Add cost
 					</a>
 				</td>
-				<td></td>
 			</tr>
 			<tr id="eventform_hascost"<?= (! $has['cost']) ? ' style="display: none;"' : ''; ?>>
 				<th>Cost</th>
@@ -246,20 +240,21 @@
 						<?php echo $this->Form->input('cost', [
 							'maxLength' => 200,
 							'label' => false,
-							'class' => 'form-control'
+							'class' => 'form-control',
+							'id' => 'EventCost'
 						]); ?>
+						<a href="#" id="event_remove_cost">Remove</a>
+						<div class="text-muted">Just leave this blank if the event is free.</div>
 					</div>
-					<a href="#" id="event_remove_cost">Remove</a>
-					<div class="text-muted">Just leave this blank if the event is free.</div>
 				</td>
 			</tr>
 			<tr id="eventform_noages"<?= ($has['ages']) ? ' style="display: none;"' : ''; ?>>
+				<td></td>
 				<td>
 					<a href="#" id="event_add_age_restriction">
 						Add age restriction
 					</a>
 				</td>
-				<td></td>
 			</tr>
 			<tr id="eventform_hasages"<?= (! $has['ages']) ? ' style="display: none;"' : ''; ?>>
 				<th>Age Restriction</th>
@@ -268,20 +263,21 @@
 						<?php echo $this->Form->input('age_restriction', [
 							'label' => false,
 							'class' => 'form-control',
-							'maxLength' => 30
+							'maxLength' => 30,
+							'id' => 'EventAgeRestriction'
 						]); ?>
+						<a href="#" id="event_remove_age_restriction">Remove</a>
+						<div class="text-muted">Leave this blank if this event has no age restrictions.</div>
 					</div>
-					<a href="#" id="event_remove_age_restriction">Remove</a>
-					<div class="text-muted">Leave this blank if this event has no age restrictions.</div>
 				</td>
 			</tr>
 			<tr id="eventform_nosource"<?= ($has['source']) ? ' style="display: none;"' : ''; ?>>
+				<td></td>
 				<td>
 					<a href="#" id="event_add_source">
 						Add info source
 					</a>
 				</td>
-				<td></td>
 			</tr>
 			<tr id="eventform_hassource"<?= (! $has['source']) ? ' style="display: none;"' : ''; ?>>
 				<th>Source</th>
@@ -289,7 +285,8 @@
 					<div class="form-group col-lg-8 col-xs-12">
 						<?php echo $this->Form->input('source', [
 							'label' => false,
-							'class' => 'form-control'
+							'class' => 'form-control',
+							'id' => 'EventSource'
 						]); ?>
 						<a href="#" id="event_remove_source">Remove</a>
 						<div class="text-muted">Did you get this information from a website, newspaper, flyer, etc?</div>
@@ -298,6 +295,21 @@
 			</tr>
         </tbody>
     </table>
-</fieldset>
 <?= $this->Form->button(__('Submit')) ?>
 <?= $this->Form->end() ?>
+<?php
+	/*$previous_locations_for_autocomplete = [];
+	foreach ($previous_locations as $location => $address) {
+		$previous_locations_for_autocomplete[] = [
+			'label' => $location,
+			'value' => $address
+		];
+	}*/
+	/*$this->Js->buffer('
+		eventForm.previousLocations = '.$this->Js->object($previous_locations_for_autocomplete).';
+		setupEventForm();
+	'); */
+	$this->Js->buffer('
+		setupEventForm();
+	');
+?>

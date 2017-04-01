@@ -68,8 +68,6 @@ function editEventSeries_updateRow(event_id) {
 }
 
 function setupEventForm() {
-	// Since TinyMCE doesn't work with HTML 5's required attribute
-	$('#EventDescription').removeAttr('required');
 
 	// This is only applicable if a new event takes place on multiple dates
 	var series_title_input = $('#EventSeriesTitle');
@@ -135,28 +133,6 @@ function setupEventForm() {
 	if (form.length == 0) {
 		form = $('#EventEditForm');
 	}
-	form.submit(function(event) {
-		if ($('#EventTitle').val() == '') {
-			alert('Please give this event a title.');
-			$('#EventTitle').focus();
-			return false;
-		}
-		if ($('#datepicker_hidden').val() == '') {
-			alert('Please select a date.');
-			return false;
-		}
-		if ($('#EventLocation').val() == '') {
-			alert('Please enter a location.');
-			$('#EventLocation').focus();
-			return false;
-		}
-		var description = tinyMCE.get('EventDescription').getContent();
-		if (description == "" || description == null) {
-			alert('Please enter a description of this event.');
-			return false;
-		}
-		return true;
-	});
 	if ($('#EventCost').val() != '') {
 		$('#eventform_nocost').hide();
 		$('#eventform_hascost').show();

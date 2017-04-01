@@ -19,7 +19,7 @@ class UsersController extends AppController
         // we should probably allow people to register & change their passwords
         // I *guess*.
         $this->Auth->allow([
-            'register', 'forgotPassword', 'resetPassword'
+            'register', 'forgotPassword', 'resetPassword', 'view'
         ]);
     }
 
@@ -41,7 +41,36 @@ class UsersController extends AppController
         ]);
 
         $this->set('user', $user);
+
+        // does this person have events they've shared?
+		$event_count = $this->Users->Events->find('all', [
+			'conditions' => ['user_id' => $id]
+		])
+        ->count();
+
+        if ($event_count) {
+			$events = $this->paginate = [
+				'conditions' => ['Event.user_id' => $id],
+				'contain' => [
+					'EventsImage' => ['Image'],
+					'Tag',
+					'Category',
+					'EventSeries',
+					'User'
+				],
+				'order' => 'date DESC',
+				'limit' => 20
+			];
+			$events = $this->Users->Events->arrangeByDate($events);
+		} else {
+		    $events = [];
+		}
+
         $this->set('_serialize', ['user']);
+        $this->set([
+            'event_count' => $event_count,
+            'event' => $event
+        ]);
     }
 
     public function login()

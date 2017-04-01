@@ -75,8 +75,8 @@ class EventsTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-        ->requirePresence('title', 'create')
-        ->notEmpty('title');
+            ->requirePresence('title', 'create')
+            ->notEmpty('title');
 
         $validator
             ->date('date')
@@ -93,7 +93,8 @@ class EventsTable extends Table
 
         $validator
             ->integer('category_id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence('category_id')
+            ->notEmpty('category_id');
 
         return $validator;
     }
@@ -104,6 +105,16 @@ class EventsTable extends Table
         'upcomingWithTag' => true,
         'pastWithTag' => true
     ];
+
+    public function arrangeByDate($events) {
+        $arranged_events = [];
+        foreach ($events as $event) {
+            $date = $event['date'];
+            $arranged_events[$date][] = $event;
+        }
+        ksort($arranged_events);
+        return $arranged_events;
+    }
 
     public function buildRules(RulesChecker $rules)
     {

@@ -186,15 +186,15 @@ class CalendarHelper extends Helper {
 	}
 
 	public function eventTime($event) {
-		$start_stamp = strtotime($event['Event']['time_start']);
-		if (substr($event['Event']['time_start'], 3, 5) == '00:00') {
+		$start_stamp = strtotime($event['time_start']);
+		if (substr($event['time_start'], 3, 5) == '00:00') {
 			$retval = date('ga', $start_stamp);
 		} else {
 			$retval = date('g:ia', $start_stamp);
 		}
-		if ($event['Event']['time_end']) {
-			$end_stamp = strtotime($event['Event']['time_end']);
-			if (substr($event['Event']['time_end'], 3, 5) == '00:00') {
+		if ($event['time_end']) {
+			$end_stamp = strtotime($event['time_end']);
+			if (substr($event['time_end'], 3, 5) == '00:00') {
 				$retval .= ' to '.date('ga', $end_stamp);
 			} else {
 				$retval .= ' to '.date('g:ia', $end_stamp);
@@ -211,7 +211,7 @@ class CalendarHelper extends Helper {
 	public function eventTags($event) {
 		$linked_tags = [];
 		foreach ($event['Tag'] as $tag) {
-			$tag_link_id = "filter_tag_inline_{$event['Event']['id']}_{$tag['id']}";
+			$tag_link_id = "filter_tag_inline_{$event['id']}_{$tag['id']}";
 			$tag_slug = "{$tag['id']}_".Inflector::slug($tag['name']);
 			$linked_tags[] = $this->Html->link($tag['name'],
 				[
@@ -234,7 +234,7 @@ class CalendarHelper extends Helper {
 	 * @return string
 	 */
 	public function date($event) {
-		$date_split = explode('-', $event['Event']['date']);
+		$date_split = explode('-', $event['date']);
 		$year = $date_split[0];
 		$month = ($date_split[1] < 10) ? substr($date_split[1], 1, 1) : $date_split[1];
 		$day = ($date_split[2] < 10) ? substr($date_split[2], 1, 1) : $date_split[2];
@@ -247,9 +247,9 @@ class CalendarHelper extends Helper {
 	 * @return string
 	 */
 	public function time($event) {
-		$retval = date('g:ia', strtotime($event['Event']['time_start']));
-		if ($event['Event']['time_end']) {
-			$retval .= ' to '.date('g:ia', strtotime($event['Event']['time_end']));
+		$retval = date('g:ia', strtotime($event['time_start']));
+		if ($event['time_end']) {
+			$retval .= ' to '.date('g:ia', strtotime($event['time_end']));
 		}
 		return $retval;
 	}
