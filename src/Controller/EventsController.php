@@ -230,10 +230,54 @@ class EventsController extends AppController
             ])
             ->where(['date >=' => $now])
             ->toArray();
-        $dates = array_column($events, 'date');
+        foreach ($events as $event) {
+            $dates[] = get_object_vars($event->date);
+        }
+        foreach ($dates as $date) {
+            $newDates[] = $date['date'];
+        }
+    	$event_keys = array_values($newDates);
+    	if(count(array_unique($event_keys))<count($event_keys)) {
+            $multiple_dates = true;
+        } else {
+            $multiple_dates = false;
+        }
         $this->set([
-            'dates' => $dates,
-            'events' => $events
+            'events' => $events,
+            'event_keys' => $event_keys,
+            'multiple_dates' => $multiple_dates,
+            'newDates' => $newDates
+        ]);
+        $this->set('titleForLayout', '');
+    }
+
+    public function location($location = null) {
+        $now = Time::now();
+        $events = $this->Events
+            ->find('all', [
+            'conditions' => ['location' => $location],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+            ])
+            ->toArray();
+        foreach ($events as $event) {
+            $dates[] = get_object_vars($event->date);
+        }
+        foreach ($dates as $date) {
+            $newDates[] = $date['date'];
+        }
+        $event_keys = array_values($newDates);
+        if(count(array_unique($event_keys))<count($event_keys)) {
+            $multiple_dates = true;
+        } else {
+            $multiple_dates = false;
+        }
+        $this->set([
+            'events' => $events,
+            'event_keys' => $event_keys,
+            'location' => $location,
+            'multiple_dates' => $multiple_dates,
+            'newDates' => $newDates
         ]);
         $this->set('titleForLayout', '');
     }

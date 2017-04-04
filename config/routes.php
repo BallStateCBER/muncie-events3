@@ -55,6 +55,10 @@ Router::scope('/', function (RouteBuilder $routes) {
     		['id' => '[0-9]+', 'pass' => ['id']]
     	);
     }
+    
+    // location index
+    $routes->connect('/location/*', ['controller' => 'events', 'action' => 'location']);
+
     // viewing events
     Router::connect("event/:id",
         ['controller' => 'events', 'action' => 'view'],
@@ -69,7 +73,12 @@ Router::scope('/', function (RouteBuilder $routes) {
     // users actions
     $routes->connect('/login', ['controller' => 'Users', 'action' => 'login']);
     $routes->connect('/register', ['controller' => 'Users', 'action' => 'register']);
-    $routes->connect('/user/*', ['controller' => 'Users', 'action' => 'view']);
+
+    // viewing users
+    Router::connect("user/:id",
+        ['controller' => 'users', 'action' => 'view'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
 
     // widgets
     $routes->connect('/widgets', ['controller' => 'Widgets', 'action' => 'index']);

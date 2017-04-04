@@ -233,12 +233,8 @@ class CalendarHelper extends Helper {
 	 * @param array $event
 	 * @return string
 	 */
-	public function date($event) {
-		$date_split = explode('-', $event['date']);
-		$year = $date_split[0];
-		$month = ($date_split[1] < 10) ? substr($date_split[1], 1, 1) : $date_split[1];
-		$day = ($date_split[2] < 10) ? substr($date_split[2], 1, 1) : $date_split[2];
-		return date('l, F j, Y', mktime(0, 0, 0, $month, $day, $year));
+	public function date($date) {
+		return date('l, F j, Y', strtotime($date));
 	}
 
 	/**
@@ -247,9 +243,9 @@ class CalendarHelper extends Helper {
 	 * @return string
 	 */
 	public function time($event) {
-		$retval = date('g:ia', strtotime($event['time_start']));
-		if ($event['time_end']) {
-			$retval .= ' to '.date('g:ia', strtotime($event['time_end']));
+		$retval = date('g:ia', strtotime($event->time_start));
+		if ($event->time_end) {
+			$retval .= ' to '.date('g:ia', strtotime($event->time_end));
 		}
 		return $retval;
 	}

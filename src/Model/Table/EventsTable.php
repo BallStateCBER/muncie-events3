@@ -106,16 +106,6 @@ class EventsTable extends Table
         'pastWithTag' => true
     ];
 
-    public function arrangeByDate($events) {
-        $arranged_events = [];
-        foreach ($events as $event) {
-            $date = $event['date'];
-            $arranged_events[$date][] = $event;
-        }
-        ksort($arranged_events);
-        return $arranged_events;
-    }
-
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));

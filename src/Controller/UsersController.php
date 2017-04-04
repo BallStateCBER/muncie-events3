@@ -40,38 +40,25 @@ class UsersController extends AppController
             'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
-        $this->set('user', $user);
-
-        // does this person have events they've shared?
 		$event_count = $this->Users->Events->find('all', [
 			'conditions' => ['user_id' => $id]
-		])
-        ->count();
+		])->count();
 
-        if ($event_count) {
-			$events = $this->paginate = [
-				'conditions' => ['Event.user_id' => $id],
-				'contain' => [
-					'EventsImage' => ['Image'],
-					'Tag',
-					'Category',
-					'EventSeries',
-					'User'
-				],
-				'order' => 'date DESC',
-				'limit' => 20
-			];
-			$events = $this->Users->Events->arrangeByDate($events);
-		} else {
-		    $events = [];
-		}
+        $events = $this->Users->Events->find('all', [
+            'conditions' => ['Events.user_id' => $id],
+            'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+        ]);
 
-        $this->set('_serialize', ['user']);
         $this->set([
             'event_count' => $event_count,
-            'event' => $event
+            'events' => $events,
+            'titleForLayout' => $user->name,
+            'user' => $user
         ]);
+        $this->set('_serialize', ['user']);
     }
+
 
     public function login()
     {
