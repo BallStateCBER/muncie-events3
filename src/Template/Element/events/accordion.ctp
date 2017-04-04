@@ -9,24 +9,21 @@
 if (empty($events)) {
 	$this->Js->buffer("setNoMoreEvents();");
 } else {
-	$event_keys = array_keys($events);
-	$first_key = reset($event_keys);
-	$multiple_dates = (strpos($first_key, '-') !== false);
 	if ($multiple_dates) {
-		foreach ($events as $date => $days_events) {
-			echo $this->Calendar->dayHeaders($date);
-			echo $this->element('events/accordion_day', array(
-				'events' => $days_events
-			));
+		foreach ($events as $event) {
+			echo $this->Calendar->dayHeaders($event->date);
+			echo $this->element('events/accordion_day', [
+				'event' => $event
+			]);
 		}
 	} else {
 		if (! isset($open_only_event)) {
 			$open_only_event = false;
 		}
-		echo $this->element('events/accordion_day', array(
+		echo $this->element('events/accordion_day', [
 			'events' => $events,
 			'open_only_event' => $open_only_event	// Open event if there's only one event
-		));
+		]);
 	}
 	if (isset($next_start_date)) {
 		$this->Js->buffer("setNextStartDate('$next_start_date');");

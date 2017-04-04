@@ -1,10 +1,10 @@
 <h1 class="page_title">
-	<?php echo $event['title']; ?>
+	<?= $event->title; ?>
 </h1>
 
 <div class="event">
-	<?php
-		echo $this->element('events/actions', compact('event'));
+	<?=
+		$this->element('events/actions', compact('event'));
 		$this->Js->buffer("setupEventActions('.event');");
 	?>
 
@@ -13,29 +13,28 @@
 			<tr>
 				<th>When</th>
 				<td>
-					<?php echo $this->Calendar->date($event); ?>
+					<?= $this->Calendar->date($event->date); ?>
 					<br />
-					<?php echo $this->Calendar->time($event); ?>
+					<?= $this->Calendar->time($event); ?>
 				</td>
 			</tr>
 			<tr>
 				<th>Where</th>
 				<td>
-					<?php echo $this->Html->link(
-					   $event['location'],
-					   array(
+					<?= $this->Html->link(
+					   $event->location, [
 					       'controller' => 'events',
 					       'action' => 'location',
-					       $event['location']
-                       )
+					       $event->location
+                       ]
                     ); ?>
-					<?php if ($event['location_details']): ?>
+					<?php if ($event->location_details): ?>
 						<br />
-						<?php echo $event['location_details']; ?>
+						<?= $event->location_details; ?>
 					<?php endif; ?>
-					<?php if ($event['address']): ?>
+					<?php if ($event->address): ?>
 						<br />
-						<?php echo $event['address']; ?>
+						<?= $event->address; ?>
 					<?php endif; ?>
 				</td>
 			</tr>
@@ -44,19 +43,19 @@
 				<td class="what">
 					<?php
 						echo $this->Html->link(
-							$this->Icon->category($event->Category['name']).$event->Category['name'],
-							['controller' => 'events', 'action' => 'category', $event->Category['slug']],
+							$this->Icon->category($event->category->name).$event->category->name,
+							['controller' => 'events', 'action' => 'category', $event->category->slug],
 							['escape' => false, 'title' => 'View this category']
 						);
-						if (! empty($event['Tag'])) {
+						if (! empty($event->tag)) {
 							$linked_tags = [];
-							foreach ($event['Tag'] as $tag) {
+							foreach ($event->tag as $tag) {
 								$linked_tags[] = $this->Html->link(
-									$tag['name'],
+									$tag->name,
 									[
 										'controller' => 'events',
 										'action' => 'tag',
-										'slug' => $tag['id'].'_'.Inflector::slug($tag['name'])
+										'slug' => $tag->id.'_'.Inflector::slug($tag->name)
 									],
 									['title' => 'View this tag']
 								);
@@ -66,25 +65,25 @@
 					?>
 				</td>
 			</tr>
-			<?php if ($event['cost']): ?>
+			<?php if ($event->cost): ?>
 				<tr>
 					<th>Cost</th>
-					<td><?php echo $event['cost']; ?></td>
+					<td><?= $event->cost; ?></td>
 				</tr>
 			<?php endif; ?>
-			<?php if ($event['age_restriction']): ?>
+			<?php if ($event->age_restrictions): ?>
 				<tr>
 					<th>Ages</th>
-					<td><?php echo $event['age_restriction']; ?></td>
+					<td><?= $event->age_restrictions; ?></td>
 				</tr>
 			<?php endif; ?>
-			<?php if ($event['series_id'] && $event->EventSeries['title']): ?>
+			<?php if ($event->series_id && $event->eventSeries->title): ?>
 				<tr>
 					<th>Series</th>
 					<td>
-						<?php echo $this->Html->link(
-							$event->EventSeries['title'],
-							['controller' => 'event_series', 'action' => 'view', 'id' => $event['series_id']]
+						<?= $this->Html->link(
+							$event->eventSeries->title,
+							['controller' => 'event_series', 'action' => 'view', 'id' => $event->series_id]
 						); ?>
 					</td>
 				</tr>
@@ -92,44 +91,44 @@
 		</table>
 	</div>
 	<div class="description">
-		<?php if (! empty($event->EventsImage)): ?>
+		<?php if (! empty($event->eventsImage)): ?>
 			<div class="images">
-				<?php foreach ($event->EventsImage as $image): ?>
-					<?php echo $this->Calendar->thumbnail('small', [
-						'filename' => $image->Image['filename'],
-						'caption' => $image['caption'],
-						'group' => 'event'.$event['id']
+				<?php foreach ($event->eventsImage as $image): ?>
+					<?= $this->Calendar->thumbnail('small', [
+						'filename' => $image->filename,
+						'caption' => $image->caption,
+						'group' => 'event'.$event->id
 					]); ?>
-					<?php if ($image['caption']): ?>
+					<?php if ($image->caption): ?>
 						<span class="caption">
-							<?php echo $image['caption']; ?>
+							<?= $image->caption; ?>
 						</span>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
-		<?php echo $this->Text->autoLink($event['description'], [
+		<?= $this->Text->autoLink($event->description, [
 			'escape' => false
 		]); ?>
 	</div>
 
 	<div class="footer_details">
 		<p>
-			<?php if (! $event->User['id']): ?>
+			<?php if (! $event->user->id): ?>
 				Added anonymously
-			<?php elseif (! $event->User['name']): ?>
+			<?php elseif (! $event->user->name): ?>
 				Added by a user whose account no longer exists
 			<?php else: ?>
-				Author: <?php echo $this->Html->link(
-					$event->User['name'],
-					['controller' => 'users', 'action' => 'view', 'id' => $event->User['id']]
+				Author: <?= $this->Html->link(
+					$event->user->name,
+					['controller' => 'users', 'action' => 'view', 'id' => $event->user->id]
 				); ?>
 			<?php endif; ?>
 
-			<?php if ($event['source']): ?>
+			<?php if ($event->source): ?>
 				<br />
 				Source:
-				<?php echo $this->Text->autoLink($event['source']); ?>
+				<?= $this->Text->autoLink($event->source); ?>
 			<?php endif; ?>
 		</p>
 	</div>
