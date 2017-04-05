@@ -4,9 +4,9 @@
 
 <p style="clear: both;">
 	<?php echo $this->Html->link('&larr; Back to Upcoming Event Tags',
-		array('controller' => 'events', 'action' => 'upcoming_tags'),
-		array('escape' => false)
-	); ?>
+        array('controller' => 'events', 'action' => 'upcoming_tags'),
+        array('escape' => false)
+    ); ?>
 </p>
 
 <div id="events">
@@ -17,8 +17,8 @@
 				<br />
 				If you know of an event that we left out, be a pal and
 				<?php echo $this->Html->link('tell us about it',
-					array('controller' => 'events', 'action' => 'add', 'm' => $month, 'd' => $day, 'y' => $year)
-				); ?>
+                    array('controller' => 'events', 'action' => 'add', 'm' => $month, 'd' => $day, 'y' => $year)
+                ); ?>
 			</p>
 		<?php else: ?>
 			<?php foreach ($events as $date => $date_events): ?>
@@ -44,13 +44,13 @@
 						</div>
 					</a>
 					<?php
-						$this->Js->buffer("
+                        $this->Js->buffer("
 							$('basic_info_event_{$event['id']}').observe('click', function (event) {
 								event.stop();
 								selectEvent({$event['id']});
 							});
 						");
-					?>
+                    ?>
 				<?php endforeach; ?>
 			<?php endforeach; ?>
 		<?php endif; ?>
@@ -61,7 +61,7 @@
 		</div>
 		<div id="load_event">
 			<div id="event_info_placeholder">
-				<?php if (! empty($events)): ?>
+				<?php if (!empty($events)): ?>
 					&larr; Click on an event for more info
 				<?php endif; ?>
 			</div>
