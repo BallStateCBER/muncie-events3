@@ -6,27 +6,40 @@
 	or one day, i.e.
 		$events[$k] = $event
 */
-if (empty($events)) {
-	$this->Js->buffer("setNoMoreEvents();");
-} else {
-	if ($multiple_dates) {
-		foreach ($events as $event) {
-			echo $this->Calendar->dayHeaders($event->date);
-			echo $this->element('events/accordion_day', [
+?>
+
+<?php if (empty($events)): ?>
+	<?= $this->Js->buffer("setNoMoreEvents();"); ?>
+<?php else: ?>
+	<?php if (! $multiple_dates): ?>
+		<?php foreach ($events as $date => $event): ?>
+			<?= $this->Calendar->dayHeaders($date); ?>
+			<ul class="event_accordion">
+			<?= $this->element('events/accordion_day', [
 				'event' => $event
-			]);
-		}
-	} else {
-		if (! isset($open_only_event)) {
-			$open_only_event = false;
-		}
-		echo $this->element('events/accordion_day', [
-			'events' => $events,
-			'open_only_event' => $open_only_event	// Open event if there's only one event
-		]);
-	}
-	if (isset($next_start_date)) {
+			]); ?>
+			</ul>
+		<?php endforeach; ?>
+	<?php else: ?>
+		<?php foreach ($events as $date => $event): ?>
+			<?= $this->Calendar->dayHeaders($date); ?>
+			<ul class="event_accordion">
+			<?php if (count($event) > 1): ?>
+				<?php foreach ($event as $k => $e): ?>
+					<?= $this->element('events/accordion_day', [
+						'event' => $e
+					]); ?>
+				<?php endforeach; ?>
+			<?php else: ?>
+				<?= $this->element('events/accordion_day', [
+					'event' => $event
+				]); ?>
+			<?php endif; ?>
+			</ul>
+		<?php endforeach; ?>
+	<?php endif; ?>
+	<?php if (isset($next_start_date)) {
 		$this->Js->buffer("setNextStartDate('$next_start_date');");
 	}
-	$this->Js->buffer("setupEventAccordion();");
-}
+	$this->Js->buffer("setupEventAccordion();"); ?>
+<?php endif; ?>
