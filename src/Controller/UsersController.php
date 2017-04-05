@@ -12,7 +12,6 @@ use Cake\Routing\Router;
  */
 class UsersController extends AppController
 {
-
     public function initialize()
     {
         parent::initialize();
@@ -40,9 +39,9 @@ class UsersController extends AppController
             'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
-		$event_count = $this->Users->Events->find('all', [
-			'conditions' => ['user_id' => $id]
-		])->count();
+        $event_count = $this->Users->Events->find('all', [
+            'conditions' => ['user_id' => $id]
+        ])->count();
 
         $events = $this->Users->Events->find('all', [
             'conditions' => ['Events.user_id' => $id],
@@ -99,7 +98,8 @@ class UsersController extends AppController
 
     public function register()
     {
-        $this->set('titleForLayout', 'Register');;
+        $this->set('titleForLayout', 'Register');
+        ;
 
         $user = $this->Users->newEntity();
 
@@ -126,16 +126,16 @@ class UsersController extends AppController
         $email = $this->Auth->user('email');
         $user = $this->Users->get($id);
 
-        $reset_password_hash = $this->Users->getResetPasswordHash($id, $email);
+        $resetPasswordHash = $this->Users->getResetPasswordHash($id, $email);
 
-        $reset_url = Router::url([
+        $resetUrl = Router::url([
             'controller' => 'users',
             'action' => 'resetPassword',
             $id,
-            $reset_password_hash
+            $resetPasswordHash
         ], true);
 
-        $this->set('reset_url', $reset_url);
+        $this->set('reset_url', $resetUrl);
 
         if ($this->request->is(['post'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -149,7 +149,8 @@ class UsersController extends AppController
         }
     }
 
-    public function forgotPassword() {
+    public function forgotPassword()
+    {
         $this->set([
             'titleForLayout' => 'Forgot Password'
         ]);
@@ -162,9 +163,9 @@ class UsersController extends AppController
             if (empty($email)) {
                 $this->Flash->error('Please enter the email address you registered with to have your password reset.');
             } else {
-                $user_id = $this->Users->getIdFromEmail($email);
-                if ($user_id) {
-                    if ($this->Users->sendPasswordResetEmail($user_id, $email)) {
+                $userId = $this->Users->getIdFromEmail($email);
+                if ($userId) {
+                    if ($this->Users->sendPasswordResetEmail($userId, $email)) {
                         $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
                     } else {
                         $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$admin_email.'">'.$admin_email.'</a> for assistance.');
@@ -176,20 +177,21 @@ class UsersController extends AppController
         }
     }
 
-    public function resetPassword($user_id, $reset_password_hash) {
-        $email = $this->Users->getEmailFromId($user_id);
-        $user = $this->Users->get($user_id);
+    public function resetPassword($userId, $resetPasswordHash)
+    {
+        $email = $this->Users->getEmailFromId($userId);
+        $user = $this->Users->get($userId);
 
         $this->set([
             'titleForLayout' => 'Reset Password',
-            'user_id' => $user_id,
+            'user_id' => $userId,
             'email' => $email,
-            'reset_password_hash' => $reset_password_hash
+            'reset_password_hash' => $resetPasswordHash
         ]);
 
-        $expected_hash = $this->Users->getResetPasswordHash($user_id, $email);
+        $expected_hash = $this->Users->getResetPasswordHash($userId, $email);
 
-        if ($reset_password_hash != $expected_hash) {
+        if ($resetPasswordHash != $expected_hash) {
             $this->Flash->error('Invalid password-resetting code. Make sure that you entered the correct address and that the link emailed to you hasn\'t expired.');
             $this->redirect('/');
         }

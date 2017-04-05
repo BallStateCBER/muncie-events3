@@ -124,8 +124,9 @@ class UsersTable extends Table
         return $rules;
     }
 
-    public function getEmailFromId($user_id) {
-        $query = TableRegistry::get('Users')->find()->select(['email'])->where(['id' => $user_id]);
+    public function getEmailFromId($userId)
+    {
+        $query = TableRegistry::get('Users')->find()->select(['email'])->where(['id' => $userId]);
         $result = $query->all();
         $email = $result->toArray();
         $email = implode($email);
@@ -136,32 +137,36 @@ class UsersTable extends Table
         return $email;
     }
 
-    public function getIdFromEmail($email) {
+    public function getIdFromEmail($email)
+    {
         $query = TableRegistry::get('Users')->find()->select(['id'])->where(['email' => $email]);
         $result = $query->all();
         $id = $result->toArray();
         $id = implode($id);
 
-        preg_match_all('!\d+!', $id, $user_id);
-        return implode($user_id[0]);
+        preg_match_all('!\d+!', $id, $userId);
+        return implode($userId[0]);
     }
 
-    public function getResetPasswordHash($user_id, $email) {
+    public function getResetPasswordHash($userId, $email)
+    {
+        $
         $salt = Configure::read('password_reset_salt');
         $month = date('my');
-        return md5($user_id.$email.$salt.$month);
+        return md5($userId.$email.$salt.$month);
     }
 
-    public function sendPasswordResetEmail($user_id, $email) {
-        $reset_password_hash = $this->getResetPasswordHash($user_id, $email);
-        $reset_email = new Email('default');
-        $reset_url = Router::url([
+    public function sendPasswordResetEmail($userId, $email)
+    {
+        $resetPasswordHash = $this->getResetPasswordHash($userId, $email);
+        $resetEmail = new Email('default');
+        $resetUrl = Router::url([
             'controller' => 'users',
             'action' => 'resetPassword',
-            $user_id,
-            $reset_password_hash
+            $userId,
+            $resetPasswordHash
         ], true);
-        $reset_email->to($email)
+        $resetEmail->to($email)
             ->subject('Muncie Events: Reset Password')
             ->template('forgot_password')
             ->emailFormat('both')
@@ -170,6 +175,6 @@ class UsersTable extends Table
                 'email',
                 'reset_url'
             ));
-        return $reset_email->send();
+        return $resetEmail->send();
     }
 }
