@@ -39,7 +39,7 @@ class UsersController extends AppController
             'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
-        $event_count = $this->Users->Events->find('all', [
+        $eventCount = $this->Users->Events->find('all', [
             'conditions' => ['user_id' => $id]
         ])->count();
 
@@ -50,7 +50,7 @@ class UsersController extends AppController
         ]);
 
         $this->set([
-            'event_count' => $event_count,
+            'eventCount' => $eventCount,
             'events' => $events,
             'titleForLayout' => $user->name,
             'user' => $user
@@ -157,7 +157,7 @@ class UsersController extends AppController
         $user = $this->Users->newEntity();
 
         if ($this->request->is('post')) {
-            $admin_email = Configure::read('admin_email');
+            $adminEmail = Configure::read('admin_email');
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $email = strtolower(trim($user['email']));
             if (empty($email)) {
@@ -168,7 +168,7 @@ class UsersController extends AppController
                     if ($this->Users->sendPasswordResetEmail($userId, $email)) {
                         $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
                     } else {
-                        $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$admin_email.'">'.$admin_email.'</a> for assistance.');
+                        $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
                     }
                 } else {
                     $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
@@ -189,9 +189,9 @@ class UsersController extends AppController
             'reset_password_hash' => $resetPasswordHash
         ]);
 
-        $expected_hash = $this->Users->getResetPasswordHash($userId, $email);
+        $expectedHash = $this->Users->getResetPasswordHash($userId, $email);
 
-        if ($resetPasswordHash != $expected_hash) {
+        if ($resetPasswordHash != $expectedHash) {
             $this->Flash->error('Invalid password-resetting code. Make sure that you entered the correct address and that the link emailed to you hasn\'t expired.');
             $this->redirect('/');
         }
