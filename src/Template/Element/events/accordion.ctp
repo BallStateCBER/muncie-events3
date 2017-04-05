@@ -38,8 +38,8 @@
             </ul>
         <?php endforeach; ?>
     <?php endif; ?>
-    <?php if (isset($next_start_date)) {
-                    $this->Js->buffer("setNextStartDate('$next_start_date');");
+    <?php if (isset($nextStartDate)) {
+                    $this->Js->buffer("setNextStartDate('$nextStartDate');");
                 }
     $this->Js->buffer("setupEventAccordion();"); ?>
 <?php endif; ?>

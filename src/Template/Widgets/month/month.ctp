@@ -7,7 +7,7 @@
                 </a>
             </td>
             <th colspan="5" class="month_name">
-                <?php echo $month_name; ?>
+                <?php echo $monthName; ?>
             </th>
             <td class="next_month">
                 <a href="#" class="next_month" title="Next month">
@@ -33,13 +33,13 @@
                 }
 
                 // Pre-spacer
-                if ($cell_num < $pre_spacer) {
+                if ($cell_num < $preSpacer) {
                     echo '<td class="spacer">&nbsp;</td>';
                 }
 
                 // Calendar date
-                if ($cell_num >= $pre_spacer && $cell_num < $pre_spacer + $last_day) {
-                    $day = $cell_num - $pre_spacer + 1;
+                if ($cell_num >= $preSpacer && $cell_num < $preSpacer + $lastDay) {
+                    $day = $cell_num - $preSpacer + 1;
                     echo ("$year$month$day" == $today) ? '<td class="today">' : '<td>';
                     echo '<div>';
                     //echo '<span class="number">'.$day.'</span>';
@@ -66,7 +66,7 @@
                         //$events[$date] = array_merge($events[$date], $events[$date]);
                         //$events[$date] = array_merge($events[$date], $events[$date]);
                         //$events[$date] = array_merge($events[$date], $events[$date]);
-                        for ($n = 0; $events_displayed_per_day == 0 || $n < $events_displayed_per_day; $n++) {
+                        for ($n = 0; $eventsDisplayedPerDay == 0 || $n < $eventsDisplayedPerDay; $n++) {
                             if (!isset($events[$date][$n])) {
                                 break;
                             }
@@ -103,9 +103,9 @@
                         }
                         echo '</ul>';
                         $count = count($events[$date]);
-                        if ($events_displayed_per_day > 0 && $count > $events_displayed_per_day) {
+                        if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
                             echo $this->Html->link(
-                                $count - $events_displayed_per_day.' more',
+                                $count - $eventsDisplayedPerDay.' more',
                                 array(
                                     'controller' => 'events',
                                     'action' => 'day',
@@ -125,7 +125,7 @@
                 }
 
                 // After the last day
-                if ($cell_num >= $pre_spacer + $last_day - 1) {
+                if ($cell_num >= $preSpacer + $lastDay - 1) {
 
                     // End of calendar
                     if ($cell_num % 7 == 6) {
@@ -151,6 +151,6 @@
     muncieEventsMonthWidget.setCurrentMonth('$month');
     muncieEventsMonthWidget.setCurrentYear('$year');
     muncieEventsMonthWidget.prepareLinks('#calendar_$year-$month');
-    var events = ".$this->Js->object($events_for_json).";
+    var events = ".$this->Js->object($eventsForJson).";
     muncieEventsMonthWidget.setEvents(events);
 "); ?>
