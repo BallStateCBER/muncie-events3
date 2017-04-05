@@ -70,7 +70,7 @@
     <?php endforeach; ?>
 
     <?php $this->Js->buffer("
-        muncieEventsFeedWidget.setNextStartDate('$next_start_date');
-        muncieEventsFeedWidget.prepareLinks([".implode(',', $event_ids)."]);
+        muncieEventsFeedWidget.setNextStartDate('$nextStartDate');
+        muncieEventsFeedWidget.prepareLinks([".implode(',', $eventIds)."]);
     "); ?>
 <?php endif; ?>

@@ -10,35 +10,35 @@ class CalendarHelper extends Helper
     /**
      * Returns a header describing the dates included in this selection
      */
-    public function selectionHeader($events, $boundary, $starting_date, $ending_date)
+    public function selectionHeader($events, $boundary, $startingDate, $endingDate)
     {
         if (empty($events)) {
-            $boundary_date = ($boundary[1] == date('Y-m-d')) ? 'Today' : date('M j, Y', strtotime($boundary[1]));
-            return ($boundary[0] == 'start') ? 'After '.$boundary_date : 'Before '.$boundary_date;
+            $boundaryDate = ($boundary[1] == date('Y-m-d')) ? 'Today' : date('M j, Y', strtotime($boundary[1]));
+            return ($boundary[0] == 'start') ? 'After '.$boundaryDate : 'Before '.$boundaryDate;
         }
 
         $retval = '';
-        $starts_today = $starting_date == date('Y-m-d');
-        if ($starting_date == $ending_date) {
-            $retval .= $starts_today ? 'Today' : date('M j, Y', strtotime($starting_date));
+        $startsToday = $startingDate == date('Y-m-d');
+        if ($startingDate == $endingDate) {
+            $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
         } else {
-            $sy = date('Y', strtotime($starting_date));
-            $ey = date('Y', strtotime($ending_date));
+            $sy = date('Y', strtotime($startingDate));
+            $ey = date('Y', strtotime($endingDate));
             if ($sy != $ey) {
-                $retval .= $starts_today ? 'Today' : date('M j, Y', strtotime($starting_date));
-                $retval .= ' to '.date('M j, Y', strtotime($ending_date));
+                $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
+                $retval .= ' to '.date('M j, Y', strtotime($endingDate));
             } else {
-                $sm = date('M', strtotime($starting_date));
-                $em = date('M', strtotime($ending_date));
+                $sm = date('M', strtotime($startingDate));
+                $em = date('M', strtotime($endingDate));
                 if ($sm != $em) {
-                    $retval .= $starts_today ? 'Today' : date('M j', strtotime($starting_date));
-                    $retval .= ' to '.date('M j, Y', strtotime($ending_date));
+                    $retval .= $startsToday ? 'Today' : date('M j', strtotime($startingDate));
+                    $retval .= ' to '.date('M j, Y', strtotime($endingDate));
                 } else {
-                    if ($starts_today) {
-                        $retval .= 'Today to '.date('M j, Y', strtotime($ending_date));
+                    if ($startsToday) {
+                        $retval .= 'Today to '.date('M j, Y', strtotime($endingDate));
                     } else {
-                        $retval .= date('M j', strtotime($starting_date));
-                        $retval .= '-'.date('j, Y', strtotime($ending_date));
+                        $retval .= date('M j', strtotime($startingDate));
+                        $retval .= '-'.date('j, Y', strtotime($endingDate));
                     }
                 }
             }
@@ -46,20 +46,20 @@ class CalendarHelper extends Helper
         return $retval;
     }
 
-    public function prevLink($starting_date, $filter)
+    public function prevLink($startingDate, $filter)
     {
-        if ($starting_date) {
-            $prev_url = array_merge(
+        if ($startingDate) {
+            $prevUrl = array_merge(
                 [
                     'controller' => 'events',
                     'action' => 'accordion',
-                    'end_date' => date('Y-m-d', strtotime("$starting_date - 1 day"))
+                    'end_date' => date('Y-m-d', strtotime("$startingDate - 1 day"))
                 ],
                 $this->__getFilterUrlParams($filter)
             );
             return $this->Js->link(
                 '&larr; <span>Previous</span> <img id="event_accordion_prev_indicator" src="/img/loading_small.gif" style="visibility: hidden;" />',
-                $prev_url,
+                $prevUrl,
                 [
                     'update' => 'event_accordion_inner',
                     'before' => "$('#event_accordion_prev_indicator').css('visibility', 'visible');",
@@ -74,20 +74,20 @@ class CalendarHelper extends Helper
         }
     }
 
-    public function nextLink($ending_date, $filter)
+    public function nextLink($endingDate, $filter)
     {
-        if ($ending_date) {
-            $next_url = array_merge(
+        if ($endingDate) {
+            $nextUrl = array_merge(
                 [
                     'controller' => 'events',
                     'action' => 'accordion',
-                    'start_date' => date('Y-m-d', strtotime("$ending_date + 1 day"))
+                    'startDate' => date('Y-m-d', strtotime("$endingDate + 1 day"))
                 ],
                 $this->__getFilterUrlParams($filter)
             );
             return $this->Js->link(
                 '<img id="event_accordion_next_indicator" src="/img/loading_small.gif" style="visibility: hidden;" /> <span>Next</span> &rarr;',
-                $next_url,
+                $nextUrl,
                 [
                     'update' => 'event_accordion_inner',
                     'before' => "$('event_accordion_next_indicator').setStyle({visibility: 'visible'});",
@@ -110,13 +110,13 @@ class CalendarHelper extends Helper
         $retval = '';
         if (isset($filter['tag'])) {
             $retval .= '<br /><span class="filter">Tag: '.ucwords($filter['tag']['name']).'</span>';
-            $unselect_tag_url = ['controller' => 'events', 'action' => 'accordion'];
+            $unselectTagUrl = ['controller' => 'events', 'action' => 'accordion'];
             if (isset($filter['categories'])) {
-                $unselect_tag_url['categories'] = implode(',', $filter['categories']);
+                $unselectTagUrl['categories'] = implode(',', $filter['categories']);
             }
             $retval .= $this->Js->link(
                 'Unselect tag',
-                $unselect_tag_url,
+                $unselectTagUrl,
                 [
                     'update' => 'event_accordion_inner',
                     'before' => "$('#event_accordion_loading_indicator').show();",
@@ -136,30 +136,12 @@ class CalendarHelper extends Helper
      */
     private function __getFilterUrlParams($filter)
     {
-        $filter_url_params = [];
+        $filterUrlParams = [];
         if (isset($filter['tag'])) {
-            $filter_url_params['tag'] = $filter['tag']['id'].'_'.Inflector::slug($filter['tag']['name']);
+            $filterUrlParams['tag'] = $filter['tag']['id'].'_'.Inflector::slug($filter['tag']['name']);
         }
-        return $filter_url_params;
+        return $filterUrlParams;
     }
-
-    /**
-     * Assuming no events were found, outputs an appropriate message depending on $filter
-     * @param Array $filter
-     * @return string
-     */
-    public function noEventsMessage($filter)
-    {
-        if (isset($filter['tag'])) {
-            return 'The calendar contains no events with that tag in this date range.';
-        } elseif (isset($filter['categories'])) {
-            $that_category = count($filter['categories']) == 1 ? 'that category' : 'those categories';
-            return "The calendar contains no events in $that_category in this date range.";
-        } else {
-            return 'The calendar contains no events in this date range.';
-        }
-    }
-
     /**
      * Returns an <hgroup> tag for the provided Y-m-d format date string
      * @param string $date
@@ -169,44 +151,44 @@ class CalendarHelper extends Helper
     {
         if ($date == date('Y-m-d')) {
             $day = 'Today';
-            $this_week = true;
+            $thisWeek = true;
         } elseif ($date == date('Y-m-d', strtotime('tomorrow'))) {
             $day = 'Tomorrow';
-            $this_week = true;
+            $thisWeek = true;
         } else {
             $day = date('l', strtotime($date));
-            $this_week = ($date > date('Y-m-d') && $date < date('Y-m-d', strtotime('today + 6 days')));
-            if ($this_week) {
+            $thisWeek = ($date > date('Y-m-d') && $date < date('Y-m-d', strtotime('today + 6 days')));
+            if ($thisWeek) {
                 $day = 'This '.$day;
             }
         }
         $timestamp = strtotime($date);
 
         $pattern = 'M j, Y';
-        $header_short_date = '<h2 class="short_date">'.date($pattern, $timestamp).'</h2>';
-        $header_day = '<h2 class="day">'.$day.'</h2>';
-        $headers = $header_short_date.$header_day;
+        $headerShortDate = '<h2 class="short_date">'.date($pattern, $timestamp).'</h2>';
+        $headerDay = '<h2 class="day">'.$day.'</h2>';
+        $headers = $headerShortDate.$headerDay;
         $classes = 'event_accordion';
-        if ($this_week) {
-            $classes .= ' this_week';
+        if ($thisWeek) {
+            $classes .= ' thisWeek';
         }
         return "<hgroup class=\"$classes\">$headers</hgroup>";
     }
 
     public function eventTime($event)
     {
-        $start_stamp = strtotime($event['time_start']);
+        $startStamp = strtotime($event['time_start']);
         if (substr($event['time_start'], 3, 5) == '00:00') {
-            $retval = date('ga', $start_stamp);
+            $retval = date('ga', $startStamp);
         } else {
-            $retval = date('g:ia', $start_stamp);
+            $retval = date('g:ia', $startStamp);
         }
         if ($event['time_end']) {
-            $end_stamp = strtotime($event['time_end']);
+            $endStamp = strtotime($event['time_end']);
             if (substr($event['time_end'], 3, 5) == '00:00') {
-                $retval .= ' to '.date('ga', $end_stamp);
+                $retval .= ' to '.date('ga', $endStamp);
             } else {
-                $retval .= ' to '.date('g:ia', $end_stamp);
+                $retval .= ' to '.date('g:ia', $endStamp);
             }
         }
         return $retval;
@@ -219,23 +201,23 @@ class CalendarHelper extends Helper
      */
     public function eventTags($event)
     {
-        $linked_tags = [];
+        $linkedTags = [];
         foreach ($event['Tag'] as $tag) {
-            $tag_link_id = "filter_tag_inline_{$event['id']}_{$tag['id']}";
-            $tag_slug = "{$tag['id']}_".Inflector::slug($tag['name']);
-            $linked_tags[] = $this->Html->link($tag['name'],
+            $tagLinkId = "filter_tag_inline_{$event['id']}_{$tag['id']}";
+            $tagSlug = "{$tag['id']}_".Inflector::slug($tag['name']);
+            $linkedTags[] = $this->Html->link($tag['name'],
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag_slug
+                    'slug' => $tagSlug
                 ],
                 [
                     'escape' => false,
-                    'id' => $tag_link_id
+                    'id' => $tagLinkId
                 ]
             );
         }
-        return implode(', ', $linked_tags);
+        return implode(', ', $linkedTags);
     }
 
     /**
@@ -312,11 +294,11 @@ class CalendarHelper extends Helper
             return '';
         }
         $filename = $params['filename'];
-        $reduced_path = WWW_ROOT.'img'.DS.'events'.DS.$type.DS.$filename;
-        if (!file_exists($reduced_path)) {
+        $reducedPath = WWW_ROOT.'img'.DS.'events'.DS.$type.DS.$filename;
+        if (!file_exists($reducedPath)) {
             return '';
         }
-        $full_path = WWW_ROOT.'img'.DS.'events'.DS.'full'.DS.$filename;
+        $fullPath = WWW_ROOT.'img'.DS.'events'.DS.'full'.DS.$filename;
         $class = "thumbnail tn_$type";
         if (isset($params['class'])) {
             $class .= ' '.$params['class'];
@@ -326,7 +308,7 @@ class CalendarHelper extends Helper
         $image = '<img src="/img/events/'.$type.'/'.$filename.'" class="'.$class.'" />';
 
 
-        if (!file_exists($full_path)) {
+        if (!file_exists($fullPath)) {
             return $image;
         }
 

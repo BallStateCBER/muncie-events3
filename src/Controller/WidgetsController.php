@@ -8,7 +8,7 @@ class WidgetsController extends AppController
     public $components = array();
     public $helpers = array();
 
-    public $custom_styles = array();
+    public $customStyles = array();
 
     public function beforeFilter(Event $event)
     {
@@ -21,64 +21,64 @@ class WidgetsController extends AppController
         parent::beforeRender($event);
     }
 
-    private function __setDemoData($widget_type)
+    private function __setDemoData($widgetType)
     {
-        $this->Widget->setType($widget_type);
-        $iframe_query_string = $this->Widget->getIframeQueryString();
+        $this->Widget->setType($widgetType);
+        $iframeQueryString = $this->Widget->getIframeQueryString();
         $options = $this->Widget->getOptions();
-        $iframe_styles = $this->Widget->getIframeStyles($options);
+        $iframeStyles = $this->Widget->getIframeStyles($options);
         $this->set(array(
             'defaults' => $this->Widget->getDefaults(),
-            'iframe_styles' => $iframe_styles,
-            'iframe_url' => Router::url(array(
+            'iframeStyles' => $iframeStyles,
+            'iframeUrl' => Router::url(array(
                 'controller' => 'widgets',
-                'action' => $widget_type,
-                '?' => $iframe_query_string
+                'action' => $widgetType,
+                '?' => $iframeQueryString
             ), true),
             'code_url' => Router::url(array(
                 'controller' => 'widgets',
-                'action' => $widget_type,
-                '?' => str_replace('&', '&amp;', $iframe_query_string)
+                'action' => $widgetType,
+                '?' => str_replace('&', '&amp;', $iframeQueryString)
             ), true),
             'categories' => $this->Event->Category->getAll()
         ));
     }
 
     /**
-     * Produces a view that lists seven event-populated days, starting with $start_date
-     * @param string $start_date 'yyyy-mm-dd', today by default
+     * Produces a view that lists seven event-populated days, starting with $startDate
+     * @param string $startDate 'yyyy-mm-dd', today by default
      */
-    public function feed($start_date = null)
+    public function feed($startDate = null)
     {
         $this->__setDemoData('feed');
 
         // Get relevant event filters
         $options = $_GET;
         $filters = $this->Event->getValidFilters($options);
-        $events = $this->Event->getWidgetPage($start_date, $filters);
-        $event_ids = array();
-        foreach ($events as $date => $days_events) {
-            foreach ($days_events as $event) {
-                $event_ids[] = $event['Event']['id'];
+        $events = $this->Event->getWidgetPage($startDate, $filters);
+        $eventIds = array();
+        foreach ($events as $date => $daysEvents) {
+            foreach ($daysEvents as $event) {
+                $eventIds[] = $event['Event']['id'];
             }
         }
         $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed';
         $this->Widget->processCustomStyles($options);
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
-        $base_url = Router::url(array('controller' => 'widgets', 'action' => 'feed'), true);
-        $query_string = str_replace($base_url, '', $_SERVER['QUERY_STRING']);
+        $baseUrl = Router::url(array('controller' => 'widgets', 'action' => 'feed'), true);
+        $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
 
         $this->set(array(
             'titleForLayout' => 'Upcoming Events',
             'events' => $events,
-            'event_ids' => $event_ids,
+            'eventIds' => $eventIds,
             'is_ajax' => $this->request->is('ajax'),
-            'next_start_date' => $this->Event->getNextStartDate($events),
-            'custom_styles' => $this->Widget->custom_styles,
+            'nextStartDate' => $this->Event->getNextStartDate($events),
+            'customStyles' => $this->Widget->customStyles,
             'filters' => $filters,
             'categories' => $this->Event->Category->getList(),
-            'all_events_url' => $this->__getAllEventsUrl('feed', $query_string)
+            'all_events_url' => $this->__getAllEventsUrl('feed', $queryString)
         ));
     }
 
@@ -86,52 +86,52 @@ class WidgetsController extends AppController
      * Produces a grid-calendar view for the provided month
      * @param string $month 'yyyy-mm', current month by default
      */
-    public function month($year_month = null)
+    public function month($yearMonth = null)
     {
         $this->__setDemoData('month');
 
         // Process various date information
-        if (!$year_month) {
-            $year_month = date('Y-m');
+        if (!$yearMonth) {
+            $yearMonth = date('Y-m');
         }
-        $split = explode('-', $year_month);
+        $split = explode('-', $yearMonth);
         $year = reset($split);
         $month = end($split);
         $timestamp = mktime(0, 0, 0, $month, 1, $year);
-        $month_name = date('F', $timestamp);
-        $pre_spacer = date('w', $timestamp);
-        $last_day = date('t', $timestamp);
-        $post_spacer = 6 - date('w', mktime(0, 0, 0, $month, $last_day, $year));
-        $prev_year = ($month == 1) ? $year - 1 : $year;
-        $prev_month = ($month == 1) ? 12 : $month - 1;
-        $next_year = ($month == 12) ? $year + 1 : $year;
-        $next_month = ($month == 12) ? 1 : $month + 1;
+        $monthName = date('F', $timestamp);
+        $preSpacer = date('w', $timestamp);
+        $lastDay = date('t', $timestamp);
+        $postSpacer = 6 - date('w', mktime(0, 0, 0, $month, $lastDay, $year));
+        $prevYear = ($month == 1) ? $year - 1 : $year;
+        $prevMonth = ($month == 1) ? 12 : $month - 1;
+        $nextYear = ($month == 12) ? $year + 1 : $year;
+        $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y').date('m').date('j');
 
         // Get relevant event filters
         $options = $_GET;
         $filters = $this->Event->getValidFilters($options);
-        $events = $this->Event->getMonth($year_month, $filters);
-        $events_for_json = array();
-        foreach ($events as $date => &$days_events) {
-            if (!isset($events_for_json[$date])) {
-                $events_for_json[$date] = array(
+        $events = $this->Event->getMonth($yearMonth, $filters);
+        $eventsForJson = array();
+        foreach ($events as $date => &$daysEvents) {
+            if (!isset($eventsForJson[$date])) {
+                $eventsForJson[$date] = array(
                     'heading' => 'Events on '.date('F j, Y', strtotime($date)),
                     'events' => array()
                 );
             }
-            foreach ($days_events as &$event) {
-                $time_split = explode(':', $event['Event']['time_start']);
-                $timestamp = mktime($time_split[0], $time_split[1]);
-                $displayed_time = date('g:ia', $timestamp);
-                $event['Event']['displayed_time'] = $displayed_time;
-                $events_for_json[$date]['events'][] = array(
+            foreach ($daysEvents as &$event) {
+                $timeSplit = explode(':', $event['Event']['time_start']);
+                $timestamp = mktime($timeSplit[0], $timeSplit[1]);
+                $displayedTime = date('g:ia', $timestamp);
+                $event['Event']['displayed_time'] = $displayedTime;
+                $eventsForJson[$date]['events'][] = array(
                     'id' => $event['Event']['id'],
                     'title' => $event['Event']['title'],
                     'category_name' => $event['Category']['name'],
                     'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event['Category']['name'])),
                     'url' => Router::url(array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])),
-                    'time' => $displayed_time
+                    'time' => $displayedTime
                 );
             }
         }
@@ -140,27 +140,27 @@ class WidgetsController extends AppController
 
         // Events displayed per day
         if (isset($options['events_displayed_per_day'])) {
-            $events_displayed_per_day = $options['events_displayed_per_day'];
+            $eventsDisplayedPerDay = $options['events_displayed_per_day'];
         } else {
             $defaults = $this->Widget->getDefaults();
-            $events_displayed_per_day = $defaults['event_options']['events_displayed_per_day'];
+            $eventsDisplayedPerDay = $defaults['event_options']['events_displayed_per_day'];
         }
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
-        $base_url = Router::url(array('controller' => 'widgets', 'action' => 'month'), true);
-        $query_string = str_replace($base_url, '', $_SERVER['QUERY_STRING']);
+        $baseUrl = Router::url(array('controller' => 'widgets', 'action' => 'month'), true);
+        $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
 
         $this->set(array(
-            'titleForLayout' => "$month_name $year",
-            'events_displayed_per_day' => $events_displayed_per_day,
-            'custom_styles' => $this->Widget->custom_styles,
-            'all_events_url' => $this->__getAllEventsUrl('month', $query_string),
+            'titleForLayout' => "$monthName $year",
+            'events_displayed_per_day' => $eventsDisplayedPerDay,
+            'customStyles' => $this->Widget->customStyles,
+            'all_events_url' => $this->__getAllEventsUrl('month', $queryString),
             'categories' => $this->Event->Category->getList()
         ));
         $this->set(compact(
-            'month', 'year', 'timestamp', 'month_name', 'pre_spacer', 'last_day', 'post_spacer',
-            'prev_year', 'prev_month', 'next_year', 'next_month', 'today', 'events',
-            'events_for_json', 'filters'
+            'month', 'year', 'timestamp', 'monthName', 'preSpacer', 'lastDay', 'postSpacer',
+            'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'events',
+            'eventsForJson', 'filters'
         ));
     }
 
@@ -185,30 +185,30 @@ class WidgetsController extends AppController
 
     /**
      * Accepts a query string and returns the URL to view this calendar with no filters (but custom styles retained)
-     * @param string $query_string
+     * @param string $queryString
      * @return string
      */
-    private function __getAllEventsUrl($action, $query_string)
+    private function __getAllEventsUrl($action, $queryString)
     {
-        if (empty($query_string)) {
-            $new_query_string = '';
+        if (empty($queryString)) {
+            $new_queryString = '';
         } else {
-            $parameters = explode('&', urldecode($query_string));
-            $filtered_params = array();
+            $parameters = explode('&', urldecode($queryString));
+            $filteredParams = array();
             $defaults = $this->Widget->getDefaults();
-            foreach ($parameters as $param_pair) {
-                $pair_split = explode('=', $param_pair);
-                list($var, $val) = $pair_split;
+            foreach ($parameters as $paramPair) {
+                $pairSplit = explode('=', $paramPair);
+                list($var, $val) = $pairSplit;
                 if (!isset($defaults['event_options'][$var])) {
-                    $filtered_params[$var] = $val;
+                    $filteredParams[$var] = $val;
                 }
             }
-            $new_query_string = http_build_query($filtered_params, '', '&amp;');
+            $new_queryString = http_build_query($filteredParams, '', '&amp;');
         }
         return Router::url(array(
             'controller' => 'widgets',
             'action' => $action,
-            '?' => $new_query_string
+            '?' => $new_queryString
         ));
     }
 
@@ -260,17 +260,17 @@ class WidgetsController extends AppController
     }
 
     // Produces a view listing the upcoming events for a given location
-    public function venue($venue_name = '', $starting_date = null)
+    public function venue($venueName = '', $startingDate = null)
     {
-        if (!$starting_date) {
-            $starting_date = date('Y-m-d');
+        if (!$startingDate) {
+            $startingDate = date('Y-m-d');
         }
 
-        $event_results = $this->Event->find('all', array(
+        $eventResults = $this->Event->find('all', array(
             'conditions' => array(
                 'published' => 1,
-                'date >=' => $starting_date,
-                'location LIKE' => $venue_name
+                'date >=' => $startingDate,
+                'location LIKE' => $venueName
             ),
             'fields' => array('id', 'title', 'date', 'time_start', 'time_end', 'cost', 'description'),
             'contain' => false,
@@ -278,7 +278,7 @@ class WidgetsController extends AppController
             'limit' => 1
         ));
         $events = array();
-        foreach ($event_results as $result) {
+        foreach ($eventResults as $result) {
             $date = $result['Event']['date'];
             $events[$date][] = $result;
         }
@@ -291,26 +291,26 @@ class WidgetsController extends AppController
             'events' => $events,
             'titleForLayout' => 'Upcoming Events',
             'is_ajax' => $this->request->is('ajax'),
-            'starting_date' => $starting_date,
-            'venue_name' => $venue_name
+            'startingDate' => $startingDate,
+            'venueName' => $venueName
         ));
     }
 
-    public function demo_feed()
+    public function demoFeed()
     {
         $this->__setDemoData('feed');
         $this->layout = 'ajax';
         $this->render('customize/demo');
     }
 
-    public function demo_month()
+    public function demoMonth()
     {
         $this->__setDemoData('month');
         $this->layout = 'ajax';
         $this->render('customize/demo');
     }
 
-    public function customize_feed()
+    public function customizeFeed()
     {
         $this->__setDemoData('feed');
         $this->set('titleForLayout', 'Customize Feed Widget');
@@ -318,7 +318,7 @@ class WidgetsController extends AppController
         $this->render('customize/feed');
     }
 
-    public function customize_month()
+    public function customizeMonth()
     {
         $this->__setDemoData('month');
         $this->set('titleForLayout', 'Customize Month Widget');

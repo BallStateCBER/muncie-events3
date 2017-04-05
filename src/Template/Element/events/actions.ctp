@@ -46,9 +46,9 @@ if (!isset($can_edit)) {
             ); ?>
             <?php
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
-                $start_stamp = strtotime($event['date'].' '.$event['time_start']);
-                $start_est = date('Ymd', $start_stamp).'T'.date('Hi00', $start_stamp);
-                $start_utc = gmdate('Ymd', $start_stamp).'T'.gmdate('Hi00', $start_stamp).'Z';
+                $startStamp = strtotime($event['date'].' '.$event['time_start']);
+                $start_est = date('Ymd', $startStamp).'T'.date('Hi00', $startStamp);
+                $start_utc = gmdate('Ymd', $startStamp).'T'.gmdate('Hi00', $startStamp).'Z';
                 $end_string = $event['date'].' ';
                 if ($event['time_end']) {
                     $end_string .= $event['time_end'];
@@ -58,9 +58,9 @@ if (!isset($can_edit)) {
                 if ($event['time_start'] > $event['time_end']) {
                     $end_string .= ' +1 day';
                 }
-                $end_stamp = strtotime($end_string);
-                $end_est = date('Ymd', $end_stamp).'T'.date('Hi00', $end_stamp);
-                $end_utc = gmdate('Ymd', $end_stamp).'T'.gmdate('Hi00', $end_stamp).'Z';
+                $endStamp = strtotime($end_string);
+                $end_est = date('Ymd', $endStamp).'T'.date('Hi00', $endStamp);
+                $end_utc = gmdate('Ymd', $endStamp).'T'.gmdate('Hi00', $endStamp).'Z';
 
                 // Clean up and truncate description
                 $description = $event['description'];
