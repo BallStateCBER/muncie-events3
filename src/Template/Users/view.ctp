@@ -39,12 +39,7 @@
 		<?= $eventCount; ?> Contributed Event<?= $eventCount == 1 ? '' : 's'; ?>:
 	</h2>
 
-	<?php foreach ($events as $event): ?>
-		<?= $this->Calendar->dayHeaders($event->date); ?>
-		<?= $this->element('events/accordion_day', [
-            'event' => $event
-        ]); ?>
-	<?php endforeach; ?>
+	<?= $this->element('events/accordion'); ?>
 
 	<?php $this->Js->buffer("setupEventAccordion();"); ?>
 

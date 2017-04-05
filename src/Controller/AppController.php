@@ -92,4 +92,49 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
     }
+
+
+        // to index events
+        public function indexEvents($events)
+        {
+            foreach ($events as $event) {
+                $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
+            }
+            foreach ($evDates as $evDate) {
+                $dates[] = $evDate['date'];
+            }
+            // are there multiple events happening on a certain date?
+            if (count(array_unique($dates))<count($dates)) {
+                $multipleDates = true;
+                $events = $this->multipleDateIndex($dates, $events);
+            } else {
+                $multipleDates = false;
+                $events = array_combine($dates, $events);
+            }
+            $this->set([
+                'events' => $events,
+                'multipleDates' => $multipleDates,
+            ]);
+        }
+
+        // to index dates with multiple events happening during them
+        public function multipleDateIndex($dates, $events)
+        {
+
+            // assign each event a date as a key
+            foreach ($dates as $i => $k) {
+                $events[$k][] = $events[$i];
+            }
+
+            // if a date has more than one event, add the event to its end, as a new array
+            array_walk($events, create_function('&$v',
+                '$v = (count($v) == 1)? array_pop($v): $v;'
+            ));
+
+            // remove any null or empty events from the array
+            $events = array_filter($events, function ($value) {
+                return $value !== null;
+            });
+            return $events;
+        }
 }

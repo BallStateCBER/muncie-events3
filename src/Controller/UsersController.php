@@ -43,11 +43,15 @@ class UsersController extends AppController
             'conditions' => ['user_id' => $id]
         ])->count();
 
-        $events = $this->Users->Events->find('all', [
+        $events = $this->Users->Events
+            ->find('all', [
             'conditions' => ['Events.user_id' => $id],
             'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
-        ]);
+            ])
+            ->toArray();
+
+        $events = $this->indexEvents($events);
 
         $this->set([
             'eventCount' => $eventCount,
