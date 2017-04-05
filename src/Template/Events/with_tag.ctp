@@ -4,16 +4,16 @@
 
 <?php
 $this->Paginator->__defaultModel = 'Event';
-	$this->Paginator->options = array(
-		'model' => 'Event',
-		'update' => 'tagged_content_links_loading',
-		'url' => array(
-			'controller' => 'events',
-			'action' => 'with_tag',
-			$tag_id
-		),
-		'evalScripts' => true
-	);
+    $this->Paginator->options = array(
+        'model' => 'Event',
+        'update' => 'tagged_content_links_loading',
+        'url' => array(
+            'controller' => 'events',
+            'action' => 'with_tag',
+            $tagId
+        ),
+        'evalScripts' => true
+    );
 ?>
 <?php echo $this->element('paging', array('model' => 'Event', 'options' => array('numbers' => true))); ?>
 <?php if (empty($events)): ?>
@@ -23,14 +23,14 @@ $this->Paginator->__defaultModel = 'Event';
 		<?php $i = 0; ?>
 		<?php foreach ($events as $id => $event) : ?>
 			<tr<?php if ($i % 2 == 1): ?> class="shaded"<?php endif; ?>>
-				<td class="date"> 
-					<?php echo date('M j, Y', strtotime($event['Event']['date'])); ?> 
+				<td class="date">
+					<?php echo date('M j, Y', strtotime($event['Event']['date'])); ?>
 				</td>
 				<th class="title">
 					<?php echo $this->Html->link(
-						$event['Event']['title'], 
-						array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])
-					); ?> 
+                        $event['Event']['title'],
+                        array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])
+                    ); ?>
 				</th>
 			</tr>
 		<?php $i++; endforeach; ?>

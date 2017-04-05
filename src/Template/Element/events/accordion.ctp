@@ -11,7 +11,7 @@
 <?php if (empty($events)): ?>
     <?= $this->Js->buffer("setNoMoreEvents();"); ?>
 <?php else: ?>
-    <?php if (!$multiple_dates): ?>
+    <?php if (!$multipleDates): ?>
         <?php foreach ($events as $date => $event): ?>
             <?= $this->Calendar->dayHeaders($date); ?>
             <ul class="event_accordion">

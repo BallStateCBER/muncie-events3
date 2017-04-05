@@ -1,5 +1,5 @@
 <?php
-    $multiple_dates_allowed = ($this->request->action == 'add' || $this->request->action == 'edit_series');
+    $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'edit_series');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
@@ -53,17 +53,17 @@
                     <div class="col-xs-12 col-lg-8">
                         <!--div id="datepicker" class="multi"></div-->
                         <?php
-                        if ($multiple_dates_allowed) {
+                        if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
-                                var default_date = $default_date;
-                                var preselected_dates = $datepicker_preselected_dates;
-                                setupDatepickerMultiple(default_date, preselected_dates);
+                                var defaultDate = $defaultDate;
+                                var preselectedDates = $preselectedDates;
+                                setupDatepickerMultiple(defaultDate, preselectedDates);
                             ");
                         } else {
                             $this->Js->buffer("
-                                var default_date = '".$this->request->Event['date']."';
-                                setupDatepickerSingle(default_date);
+                                var defaultDate = '".$this->request->Event['date']."';
+                                setupDatepickerSingle(defaultDate);
                             ");
                         }
                             echo $this->Js->writeBuffer();
@@ -78,7 +78,7 @@
                     </div>
                 </td>
             </tr>
-            <?php if ($multiple_dates_allowed): ?>
+            <?php if ($multipleDatesAllowed): ?>
                 <tr id="series_row" <?php if (!$has['series']): ?>style="display: none;"<?php endif; ?>>
                     <th>Series Name</th>
                     <td>

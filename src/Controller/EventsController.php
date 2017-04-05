@@ -47,9 +47,9 @@ class EventsController extends AppController
             ]
         ]
     ];
-    public $auto_publish = false; // false puts new additions into moderation queue
-    public $event_filter = [];
-    public $admin_actions = ['publish', 'approve', 'moderate'];
+    public $autoPublish = false; // false puts new additions into moderation queue
+    public $eventFilter = [];
+    public $adminActions = ['publish', 'approve', 'moderate'];
 
     public function initialize()
     {
@@ -85,36 +85,36 @@ class EventsController extends AppController
         if (!isset($this->request->data['Events.custom_tags'])) {
             return;
         }
-        $custom_tags = trim($this->request->data['Events.custom_tags']);
-        if (empty($custom_tags)) {
+        $customTags = trim($this->request->data['Events.custom_tags']);
+        if (empty($customTags)) {
             return;
         }
-        $custom_tags = explode(',', $custom_tags);
+        $customTags = explode(',', $customTags);
 
         // Force lowercase and remove leading/trailing whitespace
-        foreach ($custom_tags as &$ct) {
+        foreach ($customTags as &$ct) {
             $ct = strtolower(trim($ct));
         }
         unset($ct);
 
         // Remove duplicates
-        $custom_tags = array_unique($custom_tags);
+        $customTags = array_unique($customTags);
 
         $this->Event->Tag = $this->Event->Tag;
-        foreach ($custom_tags as $ct) {
+        foreach ($customTags as $ct) {
             // Skip over blank tags
             if ($ct == '') {
                 continue;
             }
 
             // Get ID of existing tag, if it exists
-            $tag_id = $this->Event->Tag->field('id', ['name' => $ct]);
+            $tagId = $this->Event->Tag->field('id', ['name' => $ct]);
 
             // Include this tag if it exists and is selectable
-            if ($tag_id) {
-                $selectable = $this->Event->Tag->field('selectable', ['id' => $tag_id]);
+            if ($tagId) {
+                $selectable = $this->Event->Tag->field('selectable', ['id' => $tagId]);
                 if ($selectable) {
-                    $this->request->data['Tag'][] = $tag_id;
+                    $this->request->data['Tag'][] = $tagId;
                 } else {
                     continue;
                 }
@@ -140,26 +140,26 @@ class EventsController extends AppController
     private function __prepareEventForm()
     {
         $event = $this->request->getData('Event');
-        $available_tags = $this->Events->Tags->find('all', [
+        $availableTags = $this->Events->Tags->find('all', [
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
         $this->set([
-            'available_tags' => $available_tags
+            'available_tags' => $availableTags
         ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
-            $has_series = count(explode(',', $event['date'])) > 1;
-            $has_end_time = isset($event['has_end_time']) ? $event['has_end_time'] : false;
+            $hasSeries = count(explode(',', $event['date'])) > 1;
+            $hasEndTime = isset($event['has_end_time']) ? $event['has_end_time'] : false;
         } elseif ($this->request->action == 'edit') {
-            $has_series = isset($event['series_id']) ? (bool) $event['series_id'] : false;
-            $has_end_time = isset($event['time_end']) && $event['time_end'];
+            $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
+            $hasEndTime = isset($event['time_end']) && $event['time_end'];
         }
 
         $this->set([
             'has' => [
-                'series' => $has_series,
-                'end_time' => $has_end_time,
+                'series' => $hasSeries,
+                'end_time' => $hasEndTime,
                 'address' => isset($event['address']) && $event['address'],
                 'cost' => isset($event['cost']) && $event['cost'],
                 'ages' => isset($event['age_restriction']) && $event['age_restriction'],
@@ -178,31 +178,31 @@ class EventsController extends AppController
 
         // Prepare date picker
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
-            $date_field_values = [];
+            $dateFieldValues = [];
             if (empty($event['date'])) {
-                $default_date = 0; // Today
-                $datepicker_preselected_dates = '[]';
+                $defaultDate = 0; // Today
+                $preselectedDates = '[]';
             } else {
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
-                    if (!isset($default_date)) {
-                        $default_date = "$month/$day/$year";
+                    if (!isset($defaultDate)) {
+                        $defaultDate = "$month/$day/$year";
                     }
-                    $date_field_values[] = "$month/$day/$year";
+                    $dateFieldValues[] = "$month/$day/$year";
                 }
-                $dates_for_js = [];
-                foreach ($date_field_values as $date) {
-                    $dates_for_js[] = "'".$date."'";
+                $datesForJs = [];
+                foreach ($dateFieldValues as $date) {
+                    $datesForJs[] = "'".$date."'";
                 }
-                $dates_for_js = implode(',', $dates_for_js);
-                $datepicker_preselected_dates = "[$dates_for_js]";
+                $datesForJs = implode(',', $datesForJs);
+                $preselectedDates = "[$datesForJs]";
             }
             $this->set([
-                'default_date' => $default_date,
-                'datepicker_preselected_dates' => $datepicker_preselected_dates
+                'defaultDate' => $defaultDate,
+                'preselectedDates' => $preselectedDates
             ]);
-            $event['date'] = implode(',', $date_field_values);
+            $event['date'] = implode(',', $dateFieldValues);
         } elseif ($this->action == 'edit') {
             list($year, $month, $day) = explode('-', $event['date']);
             $event['date'] = "$month/$day/$year";
@@ -222,7 +222,7 @@ class EventsController extends AppController
     }
 
     // to index dates with multiple events happening during them
-    public function multiple_date_index($dates, $events)
+    public function multipleDateIndex($dates, $events)
     {
 
         // assign each event a date as a key
@@ -243,7 +243,7 @@ class EventsController extends AppController
     }
 
     // to index events
-    public function index_events($events)
+    public function indexEvents($events)
     {
         foreach ($events as $event) {
             $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
@@ -253,15 +253,15 @@ class EventsController extends AppController
         }
         // are there multiple events happening on a certain date?
         if (count(array_unique($dates))<count($dates)) {
-            $multiple_dates = true;
-            $events = $this->multiple_date_index($dates, $events);
+            $multipleDates = true;
+            $events = $this->multipleDateIndex($dates, $events);
         } else {
-            $multiple_dates = false;
+            $multipleDates = false;
             $events = array_combine($dates, $events);
         }
         $this->set([
             'events' => $events,
-            'multiple_dates' => $multiple_dates,
+            'multipleDates' => $multipleDates,
         ]);
     }
 
@@ -276,7 +276,7 @@ class EventsController extends AppController
             ])
             ->where(['date >=' => $now])
             ->toArray();
-        $this->index_events($events);
+        $this->indexEvents($events);
         $this->set('titleForLayout', '');
     }
 
@@ -289,7 +289,7 @@ class EventsController extends AppController
             'order' => ['date' => 'DESC']
             ])
             ->toArray();
-        $this->index_events($events);
+        $this->indexEvents($events);
         $this->set('location', $location);
         $this->set('titleForLayout', '');
     }

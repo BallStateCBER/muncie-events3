@@ -1,9 +1,9 @@
 <?php
-    // This element has $available_tags and (optionally) $selected_tags passed into it
+    // This element has $availableTags and (optionally) $selected_tags passed into it
 
     // Counters CakePHP's variable-renaming weirdness
-    if (!isset($available_tags)) {
-        $available_tags = isset($availableTags) ? $availableTags : [];
+    if (!isset($availableTags)) {
+        $availableTags = isset($availableTags) ? $availableTags : [];
     }
     if (!isset($selected_tags)) {
         $selected_tags = isset($selectedTags) ? $selectedTags : [];
@@ -97,4 +97,4 @@
     </div>
 </div>
 
-<?php echo $this->Tag->setup($available_tags, 'available_tags', $selected_tags); ?>
+<?php echo $this->Tag->setup($availableTags, 'available_tags', $selected_tags); ?>
