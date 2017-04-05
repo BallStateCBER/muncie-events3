@@ -29,12 +29,13 @@ class User extends Entity
      *
      * @var array
      */
-     protected function _setPassword($password)
-     {
-         return (new DefaultPasswordHasher)->hash($password);
-     }
+    protected function _setPassword($password)
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
 
-     public function getIdFromEmail($email) {
+    public function getIdFromEmail($email)
+    {
         $email = strtolower(trim($email));
         $query = $this->find('all', [
             'conditions' => ['Users.email' => $email],
@@ -48,30 +49,32 @@ class User extends Entity
         }
     }
 
-    public function getResetPasswordHash($user_id, $email = null) {
+    public function getResetPasswordHash($userId, $email = null)
+    {
         $salt = Configure::read('password_reset_salt');
         $month = date('my');
-        return md5($user_id.$email.$salt.$month);
+        return md5($userId.$email.$salt.$month);
     }
 
-    public function sendPasswordResetEmail($user_id, $email_address) {
-        $reset_password_hash = $this->getResetPasswordHash($user_id, $email_address);
+    public function sendPasswordResetEmail($userId, $emailAddress)
+    {
+        $resetPasswordHash = $this->getResetPasswordHash($userId, $emailAddress);
         $email = new Email('default');
         $titleForLayout = 'Reset Password';
-        $reset_url = Router::url([
+        $resetUrl = Router::url([
             'controller' => 'Users',
             'action' => 'resetPassword',
-            $user_id,
-            $reset_password_hash
+            $userId,
+            $resetPasswordHash
         ], true);
-        $email->to($email_address)
+        $email->to($emailAddress)
             ->subject('Muncie Events: Reset Password')
             ->template('forgot_password')
             ->emailFormat('both')
             ->helpers(['Html', 'Text'])
             ->viewVars(compact(
                 'titleForLayout',
-                'email_address',
+                'emailAddress',
                 'reset_url'
             ));
         return $email->send();
