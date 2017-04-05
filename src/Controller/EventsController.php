@@ -13,43 +13,43 @@ use Cake\I18n\Time;
 class EventsController extends AppController
 {
     public $name = 'Events';
-	//public $helpers = ['Tag'];
-	//public $components = [
-	//	'Calendar',
-	//	'Search.Prg',
-	//	'RequestHandler'
-	//];
-	public $uses = ['Event'];
-	public $paginate = [
-		'order' => [
-			'Event.date' => 'asc',
-			'Event.time_start' => 'asc'
-		],
-		'limit' => 15,
-		'contain' => [
-			'User' => [
-				'fields' => ['id', 'name']
-			],
-			'Category' => [
-				'fields' => ['id', 'name', 'slug']
-			],
-			'EventSeries' => [
-				'fields' => ['id', 'title']
-			],
-			'EventsImage' => [
-				'fields' => ['id', 'caption'],
-				'Image' => [
-					'fields' => ['id', 'filename']
-				]
-			],
-			'Tag' => [
-				'fields' => ['id', 'name']
-			]
-		]
-	];
-	public $auto_publish = false; // false puts new additions into moderation queue
-	public $event_filter = [];
-	public $admin_actions = ['publish', 'approve', 'moderate'];
+    //public $helpers = ['Tag'];
+    //public $components = [
+    //	'Calendar',
+    //	'Search.Prg',
+    //	'RequestHandler'
+    //];
+    public $uses = ['Event'];
+    public $paginate = [
+        'order' => [
+            'Event.date' => 'asc',
+            'Event.time_start' => 'asc'
+        ],
+        'limit' => 15,
+        'contain' => [
+            'User' => [
+                'fields' => ['id', 'name']
+            ],
+            'Category' => [
+                'fields' => ['id', 'name', 'slug']
+            ],
+            'EventSeries' => [
+                'fields' => ['id', 'title']
+            ],
+            'EventsImage' => [
+                'fields' => ['id', 'caption'],
+                'Image' => [
+                    'fields' => ['id', 'filename']
+                ]
+            ],
+            'Tag' => [
+                'fields' => ['id', 'name']
+            ]
+        ]
+    ];
+    public $auto_publish = false; // false puts new additions into moderation queue
+    public $event_filter = [];
+    public $admin_actions = ['publish', 'approve', 'moderate'];
 
     public function initialize()
     {
@@ -65,23 +65,24 @@ class EventsController extends AppController
     {
         $event = $this->request->getData('Event');
 
-		if (! $event['time_start']) {
-			// Fixes bug where midnight is saved as null
-			$event['time_start'] = '00:00:00';
-		}
-		/* $event['description'] = strip_tags(
-			$event['description'],
-			$event['allowed_tags']
-		); */
+        if (!$event['time_start']) {
+            // Fixes bug where midnight is saved as null
+            $event['time_start'] = '00:00:00';
+        }
+        /* $event['description'] = strip_tags(
+            $event['description'],
+            $event['allowed_tags']
+        ); */
 
-		// Fixes bug that prevents CakePHP from deleting all tags
-		if (null !== $this->request->getData('Tag')) {
-			$this->set('Tag', []);
-		}
-	}
+        // Fixes bug that prevents CakePHP from deleting all tags
+        if (null !== $this->request->getData('Tag')) {
+            $this->set('Tag', []);
+        }
+    }
 
-    private function __processCustomTags() {
-        if (! isset($this->request->data['Events.custom_tags'])) {
+    private function __processCustomTags()
+    {
+        if (!isset($this->request->data['Events.custom_tags'])) {
             return;
         }
         $custom_tags = trim($this->request->data['Events.custom_tags']);
@@ -143,9 +144,9 @@ class EventsController extends AppController
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
-		$this->set([
+        $this->set([
             'available_tags' => $available_tags
-		]);
+        ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
             $has_series = count(explode(',', $event['date'])) > 1;
@@ -168,7 +169,7 @@ class EventsController extends AppController
 
         // Fixes bug where midnight is saved as null
         if ($event['has_end_time']) {
-            if (! $event['time_end']) {
+            if (!$event['time_end']) {
                 $event['time_end'] = '00:00:00';
             }
         } else {
@@ -185,7 +186,7 @@ class EventsController extends AppController
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
-                    if (! isset($default_date)) {
+                    if (!isset($default_date)) {
                         $default_date = "$month/$day/$year";
                     }
                     $date_field_values[] = "$month/$day/$year";
@@ -208,7 +209,8 @@ class EventsController extends AppController
         }
     }
 
-    public function datepicker_populated_dates() {
+    public function datepicker_populated_dates()
+    {
         $results = $this->Event->getPopulatedDates();
         $dates = [];
         foreach ($results as $result) {
@@ -220,7 +222,8 @@ class EventsController extends AppController
     }
 
     // to index dates with multiple events happening during them
-    public function multiple_date_index($dates, $events) {
+    public function multiple_date_index($dates, $events)
+    {
 
         // assign each event a date as a key
         foreach ($dates as $i => $k) {
@@ -233,14 +236,15 @@ class EventsController extends AppController
         ));
 
         // remove any null or empty events from the array
-        $events = array_filter($events, function($value) {
-            return $value !== NULL;
+        $events = array_filter($events, function ($value) {
+            return $value !== null;
         });
         return $events;
     }
 
     // to index events
-    public function index_events($events) {
+    public function index_events($events)
+    {
         foreach ($events as $event) {
             $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
         }
@@ -248,7 +252,7 @@ class EventsController extends AppController
             $dates[] = $evDate['date'];
         }
         // are there multiple events happening on a certain date?
-        if(count(array_unique($dates))<count($dates)) {
+        if (count(array_unique($dates))<count($dates)) {
             $multiple_dates = true;
             $events = $this->multiple_date_index($dates, $events);
         } else {
@@ -276,7 +280,8 @@ class EventsController extends AppController
         $this->set('titleForLayout', '');
     }
 
-    public function location($location = null) {
+    public function location($location = null)
+    {
         $events = $this->Events
             ->find('all', [
             'conditions' => ['location' => $location],
@@ -306,7 +311,7 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             //$dates = explode(',', $this->request->Event['date']);
-			//$is_series = count($dates) > 1;
+            //$is_series = count($dates) > 1;
 
             // process data
             $this->__formatFormData();
