@@ -21,22 +21,26 @@ class CalendarHelper extends Helper
         $startsToday = $startingDate == date('Y-m-d');
         if ($startingDate == $endingDate) {
             $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
-        } else {
+        }
+        if ($startingDate !== $endingDate) {
             $sy = date('Y', strtotime($startingDate));
             $ey = date('Y', strtotime($endingDate));
             if ($sy != $ey) {
                 $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
                 $retval .= ' to '.date('M j, Y', strtotime($endingDate));
-            } else {
+            }
+            if ($sy == $ey) {
                 $sm = date('M', strtotime($startingDate));
                 $em = date('M', strtotime($endingDate));
                 if ($sm != $em) {
                     $retval .= $startsToday ? 'Today' : date('M j', strtotime($startingDate));
                     $retval .= ' to '.date('M j, Y', strtotime($endingDate));
-                } else {
+                }
+                if ($sm == $em) {
                     if ($startsToday) {
                         $retval .= 'Today to '.date('M j, Y', strtotime($endingDate));
-                    } else {
+                    }
+                    if (!$startsToday) {
                         $retval .= date('M j', strtotime($startingDate));
                         $retval .= '-'.date('j, Y', strtotime($endingDate));
                     }
@@ -68,7 +72,8 @@ class CalendarHelper extends Helper
                     'class' => 'prev'
                 ]
             );
-        } else {
+        }
+        if (!$startingDate) {
             // Non-breaking space forces element to appear even if it has no link
             return '&nbsp;';
         }
@@ -96,7 +101,8 @@ class CalendarHelper extends Helper
                     'class' => 'next'
                 ]
             );
-        } else {
+        }
+        if (!$endingDate) {
             // Non-breaking space forces element to appear even if it has no link
             return '&nbsp;';
         }

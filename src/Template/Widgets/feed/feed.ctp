@@ -5,7 +5,7 @@
         <?php else: ?>
             No upcoming events found.
             <br />
-            <?php echo $this->Html->link('Add an upcoming event', array('controller' => 'events', 'action' => 'add')); ?>
+            <?php echo $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
         <?php endif; ?>
     </p>
     <?php $this->Js->buffer("muncieEventsFeedWidget.setNoMoreEvents();"); ?>

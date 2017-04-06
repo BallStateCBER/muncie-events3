@@ -90,7 +90,8 @@ class UsersController extends AppController
                     ]);
                 }
                 return $this->redirect($this->Auth->redirectUrl());
-            } else {
+            }
+            if (!$user) {
                 $this->Flash->error(__('We could not log you in. Please check your email & password.'));
             }
         }
@@ -164,9 +165,7 @@ class UsersController extends AppController
             $adminEmail = Configure::read('admin_email');
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $email = strtolower(trim($user['email']));
-            if (empty($email)) {
-                $this->Flash->error('Please enter the email address you registered with to have your password reset.');
-            } else {
+            if (!empty($email)) {
                 $userId = $this->Users->getIdFromEmail($email);
                 if ($userId) {
                     if ($this->Users->sendPasswordResetEmail($userId, $email)) {
@@ -174,9 +173,13 @@ class UsersController extends AppController
                     } else {
                         $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
                     }
-                } else {
+                }
+                if (!$userId) {
                     $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
                 }
+            }
+            if (empty($email)) {
+                $this->Flash->error('Please enter the email address you registered with to have your password reset.');
             }
         }
     }

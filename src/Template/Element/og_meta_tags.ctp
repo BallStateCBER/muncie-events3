@@ -6,32 +6,32 @@ $titleForLayout = "Muncie Events";
     # at some point when you're not cutting corners trying
     # to get the site functional
 
-    $default_og_meta_tags = array(
+    $default_og_meta_tags = [
         'og:title' => $titleForLayout,
         'og:type' => 'website', // was muncieevents:website
-        'og:url' => Router::url(array(), true),
+        'og:url' => Router::url([], true),
         'og:image' => 'http://muncieevents.com/img/facebook_logo.png',
         'og:site_name' => 'Muncie Events',
-        'fb:admins' => array(
+        'fb:admins' => [
             '20721049', // Graham Watson
             '681411028' // Mary Ogle
-        ),
+        ],
         'fb:app_id' => '496726620385625',
         'og:description' => 'Upcoming events in Muncie, IN',
         'og:locale' => 'en_US'
-    );
+    ];
 
     if (isset($og_meta_tags)) {
         foreach ($og_meta_tags as $property => $contents) {
             if (!is_array($contents)) {
-                $contents = array($contents);
+                $contents = [$contents];
             }
             foreach ($contents as $content) {
                 switch ($property) {
                     case 'og:description':
-                        $content = $this->Text->truncate(strip_tags($content), 1000, array(
+                        $content = $this->Text->truncate(strip_tags($content), 1000, [
                             'exact' => false
-                        ));
+                        ]);
                         break;
                 }
                 echo '<meta property="'.$property.'" content="'.htmlentities($content).'" />';
@@ -44,7 +44,7 @@ $titleForLayout = "Muncie Events";
             continue;
         }
         if (!is_array($default_contents)) {
-            $default_contents = array($default_contents);
+            $default_contents = [$default_contents];
         }
         foreach ($default_contents as $content) {
             switch ($property) {

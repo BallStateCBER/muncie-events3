@@ -24,25 +24,25 @@ if (!isset($can_edit)) {
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',
             '#',
-            array(
+            [
                 'escape' => false,
                 'title' => 'Export to another calendar application',
                 'id' => 'export_event_'.$event['id'],
                 'class' => 'export_options_toggler'
-            )
+            ]
         ); ?>
         <div class="export_options" style="display: none;">
             <?php echo $this->Html->link(
                 'iCal',
-                array(
+                [
                     'controller' => 'events',
                     'action' => 'view',
                     'id' => $event['id'],
                     'ext' => 'ics'
-                ),
-                array(
+                ],
+                [
                     'title' => 'Download iCalendar (.ICS) file'
-                )
+                ]
             ); ?>
             <?php
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
@@ -69,10 +69,10 @@ if (!isset($can_edit)) {
                 $description = $this->Text->truncate(
                     $description,
                     1000,
-                    array(
+                    [
                         'ellipsis' => "... (continued at $event_url)",
                         'exact' => false
-                    )
+                    ]
                 );
 
                 /* In parentheses after the location name, the address has
@@ -102,22 +102,22 @@ if (!isset($can_edit)) {
                 echo $this->Html->link(
                     'Google',
                     $google_cal_url,
-                    array(
+                    [
                         'title' => 'Add to Google Calendar'
-                    )
+                    ]
                 );
             ?>
             <?php echo $this->Html->link(
                 'Outlook',
-                array(
+                [
                     'controller' => 'events',
                     'action' => 'view',
                     'id' => $event['id'],
                     'ext' => 'ics'
-                ),
-                array(
+                ],
+                [
                     'title' => 'Add to Microsoft Outlook'
-                )
+                ]
             ); ?>
             <?php
                 $location = $event['location'];
@@ -139,9 +139,9 @@ if (!isset($can_edit)) {
                 echo $this->Html->link(
                     'Yahoo!',
                     $yahoo_cal_url,
-                    array(
+                    [
                         'title' => 'Add to Yahoo!Calendar'
-                    )
+                    ]
                 );
             ?>
         </div>
@@ -149,32 +149,32 @@ if (!isset($can_edit)) {
     <?php if ($user_role == 'admin' && !$event['approved_by']): ?>
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/tick.png').'Approve',
-            array(
+            [
                 'controller' => 'events',
                 'action' => 'approve',
                 'id' => $event['id']
-            ),
-            array('escape' => false)
+            ],
+            ['escape' => false]
         ); ?>
     <?php endif; ?>
     <?php if ($can_edit): ?>
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/pencil.png').'Edit',
-            array(
+            [
                 'controller' => 'events',
                 'action' => 'edit',
                 'id' => $event['id']
-            ),
-            array('escape' => false)
+            ],
+            ['escape' => false]
         ); ?>
         <?php echo $this->Form->postLink(
             $this->Html->image('/img/icons/cross.png').'Delete',
-            array(
+            [
                 'controller' => 'events',
                 'action' => 'delete',
                 'id' => $event['id']
-            ),
-            array('escape' => false),
+            ],
+            ['escape' => false],
             'Are you sure that you want to delete this event?'
         ); ?>
     <?php endif; ?>

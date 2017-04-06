@@ -14,7 +14,7 @@
         </li>
     <?php endif; ?>
     <li>
-        <?php echo $this->Html->link('Add Event', array('controller' => 'events', 'action' => 'add')); ?>
+        <?php echo $this->Html->link('Add Event', ['controller' => 'events', 'action' => 'add']); ?>
     </li>
 </ul>
 <?php if (!empty($filters)): ?>
@@ -28,7 +28,7 @@
                             <?php echo count($filters['category']) == 1 ? 'Category' : 'Categories'; ?>:
                         </strong>
                         <?php
-                            $category_names = array();
+                            $category_names = [];
                             foreach ($filters['category'] as $cat_id) {
                                 $category_names[] = $categories[$cat_id];
                             }
@@ -65,7 +65,7 @@
                 echo $this->Html->link(
                     '[View all events]',
                     $all_events_url,
-                    array('target' => '_self')
+                    ['target' => '_self']
                 );
             ?>
         </div>
