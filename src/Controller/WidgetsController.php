@@ -1,5 +1,8 @@
 <?php
-namespace app\Controller;
+namespace App\Controller;
+
+use App\Controller\AppController;
+use Cake\Routing\Router;
 
 class WidgetsController extends AppController
 {
@@ -10,25 +13,186 @@ class WidgetsController extends AppController
 
     public $customStyles = [];
 
-    public function beforeFilter(Event $event)
+    public $widgetType = null;
+
+    public function initialize()
     {
-        parent::beforeFilter($event);
-        $this->Auth->allow();
+        parent::initialize();
+        // anyone can access widgets
+        $this->Auth->allow([
+            'day', 'event', 'index', 'month'
+        ]);
     }
 
-    public function beforeRender(Event $event)
+    public function setType($widgetType)
     {
-        parent::beforeRender($event);
+        switch ($widgetType) {
+            case 'feed':
+            case 'month':
+                $this->widgetType = $widgetType;
+                break;
+            default:
+                throw new InternalErrorException('Unknown widget type: '.$widgetType);
+        }
+    }
+
+    public function getDefaults()
+    {
+        if (!$this->widgetType) {
+            throw new InternalErrorException('Widget type is null.');
+        }
+        $defaults = [
+            'styles' => [
+                'textColorDefault' => '#000000',
+                'textColorLight' => '#666666',
+                'textColorLink' => '#0b54a6',
+                'borderColorLight' => '#aaaaaa',
+                'borderColorDark' => '#000000',
+                'backgroundColorDefault' => '#ffffff',
+                'backgroundColorAlt' => '#f0f0f0',
+                'showIcons' => 1,
+                'hideGeneralEventsIcon' => 0
+            ],
+            'iframeOptions' => [
+                'outerBorder' => 1
+            ],
+            'eventOptions' => [
+                'category' => '',
+                'location' => '',
+                'tagsIncluded' => '',
+                'tagsExcluded' => ''
+            ]
+        ];
+        switch ($this->widgetType) {
+            case 'feed':
+                $defaults['iframeOptions']['height'] = 300;
+                $defaults['iframeOptions']['width'] = 100;
+                break;
+            case 'month':
+                $defaults['styles']['fontSize'] = '11px';
+                $defaults['styles']['showIcons'] = true;
+                $defaults['iframeOptions']['height'] = 400;
+                $defaults['iframeOptions']['width'] = 100;
+                $defaults['eventOptions']['eventsDisplayedPerDay'] = 2;
+                break;
+        }
+        return $defaults;
+    }
+
+    public function getIframeQueryString()
+    {
+        if (empty($_SERVER['QUERY_STRING'])) {
+            return '';
+        }
+        $defaults = $this->getDefaults();
+        $iframeParams = [];
+        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        foreach ($parameters as $option) {
+            $optionSplit = explode('=', $option);
+            if (count($optionSplit) != 2) {
+                continue;
+            }
+            list($key, $val) = $optionSplit;
+
+            // Clean up option and skip blanks
+            $val = trim($val);
+            if ($val == '') {
+                continue;
+            }
+            $key = str_replace('amp;', '', $key);
+
+            // Retain only valid params that differ from their default values
+            if ($this->isValidNondefaultOption($key, $val)) {
+                // Iframe options (applying to the iframe element, but not
+                // its contents) aren't included in the query string
+                if (!isset($defaults['iframe_options'][$key])) {
+                    $iframeParams[$key] = $val;
+                }
+            }
+        }
+        return http_build_query($iframeParams, '', '&amp;');
+    }
+
+    public function getOptions()
+    {
+        if (empty($_SERVER['QUERY_STRING'])) {
+            return [];
+        }
+        $options = [];
+        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        foreach ($parameters as $option) {
+            $optionSplit = explode('=', $option);
+            if (count($optionSplit) != 2) {
+                continue;
+            }
+            list($key, $val) = $optionSplit;
+
+            // Clean up option and skip blanks
+            $val = trim($val);
+            if ($val == '') {
+                continue;
+            }
+            $key = str_replace('amp;', '', $key);
+
+            // Retain only valid options that differ from their default values
+            if ($this->isValidNondefaultOption($key, $val)) {
+                $options[$key] = $val;
+            }
+        }
+        return $options;
+    }
+
+    public function getIframeStyles($options)
+    {
+        $iframeStyles = '';
+        $defaults = $this->getDefaults();
+
+        // Dimensions for height
+        foreach (['height'] as $dimension) {
+            if (isset($options[$dimension])) {
+                $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
+                $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
+            } else {
+                $unit = 'px';
+                $value = $defaults['iframeOptions'][$dimension];
+            }
+            $iframeStyles .= "$dimension:{$value}$unit;";
+        }
+        // Dimensions for width
+        foreach (['width'] as $dimension) {
+            if (isset($options[$dimension])) {
+                $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
+                $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
+            } else {
+                $unit = '%';
+                $value = $defaults['iframeOptions'][$dimension];
+            }
+            $iframeStyles .= "$dimension:{$value}$unit;";
+        }
+
+        // Border
+        if (isset($options['outerBorder']) && $options['outerBorder'] == 0) {
+            $iframe_styles .= "border:0;";
+        } else {
+            if (isset($options['borderColorDark'])) {
+                $outerBorderColor = $options['borderColorDark'];
+            } else {
+                $outerBorderColor = $defaults['styles']['borderColorDark'];
+            }
+            $iframeStyles .= "border:1px solid $outerBorderColor;";
+        }
+
+        return $iframeStyles;
     }
 
     private function __setDemoData($widgetType)
     {
-        $this->Widget->setType($widgetType);
-        $iframeQueryString = $this->Widget->getIframeQueryString();
-        $options = $this->Widget->getOptions();
-        $iframeStyles = $this->Widget->getIframeStyles($options);
+        $this->setType($widgetType);
+        $iframeQueryString = $this->getIframeQueryString();
+        $options = $this->getOptions();
+        $iframeStyles = $this->getIframeStyles($options);
         $this->set([
-            'defaults' => $this->Widget->getDefaults(),
+            'defaults' => $this->getDefaults(),
             'iframeStyles' => $iframeStyles,
             'iframeUrl' => Router::url([
                 'controller' => 'widgets',
@@ -40,7 +204,7 @@ class WidgetsController extends AppController
                 'action' => $widgetType,
                 '?' => str_replace('&', '&amp;', $iframeQueryString)
             ], true),
-            'categories' => $this->Event->Category->getAll()
+            'categories' => $this->Categories->getAll()
         ]);
     }
 
@@ -62,7 +226,7 @@ class WidgetsController extends AppController
                 $eventIds[] = $event->id;
             }
         }
-        $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed';
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
         $this->Widget->processCustomStyles($options);
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
@@ -135,7 +299,7 @@ class WidgetsController extends AppController
                 ];
             }
         }
-        $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month';
+        $this->viewBuilder->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
         $this->Widget->processCustomStyles($options);
 
         // Events displayed per day
@@ -248,7 +412,7 @@ class WidgetsController extends AppController
                 'class' => 'error'
             ]);
         }
-        $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed';
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
         $this->set([
             'event' => $event
             ]
@@ -260,7 +424,7 @@ class WidgetsController extends AppController
         $this->set([
             'titleForLayout' => 'Website Widgets'
         ]);
-        $this->layout = 'no_sidebar';
+        $this->viewBuilder()->layout('no_sidebar');
     }
 
     // Produces a view listing the upcoming events for a given location
@@ -287,9 +451,9 @@ class WidgetsController extends AppController
             $events[$date][] = $result;
         }
         if ($this->request->is('ajax')) {
-            $this->layout = 'widgets/ajax';
+            $this->viewBuilder()->layout('widgets/ajax');
         } else {
-            $this->layout = 'widgets/venue';
+            $this->viewBuilder()->layout('widgets/venue');
         }
         $this->set([
             'events' => $events,
@@ -303,14 +467,14 @@ class WidgetsController extends AppController
     public function demoFeed()
     {
         $this->__setDemoData('feed');
-        $this->layout = 'ajax';
+        $this->viewBuilder()->layout('ajax');
         $this->render('customize/demo');
     }
 
     public function demoMonth()
     {
         $this->__setDemoData('month');
-        $this->layout = 'ajax';
+        $this->viewBuilder()->layout('ajax');
         $this->render('customize/demo');
     }
 
@@ -318,7 +482,7 @@ class WidgetsController extends AppController
     {
         $this->__setDemoData('feed');
         $this->set('titleForLayout', 'Customize Feed Widget');
-        $this->layout = 'no_sidebar';
+        $this->viewBuilder()->layout('no_sidebar');
         $this->render('customize/feed');
     }
 
@@ -326,7 +490,7 @@ class WidgetsController extends AppController
     {
         $this->__setDemoData('month');
         $this->set('titleForLayout', 'Customize Month Widget');
-        $this->layout = 'no_sidebar';
+        $this->viewBuilder()->layout('no_sidebar');
         $this->render('customize/month');
     }
 }

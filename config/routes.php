@@ -49,13 +49,13 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // events actions
     foreach (['edit', 'edit_series', 'publish', 'approve', 'delete'] as $action) {
-    	Router::connect(
-    		"/event/$action/:id",
-    		['controller' => 'events', 'action' => $action],
-    		['id' => '[0-9]+', 'pass' => ['id']]
-    	);
+        Router::connect(
+            "/event/$action/:id",
+            ['controller' => 'events', 'action' => $action],
+            ['id' => '[0-9]+', 'pass' => ['id']]
+        );
     }
-    
+
     // location index
     $routes->connect('/location/*', ['controller' => 'events', 'action' => 'location']);
 
@@ -64,6 +64,12 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'events', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
+
+    // Categories
+    $category_slugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
+    foreach ($category_slugs as $slug) {
+        Router::connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
+    }
 
     // pages
     $routes->connect('/about', ['controller' => 'Pages', 'action' => 'about']);

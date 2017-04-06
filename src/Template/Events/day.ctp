@@ -6,7 +6,6 @@
     <?php echo $this->Calendar->prevDay(mktime(0, 0, 0, $month, $day - 1, $year)); ?>
     <?php echo $this->Calendar->nextDay(mktime(0, 0, 0, $month, $day + 1, $year)); ?>
 </div>
-<?php echo $this->element('events/date_picker', ['default' => "$month/$day/$year"]); ?>
 
 <?php if (empty($events)): ?>
     <p class="alert alert-info">

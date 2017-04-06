@@ -77,13 +77,13 @@
                     <td><?= $event->age_restrictions; ?></td>
                 </tr>
             <?php endif; ?>
-            <?php if ($event->series_id && $event->eventSeries->title): ?>
+            <?php if ($event->series_id && $event->event_series->title): ?>
                 <tr>
                     <th>Series</th>
                     <td>
                         <?= $this->Html->link(
-                            $event->eventSeries->title,
-                            ['controller' => 'event_series', 'action' => 'view', 'id' => $event->series_id]
+                            $event->event_series->title,
+                            ['controller' => 'EventSeries', 'action' => 'view', 'id' => $event->series_id]
                         ); ?>
                     </td>
                 </tr>
@@ -91,9 +91,9 @@
         </table>
     </div>
     <div class="description">
-        <?php if (!empty($event->eventsImage)): ?>
+        <?php if (!empty($event->images)): ?>
             <div class="images">
-                <?php foreach ($event->eventsImage as $image): ?>
+                <?php foreach ($event->images as $image): ?>
                     <?= $this->Calendar->thumbnail('small', [
                         'filename' => $image->filename,
                         'caption' => $image->caption,

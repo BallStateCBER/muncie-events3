@@ -40,7 +40,10 @@ class AppController extends Controller
 
     public $helpers = ['AkkaCKEditor.CKEditor' =>
         ['distribution' => 'basic'],
-    'CakeJs.Js', 'Form', 'Html'];
+        'CakeJs.Js',
+        'Form',
+        'Html'
+    ];
 
     public function initialize()
     {
@@ -112,6 +115,7 @@ class AppController extends Controller
                 $events = array_combine($dates, $events);
             }
             $this->set([
+                'dates' => $dates,
                 'events' => $events,
                 'multipleDates' => $multipleDates,
             ]);
@@ -124,6 +128,7 @@ class AppController extends Controller
             // assign each event a date as a key
             foreach ($dates as $i => $k) {
                 $events[$k][] = $events[$i];
+                unset($events[$i]);
             }
 
             // if a date has more than one event, add the event to its end, as a new array
