@@ -1,5 +1,5 @@
 <h1 class="page_title">
-    <?php echo $title_for_layout; ?>
+    <?php echo $titleForLayout; ?>
 </h1>
 <div id="moderate_events">
     <?php if (empty($unapproved)): ?>
@@ -29,7 +29,7 @@
                     <ul class="actions">
                         <li>
                             <?php
-                                $url = array('controller' => 'events', 'action' => 'approve');
+                                $url = ['controller' => 'events', 'action' => 'approve'];
                                 if ($is_series) {
                                     $url = array_merge($url, $series_part_event_ids);
                                 } else {
@@ -38,7 +38,7 @@
                                 echo $this->Html->link(
                                     $this->Html->image('icons/tick.png').'Approve'.($published ? '' : ' and publish'),
                                     $url,
-                                    array('escape' => false)
+                                    ['escape' => false]
                                 );
                             ?>
                         </li>
@@ -51,18 +51,18 @@
                                 }
                                 echo $this->Html->link(
                                     $this->Html->image('icons/pencil.png').'Edit',
-                                    array(
+                                    [
                                         'controller' => 'events',
                                         'action' => 'edit',
                                         'id' => $event_id
-                                    ),
-                                    array('escape' => false, 'confirm' => $confirm)
+                                    ],
+                                    ['escape' => false, 'confirm' => $confirm]
                                 );
                             ?>
                         </li>
                         <li>
                             <?php
-                                $url = array('controller' => 'events', 'action' => 'delete');
+                                $url = ['controller' => 'events', 'action' => 'delete'];
                                 if ($is_series && $count > 1) {
                                     $url = array_merge($url, $series_part_event_ids);
                                     if ($count_series_parts > 1) {
@@ -78,7 +78,7 @@
                                 echo $this->Form->postLink(
                                     $this->Html->image('icons/cross.png').'Delete',
                                     $url,
-                                    array('escape' => false, 'confirm' => $confirm),
+                                    ['escape' => false, 'confirm' => $confirm],
                                     'Are you sure?'
                                 );
                             ?>
@@ -119,7 +119,7 @@
                                 <?php if ($event['User']['id']): ?>
                                     by <?php echo $this->Html->link(
                                         $event['User']['name'],
-                                        array('controller' => 'users', 'action' => 'view', 'id' => $event['User']['id'])
+                                        ['controller' => 'users', 'action' => 'view', 'id' => $event['User']['id']]
                                     ); ?>
                                 <?php else: ?>
                                     anonymously
@@ -153,7 +153,7 @@
                                 <?php echo $event['Category']['name']; ?>
                             </td>
                         </tr>
-                        <?php $vars_to_display = array('title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source'); ?>
+                        <?php $vars_to_display = ['title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source']; ?>
                         <?php foreach ($vars_to_display as $var): ?>
                             <?php if (!empty($event['Event'][$var])): ?>
                                 <tr>
@@ -171,7 +171,7 @@
                                 <th>Tags</th>
                                 <td>
                                     <?php
-                                        $tags_list = array();
+                                        $tags_list = [];
                                         foreach ($event['Tag'] as $tag) {
                                             $tags_list[] = $tag['name'];
                                         }
@@ -185,11 +185,11 @@
                                 <th>Images</th>
                                 <td>
                                     <?php foreach ($event['EventsImage'] as $image): ?>
-                                        <?php echo $this->Calendar->thumbnail('tiny', array(
+                                        <?php echo $this->Calendar->thumbnail('tiny', [
                                             'filename' => $image['Image']['filename'],
                                             'caption' => $image['caption'],
                                             'group' => 'unapproved_event_'.$event['Event']['id']
-                                        )); ?>
+                                        ]); ?>
                                     <?php endforeach; ?>
                                 </td>
                             </tr>

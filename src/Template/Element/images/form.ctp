@@ -46,18 +46,18 @@ $helpers = ['Html'];
                                 <li id="selectedimage_<?php echo $id; ?>" data-image-id="<?php echo $id; ?>">
                                     <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
                                     <a href="#" class="remove"><img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /></a>
-                                    <?php echo $this->Calendar->thumbnail('tiny', array(
+                                    <?php echo $this->Calendar->thumbnail('tiny', [
                                         'filename' => $filename,
                                         'class' => 'selected_image'
-                                    )); ?>
-                                    <?php echo $this->Form->input("Image.$id", array(
+                                    ]); ?>
+                                    <?php echo $this->Form->input("Image.$id", [
                                         'label' => 'Caption:',
                                         'div' => false,
                                         'type' => 'text',
                                         'value' => $selected_image['caption'],
                                         'placeholder' => "Enter a caption for this image",
                                         'class' => 'caption'
-                                    )); ?>
+                                    ]); ?>
                                 </li>
                             <?php endforeach; ?>
                         <?php endif; ?>

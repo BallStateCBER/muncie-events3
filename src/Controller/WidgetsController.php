@@ -4,11 +4,11 @@ namespace app\Controller;
 class WidgetsController extends AppController
 {
     public $name = 'Widgets';
-    public $uses = array('Event', 'Widget');
-    public $components = array();
-    public $helpers = array();
+    public $uses = ['Event', 'Widget'];
+    public $components = [];
+    public $helpers = [];
 
-    public $customStyles = array();
+    public $customStyles = [];
 
     public function beforeFilter(Event $event)
     {
@@ -27,21 +27,21 @@ class WidgetsController extends AppController
         $iframeQueryString = $this->Widget->getIframeQueryString();
         $options = $this->Widget->getOptions();
         $iframeStyles = $this->Widget->getIframeStyles($options);
-        $this->set(array(
+        $this->set([
             'defaults' => $this->Widget->getDefaults(),
             'iframeStyles' => $iframeStyles,
-            'iframeUrl' => Router::url(array(
+            'iframeUrl' => Router::url([
                 'controller' => 'widgets',
                 'action' => $widgetType,
                 '?' => $iframeQueryString
-            ), true),
-            'code_url' => Router::url(array(
+            ], true),
+            'code_url' => Router::url([
                 'controller' => 'widgets',
                 'action' => $widgetType,
                 '?' => str_replace('&', '&amp;', $iframeQueryString)
-            ), true),
+            ], true),
             'categories' => $this->Event->Category->getAll()
-        ));
+        ]);
     }
 
     /**
@@ -56,20 +56,20 @@ class WidgetsController extends AppController
         $options = $_GET;
         $filters = $this->Event->getValidFilters($options);
         $events = $this->Event->getWidgetPage($startDate, $filters);
-        $eventIds = array();
+        $eventIds = [];
         foreach ($events as $date => $daysEvents) {
             foreach ($daysEvents as $event) {
-                $eventIds[] = $event['Event']['id'];
+                $eventIds[] = $event->id;
             }
         }
         $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed';
         $this->Widget->processCustomStyles($options);
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
-        $baseUrl = Router::url(array('controller' => 'widgets', 'action' => 'feed'), true);
+        $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
         $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
 
-        $this->set(array(
+        $this->set([
             'titleForLayout' => 'Upcoming Events',
             'events' => $events,
             'eventIds' => $eventIds,
@@ -79,7 +79,7 @@ class WidgetsController extends AppController
             'filters' => $filters,
             'categories' => $this->Event->Category->getList(),
             'all_events_url' => $this->__getAllEventsUrl('feed', $queryString)
-        ));
+        ]);
     }
 
     /**
@@ -112,27 +112,27 @@ class WidgetsController extends AppController
         $options = $_GET;
         $filters = $this->Event->getValidFilters($options);
         $events = $this->Event->getMonth($yearMonth, $filters);
-        $eventsForJson = array();
+        $eventsForJson = [];
         foreach ($events as $date => &$daysEvents) {
             if (!isset($eventsForJson[$date])) {
-                $eventsForJson[$date] = array(
+                $eventsForJson[$date] = [
                     'heading' => 'Events on '.date('F j, Y', strtotime($date)),
-                    'events' => array()
-                );
+                    'events' => []
+                ];
             }
             foreach ($daysEvents as &$event) {
-                $timeSplit = explode(':', $event['Event']['time_start']);
+                $timeSplit = explode(':', $event['time_start']);
                 $timestamp = mktime($timeSplit[0], $timeSplit[1]);
                 $displayedTime = date('g:ia', $timestamp);
-                $event['Event']['displayed_time'] = $displayedTime;
-                $eventsForJson[$date]['events'][] = array(
-                    'id' => $event['Event']['id'],
-                    'title' => $event['Event']['title'],
-                    'category_name' => $event['Category']['name'],
-                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event['Category']['name'])),
-                    'url' => Router::url(array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])),
+                $event['displayed_time'] = $displayedTime;
+                $eventsForJson[$date]['events'][] = [
+                    'id' => $event['id'],
+                    'title' => $event['title'],
+                    'category_name' => $event->Category['name'],
+                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->Category['name'])),
+                    'url' => Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]),
                     'time' => $displayedTime
-                );
+                ];
             }
         }
         $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month';
@@ -147,16 +147,19 @@ class WidgetsController extends AppController
         }
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
-        $baseUrl = Router::url(array('controller' => 'widgets', 'action' => 'month'), true);
+        $baseUrl = Router::url([
+            'controller' => 'widgets',
+            'action' => 'month'],
+            true);
         $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
 
-        $this->set(array(
+        $this->set([
             'titleForLayout' => "$monthName $year",
             'events_displayed_per_day' => $eventsDisplayedPerDay,
             'customStyles' => $this->Widget->customStyles,
             'all_events_url' => $this->__getAllEventsUrl('month', $queryString),
             'categories' => $this->Event->Category->getList()
-        ));
+        ]);
         $this->set(compact(
             'month', 'year', 'timestamp', 'monthName', 'preSpacer', 'lastDay', 'postSpacer',
             'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'events',
@@ -177,10 +180,10 @@ class WidgetsController extends AppController
         $options = $_GET;
         $filters = $this->Event->getValidFilters($options);
         $events = $this->Event->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
-        $this->set(array(
+        $this->set([
             'titleForLayout' => 'Events on '.date('F jS, Y', mktime(0, 0, 0, $month, $day, $year)),
             'events' => $events
-        ));
+        ]);
     }
 
     /**
@@ -191,10 +194,10 @@ class WidgetsController extends AppController
     private function __getAllEventsUrl($action, $queryString)
     {
         if (empty($queryString)) {
-            $new_queryString = '';
+            $newQueryString = '';
         } else {
             $parameters = explode('&', urldecode($queryString));
-            $filteredParams = array();
+            $filteredParams = [];
             $defaults = $this->Widget->getDefaults();
             foreach ($parameters as $paramPair) {
                 $pairSplit = explode('=', $paramPair);
@@ -203,59 +206,60 @@ class WidgetsController extends AppController
                     $filteredParams[$var] = $val;
                 }
             }
-            $new_queryString = http_build_query($filteredParams, '', '&amp;');
+            $newQueryString = http_build_query($filteredParams, '', '&amp;');
         }
-        return Router::url(array(
+        return Router::url([
             'controller' => 'widgets',
             'action' => $action,
-            '?' => $new_queryString
-        ));
+            '?' => $newQueryString
+        ]);
     }
 
     public function event($id)
     {
-        $event = $this->Event->find('first', array(
-            'conditions' => array('Event.id' => $id),
-            'contain' => array(
-                'User' => array(
-                    'fields' => array('User.id', 'User.name')
-                ),
-                'Category' => array(
-                    'fields' => array('Category.id', 'Category.name', 'Category.slug')
-                ),
-                'EventSeries' => array(
-                    'fields' => array('EventSeries.id', 'EventSeries.title')
-                ),
-                'Tag' => array(
-                    'fields' => array('Tag.id', 'Tag.name')
-                ),
-                'EventsImage' => array(
-                    'fields' => array('EventsImage.id', 'EventsImage.caption'),
-                    'Image' => array(
-                        'fields' => array('Image.id', 'Image.filename')
-                    )
-                )
-            )
-        ));
+        $event = $this->Event->find('first', [
+            'conditions' => ['Event.id' => $id],
+            'contain' => [
+                'User' => [
+                    'fields' => ['User.id', 'User.name']
+                ],
+                'Category' => [
+                    'fields' => ['Category.id', 'Category.name', 'Category.slug']
+                ],
+                'EventSeries' => [
+                    'fields' => ['EventSeries.id', 'EventSeries.title']
+                ],
+                'Tag' => [
+                    'fields' => ['Tag.id', 'Tag.name']
+                ],
+                'EventsImage' => [
+                    'fields' => ['EventsImage.id', 'EventsImage.caption'],
+                    'Image' => [
+                        'fields' => ['Image.id', 'Image.filename']
+                    ]
+                ]
+            ]
+        ]);
 
         if (empty($event)) {
-            return $this->renderMessage(array(
+            return $this->renderMessage([
                 'title' => 'Event Not Found',
                 'message' => "Sorry, but we couldn't find the event (#$id) you were looking for.",
                 'class' => 'error'
-            ));
+            ]);
         }
         $this->layout = $this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed';
-        $this->set(array(
-            'event' => $event)
+        $this->set([
+            'event' => $event
+            ]
         );
     }
 
     public function index()
     {
-        $this->set(array(
+        $this->set([
             'titleForLayout' => 'Website Widgets'
-        ));
+        ]);
         $this->layout = 'no_sidebar';
     }
 
@@ -266,18 +270,18 @@ class WidgetsController extends AppController
             $startingDate = date('Y-m-d');
         }
 
-        $eventResults = $this->Event->find('all', array(
-            'conditions' => array(
+        $eventResults = $this->Event->find('all', [
+            'conditions' => [
                 'published' => 1,
                 'date >=' => $startingDate,
                 'location LIKE' => $venueName
-            ),
-            'fields' => array('id', 'title', 'date', 'time_start', 'time_end', 'cost', 'description'),
+            ],
+            'fields' => ['id', 'title', 'date', 'time_start', 'time_end', 'cost', 'description'],
             'contain' => false,
-            'order' => array('date', 'time_start'),
+            'order' => ['date', 'time_start'],
             'limit' => 1
-        ));
-        $events = array();
+        ]);
+        $events = [];
         foreach ($eventResults as $result) {
             $date = $result['Event']['date'];
             $events[$date][] = $result;
@@ -287,13 +291,13 @@ class WidgetsController extends AppController
         } else {
             $this->layout = 'widgets/venue';
         }
-        $this->set(array(
+        $this->set([
             'events' => $events,
             'titleForLayout' => 'Upcoming Events',
             'is_ajax' => $this->request->is('ajax'),
             'startingDate' => $startingDate,
             'venueName' => $venueName
-        ));
+        ]);
     }
 
     public function demoFeed()

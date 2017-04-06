@@ -59,7 +59,7 @@
     </tr>
     <?php
     $nextStartingDate = date('Y-m-d', strtotime($date.' +1 day'));
-    $url = Router::url(array('controller' => 'widgets', 'action' => 'venue', urlencode($venueName), $nextStartingDate), true);
+    $url = Router::url(['controller' => 'widgets', 'action' => 'venue', urlencode($venueName), $nextStartingDate], true);
     $this->Js->buffer("
         function loadMoreEvents() {
             $('more_events_loading').show();

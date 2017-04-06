@@ -5,7 +5,7 @@
         <?php else: ?>
             No upcoming events found.
             <br />
-            <?php echo $this->Html->link('Add an upcoming event', array('controller' => 'events', 'action' => 'add')); ?>
+            <?php echo $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
         <?php endif; ?>
     </p>
     <?php $this->Js->buffer("muncieEventsFeedWidget.setNoMoreEvents();"); ?>
@@ -32,11 +32,11 @@
                     <?php if (!empty($event['EventsImage'])): ?>
                         <?php
                             $image = array_shift($event['EventsImage']);
-                            echo $this->Calendar->thumbnail('tiny', array(
+                            echo $this->Calendar->thumbnail('tiny', [
                                 'filename' => $image['Image']['filename'],
                                 'caption' => $image['caption'],
                                 'group' => 'event_minimized'.$event['Event']['id']
-                            ));
+                            ]);
                         ?>
                     <?php endif; ?>
                     <?php $url = Router::url(array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])); ?>
@@ -54,11 +54,11 @@
                     <?php if (!empty($event['EventsImage'])): ?>
                         <div class="hidden_images">
                             <?php foreach ($event['EventsImage'] as $image): ?>
-                                <?php echo $this->Calendar->thumbnail('tiny', array(
+                                <?php echo $this->Calendar->thumbnail('tiny', [
                                     'filename' => $image['Image']['filename'],
                                     'caption' => $image['caption'],
                                     'group' => 'event_minimized'.$event['Event']['id']
-                                )); ?>
+                                ]); ?>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>

@@ -1,6 +1,6 @@
 <?php
     if (!isset($upcoming_tags)) {
-        $upcoming_tags = $this->requestAction(array('controller' => 'events', 'action' => 'upcoming_tags'));
+        $upcoming_tags = $this->requestAction(['controller' => 'events', 'action' => 'upcoming_tags']);
     }
 ?>
 <div class="tag_cloud">
@@ -36,15 +36,15 @@
                     $font_size = $min_font_size + round($font_size_range * (($tag_info['count'] - $min_count) / $count_range));
                     echo $this->Html->link(
                         '<li class="list-group-item" style="font-size: '.$font_size.'%;">'.$tag_info['name'].'</li>',
-                        array(
+                        [
                             'controller' => 'events',
                             'action' => 'tag',
                             'slug' => $tag_info['id'].'_'.Inflector::slug($tag_info['name'])
-                        ),
-                        array(
+                        ],
+                        [
                             'escape' => false,
                             'id' => 'filter_tag_'.$tag_info['id']
-                        )
+                        ]
                     );
                 ?>
                 <?php // $this->Js->buffer("setTagFilterListener('filter_tag_{$tag_info['id']}', '{$tag_info['id']}_".Inflector::slug($tag_name)."');");?>

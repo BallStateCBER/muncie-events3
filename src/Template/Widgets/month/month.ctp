@@ -16,7 +16,7 @@
             </td>
         </tr>
         <tr>
-            <?php foreach (array('S', 'M', 'T', 'W', 'T', 'F', 'S') as $letter): ?>
+            <?php foreach (['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $letter): ?>
                 <th class="day_header">
                     <?php echo $letter; ?>
                 </th>
@@ -46,17 +46,17 @@
 
                     echo $this->Html->link(
                         $day,
-                        array(
+                        [
                             'controller' => 'events',
                             'action' => 'day',
                             $month,
                             $day,
                             $year
-                        ),
-                        array(
+                        ],
+                        [
                             'class' => 'date',
                             'data-day' => str_pad($day, 2, '0', STR_PAD_LEFT)
-                        )
+                        ]
                     );
 
                     $date = $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-'.str_pad($day, 2, '0', STR_PAD_LEFT);
@@ -77,26 +77,26 @@
                             $link_text = $this->Text->truncate(
                                 $event['Event']['title'],
                                 50,
-                                array(
+                                [
                                     'ending' => '...',
                                     'exact' => false
-                                )
+                                ]
                             );
                             $category_name = $event['Category']['name'];
                             $link_text = $this->Icon->category($category_name).$link_text;
                             echo $this->Html->link(
                                 $link_text,
-                                array(
+                                [
                                     'controller' => 'events',
                                     'action' => 'view',
                                     'id' => $event['Event']['id']
-                                ),
-                                array(
+                                ],
+                                [
                                     'escape' => false,
                                     'class' => 'event',
                                     'data-event-id' => $event['Event']['id'],
                                     'title' => $event['Event']['displayed_time'].' - '.$event['Event']['title']
-                                )
+                                ]
                             );
 
                             echo '</li>';
@@ -106,18 +106,18 @@
                         if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
                             echo $this->Html->link(
                                 $count - $eventsDisplayedPerDay.' more',
-                                array(
+                                [
                                     'controller' => 'events',
                                     'action' => 'day',
                                     $month,
                                     $day,
                                     $year
-                                ),
-                                array(
+                                ],
+                                [
                                     'class' => 'more',
                                     'data-day' => str_pad($day, 2, '0', STR_PAD_LEFT),
                                     'title' => 'View all events on this date'
-                                )
+                                ]
                             );
                         }
                     }

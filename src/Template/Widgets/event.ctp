@@ -3,7 +3,7 @@
         <?php echo $event['Event']['title']; ?>
     </h1>
     <?php
-        echo $this->element('events/actions', array('event' => $event, 'can_edit' => false));
+        echo $this->element('events/actions', ['event' => $event, 'can_edit' => false]);
         $this->Js->buffer("setupEventActions('.event');");
     ?>
     <div class="header_details">
@@ -37,11 +37,11 @@
                         echo $this->Icon->category($event['Category']['name']).$event['Category']['name'];
                         if (!empty($event['Tag'])) {
                             echo ': <span class="tags">';
-                            $linked_tags = array();
+                            $linked_tags = [];
                             foreach ($event['Tag'] as $tag) {
                                 $linked_tags[] = $tag['name'];
                                 /*
-                                $linked_tags[] = $this->Html->link($tag['name'], array(
+                                $linked_tags[] = $this->Html->link($tag['name'], [
                                     'controller' => 'events',
                                     'action' => 'index',
                                     'tag' => $tag['id'].'_'.Inflector::slug($tag['name'])
@@ -71,11 +71,11 @@
                     <th>Images</th>
                     <td>
                         <?php foreach ($event['EventsImage'] as $image): ?>
-                            <?php echo $this->Calendar->thumbnail('tiny', array(
+                            <?php echo $this->Calendar->thumbnail('tiny', [
                                 'filename' => $image['Image']['filename'],
                                 'caption' => $image['caption'],
                                 'group' => 'event_view'.$event['Event']['id']
-                            )); ?>
+                            ]); ?>
                         <?php endforeach; ?>
                     </td>
                 </tr>
@@ -83,9 +83,9 @@
         </table>
     </div>
     <div class="description">
-        <?php echo $this->Text->autolink($event['Event']['description'], array(
+        <?php echo $this->Text->autolink($event['Event']['description'], [
             'escape' => false
-        )); ?>
+        ]); ?>
     </div>
     <div class="footer">
         <?php
