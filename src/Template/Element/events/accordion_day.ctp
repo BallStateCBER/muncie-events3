@@ -1,4 +1,4 @@
-<li <?= (!empty($event->eventsImage)) ? 'class="with_images"' : ''; ?>>
+<li <?= (!empty($event->images)) ? 'class="with_images"' : ''; ?>>
     <?php
         use Cake\Routing\Router;
 
@@ -8,10 +8,10 @@ $url = Router::url([
             'id' => $event->id
         ], true);
     ?>
-    <?php if (!empty($event->eventsImage)): ?>
+    <?php if (!empty($event->images)): ?>
         <span class="tiny_thumbnails">
             <?php
-                foreach ($event->eventsImage as $image) {
+                foreach ($event->images as $image) {
                     echo $this->Calendar->thumbnail('tiny', [
                         'filename' => $image->filename,
                         'caption' => $image->caption,
@@ -38,9 +38,9 @@ $url = Router::url([
                         <?= $event->location_details; ?>
                     </span>
             <?php endif; ?>
-            <?php if ($event['address']): ?>
+            <?php if ($event->address): ?>
             <span class="address" id="address_<?= $event->id; ?>">
-                        <?= $event['address']; ?>
+                        <?= $event->address; ?>
                     </span>
             <?php endif; ?>
             </span>
@@ -50,11 +50,11 @@ $url = Router::url([
                 <?= $this->element('events/actions', compact('event')); ?>
             </div>
             <div class="description">
-                <?php if (!empty($event->eventsImage)): ?>
+                <?php if (!empty($event->images)): ?>
                 <div class="images">
-                    <?php foreach ($event->eventsImage as $image): ?>
+                    <?php foreach ($event->images as $image): ?>
                     <?= $this->Calendar->thumbnail('small', [
-                                    'filename' => $image->image['filename'],
+                                    'filename' => $image['filename'],
                                     'caption' => $image->caption,
                                     'group' => 'event'.$event->id
                                 ]); ?>

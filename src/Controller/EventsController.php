@@ -15,9 +15,9 @@ class EventsController extends AppController
     public $name = 'Events';
     //public $helpers = ['Tag'];
     //public $components = [
-    //	'Calendar',
-    //	'Search.Prg',
-    //	'RequestHandler'
+    //    'Calendar',
+    //    'Search.Prg',
+    //    'RequestHandler'
     //];
     public $uses = ['Event'];
     public $paginate = [
@@ -250,6 +250,18 @@ class EventsController extends AppController
         $this->set('titleForLayout', '');
     }
 
+    public function getFilteredEventsOnDates($date)
+    {
+        $events = $this->Events
+            ->find('all', [
+            'conditions' => ['date' => $date],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+            ])
+            ->toArray();
+        $this->indexEvents($events);
+    }
+
     public function view($id = null)
     {
         $event = $this->Events->get($id, [
@@ -259,6 +271,61 @@ class EventsController extends AppController
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', $event['title']);
+    }
+
+    public function category($slug)
+    {
+        $category = $this->Events->Categories->find('all', [
+            'conditions' => ['slug' => $slug]
+            ])
+            ->first();
+        $events = $this->Events->find('all', [
+            'conditions' => ['category_id' => $category->id],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+            ])
+            ->toArray();
+        if (empty($events)) {
+            return $this->renderMessage([
+                'title' => 'Category Not Found',
+                'message' => "Sorry, but we couldn't find the category \"$slug\".",
+                'class' => 'error'
+            ]);
+        }
+        $this->indexEvents($events);
+        $this->set([
+            'category' => $category,
+            'titleForLayout' => $category->name
+        ]);
+    }
+
+    public function day($month = null, $day = null, $year = null)
+    {
+        if (! $year || ! $month || ! $day) {
+            $this->redirect('/');
+        }
+
+        // Zero-pad day and month numbers
+        $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+        $day = str_pad($day, 2, '0', STR_PAD_LEFT);
+        $date = "$year-$month-$day";
+        $events = $this->Events
+            ->find('all', [
+            'conditions' => ['date' => $date],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+            ])
+            ->toArray();
+        if ($events) {
+            $this->indexEvents($events);
+        }
+        $timestamp = mktime(0, 0, 0, $month, $day, $year);
+        $dateString = date('F j, Y', $timestamp);
+        $this->set(compact('month', 'year', 'day'));
+        $this->set(array(
+            'titleForLayout' => 'Events on '.$dateString,
+            'displayedDate' => date('l F j, Y', $timestamp)
+        ));
     }
 
     public function add()

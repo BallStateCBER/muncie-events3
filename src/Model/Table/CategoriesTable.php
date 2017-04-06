@@ -74,4 +74,23 @@ class CategoriesTable extends Table
 
         return $validator;
     }
+
+    public function getAll()
+    {
+        $cacheKey = "all_categories";
+        if ($cached = Cache::read($cacheKey)) {
+            return $cached;
+        }
+        $result = $this->find('all', [
+            'fields' => ['Categories.id', 'Categories.name', 'Categories.slug'],
+            'contain' => false,
+            'order' => ['Categories.weight' => 'ASC']
+            ]);
+        if (empty($result)) {
+            throw new InternalErrorException("No categories found");
+        } else {
+            Cache::write($cacheKey, $result);
+            return $result;
+        }
+    }
 }

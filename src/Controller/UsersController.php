@@ -4,6 +4,8 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Routing\Router;
+use Cake\I18n\Date;
+use Cake\I18n\Time;
 
 /**
  * Users Controller
@@ -39,23 +41,27 @@ class UsersController extends AppController
             'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
-        $eventCount = $this->Users->Events->find('all', [
+        $now = Time::now();
+        $eventCount = $this->Users->Events
+            ->find('all', [
             'conditions' => ['user_id' => $id]
-        ])->count();
+            ])
+            ->count();
 
         $events = $this->Users->Events
             ->find('all', [
-            'conditions' => ['Events.user_id' => $id],
             'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
             ])
+            ->where([
+                'Events.user_id =' => $id
+            ])
             ->toArray();
 
-        $events = $this->indexEvents($events);
+        $this->indexEvents($events);
 
         $this->set([
             'eventCount' => $eventCount,
-            'events' => $events,
             'titleForLayout' => $user->name,
             'user' => $user
         ]);
