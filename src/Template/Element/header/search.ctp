@@ -1,10 +1,10 @@
 <div class="dropdown">
-    <?php
-        echo $this->Form->create('Event', [
+    <?= $this->Form->create('Event', [
             'id' => 'EventSearchForm',
             # 'url' => array_merge(['action' => 'search'], $this->request->params['pass'])
         ]);
-        echo $this->Form->input('filter', [
+    ?>
+    <?= $this->Form->input('filter', [
             'div' => false,
             'label' => false,
             'class' => 'form-control',
@@ -15,8 +15,7 @@
     <button id="search_options_toggler" class="dropdown-toggle btn btn-secondary btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Advanced</button>
     <div id="search_options" class="dropdown-menu" aria-labelledby="search_options_toggler">
         <div>
-            <?php
-                echo $this->Form->input('direction', [
+            <?= $this->Form->input('direction', [
                     'options' => [
                         'future' => 'Upcoming Events',
                         'past' => 'Past Events',
@@ -30,6 +29,6 @@
             ?>
         </div>
     </div>
-    <?php echo $this->Form->end(); ?>
+    <?= $this->Form->end(); ?>
     <?php $this->Js->buffer("setupSearch();"); ?>
 </div>

@@ -57,7 +57,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'index', 'location', 'view'
+            'category', 'day', 'index', 'location', 'view'
         ]);
     }
 
@@ -100,7 +100,7 @@ class EventsController extends AppController
         // Remove duplicates
         $customTags = array_unique($customTags);
 
-        $this->Event->Tag = $this->Event->Tag;
+        $this->Events->Tags = $this->Events->Tags;
         foreach ($customTags as $ct) {
             // Skip over blank tags
             if ($ct == '') {
@@ -108,11 +108,11 @@ class EventsController extends AppController
             }
 
             // Get ID of existing tag, if it exists
-            $tagId = $this->Event->Tag->field('id', ['name' => $ct]);
+            $tagId = $this->Events->Tags->field('id', ['name' => $ct]);
 
             // Include this tag if it exists and is selectable
             if ($tagId) {
-                $selectable = $this->Event->Tag->field('selectable', ['id' => $tagId]);
+                $selectable = $this->Events->Tags->field('selectable', ['id' => $tagId]);
                 if ($selectable) {
                     $this->request->data['Tag'][] = $tagId;
                 } else {
@@ -121,16 +121,16 @@ class EventsController extends AppController
 
             // Create the custom tag if it does not already exist
             } else {
-                $this->Event->Tag->create();
-                $this->Event->Tag->set([
+                $this->Events->Tags->create();
+                $this->Events->Tags->set([
                     'name' => $ct,
                     'user_id' => $this->Auth->user('id'),
-                    'parent_id' => $this->Event->Tag->getUnlistedGroupId(), // 'Unlisted' group
+                    'parent_id' => $this->Events->Tags->getUnlistedGroupId(), // 'Unlisted' group
                     'listed' => 0,
                     'selectable' => 1
                 ]);
-                $this->Event->Tag->save();
-                $this->request->data['Tag'][] = $this->Event->Tag->id;
+                $this->Events->Tags->save();
+                $this->request->data['Tag'][] = $this->Events->Tags->id;
             }
         }
         $this->request->data['Tag'] = array_unique($this->request->data['Tag']);
@@ -224,13 +224,12 @@ class EventsController extends AppController
     // home page
     public function index()
     {
-        $now = Time::now();
         $events = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
-            ->where(['date >=' => $now])
+            ->where(['date >=' => date('Y-m-d')])
             ->toArray();
         $this->indexEvents($events);
         $this->set('titleForLayout', '');

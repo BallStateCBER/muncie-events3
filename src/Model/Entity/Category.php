@@ -30,4 +30,18 @@ class Category extends Entity
         '*' => true,
         'id' => false
     ];
+
+    public function getAll()
+    {
+        $result = $this->find('all', [
+            'contain' => false,
+            'order' => ['weight' => 'ASC']
+            ]);
+        if (empty($result)) {
+            throw new InternalErrorException("No categories found");
+        } else {
+            Cache::write($cacheKey, $result);
+            return $result;
+        }
+    }
 }
