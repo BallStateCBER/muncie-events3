@@ -106,6 +106,75 @@ class EventsTable extends Table
         'pastWithTag' => true
     ];
 
+    public function getValidFilters($options)
+    {
+        // Correct formatting of $options
+        $correctedOptions = [];
+        foreach ($options as $var => $val) {
+            if (is_string($val)) {
+                $val = trim($val);
+            }
+            if (stripos($var, 'amp;') === 0) {
+                $var = str_replace('amp;', '', $var);
+            }
+
+            // Turn specified options into arrays if they're comma-delimited strings
+            $expectedArrays = ['category', 'tags_included', 'tags_excluded'];
+            if (in_array($var, $expectedArrays) && ! is_array($val)) {
+                $val = explode(',', $val);
+                $correctedArray = [];
+                foreach ($val as $member) {
+                    $member = trim($member);
+                    if ($member != '') {
+                        $correctedArray[] = $member;
+                    }
+                }
+                $val = $correctedArray;
+            }
+
+            // Only include if not empty
+            /* Note: A value of 0 is a valid Widget parameter elsewhere (e.g. the
+             * boolean 'outerBorder'), but not valid for any event filters. */
+            if (! empty($val)) {
+                $correctedOptions[$var] = $val;
+            }
+        }
+        $options = $correctedOptions;
+
+        // Pull event filters out of options
+        $filters = [];
+        $filterTypes = ['category', 'location', 'tags_included', 'tags_excluded'];
+        foreach ($filterTypes as $type) {
+            if (isset($options[$type])) {
+                $filters[$type] = $options[$type];
+            }
+        }
+
+        // Remove categories filter if it specifies all categories
+        if (isset($filters['category'])) {
+            sort($filters['category']);
+            $allCategoryIds = array_keys($this->Categories->find('list', ['order' => 'id ASC']));
+            $excludedCategories = array_diff($allCategoryIds, $filters['category']);
+            if (empty($excludedCategories)) {
+                unset($filters['category']);
+            }
+        }
+
+        // If a tag is both excluded and included, favor excluding
+        if (isset($filters['tags_included']) && isset($filters['tags_excluded'])) {
+            foreach ($filters['tags_included'] as $k => $id) {
+                if (in_array($id, $filters['tags_excluded'])) {
+                    unset($filters['tags_included'][$k]);
+                }
+            }
+            if (empty($filters['tags_included'])) {
+                unset($filters['tags_included']);
+            }
+        }
+
+        return $filters;
+    }
+
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
@@ -113,5 +182,38 @@ class EventsTable extends Table
         $rules->add($rules->existsIn(['series_id'], 'EventSeries'));
 
         return $rules;
+    }
+
+    public function getLocations()
+    {
+        $locations = $this->find();
+        $locations
+            ->select(['location'])
+            ->where(['date >=' => date('Y-m-d')])
+            ->group(['location'])
+            ->toArray();
+        foreach ($locations as $location) {
+            $retval[] = $location->location;
+        }
+
+        return $retval;
+    }
+
+    public function getAllUpcomingEventCounts()
+    {
+        $results = $this->find();
+        $results
+            ->select(['category_id'])
+            ->select(['count' => $results->func()->count('id')])
+            ->where(['date >=' => date('Y-m-d')])
+            ->group(['category_id']);
+
+        $retval = [];
+        foreach ($results as $result) {
+            $catId = $result->category_id;
+            $count = $result->count;
+            $retval[$catId] = $count;
+        }
+        return $retval;
     }
 }

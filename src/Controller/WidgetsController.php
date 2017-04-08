@@ -20,7 +20,7 @@ class WidgetsController extends AppController
         parent::initialize();
         // anyone can access widgets
         $this->Auth->allow([
-            'day', 'event', 'index', 'month'
+            'day', 'event', 'feed', 'index', 'month'
         ]);
     }
 
@@ -204,7 +204,7 @@ class WidgetsController extends AppController
                 'action' => $widgetType,
                 '?' => str_replace('&', '&amp;', $iframeQueryString)
             ], true),
-            'categories' => $this->Categories->getAll()
+            'categories' => $this->Categories
         ]);
     }
 
@@ -218,8 +218,8 @@ class WidgetsController extends AppController
 
         // Get relevant event filters
         $options = $_GET;
-        $filters = $this->Event->getValidFilters($options);
-        $events = $this->Event->getWidgetPage($startDate, $filters);
+        $filters = $this->Events->getValidFilters($options);
+        $events = $this->Events->getWidgetPage($startDate, $filters);
         $eventIds = [];
         foreach ($events as $date => $daysEvents) {
             foreach ($daysEvents as $event) {
@@ -238,10 +238,10 @@ class WidgetsController extends AppController
             'events' => $events,
             'eventIds' => $eventIds,
             'is_ajax' => $this->request->is('ajax'),
-            'nextStartDate' => $this->Event->getNextStartDate($events),
+            'nextStartDate' => $this->Events->getNextStartDate($events),
             'customStyles' => $this->Widget->customStyles,
             'filters' => $filters,
-            'categories' => $this->Event->Category->getList(),
+            'categories' => $this->Events->Categories->getList(),
             'all_events_url' => $this->__getAllEventsUrl('feed', $queryString)
         ]);
     }
@@ -274,8 +274,8 @@ class WidgetsController extends AppController
 
         // Get relevant event filters
         $options = $_GET;
-        $filters = $this->Event->getValidFilters($options);
-        $events = $this->Event->getMonth($yearMonth, $filters);
+        $filters = $this->Events->getValidFilters($options);
+        $events = $this->Events->getMonth($yearMonth, $filters);
         $eventsForJson = [];
         foreach ($events as $date => &$daysEvents) {
             if (!isset($eventsForJson[$date])) {
@@ -292,8 +292,8 @@ class WidgetsController extends AppController
                 $eventsForJson[$date]['events'][] = [
                     'id' => $event['id'],
                     'title' => $event['title'],
-                    'category_name' => $event->Category['name'],
-                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->Category['name'])),
+                    'category_name' => $event->Categories->name,
+                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->Categories->name)),
                     'url' => Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]),
                     'time' => $displayedTime
                 ];
@@ -322,7 +322,7 @@ class WidgetsController extends AppController
             'events_displayed_per_day' => $eventsDisplayedPerDay,
             'customStyles' => $this->Widget->customStyles,
             'all_events_url' => $this->__getAllEventsUrl('month', $queryString),
-            'categories' => $this->Event->Category->getList()
+            'categories' => $this->Events->Category->getList()
         ]);
         $this->set(compact(
             'month', 'year', 'timestamp', 'monthName', 'preSpacer', 'lastDay', 'postSpacer',
@@ -342,8 +342,8 @@ class WidgetsController extends AppController
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $day = str_pad($month, 2, '0', STR_PAD_LEFT);
         $options = $_GET;
-        $filters = $this->Event->getValidFilters($options);
-        $events = $this->Event->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
+        $filters = $this->Events->getValidFilters($options);
+        $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
         $this->set([
             'titleForLayout' => 'Events on '.date('F jS, Y', mktime(0, 0, 0, $month, $day, $year)),
             'events' => $events
@@ -381,7 +381,7 @@ class WidgetsController extends AppController
 
     public function event($id)
     {
-        $event = $this->Event->find('first', [
+        $event = $this->Events->find('first', [
             'conditions' => ['Event.id' => $id],
             'contain' => [
                 'User' => [
@@ -434,7 +434,7 @@ class WidgetsController extends AppController
             $startingDate = date('Y-m-d');
         }
 
-        $eventResults = $this->Event->find('all', [
+        $eventResults = $this->Events->find('all', [
             'conditions' => [
                 'published' => 1,
                 'date >=' => $startingDate,

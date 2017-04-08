@@ -94,32 +94,49 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+
+        $this->loadModel('Categories');
+        $this->loadModel('Events');
+        $this->loadModel('Tags');
+
+        $categories = $this->Categories->getAll();
+
+
+        $this->set([
+            'headerVars' => [
+                'categories' => $categories
+            ],
+            'sidebarVars' => [
+                'locations' => $this->Events->getLocations(),
+                #'upcoming_tags' => $this->Tags->getUpcoming(),
+                'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
+            ]
+        ]);
     }
 
-
-        // to index events
-        public function indexEvents($events)
-        {
-            foreach ($events as $event) {
-                $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
-            }
-            foreach ($evDates as $evDate) {
-                $dates[] = $evDate['date'];
-            }
-            // are there multiple events happening on a certain date?
-            if (count(array_unique($dates))<count($dates)) {
-                $multipleDates = true;
-                $events = $this->multipleDateIndex($dates, $events);
-            } else {
-                $multipleDates = false;
-                $events = array_combine($dates, $events);
-            }
-            $this->set([
-                'dates' => $dates,
-                'events' => $events,
-                'multipleDates' => $multipleDates,
-            ]);
+    // to index events
+    public function indexEvents($events)
+    {
+        foreach ($events as $event) {
+            $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
         }
+        foreach ($evDates as $evDate) {
+            $dates[] = $evDate['date'];
+        }
+        // are there multiple events happening on a certain date?
+        if (count(array_unique($dates))<count($dates)) {
+            $multipleDates = true;
+            $events = $this->multipleDateIndex($dates, $events);
+        } else {
+            $multipleDates = false;
+            $events = array_combine($dates, $events);
+        }
+        $this->set([
+            'dates' => $dates,
+            'events' => $events,
+            'multipleDates' => $multipleDates,
+        ]);
+    }
 
         // to index dates with multiple events happening during them
         public function multipleDateIndex($dates, $events)
