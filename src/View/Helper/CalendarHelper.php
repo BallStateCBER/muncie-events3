@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Helper;
 
+use Cake\Utility\Inflector;
 use Cake\View\Helper;
 
 class CalendarHelper extends Helper
@@ -210,7 +211,7 @@ class CalendarHelper extends Helper
     public function eventTags($event)
     {
         $linkedTags = [];
-        foreach ($event['Tag'] as $tag) {
+        foreach ($event['tags'] as $tag) {
             $tagLinkId = "filter_tag_inline_{$event['id']}_{$tag['id']}";
             $tagSlug = "{$tag['id']}_".Inflector::slug($tag['name']);
             $linkedTags[] = $this->Html->link($tag['name'],

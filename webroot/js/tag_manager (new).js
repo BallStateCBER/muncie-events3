@@ -1,6 +1,6 @@
 var TagManager = {
     tags: [],
-    selected_tags: [],
+    selectedTags: [],
 
     /**
      * @param data An array of tag objects
@@ -9,35 +9,35 @@ var TagManager = {
      */
     createTagList: function(data, container) {
         var list = $('<ul></ul>');
-        var available_tags_container = $('#available_tags');
+        var availableTagsContainer = $('#available_tags');
         for (var i = 0; i < data.length; i++) {
-            var tag_id = data[i].id;
-            var tag_name = data[i].name;
+            var tagId = data[i].id;
+            var tagName = data[i].name;
             var children = data[i].children;
-            var has_children = (children.length > 0);
-            var is_selectable = data[i].selectable;
-            var list_item = $('<li id="available_tag_li_'+tag_id+'"></li>');
+            var hasChildren = (children.length > 0);
+            var isSelectable = data[i].selectable;
+            var listItem = $('<li id="available_tag_li_'+tagId+'"></li>');
             var row = $('<div class="single_row"></div>');
-            list_item.append(row);
-            list.append(list_item);
+            listItem.append(row);
+            list.append(listItem);
 
-            if (is_selectable) {
-                var tag_link = $('<a href="#" class="available_tag" title="Click to select" id="available_tag_'+tag_id+'"></a>');
-                tag_link.append(tag_name);
-                (function(tag_id) {
-                    tag_link.click(function (event) {
+            if (isSelectable) {
+                var tagLink = $('<a href="#" class="available_tag" title="Click to select" id="available_tag_'+tagId+'"></a>');
+                tagLink.append(tagName);
+                (function(tagId) {
+                    tagLink.click(function (event) {
                         event.preventDefault();
                         var link = $(this);
-                        var tag_name = link.html();
-                        var list_item = link.parents('li').first();
-                        TagManager.selectTag(tag_id, tag_name, list_item);
+                        var tagName = link.html();
+                        var listItem = link.parents('li').first();
+                        TagManager.selectTag(tagId, tagName, listItem);
                     });
-                })(tag_id);
-                tag_name = tag_link;
+                })(tagId);
+                tagName = tagLink;
             }
 
             // Bullet point
-            if (has_children) {
+            if (hasChildren) {
                 var collapsed_icon = $('<a href="#" title="Click to expand/collapse"></a>');
                 collapsed_icon.append('<img src="/img/icons/menu-collapsed.png" class="expand_collapse" />');
                 (function(children) {
@@ -45,7 +45,7 @@ var TagManager = {
                         event.preventDefault();
                         var icon = $(this);
                         var icon_container = icon.parent('div');
-                        // var children = data[i].children;
+                        var children = data[i].children;
                         var children_container = icon_container.next('.children');
                         var row = icon_container.parent('li');
 
@@ -71,51 +71,51 @@ var TagManager = {
                 row.append('<img src="/img/icons/menu-leaf.png" class="leaf" />');
             }
 
-            row.append(tag_name);
+            row.append(tagName);
 
             // Tag and submenu
-            if (has_children) {
+            if (hasChildren) {
                 var children_container = $('<div style="display: none;" class="children"></div>');
                 row.after(children_container);
             }
 
             // If tag has been selected
-            if (is_selectable && this.tagIsSelected(tag_id)) {
-                tag_name.addClass('selected');
-                if (! has_children) {
-                    list_item.hide();
+            if (isSelectable && this.tagIsSelected(tagId)) {
+                tagName.addClass('selected');
+                if (! hasChildren) {
+                    listItem.hide();
                 }
             }
         }
         container.append(list);
     },
 
-    tagIsSelected: function(tag_id) {
-        var selected_tags = $('#selected_tags a');
-        for (var i = 0; i < selected_tags.length; i++) {
-            var tag = $(selected_tags[i]);
-            if (tag.data('tagId') == tag_id) {
+    tagIsSelected: function(tagId) {
+        var selectedTags = $('#selected_tags a');
+        for (var i = 0; i < selectedTags.length; i++) {
+            var tag = $(selectedTags[i]);
+            if (tag.data('tagId') == tagId) {
                 return true;
             }
         }
         return false;
     },
 
-    preselectTags: function(selected_tags) {
-        if (selected_tags.length == 0) {
+    preselectTags: function(selectedTags) {
+        if (selectedTags.length == 0) {
             return;
         }
         $('#selected_tags_container').show();
-        for (var i = 0; i < selected_tags.length; i++) {
-            TagManager.selectTag(selected_tags[i].id, selected_tags[i].name);
+        for (var i = 0; i < selectedTags.length; i++) {
+            TagManager.selectTag(selectedTags[i].id, selectedTags[i].name);
         }
     },
 
-    unselectTag: function(tag_id, unselect_link) {
-        var available_tag_list_item = $('#available_tag_li_'+tag_id);
+    unselectTag: function(tagId, unselect_link) {
+        var availableTagListItem = $('#available_tag_li_'+tagId);
 
         // If available tag has not yet been loaded, then simply remove the selected tag
-        if (available_tag_list_item.length == 0) {
+        if (availableTagListItem.length == 0) {
             unselect_link.remove();
             if ($('#selected_tags').children().length == 0) {
                 $('#selected_tags_container').slideUp(200);
@@ -124,7 +124,7 @@ var TagManager = {
         }
 
         // Remove 'selected' class from available tag
-        var available_link = $('#available_tag_'+tag_id);
+        var available_link = $('#available_tag_'+tagId);
         if (available_link.hasClass('selected')) {
             available_link.removeClass('selected');
         }
@@ -138,12 +138,12 @@ var TagManager = {
             });
         };
 
-        available_tag_list_item.slideDown(200);
+        availableTagListItem.slideDown(200);
 
         // If available tag is not visible, then no transfer effect
         if (available_link.is(':visible')) {
             var options = {
-                to: '#available_tag_'+tag_id,
+                to: '#available_tag_'+tagId,
                 className: 'ui-effects-transfer'
             };
             unselect_link.effect('transfer', options, 200, remove_link);
@@ -152,48 +152,48 @@ var TagManager = {
         }
     },
 
-    selectTag: function(tag_id, tag_name, available_tag_list_item) {
+    selectTag: function(tagId, tagName, availableTagListItem) {
         var selected_container = $('#selected_tags_container');
         if (! selected_container.is(':visible')) {
             selected_container.slideDown(200);
         }
 
         // Do not add tag if it is already selected
-        if (this.tagIsSelected(tag_id)) {
+        if (this.tagIsSelected(tagId)) {
             return;
         }
 
         // Add tag
-        var list_item = $('<a href="#" title="Click to remove" data-tag-id="'+tag_id+'" id="selected_tag_'+tag_id+'"></a>');
-        list_item.append(tag_name);
-        list_item.append('<input type="hidden" name="data[Tag][]" value="'+tag_id+'" />');
-        list_item.click(function (event) {
+        var listItem = $('<a href="#" title="Click to remove" data-tag-id="'+tagId+'" id="selected_tag_'+tagId+'"></a>');
+        listItem.append(tagName);
+        listItem.append('<input type="hidden" name="data[Tag][]" value="'+tagId+'" />');
+        listItem.click(function (event) {
             event.preventDefault();
             var unselect_link = $(this);
-            var tag_id = unselect_link.data('tagId');
-            TagManager.unselectTag(tag_id, unselect_link);
+            var tagId = unselect_link.data('tagId');
+            TagManager.unselectTag(tagId, unselect_link);
         });
-        list_item.hide();
-        $('#selected_tags').append(list_item);
-        list_item.fadeIn(200);
+        listItem.hide();
+        $('#selected_tags').append(listItem);
+        listItem.fadeIn(200);
 
         // If available tag has not yet been loaded, then return
-        var available_tag_list_item = $('#available_tag_li_'+tag_id);
-        if (available_tag_list_item.length == 0) {
+        var availableTagListItem = $('#available_tag_li_'+tagId);
+        if (availableTagListItem.length == 0) {
             return;
         }
 
         // Hide/update link to add tag
-        var link = $('#available_tag_'+tag_id);
+        var link = $('#available_tag_'+tagId);
         var options = {
-            to: '#selected_tag_'+tag_id,
+            to: '#selected_tag_'+tagId,
             className: 'ui-effects-transfer'
         };
         var callback = function() {
             link.addClass('selected');
-            var has_children = (available_tag_list_item.children('div.children').length != 0);
-            if (! has_children) {
-                available_tag_list_item.slideUp(200);
+            var hasChildren = (availableTagListItem.children('div.children').length != 0);
+            if (! hasChildren) {
+                availableTagListItem.slideUp(200);
             }
         };
         link.effect('transfer', options, 200, callback);
@@ -225,10 +225,10 @@ var TagManager = {
                 return false;
             },
             select: function(event, ui) {
-                var tag_name = ui.item.label;
+                var tagName = ui.item.label;
                 var terms = split(this.value);
                 terms.pop();
-                terms.push(tag_name);
+                terms.push(tagName);
                 // Add placeholder to get the comma-and-space at the end
                 terms.push('');
                 this.value = terms.join(', ');
@@ -270,9 +270,9 @@ var TagManager = {
             },
             select: function(event, ui) {
                 // Add the selected term to 'selected tags'
-                var tag_name = ui.item.label;
-                var tag_id = ui.item.value;
-                TagManager.selectTag(tag_id, tag_name);
+                var tagName = ui.item.label;
+                var tagId = ui.item.value;
+                TagManager.selectTag(tagId, tagName);
 
                 var terms = split(this.value);
                 // Remove the term being typed from the input field

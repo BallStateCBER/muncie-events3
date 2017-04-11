@@ -209,7 +209,7 @@
                     <div class="form-group col-lg-8 col-xs-12">
                         <?= $this->element('tags/tag_editing', [
                             'available_tags' => $available_tags,
-                            'selected_tags' => isset($this->request->data['Tag']) ? $this->request->data['Tag'] : [],
+                            'selected_tags' => isset($this->request->data['Tags']) ? $this->request->data['Tags'] : [],
                             'hide_label' => true,
                         ]); ?>
                     </div>
@@ -298,17 +298,17 @@
 <?= $this->Form->button(__('Submit')) ?>
 <?= $this->Form->end() ?>
 <?php
-    /*$previous_locations_for_autocomplete = [];
+    $previous_locations_for_autocomplete = [];
     foreach ($previous_locations as $location => $address) {
         $previous_locations_for_autocomplete[] = [
             'label' => $location,
             'value' => $address
         ];
-    }*/
-    /*$this->Js->buffer('
+    }
+    $this->Js->buffer('
         eventForm.previousLocations = '.$this->Js->object($previous_locations_for_autocomplete).';
         setupEventForm();
-    '); */
+    ');
     $this->Js->buffer('
         setupEventForm();
     ');

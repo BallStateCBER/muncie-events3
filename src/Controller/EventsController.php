@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
+use Cake\Routing\Router;
 
 /**
  * Events Controller
@@ -141,13 +142,19 @@ class EventsController extends AppController
 
     private function __prepareEventForm()
     {
+        $userId = $this->Auth->user('id');
+        $this->set([
+            'previous_locations' => $this->Events->getPastLocations(),
+            'userId' => $userId
+        ]);
+
         $event = $this->request->getData('Event');
-        $availableTags = $this->Events->Tags->find('all', [
+        $available_tags = $this->Events->Tags->find('all', [
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
         $this->set([
-            'available_tags' => $availableTags
+            'available_tags' => $available_tags
         ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
@@ -224,6 +231,113 @@ class EventsController extends AppController
         $this->layout = 'blank';
     }
 
+    public function edit($id = null)
+    {
+        $event = $this->Events->get($id, [
+            'contain' => ['Images', 'Tags']
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $event = $this->Events->patchEntity($event, $this->request->getData());
+            if ($this->Events->save($event)) {
+                $this->Flash->success(__('The event has been saved.'));
+            } else {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+            }
+        }
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        #$series = $this->Events->EventSeries->find('list');
+        $images = $this->Events->Images->find('list');
+        $tags = $this->Events->Tags->find('list');
+        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
+        $this->set('_serialize', ['event']);
+
+        $this->__prepareEventForm();
+        $this->set('titleForLayout', 'Edit Event');
+    }
+
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $event = $this->Events->get($id);
+        if ($this->Events->delete($event)) {
+            $this->Flash->success(__('The event has been deleted.'));
+        } else {
+            $this->Flash->error(__('The event could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+    public function approve($id = null)
+    {
+        $ids = $this->request->pass;
+        $adminId = $this->request->session()->read('Auth.User.id');
+        if (empty($ids)) {
+            $this->Flash->error('No events approved because no IDs were specified');
+        } else {
+            $seriesToApprove = [];
+            foreach ($ids as $id) {
+                $this->Events->id = $id;
+                $event = $this->Events->get($id);
+                if (!$this->Events->exists($id)) {
+                    $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
+                }
+                /*if ($seriesId = $this->EventSeries->id) {
+                    $seriesToApprove[$seriesId] = true;
+                }*/
+                $url = Router::url([
+                    'controller' => 'events',
+                    'action' => 'view',
+                    'id' => $id
+                ]);
+                if ($this->Events->save($event)) {
+                    $this->Flash->success("Event #$id approved.<a href=\"$url\">Go to event page</a>");
+                }
+            }
+            foreach ($seriesToApprove as $seriesId => $flag) {
+                $this->Events->EventSeries->id = $seriesId;
+                $this->Events->EventSeries->save('published', true);
+            }
+        }
+        $this->redirect($this->referer());
+    }
+
+    public function moderate()
+    {
+        // Collect all unapproved events
+        $unapproved = $this->Events
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['approved_by IS' => null])
+            ->toArray();
+
+        // Find sets of identical events (belonging to the same series
+        // and with the same modified date) and remove all but the first
+        $identicalSeriesMembers = [];
+        foreach ($unapproved as $k => $event) {
+            if (empty($event['EventsSeries'])) {
+                continue;
+            }
+            $event_id = $event['Events']['id'];
+            $seriesId = $event['EventSeries']['id'];
+            $modified = $event['Events']['modified'];
+            if (isset($identicalSeriesMembers[$seriesId][$modified])) {
+                unset($unapproved[$k]);
+            }
+            $identicalSeriesMembers[$seriesId][$modified][] = $event_id;
+        }
+
+        $this->set([
+            'titleForLayout' => 'Review Unapproved Content',
+            'unapproved' => $unapproved,
+            'identicalSeriesMembers' => $identicalSeriesMembers
+        ]);
+    }
+
+
     // home page
     public function index()
     {
@@ -285,6 +399,16 @@ class EventsController extends AppController
         $this->indexEvents($events);
         $this->set('location', $location);
         $this->set('titleForLayout', '');
+    }
+
+    public function pastLocations()
+    {
+        $locations = $this->Events->getPastLocations();
+        $this->set([
+            'titleForLayout' => 'Locations of Past Events',
+            'pastLocations' => $locations,
+            'listPastLocations' => true
+        ]);
     }
 
     public function getFilteredEventsOnDates($date)
@@ -359,10 +483,10 @@ class EventsController extends AppController
         $timestamp = mktime(0, 0, 0, $month, $day, $year);
         $dateString = date('F j, Y', $timestamp);
         $this->set(compact('month', 'year', 'day'));
-        $this->set(array(
+        $this->set([
             'titleForLayout' => 'Events on '.$dateString,
             'displayedDate' => date('l F j, Y', $timestamp)
-        ));
+        ]);
     }
 
     public function add()
@@ -401,57 +525,5 @@ class EventsController extends AppController
 
         $this->__prepareEventForm();
         $this->set('titleForLayout', 'Submit an Event');
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Event id.
-     * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $event = $this->Events->get($id, [
-            'contain' => ['Images', 'Tags']
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $event = $this->Events->patchEntity($event, $this->request->getData());
-            if ($this->Events->save($event)) {
-                $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
-            }
-        }
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        #$series = $this->Events->EventSeries->find('list');
-        $images = $this->Events->Images->find('list');
-        $tags = $this->Events->Tags->find('list');
-        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
-        $this->set('_serialize', ['event']);
-
-        $this->__prepareEventForm();
-        $this->set('titleForLayout', 'Edit Event');
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Event id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $event = $this->Events->get($id);
-        if ($this->Events->delete($event)) {
-            $this->Flash->success(__('The event has been deleted.'));
-        } else {
-            $this->Flash->error(__('The event could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
     }
 }

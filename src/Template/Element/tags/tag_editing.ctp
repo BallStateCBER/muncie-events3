@@ -1,17 +1,17 @@
 <?php
-    // This element has $availableTags and (optionally) $selected_tags passed into it
+    // This element has $available_tags and (optionally) $selected_tags passed into it
 
     // Counters CakePHP's variable-renaming weirdness
-    if (!isset($availableTags)) {
-        $availableTags = isset($availableTags) ? $availableTags : [];
+    if (!isset($available_tags)) {
+        $available_tags = isset($available_tags) ? $available_tags : [];
     }
     if (!isset($selected_tags)) {
-        $selected_tags = isset($selectedTags) ? $selectedTags : [];
+        $selected_tags = isset($selected_tags) ? $selected_tags : [];
     }
-    if (!isset($hide_label)) {
-        $hide_label = false;
+    if (!isset($hideLabel)) {
+        $hideLabel = false;
     }
-    echo $this->Html->script('/js/tag_manager.js', ['inline' => false]);
+    echo $this->Html->script('tag_manager.js');
 ?>
 
 <div class="input" id="tag_editing">
@@ -97,4 +97,4 @@
     </div>
 </div>
 
-<?php echo $this->Tag->setup($availableTags, 'available_tags', $selected_tags); ?>
+<?php echo $this->Tag->setup($available_tags, 'available_tags', $selected_tags); ?>
