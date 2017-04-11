@@ -17,11 +17,11 @@
                         // Skip if date has no events
                         $timestamp = strtotime("+$n days");
                         $month_year = date('m-Y', $timestamp);
-                        if (!isset($header_vars['populated_dates'][$month_year])) {
+                        if (!isset($header_vars['populatedDates'][$month_year])) {
                             continue;
                         }
                         $day = date('d', $timestamp);
-                        $pop_dates_in_month = $header_vars['populated_dates'][$month_year];
+                        $pop_dates_in_month = $header_vars['populatedDates'][$month_year];
                         if (!in_array($day, $pop_dates_in_month)) {
                             continue;
                         }
@@ -83,8 +83,8 @@
     </li>
 </ul>
 <?php
-    if (isset($header_vars['populated_dates'])) {
-        foreach ($header_vars['populated_dates'] as $month => $days) {
+    if (isset($header_vars['populatedDates'])) {
+        foreach ($header_vars['populatedDates'] as $month => $days) {
             $quoted_days = [];
             foreach ($days as $day) {
                 $quoted_days[] = "'$day'";

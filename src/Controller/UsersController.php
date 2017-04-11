@@ -41,7 +41,6 @@ class UsersController extends AppController
             'contain' => ['MailingList', 'EventSeries', 'Events', 'Images', 'Tags']
         ]);
 
-        $now = Time::now();
         $eventCount = $this->Users->Events
             ->find('all', [
             'conditions' => ['user_id' => $id]
@@ -124,7 +123,7 @@ class UsersController extends AppController
             $this->Flash->error(__('Sorry, we could not register you. Please try again.'));
         }
 
-        $mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
+        #$mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
         $this->set(compact('user'));
         $this->set('_serialize', ['user']);
     }

@@ -9,10 +9,10 @@ class TagHelper extends Helper
 
     private function availableTagsForJs($availableTags)
     {
-        $array_for_json = [];
+        $arrayForJson = [];
         if (is_array($availableTags)) {
             foreach ($availableTags as $tag) {
-                $array_for_json[] = [
+                $arrayForJson[] = [
                     'id' => $tag['id'],
                     'name' => $tag['name'],
                     'selectable' => (boolean) $tag['selectable'],
@@ -20,41 +20,40 @@ class TagHelper extends Helper
                 ];
             }
         }
-        return $array_for_json;
+        return $arrayForJson;
     }
 
-    private function selectedTagsForJs($selected_tags)
+    private function selectedTagsForJs($selectedTags)
     {
-        $array_for_json = [];
-        if (is_array($selected_tags)) {
-            foreach ($selected_tags as $tag) {
-                $array_for_json[] = [
+        $arrayForJson = [];
+        if (is_array($selectedTags)) {
+            foreach ($selectedTags as $tag) {
+                $arrayForJson[] = [
                     'id' => $tag['id'],
                     'name' => $tag['name']
                 ];
             }
         }
-        return $array_for_json;
+        return $arrayForJson;
     }
 
     /**
      * If necessary, convert selected_tags from an array of IDs to a full array of tag info
-     * @param array $selected_tags
+     * @param array $selectedTags
      * @return array
      */
-    private function formatSelectedTags($selected_tags)
+    private function formatSelectedTags($selectedTags)
     {
-        if (empty($selected_tags)) {
+        if (empty($selectedTags)) {
             return [];
         }
-        if (is_[$selected_tags[0]]) {
-            return $selected_tags;
+        if (is_[$selectedTags[0]]) {
+            return $selectedTags;
         }
-        App::uses('Tag', 'Model');
-        $Tag = new Tag();
+        $tag = new Tag();
         $retval = [];
-        foreach ($selected_tags as $tagId) {
-            $result = $Tag->find('first', [
+        foreach ($selectedTags as $tagId) {
+            $result = $tag->find('first', [
                 'conditions' => ['id' => $tagId],
                 'fields' => ['id', 'name', 'parent_id', 'listed', 'selectable'],
                 'contain' => false
@@ -64,18 +63,18 @@ class TagHelper extends Helper
         return $retval;
     }
 
-    public function setup($availableTags, $container_id, $selected_tags = [])
+    public function setup($availableTags, $containerId, $selectedTags = [])
     {
-        if (!empty($selected_tags)) {
-            $selected_tags = $this->formatSelectedTags($selected_tags);
+        if (!empty($selectedTags)) {
+            $selectedTags = $this->formatSelectedTags($selectedTags);
             $this->Js->buffer("
-                TagManager.selected_tags = ".$this->Js->object($this->selectedTagsForJs($selected_tags)).";
+                TagManager.selected_tags = ".$this->Js->object($this->selectedTagsForJs($selectedTags)).";
                 TagManager.preselectTags(TagManager.selected_tags);
                 ");
         }
         $this->Js->buffer("
             TagManager.tags = ".$this->Js->object($this->availableTagsForJs($availableTags)).";
-            TagManager.createTagList(TagManager.tags, $('#$container_id'));
+            TagManager.createTagList(TagManager.tags, $('#$containerId'));
             $('#new_tag_rules_toggler').click(function(event) {
                 event.preventDefault();
                 $('#new_tag_rules').slideToggle(200);

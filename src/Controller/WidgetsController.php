@@ -73,7 +73,7 @@ class WidgetsController extends AppController
                 $defaults['styles']['showIcons'] = true;
                 $defaults['iframeOptions']['height'] = 400;
                 $defaults['iframeOptions']['width'] = 100;
-                $defaults['eventOptions']['eventsDisplayedPerDay'] = 2;
+                $defaults['eventOptions']['eventsPerDay'] = 2;
                 break;
         }
         return $defaults;
@@ -152,7 +152,8 @@ class WidgetsController extends AppController
             if (isset($options[$dimension])) {
                 $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
                 $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            } else {
+            }
+            if (!isset($options[$dimension])) {
                 $unit = 'px';
                 $value = $defaults['iframeOptions'][$dimension];
             }
@@ -163,7 +164,8 @@ class WidgetsController extends AppController
             if (isset($options[$dimension])) {
                 $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
                 $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            } else {
+            }
+            if (!isset($options[$dimension])) {
                 $unit = '%';
                 $value = $defaults['iframeOptions'][$dimension];
             }
@@ -172,11 +174,12 @@ class WidgetsController extends AppController
 
         // Border
         if (isset($options['outerBorder']) && $options['outerBorder'] == 0) {
-            $iframe_styles .= "border:0;";
+            $iframeStyles .= "border:0;";
         } else {
             if (isset($options['borderColorDark'])) {
                 $outerBorderColor = $options['borderColorDark'];
-            } else {
+            }
+            if (!isset($options['borderColorDark'])) {
                 $outerBorderColor = $defaults['styles']['borderColorDark'];
             }
             $iframeStyles .= "border:1px solid $outerBorderColor;";
@@ -304,10 +307,10 @@ class WidgetsController extends AppController
 
         // Events displayed per day
         if (isset($options['events_displayed_per_day'])) {
-            $eventsDisplayedPerDay = $options['events_displayed_per_day'];
+            $eventsPerDay = $options['events_displayed_per_day'];
         } else {
             $defaults = $this->Widget->getDefaults();
-            $eventsDisplayedPerDay = $defaults['event_options']['events_displayed_per_day'];
+            $eventsPerDay = $defaults['event_options']['events_displayed_per_day'];
         }
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
@@ -319,7 +322,7 @@ class WidgetsController extends AppController
 
         $this->set([
             'titleForLayout' => "$monthName $year",
-            'events_displayed_per_day' => $eventsDisplayedPerDay,
+            'eventsPerDay' => $eventsPerDay,
             'customStyles' => $this->Widget->customStyles,
             'all_events_url' => $this->__getAllEventsUrl('month', $queryString),
             'categories' => $this->Events->Category->getList()
