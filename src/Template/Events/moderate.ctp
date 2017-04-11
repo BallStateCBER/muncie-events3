@@ -1,5 +1,9 @@
+<?php
+use Cake\Utility\Inflector;
+
+?>
 <h1 class="page_title">
-    <?php echo $titleForLayout; ?>
+    <?= $titleForLayout; ?>
 </h1>
 <div id="moderate_events">
     <?php if (empty($unapproved)): ?>
@@ -10,19 +14,19 @@
         <ul>
             <?php foreach ($unapproved as $event): ?>
                 <?php
-                    $event_id = $event['Event']['id'];
-                    $created = $event['Event']['created'];
-                    $modified = $event['Event']['modified'];
-                    $published = $event['Event']['published'];
-                    $is_series = isset($event['EventSeries']['id']);
+                    $eventId = $event->id;
+                    $created = $event->created;
+                    $modified = $event->modified;
+                    $published = $event->published;
+                    $isSeries = isset($event['EventSeries']['id']);
 
-                    if ($is_series) {
+                    if ($isSeries) {
                         $series_id = $event['EventSeries']['id'];
-                        $count = count($identical_series_members[$series_id][$modified]);
+                        $count = count($identicalSeriesMembers[$series_id][$modified]);
 
                         // If events in a series have been modified, they are separated out
-                        $count_series_parts = count($identical_series_members[$series_id]);
-                        $series_part_event_ids = $identical_series_members[$series_id][$modified];
+                        $countSeriesParts = count($identicalSeriesMembers[$series_id]);
+                        $seriesPartEventIds = $identicalSeriesMembers[$series_id][$modified];
                     }
                 ?>
                 <li>
@@ -30,10 +34,10 @@
                         <li>
                             <?php
                                 $url = ['controller' => 'events', 'action' => 'approve'];
-                                if ($is_series) {
-                                    $url = array_merge($url, $series_part_event_ids);
+                                if ($isSeries) {
+                                    $url = array_merge($url, $seriesPartEventIds);
                                 } else {
-                                    $url[] = $event_id;
+                                    $url[] = $eventId;
                                 }
                                 echo $this->Html->link(
                                     $this->Html->image('icons/tick.png').'Approve'.($published ? '' : ' and publish'),
@@ -44,7 +48,7 @@
                         </li>
                         <li>
                             <?php
-                                if ($is_series && $count > 1) {
+                                if ($isSeries && $count > 1) {
                                     $confirm = 'You will only be editing this event, and not the '.($count - 1).' other '.__n('event', 'events', ($count - 1)).' in this series.';
                                 } else {
                                     $confirm = false;
@@ -54,7 +58,7 @@
                                     [
                                         'controller' => 'events',
                                         'action' => 'edit',
-                                        'id' => $event_id
+                                        'id' => $eventId
                                     ],
                                     ['escape' => false, 'confirm' => $confirm]
                                 );
@@ -63,16 +67,16 @@
                         <li>
                             <?php
                                 $url = ['controller' => 'events', 'action' => 'delete'];
-                                if ($is_series && $count > 1) {
-                                    $url = array_merge($url, $series_part_event_ids);
-                                    if ($count_series_parts > 1) {
+                                if ($isSeries && $count > 1) {
+                                    $url = array_merge($url, $seriesPartEventIds);
+                                    if ($countSeriesParts > 1) {
                                         $confirm = "All $count events in this part of the series will be deleted.";
                                     } else {
                                         $confirm = "All events in this series will be deleted.";
                                     }
                                     $confirm .= ' Are you sure?';
                                 } else {
-                                    $url[] = $event_id;
+                                    $url[] = $eventId;
                                     $confirm = 'Are you sure?';
                                 }
                                 echo $this->Form->postLink(
@@ -92,18 +96,18 @@
                     <?php endif; ?>
 
                     <table>
-                        <?php if ($is_series): ?>
+                        <?php if ($isSeries): ?>
                             <tr>
                                 <th>
                                     Series
                                 </th>
                                 <td>
-                                    <?php echo $event['EventSeries']['title']; ?>
-                                    (<?php echo $count.__n(' event', ' events', $count); ?>)
-                                    <?php if ($count_series_parts > 1 && $created != $modified): ?>
+                                    <?= $event->EventSeries['title']; ?>
+                                    (<?= $count.__n(' event', ' events', $count); ?>)
+                                    <?php if ($countSeriesParts > 1 && $created != $modified): ?>
                                         <br />
                                         <strong>
-                                            <?php echo __n('This event has', 'These events have', $count); ?>
+                                            <?= __n('This event has', 'These events have', $count); ?>
                                             been edited since being posted.
                                         </strong>
                                     <?php endif; ?>
@@ -115,10 +119,10 @@
                                 Submitted
                             </th>
                             <td>
-                                <?php echo date('M j, Y g:ia', strtotime($created)); ?>
-                                <?php if ($event['User']['id']): ?>
-                                    by <?php echo $this->Html->link(
-                                        $event['User']['name'],
+                                <?= date('M j, Y g:ia', strtotime($created)); ?>
+                                <?php if ($event->User['id']): ?>
+                                    by <?= $this->Html->link(
+                                        $event->User['name'],
                                         ['controller' => 'users', 'action' => 'view', 'id' => $event['User']['id']]
                                     ); ?>
                                 <?php else: ?>
@@ -132,7 +136,7 @@
                                     Updated
                                 </th>
                                 <td>
-                                    <?php echo date('M j, Y g:ia', strtotime($modified)); ?>
+                                    <?= date('M j, Y g:ia', strtotime($modified)); ?>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -141,8 +145,8 @@
                                 Date
                             </th>
                             <td>
-                                <?php echo date('M j, Y', strtotime($event['Event']['date'])); ?>
-                                <?php echo $this->Calendar->eventTime($event); ?>
+                                <?= date('M j, Y', strtotime($event['Event']['date'])); ?>
+                                <?= $this->Calendar->eventTime($event); ?>
                             </td>
                         </tr>
                         <tr>
@@ -150,29 +154,29 @@
                                 Category
                             </th>
                             <td>
-                                <?php echo $event['Category']['name']; ?>
+                                <?= $event->Category['name']; ?>
                             </td>
                         </tr>
                         <?php $vars_to_display = ['title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source']; ?>
                         <?php foreach ($vars_to_display as $var): ?>
-                            <?php if (!empty($event['Event'][$var])): ?>
+                            <?php if (!empty($event->$var)): ?>
                                 <tr>
                                     <th>
-                                        <?php echo Inflector::humanize($var); ?>
+                                        <?= Inflector::humanize($var); ?>
                                     </th>
                                     <td>
-                                        <?php echo Sanitize::html($event['Event'][$var]); ?>
+                                        <?= $event->$var; ?>
                                     </td>
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
-                        <?php if (!empty($event['Tag'])): ?>
+                        <?php if (!empty($event['Tags'])): ?>
                             <tr>
                                 <th>Tags</th>
                                 <td>
                                     <?php
                                         $tags_list = [];
-                                        foreach ($event['Tag'] as $tag) {
+                                        foreach ($event['Tags'] as $tag) {
                                             $tags_list[] = $tag['name'];
                                         }
                                         echo implode(', ', $tags_list);
@@ -180,14 +184,14 @@
                                 </td>
                             </tr>
                         <?php endif; ?>
-                        <?php if (!empty($event['EventsImage'])): ?>
+                        <?php if (!empty($event['EventsImages'])): ?>
                             <tr>
                                 <th>Images</th>
                                 <td>
-                                    <?php foreach ($event['EventsImage'] as $image): ?>
-                                        <?php echo $this->Calendar->thumbnail('tiny', [
-                                            'filename' => $image['Image']['filename'],
-                                            'caption' => $image['caption'],
+                                    <?php foreach ($event['EventsImages'] as $image): ?>
+                                        <?= $this->Calendar->thumbnail('tiny', [
+                                            'filename' => $image->filename,
+                                            'caption' => $image->caption,
                                             'group' => 'unapproved_event_'.$event['Event']['id']
                                         ]); ?>
                                     <?php endforeach; ?>

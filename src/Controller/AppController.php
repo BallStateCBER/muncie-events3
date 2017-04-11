@@ -110,7 +110,8 @@ class AppController extends Controller
                 'locations' => $this->Events->getLocations(),
                 'upcomingTags' => $this->Tags->getUpcoming(),
                 'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
-            ]
+            ],
+            'unapprovedCount' => $this->Events->getUnapproved()
         ]);
     }
 

@@ -106,6 +106,17 @@ class EventsTable extends Table
         'pastWithTag' => true
     ];
 
+    public function getUnapproved()
+    {
+        $count = $this->find();
+        $count
+            ->select()
+            ->where(['Events.approved_by IS' => null])
+            ->order(['Events.created' => 'asc']);
+        $total = $count->count();
+        return $total;
+    }
+
     public function getValidFilters($options)
     {
         // Correct formatting of $options
@@ -201,6 +212,21 @@ class EventsTable extends Table
         $locations
             ->select(['location'])
             ->where(['date >=' => date('Y-m-d')])
+            ->group(['location'])
+            ->toArray();
+        foreach ($locations as $location) {
+            $retval[] = $location->location;
+        }
+
+        return $retval;
+    }
+
+    public function getPastLocations()
+    {
+        $locations = $this->find();
+        $locations
+            ->select(['location'])
+            ->where(['date <' => date('Y-m-d')])
             ->group(['location'])
             ->toArray();
         foreach ($locations as $location) {

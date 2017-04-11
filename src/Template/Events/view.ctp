@@ -1,3 +1,7 @@
+<?php
+use Cake\Utility\Inflector;
+
+?>
 <h1 class="page_title">
     <?= $event->title; ?>
 </h1>
@@ -47,9 +51,9 @@
                             ['controller' => 'events', 'action' => 'category', $event->category->slug],
                             ['escape' => false, 'title' => 'View this category']
                         );
-                        if (!empty($event->tag)) {
+                        if (!empty($event->tags)) {
                             $linked_tags = [];
-                            foreach ($event->tag as $tag) {
+                            foreach ($event->tags as $tag) {
                                 $linked_tags[] = $this->Html->link(
                                     $tag->name,
                                     [
@@ -114,7 +118,7 @@
 
     <div class="footer_details">
         <p>
-            <?php if (!$event->user->id): ?>
+            <?php if (!$event->user): ?>
                 Added anonymously
             <?php elseif (!$event->user->name): ?>
                 Added by a user whose account no longer exists

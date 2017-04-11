@@ -94,7 +94,7 @@ $url = Router::url([
             </div>
             <div class="card-footer">
                 <table class="details">
-                    <?php if (!empty($event->tag)): ?>
+                    <?php if (!empty($event->tags)): ?>
                     <tr class="tags">
                         <th>Tags:</th>
                         <td>
