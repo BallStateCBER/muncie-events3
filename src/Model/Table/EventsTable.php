@@ -99,7 +99,7 @@ class EventsTable extends Table
         return $validator;
     }
 
-    public $delete_series = null;
+    public $deleteSeries = null;
 
     public $findMethods = [
         'upcomingWithTag' => true,
@@ -186,13 +186,13 @@ class EventsTable extends Table
 
     public function arrangeByDate($events)
     {
-        $arranged_events = [];
+        $arrangedEvents = [];
         foreach ($events as $event) {
             $date = $event->date;
-            $arranged_events[$date][] = $event;
+            $arrangedEvents[$date][] = $event;
         }
-        ksort($arranged_events);
-        return $arranged_events;
+        ksort($arrangedEvents);
+        return $arrangedEvents;
     }
 
     public function getLocations()
@@ -228,12 +228,13 @@ class EventsTable extends Table
         return $retval;
     }
 
-    public function getCountInDirectionWithTag($direction, $tag_id)
+    public function getCountInDirectionWithTag($direction, $tagId)
     {
-        $conditions = ['tag_id' => $tag_id];
+        $conditions = ['tag_id' => $tagId];
         if ($direction == 'future') {
             $conditions['event_id IN'] = $this->getFutureEventIDs();
-        } else {
+        }
+        if ($direction == 'past') {
             // Since there are always more past events than future, this is quicker
             // than pulling the IDs of all past events
             $conditions['event_id NOT IN'] = $this->getFutureEventIDs();
@@ -241,14 +242,14 @@ class EventsTable extends Table
         return $this->EventsTags->find('all', ['conditions' => $conditions])->count();
     }
 
-    public function getCountPastWithTag($tag_id)
+    public function getCountPastWithTag($tagId)
     {
-        return $this->getCountInDirectionWithTag('past', $tag_id);
+        return $this->getCountInDirectionWithTag('past', $tagId);
     }
 
-    public function getCountUpcomingWithTag($tag_id)
+    public function getCountUpcomingWithTag($tagId)
     {
-        return $this->getCountInDirectionWithTag('future', $tag_id);
+        return $this->getCountInDirectionWithTag('future', $tagId);
     }
 
     public function getPastEventIDs()

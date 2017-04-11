@@ -5,7 +5,7 @@
         <?php else: ?>
             No upcoming events found.
             <br />
-            <?php echo $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
+            <?= $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
         <?php endif; ?>
     </p>
     <?php $this->Js->buffer("muncieEventsFeedWidget.setNoMoreEvents();"); ?>
@@ -21,10 +21,10 @@
             }
         ?>
         <h2 class="short_date">
-            <?php echo date('M j', strtotime($date)); ?>
+            <?= date('M j', strtotime($date)); ?>
         </h2>
         <h2 class="day">
-            <?php echo $day; ?>
+            <?= $day; ?>
         </h2>
         <ul>
             <?php foreach ($days_events as $event): ?>
@@ -32,35 +32,35 @@
                     <?php if (!empty($event['EventsImage'])): ?>
                         <?php
                             $image = array_shift($event['EventsImage']);
-                            echo $this->Calendar->thumbnail(array(
+                            echo $this->Calendar->thumbnail([
                                 'filename' => $image['Image']['filename'],
                                 'caption' => $image['caption'],
                                 'event_id' => $event['Event']['id'],
                                 'set' => 'list'
-                            ));
+                            ]);
                         ?>
                     <?php endif; ?>
-                    <?php $url = Router::url(array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])); ?>
-                    <a href="<?php echo $url; ?>" title="Click for more info" class="event_link" id="event_link_<?php echo $event['Event']['id']; ?>">
-                        <?php echo $this->Icon->category($event['Category']['name']); ?>
+                    <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id']]); ?>
+                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $event['Event']['id']; ?>">
+                        <?= $this->Icon->category($event['Category']['name']); ?>
                         <div class="title">
-                            <?php echo $event['Event']['title']; ?>
+                            <?= $event['Event']['title']; ?>
                         </div>
                         <div class="when_where">
-                            <?php echo date('g:ia', strtotime($event['Event']['time_start'])); ?>
+                            <?= date('g:ia', strtotime($event['Event']['time_start'])); ?>
                             @
-                            <?php echo $event['Event']['location'] ? $event['Event']['location'] : '&nbsp;'; ?>
+                            <?= $event['Event']['location'] ? $event['Event']['location'] : '&nbsp;'; ?>
                         </div>
                     </a>
                     <?php if (!empty($event['EventsImage'])): ?>
                         <div class="hidden_images">
                             <?php foreach ($event['EventsImage'] as $image): ?>
-                                <?php echo $this->Calendar->thumbnail(array(
+                                <?= $this->Calendar->thumbnail([
                                     'filename' => $image['Image']['filename'],
                                     'caption' => $image['caption'],
                                     'event_id' => $event['Event']['id'],
                                     'set' => 'list'
-                                )); ?>
+                                ]); ?>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>

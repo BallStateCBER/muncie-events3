@@ -115,12 +115,14 @@ class EventsController extends AppController
                 $selectable = $this->Events->Tags->field('selectable', ['id' => $tagId]);
                 if ($selectable) {
                     $this->request->data['Tag'][] = $tagId;
-                } else {
+                }
+                if (!$selectable) {
                     continue;
                 }
 
             // Create the custom tag if it does not already exist
-            } else {
+            }
+            if (!$tagId) {
                 $this->Events->Tags->create();
                 $this->Events->Tags->set([
                     'name' => $ct,
@@ -172,7 +174,8 @@ class EventsController extends AppController
             if (!$event['time_end']) {
                 $event['time_end'] = '00:00:00';
             }
-        } else {
+        }
+        if (!$event['has_end_time']) {
             $event['time_end'] = null;
         }
 
@@ -209,9 +212,9 @@ class EventsController extends AppController
         }
     }
 
-    public function datepicker_populated_dates()
+    public function datepickerPopulatedDates()
     {
-        $results = $this->Event->getPopulatedDates();
+        $results = $this->Events->getPopulatedDates();
         $dates = [];
         foreach ($results as $result) {
             list($year, $month, $day) = explode('-', $result->Event['date']);
@@ -385,15 +388,12 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
-
-                #return $this->redirect(['action' => 'index']);
             } else {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
         }
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        $series = $this->Events->EventSeries->find('list');
         $images = $this->Events->Images->find('list');
         $tags = $this->Events->Tags->find('list');
         $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
@@ -419,18 +419,16 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
-
-                //return $this->redirect(['action' => 'index']);
             } else {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
         }
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        $series = $this->Events->EventSeries->find('list');
+        #$series = $this->Events->EventSeries->find('list');
         $images = $this->Events->Images->find('list');
         $tags = $this->Events->Tags->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
         $this->set('_serialize', ['event']);
 
         $this->__prepareEventForm();

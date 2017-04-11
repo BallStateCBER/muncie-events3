@@ -23,20 +23,20 @@ class CalendarHelper extends Helper
             $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
         }
         if ($startingDate !== $endingDate) {
-            $sy = date('Y', strtotime($startingDate));
-            $ey = date('Y', strtotime($endingDate));
-            if ($sy != $ey) {
+            $startYear = date('Y', strtotime($startingDate));
+            $endYear = date('Y', strtotime($endingDate));
+            if ($startYear != $endYear) {
                 $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
                 $retval .= ' to '.date('M j, Y', strtotime($endingDate));
             }
-            if ($sy == $ey) {
-                $sm = date('M', strtotime($startingDate));
-                $em = date('M', strtotime($endingDate));
-                if ($sm != $em) {
+            if ($startYear == $endYear) {
+                $startMonth = date('M', strtotime($startingDate));
+                $endMonth = date('M', strtotime($endingDate));
+                if ($startMonth != $endMonth) {
                     $retval .= $startsToday ? 'Today' : date('M j', strtotime($startingDate));
                     $retval .= ' to '.date('M j, Y', strtotime($endingDate));
                 }
-                if ($sm == $em) {
+                if ($startMonth == $endMonth) {
                     if ($startsToday) {
                         $retval .= 'Today to '.date('M j, Y', strtotime($endingDate));
                     }
@@ -158,10 +158,12 @@ class CalendarHelper extends Helper
         if ($date == date('Y-m-d')) {
             $day = 'Today';
             $thisWeek = true;
-        } elseif ($date == date('Y-m-d', strtotime('tomorrow'))) {
+        }
+        if ($date == date('Y-m-d', strtotime('tomorrow'))) {
             $day = 'Tomorrow';
             $thisWeek = true;
-        } else {
+        }
+        if ($date != date('Y-m-d')) {
             $day = date('l', strtotime($date));
             $thisWeek = ($date > date('Y-m-d') && $date < date('Y-m-d', strtotime('today + 6 days')));
             if ($thisWeek) {
