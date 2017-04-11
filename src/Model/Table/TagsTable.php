@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -104,5 +105,109 @@ class TagsTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    public function getAllWithCounts($conditions)
+    {
+        $results = $this->Events->find();
+        $results
+            ->select('id')
+            ->where($conditions)
+            ->contain('Tags')
+            ->toArray();
+
+        $tags = [];
+        foreach ($results as $result) {
+            foreach ($result['tags'] as $tag) {
+                if (isset($tags[$tag['name']])) {
+                    $tags[$tag['name']]['count']++;
+                } else {
+                    $tags[$tag['name']] = [
+                        'id' => $tag['id'],
+                        'name' => $tag['name'],
+                        'count' => 1
+                    ];
+                }
+            }
+        }
+        ksort($tags);
+
+        return $tags;
+    }
+
+    public function getWithCounts($filter = [], $sort = 'alpha')
+    {
+        // Apply filters and find tags
+        $conditions = ['Events.published' => 1];
+        if ($filter['direction'] == 'future') {
+            $conditions['Events.date >='] = date('Y-m-d');
+        } elseif ($filter['direction'] == 'past') {
+            $conditions['Events.date <'] = date('Y-m-d');
+        }
+        if (isset($filter['categories'])) {
+            $conditions['Events.category_id'] = $filter['categories'];
+        }
+
+        $tags = $this->getAllWithCounts($conditions);
+        if (empty($tags)) {
+            return [];
+        }
+
+        if ($sort == 'alpha') {
+            return $tags;
+        }
+
+        // Sort by count if $sort is not 'alpha'
+        $sortedTags = [];
+        foreach ($tags as $tagName => $tag) {
+            $sortedTags[$tag['count']][$tag['name']] = $tag;
+        }
+        krsort($sortedTags);
+        $finalTags = [];
+        foreach ($sortedTags as $count => $tags) {
+            foreach ($tags as $name => $tag) {
+                $finalTags[$tag['name']] = $tag;
+            }
+        }
+        return $finalTags;
+    }
+
+    public function getUpcoming($filter = array(), $sort = 'alpha')
+    {
+        $filter['direction'] = 'future';
+        return $this->getWithCounts($filter);
+    }
+
+    public function getCategoriesWithTags($direction = 'future')
+    {
+        if ($direction == 'future') {
+            $eventIds = $this->Events->getFutureEventIDs();
+        } elseif ($direction == 'past') {
+            $eventIds = $this->Events->getPastEventIDs();
+        }
+        $taggedEventIds = $this->EventsTags->find();
+        $taggedEventIds
+            ->select(['event_id'])
+            ->join([
+                'table' => 'events',
+                'type' => 'LEFT',
+                'conditions' => 'events.id = event_id'
+            ])
+            ->where(['event_id in' => $eventIds]);
+        $results = $this->Events->find();
+        $results
+            ->select(['category_id'])
+            ->where(['Events.id in' => $taggedEventIds]);
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = $result['category_id'];
+        }
+        return $retval;
+    }
+
+    public function getIdFromSlug($slug)
+    {
+        $split_slug = explode('_', $slug);
+        return (int) $split_slug[0];
     }
 }

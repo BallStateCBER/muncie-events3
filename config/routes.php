@@ -68,8 +68,19 @@ Router::scope('/', function (RouteBuilder $routes) {
     // Categories
     $category_slugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
     foreach ($category_slugs as $slug) {
-        Router::connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
+        $routes->connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
     }
+
+    // Tag
+    Router::connect(
+        "/tag/:slug/*",
+        ['controller' => 'events', 'action' => 'tag'],
+        ['pass' => ['slug']]
+    );
+
+    // Tags
+    $routes->connect('/tags', ['controller' => 'tags', 'action' => 'index', 'future']);
+    $routes->connect('/tags/past', ['controller' => 'tags', 'action' => 'index', 'past']);
 
     // pages
     $routes->connect('/about', ['controller' => 'Pages', 'action' => 'about']);

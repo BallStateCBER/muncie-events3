@@ -103,9 +103,9 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                 'controller' => 'tags', 'action' => 'index', 'plugin' => false
             ], ['class' => 'see_all']); ?>
         </h2>
-        <?php if (isset($sidebarVars['upcoming_tags']) && count($sidebarVars['upcoming_tags']) > 0): ?>
+        <?php if (isset($sidebarVars['upcomingTags']) && count($sidebarVars['upcomingTags']) > 0): ?>
             <?= $this->element('tags/cloud', [
-                'upcoming_tags' => $sidebarVars['upcoming_tags'],
+                'upcomingTags' => $sidebarVars['upcomingTags'],
                 'class' => 'form-control'
             ]); ?>
         <?php else: ?>

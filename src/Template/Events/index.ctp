@@ -1,1 +1,1 @@
-<?php echo $this->element('events/accordion_wrapper'); ?>
+<?= $this->element('events/accordion_wrapper');

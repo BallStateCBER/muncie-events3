@@ -85,4 +85,16 @@ class CategoriesTable extends Table
             return $result;
         }
     }
+
+    public function getName($id)
+    {
+        $result = $this->find()
+            ->select('name')
+            ->where(['id' => $id])
+            ->first();
+        if (empty($result)) {
+            return false;
+        }
+        return $result->name;
+    }
 }

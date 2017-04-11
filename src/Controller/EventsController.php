@@ -57,7 +57,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'category', 'day', 'index', 'location', 'view'
+            'category', 'day', 'index', 'location', 'tag', 'view'
         ]);
     }
 
@@ -233,6 +233,41 @@ class EventsController extends AppController
             ->toArray();
         $this->indexEvents($events);
         $this->set('titleForLayout', '');
+    }
+
+    public function tag($slug = '')
+    {
+        // Get tag
+        $tagId = $this->Events->Tags->getIdFromSlug($slug);
+        $tag = $this->Events->Tags->find('all', [
+            'conditions' => ['id' => $tagId],
+            'fields' => ['id', 'name'],
+            'contain' => false
+        ])->first();
+        if (empty($tag)) {
+            return $this->renderMessage([
+                'title' => 'Tag Not Found',
+                'message' => "Sorry, but we couldn't find that tag ($slug)",
+                'class' => 'error'
+            ]);
+        }
+
+        $eventId = $this->Events->getIdsFromTag($tagId);
+        $events = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => 'DESC']
+            ])
+            ->where(['Events.id IN' => $eventId])
+            ->toArray();
+        $this->indexEvents($events);
+
+        $this->set([
+            'titleForLayout' => 'Tag: '.ucwords($tag->name),
+            'eventId' => $eventId,
+            'tag' => $tag,
+            'slug' => $slug
+        ]);
     }
 
     public function location($location = null)
