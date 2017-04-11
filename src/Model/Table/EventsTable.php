@@ -120,7 +120,7 @@ class EventsTable extends Table
 
             // Turn specified options into arrays if they're comma-delimited strings
             $expectedArrays = ['category', 'tags_included', 'tags_excluded'];
-            if (in_array($var, $expectedArrays) && ! is_array($val)) {
+            if (in_array($var, $expectedArrays) && ! is_[$val]) {
                 $val = explode(',', $val);
                 $correctedArray = [];
                 foreach ($val as $member) {
@@ -184,6 +184,17 @@ class EventsTable extends Table
         return $rules;
     }
 
+    public function arrangeByDate($events)
+    {
+        $arranged_events = [];
+        foreach ($events as $event) {
+            $date = $event->date;
+            $arranged_events[$date][] = $event;
+        }
+        ksort($arranged_events);
+        return $arranged_events;
+    }
+
     public function getLocations()
     {
         $locations = $this->find();
@@ -215,5 +226,68 @@ class EventsTable extends Table
             $retval[$catId] = $count;
         }
         return $retval;
+    }
+
+    public function getCountInDirectionWithTag($direction, $tag_id)
+    {
+        $conditions = ['tag_id' => $tag_id];
+        if ($direction == 'future') {
+            $conditions['event_id IN'] = $this->getFutureEventIDs();
+        } else {
+            // Since there are always more past events than future, this is quicker
+            // than pulling the IDs of all past events
+            $conditions['event_id NOT IN'] = $this->getFutureEventIDs();
+        }
+        return $this->EventsTags->find('all', ['conditions' => $conditions])->count();
+    }
+
+    public function getCountPastWithTag($tag_id)
+    {
+        return $this->getCountInDirectionWithTag('past', $tag_id);
+    }
+
+    public function getCountUpcomingWithTag($tag_id)
+    {
+        return $this->getCountInDirectionWithTag('future', $tag_id);
+    }
+
+    public function getPastEventIDs()
+    {
+        $results = $this->find()
+            ->select('id')
+            ->where(['Events.date <' => date('Y-m-d')])
+            ->toArray();
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = (int) $result->id;
+        }
+        return $retval;
+    }
+
+    /**
+     * Returns the IDs of all events taking place today and in the future
+     * @return array
+     */
+    public function getFutureEventIDs()
+    {
+        $results = $this->find()
+            ->select('id')
+            ->where(['Events.date >=' => date('Y-m-d')])
+            ->toArray();
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = (int) $result->id;
+        }
+        return $retval;
+    }
+
+    public function getIdsFromTag($tagId)
+    {
+        $eventId = $this->EventsTags->find();
+        $eventId
+            ->select('event_id')
+            ->where(['tag_id' => $tagId])
+            ->toArray();
+        return $eventId;
     }
 }

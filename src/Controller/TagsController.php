@@ -18,15 +18,42 @@ class TagsController extends AppController
             'index', 'view'
         ]);
     }
-    public function index()
+    public function index($direction = 'future', $category = 'all')
     {
-        $this->paginate = [
-            'contain' => ['ParentTags', 'Users']
-        ];
-        $tags = $this->paginate($this->Tags);
-
-        $this->set(compact('tags'));
-        $this->set('_serialize', ['tags']);
+        if ($direction != 'future' && $direction != 'past') {
+            $direction = 'future';
+        }
+        $filters = compact('direction');
+        if ($category != 'all') {
+            $filters['categories'] = $category;
+        }
+        $tags = $this->Tags->getWithCounts($filters, 'alpha');
+        $tagsByFirstLetter = [];
+        foreach ($tags as $tag_name => $tag) {
+            $firstLetter = ctype_alpha($tag['name'][0]) ? $tag['name'][0] : '#';
+            $tagsByFirstLetter[$firstLetter][$tag['name']] = $tag;
+        }
+        $directionAdjective = ($direction == 'future' ? 'upcoming' : 'past');
+        $titleForLayout = 'Tags (';
+        $titleForLayout .= ucfirst($directionAdjective);
+        $this->loadModel('Categories');
+        if ($category != 'all' && $categoryName = $this->Categories->getName($category)) {
+            $titleForLayout .= ' '.str_replace(' Events', '', ucwords($categoryName));
+        }
+        $titleForLayout .= ' Events)';
+        $this->set(compact(
+            'titleForLayout',
+            'tags',
+            'tagsByFirstLetter',
+            'direction',
+            'directionAdjective',
+            'category'
+        ));
+        $this->loadModel('Categories');
+        $this->set([
+            'categories' => $this->Categories->getAll(),
+            'categoriesWithTags' => $this->Tags->getCategoriesWithTags($direction)
+        ]);
     }
 
     /**

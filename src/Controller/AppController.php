@@ -108,7 +108,7 @@ class AppController extends Controller
             ],
             'sidebarVars' => [
                 'locations' => $this->Events->getLocations(),
-                #'upcoming_tags' => $this->Tags->getUpcoming(),
+                'upcomingTags' => $this->Tags->getUpcoming(),
                 'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
             ]
         ]);

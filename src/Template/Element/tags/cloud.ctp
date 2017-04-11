@@ -1,17 +1,19 @@
 <?php
-    if (!isset($upcoming_tags)) {
-        $upcoming_tags = $this->requestAction(['controller' => 'events', 'action' => 'upcoming_tags']);
-    }
+    use Cake\Utility\Inflector;
+
+if (!isset($upcomingTags)) {
+    $upcomingTags = $this->requestAction(['controller' => 'events', 'action' => 'upcomingTags']);
+}
 ?>
 <div class="tag_cloud">
-    <?php if (empty($upcoming_tags)): ?>
+    <?php if (empty($upcomingTags)): ?>
         <p class="empty">
             No tags found.
         </p>
     <?php else: ?>
         <?php
             $min_count = $max_count = null;
-            foreach ($upcoming_tags as $tag_info) {
+            foreach ($upcomingTags as $tag_info) {
                 if ($min_count == null) {
                     $min_count = $max_count = $tag_info['count'];
                 }
@@ -28,11 +30,8 @@
             $font_size_range = $max_font_size - $min_font_size;
         ?>
         <ul class="list-group">
-            <?php foreach ($upcoming_tags as $tag_info): ?>
+            <?php foreach ($upcomingTags as $tag_info): ?>
                 <?php
-                    // Alternate sizing method
-                    //$interval = ($max_font_size - $min_font_size) / 10;
-                    //$font_size = min($max_font_size, round($min_font_size + ($tag_info['count'] * $interval)));
                     $font_size = $min_font_size + round($font_size_range * (($tag_info['count'] - $min_count) / $count_range));
                     echo $this->Html->link(
                         '<li class="list-group-item" style="font-size: '.$font_size.'%;">'.$tag_info['name'].'</li>',
