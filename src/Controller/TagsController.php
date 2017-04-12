@@ -72,7 +72,8 @@ class TagsController extends AppController
             if ($hasChildren) {
                 $tagName = $node->Tags['name'];
                 $rearrangedNodes['branches'][$tagName] = $node;
-            } else {
+            }
+            if (!$hasChildren) {
                 $rearrangedNodes['leaves'][$tagId] = $node;
             }
         }
@@ -179,12 +180,10 @@ class TagsController extends AppController
              }
          }
 
-         $class = 'success';
-         $message = '';
-         $inputted_names = explode("\n", trim(strtolower($this->request->data['name'])));
+         $inputtedNames = explode("\n", trim(strtolower($this->request->data['name'])));
          $level = 0;
          $parents = [$rootParentId];
-         foreach ($inputted_names as $line_num => $name) {
+         foreach ($inputtedNames as $lineNum => $name) {
              $level = $this->Tags->getIndentLevel($name);
 
              // Discard any now-irrelevant data
@@ -196,7 +195,7 @@ class TagsController extends AppController
              } elseif (isset($parents[$level])) {
                  $parentId = $parents[$level];
              } else {
-                 $this->Flash->error(__('Error with nested tag structure. Looks like there\'s an extra indent in line '.$line_num.': "'.$name.'".'));
+                 $this->Flash->error(__('Error with nested tag structure. Looks like there\'s an extra indent in line '.$lineNum.': "'.$name.'".'));
                  continue;
              }
 

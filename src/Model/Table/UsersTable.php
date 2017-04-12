@@ -173,7 +173,7 @@ class UsersTable extends Table
             ->helpers(['Html', 'Text'])
             ->viewVars(compact(
                 'email',
-                'reset_url'
+                'resetUrl'
             ));
         return $resetEmail->send();
     }

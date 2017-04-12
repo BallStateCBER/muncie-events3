@@ -44,7 +44,8 @@ class User extends Entity
         $result = $query->first();
         if (!$result) {
             return false;
-        } else {
+        }
+        if ($result) {
             return $result['id'];
         }
     }
@@ -75,7 +76,7 @@ class User extends Entity
             ->viewVars(compact(
                 'titleForLayout',
                 'emailAddress',
-                'reset_url'
+                'resetUrl'
             ));
         return $email->send();
     }
