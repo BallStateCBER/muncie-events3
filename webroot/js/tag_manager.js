@@ -94,7 +94,7 @@ var TagManager = {
         var selected_tags = $('#selected_tags a');
         for (var i = 0; i < selected_tags.length; i++) {
             var tag = $(selected_tags[i]);
-            if (tag.data('tagId') == tag_id) {
+            if (tag.data('tag_id') == tag_id) {
                 return true;
             }
         }
@@ -166,11 +166,11 @@ var TagManager = {
         // Add tag
         var list_item = $('<a href="#" title="Click to remove" data-tag-id="'+tag_id+'" id="selected_tag_'+tag_id+'"></a>');
         list_item.append(tag_name);
-        list_item.append('<input type="hidden" name="data[Tag][]" value="'+tag_id+'" />');
+        list_item.append('<input type="hidden" name="data[Tags][]" value="'+tag_id+'" />');
         list_item.click(function (event) {
             event.preventDefault();
             var unselect_link = $(this);
-            var tag_id = unselect_link.data('tagId');
+            var tag_id = unselect_link.data('tag_id');
             TagManager.unselectTag(tag_id, unselect_link);
         });
         list_item.hide();

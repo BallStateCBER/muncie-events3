@@ -51,7 +51,7 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <!--div id="datepicker" class="multi"></div-->
+                        <div id="datepicker" class="multi"></div>
                         <?php
                         if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
@@ -67,9 +67,10 @@
                             ");
                         }
                             echo $this->Js->writeBuffer();
-                            echo $this->Form->control('date', [
-                                'id' => 'datepicker',
-                                'label' => false
+                            echo $this->Form->input('date', [
+                                //'type' => 'hidden',
+                                'id' => 'datepicker'
+                                //'id' => 'datepicker_hidden'
                             ]);
                         ?>
                         <div class="text-muted">
