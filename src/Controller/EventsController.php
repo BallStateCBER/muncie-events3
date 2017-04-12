@@ -14,7 +14,7 @@ use Cake\Routing\Router;
 class EventsController extends AppController
 {
     public $name = 'Events';
-    //public $helpers = ['Tag'];
+    public $helpers = ['Tag'];
     //public $components = [
     //    'Calendar',
     //    'Search.Prg',
@@ -62,23 +62,41 @@ class EventsController extends AppController
         ]);
     }
 
-    private function __formatFormData()
+    private function __isAdminOrAuthor($eventId)
     {
-        $event = $this->request->getData('Event');
-
-        if (!$event['time_start']) {
-            // Fixes bug where midnight is saved as null
-            $event['time_start'] = '00:00:00';
+        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+            return true;
         }
-        /* $event['description'] = strip_tags(
-            $event['description'],
-            $event['allowed_tags']
-        ); */
-
-        // Fixes bug that prevents CakePHP from deleting all tags
-        if (null !== $this->request->getData('Tag')) {
-            $this->set('Tag', []);
+        $userId = $this->request->session()->read('Auth.User.id');
+        if ($userId) {
+            $this->Events->id = $eventId;
+            $authorId = $this->Events->field('user_id');
+            if ($authorId) {
+                return $userId == $authorId;
+            }
         }
+        return false;
+    }
+
+    public function isAuthorized()
+    {
+        // Admins can access everything
+        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+            return true;
+
+        // Some actions are admin-only
+        } elseif (in_array($this->action, $this->adminActions)) {
+            return false;
+        }
+
+        // Otherwise, only authors can modify authored content
+        $authorOnly = ['edit', 'delete'];
+        if (in_array($this->action, $authorOnly)) {
+            return $this->__isAdminOrAuthor($this->request->params['named']['id']);
+        }
+
+        // Logged-in users can access everything else
+        return true;
     }
 
     private function __processCustomTags()
@@ -127,8 +145,8 @@ class EventsController extends AppController
                 $this->Events->Tags->create();
                 $this->Events->Tags->set([
                     'name' => $ct,
-                    'user_id' => $this->Auth->user('id'),
-                    'parent_id' => $this->Events->Tags->getUnlistedGroupId(), // 'Unlisted' group
+                    'userId' => $this->request->session()->read('Auth.User.id'),
+                    'parentId' => $this->Events->Tags->getUnlistedGroupId(), // 'Unlisted' group
                     'listed' => 0,
                     'selectable' => 1
                 ]);
@@ -142,7 +160,7 @@ class EventsController extends AppController
 
     private function __prepareEventForm()
     {
-        $userId = $this->Auth->user('id');
+        $userId = $this->request->session()->read('Auth.User.id');
         $this->set([
             'previous_locations' => $this->Events->getPastLocations(),
             'userId' => $userId
@@ -181,8 +199,7 @@ class EventsController extends AppController
             if (!$event['time_end']) {
                 $event['time_end'] = '00:00:00';
             }
-        }
-        if (!$event['has_end_time']) {
+        } else {
             $event['time_end'] = null;
         }
 
@@ -219,12 +236,31 @@ class EventsController extends AppController
         }
     }
 
+    private function __formatFormData()
+    {
+        $event = $this->request->getData('Event');
+
+        if (!$event['time_start']) {
+            // Fixes bug where midnight is saved as null
+            $event['time_start'] = '00:00:00';
+        }
+        /* $event['description'] = strip_tags(
+            $event['description'],
+            $event['allowed_tags']
+        ); */
+
+        // Fixes bug that prevents CakePHP from deleting all tags
+        if (null !== $this->request->getData('Tags')) {
+            $this->set('Tags', []);
+        }
+    }
+
     public function datepickerPopulatedDates()
     {
         $results = $this->Events->getPopulatedDates();
         $dates = [];
         foreach ($results as $result) {
-            list($year, $month, $day) = explode('-', $result->Event['date']);
+            list($year, $month, $day) = explode('-', $result->Events->date);
             $dates["$month-$year"][] = $day;
         }
         $this->set(compact('dates'));
@@ -237,6 +273,10 @@ class EventsController extends AppController
             'contain' => ['Images', 'Tags']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
+            // make sure the end time stays null if it needs to
+            if (!$this->request->data['has_end_time']) {
+                $this->request->data['time_end'] = null;
+            }
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
@@ -283,16 +323,20 @@ class EventsController extends AppController
                 if (!$this->Events->exists($id)) {
                     $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
                 }
-                /*if ($seriesId = $this->EventSeries->id) {
+                /*if ($seriesId = $this->Events->EventSeries->id) {
                     $seriesToApprove[$seriesId] = true;
-                }*/
+                } */
+                // approve & publish it
+                $event['approved_by'] = $this->request->session()->read('Auth.User.id');
+                $event['published'] = 1;
+
                 $url = Router::url([
                     'controller' => 'events',
                     'action' => 'view',
                     'id' => $id
                 ]);
                 if ($this->Events->save($event)) {
-                    $this->Flash->success("Event #$id approved.<a href=\"$url\">Go to event page</a>");
+                    $this->Flash->success(__("Event #$id approved <a href=$url>Go to event page</a>"), ['escape' => false]);
                 }
             }
             foreach ($seriesToApprove as $seriesId => $flag) {
@@ -321,13 +365,13 @@ class EventsController extends AppController
             if (empty($event['EventsSeries'])) {
                 continue;
             }
-            $event_id = $event['Events']['id'];
+            $eventId = $event['Events']['id'];
             $seriesId = $event['EventSeries']['id'];
             $modified = $event['Events']['modified'];
             if (isset($identicalSeriesMembers[$seriesId][$modified])) {
                 unset($unapproved[$k]);
             }
-            $identicalSeriesMembers[$seriesId][$modified][] = $event_id;
+            $identicalSeriesMembers[$seriesId][$modified][] = $eventId;
         }
 
         $this->set([
@@ -494,20 +538,35 @@ class EventsController extends AppController
         $event = $this->Events->newEntity();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            //$dates = explode(',', $this->request->Event['date']);
-            //$is_series = count($dates) > 1;
+            $dates = explode(',', $this->request->event['date']);
+            $tags = $this->request->event['tags'];
+            $is_series = count($dates) > 1;
+            $userId = $this->request->session()->read('Auth.User.id');
 
             // process data
             $this->__formatFormData();
             $this->__processCustomTags();
 
             // Correct date format
-            /*foreach ($dates as &$date) {
+            foreach ($dates as &$date) {
                 $date = trim($date);
                 $timestamp = strtotime($date);
                 $date = date('Y-m-d', $timestamp);
             }
-            unset($date);*/
+            unset($date);
+
+            // auto-approve if posted by an admin
+            $this->request->data['user_id'] = $userId;
+            if ($this->request->session()->read('Auth.User.role') == 'admin') {
+                $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
+            }
+
+            // kill the end time if it hasn't been set
+            if (!$this->has['end_time']) {
+                $this->request->data['time_end'] = null;
+            }
+
+            $this->request->data['Tags'] = $tags;
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
