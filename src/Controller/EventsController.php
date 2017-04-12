@@ -21,34 +21,6 @@ class EventsController extends AppController
     //    'RequestHandler'
     //];
     public $uses = ['Event'];
-    public $paginate = [
-        'order' => [
-            'Event.date' => 'asc',
-            'Event.time_start' => 'asc'
-        ],
-        'limit' => 15,
-        'contain' => [
-            'User' => [
-                'fields' => ['id', 'name']
-            ],
-            'Category' => [
-                'fields' => ['id', 'name', 'slug']
-            ],
-            'EventSeries' => [
-                'fields' => ['id', 'title']
-            ],
-            'EventsImage' => [
-                'fields' => ['id', 'caption'],
-                'Image' => [
-                    'fields' => ['id', 'filename']
-                ]
-            ],
-            'Tag' => [
-                'fields' => ['id', 'name']
-            ]
-        ]
-    ];
-    public $autoPublish = false; // false puts new additions into moderation queue
     public $eventFilter = [];
     public $adminActions = ['publish', 'approve', 'moderate'];
 
@@ -99,65 +71,6 @@ class EventsController extends AppController
         return true;
     }
 
-    private function __processCustomTags()
-    {
-        if (!isset($this->request->data['Events.custom_tags'])) {
-            return;
-        }
-        $customTags = trim($this->request->data['Events.custom_tags']);
-        if (empty($customTags)) {
-            return;
-        }
-        $customTags = explode(',', $customTags);
-
-        // Force lowercase and remove leading/trailing whitespace
-        foreach ($customTags as &$ct) {
-            $ct = strtolower(trim($ct));
-        }
-        unset($ct);
-
-        // Remove duplicates
-        $customTags = array_unique($customTags);
-
-        $this->Events->Tags = $this->Events->Tags;
-        foreach ($customTags as $ct) {
-            // Skip over blank tags
-            if ($ct == '') {
-                continue;
-            }
-
-            // Get ID of existing tag, if it exists
-            $tagId = $this->Events->Tags->field('id', ['name' => $ct]);
-
-            // Include this tag if it exists and is selectable
-            if ($tagId) {
-                $selectable = $this->Events->Tags->field('selectable', ['id' => $tagId]);
-                if ($selectable) {
-                    $this->request->data['Tag'][] = $tagId;
-                }
-                if (!$selectable) {
-                    continue;
-                }
-
-            // Create the custom tag if it does not already exist
-            }
-            if (!$tagId) {
-                $this->Events->Tags->create();
-                $this->Events->Tags->set([
-                    'name' => $ct,
-                    'userId' => $this->request->session()->read('Auth.User.id'),
-                    'parentId' => $this->Events->Tags->getUnlistedGroupId(), // 'Unlisted' group
-                    'listed' => 0,
-                    'selectable' => 1
-                ]);
-                $this->Events->Tags->save();
-                $this->request->data['Tag'][] = $this->Events->Tags->id;
-            }
-        }
-        $this->request->data['Tag'] = array_unique($this->request->data['Tag']);
-        $this->request->data['Events.custom_tags'] = '';
-    }
-
     private function __prepareEventForm()
     {
         $userId = $this->request->session()->read('Auth.User.id');
@@ -195,12 +108,21 @@ class EventsController extends AppController
         ]);
 
         // Fixes bug where midnight is saved as null
+        if (!$event['time_start']) {
+            $event['time_start'] = '00:00:00';
+        }
         if ($event['has_end_time']) {
             if (!$event['time_end']) {
                 $event['time_end'] = '00:00:00';
             }
-        } else {
+        }
+        if (!$event['has_end_time']) {
             $event['time_end'] = null;
+        }
+
+        // Fixes bug that prevents CakePHP from deleting all tags
+        if (null !== $this->request->getData('Tags')) {
+            $this->set('Tags', []);
         }
 
         // Prepare date picker
@@ -209,7 +131,8 @@ class EventsController extends AppController
             if (empty($event['date'])) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
-            } else {
+            }
+            if ($event['date']) {
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
@@ -233,25 +156,6 @@ class EventsController extends AppController
         } elseif ($this->action == 'edit') {
             list($year, $month, $day) = explode('-', $event['date']);
             $event['date'] = "$month/$day/$year";
-        }
-    }
-
-    private function __formatFormData()
-    {
-        $event = $this->request->getData('Event');
-
-        if (!$event['time_start']) {
-            // Fixes bug where midnight is saved as null
-            $event['time_start'] = '00:00:00';
-        }
-        /* $event['description'] = strip_tags(
-            $event['description'],
-            $event['allowed_tags']
-        ); */
-
-        // Fixes bug that prevents CakePHP from deleting all tags
-        if (null !== $this->request->getData('Tags')) {
-            $this->set('Tags', []);
         }
     }
 
@@ -312,7 +216,6 @@ class EventsController extends AppController
     public function approve($id = null)
     {
         $ids = $this->request->pass;
-        $adminId = $this->request->session()->read('Auth.User.id');
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
         } else {
@@ -339,10 +242,6 @@ class EventsController extends AppController
                     $this->Flash->success(__("Event #$id approved <a href=$url>Go to event page</a>"), ['escape' => false]);
                 }
             }
-            foreach ($seriesToApprove as $seriesId => $flag) {
-                $this->Events->EventSeries->id = $seriesId;
-                $this->Events->EventSeries->save('published', true);
-            }
         }
         $this->redirect($this->referer());
     }
@@ -360,7 +259,7 @@ class EventsController extends AppController
 
         // Find sets of identical events (belonging to the same series
         // and with the same modified date) and remove all but the first
-        $identicalSeriesMembers = [];
+        $identicalSeries = [];
         foreach ($unapproved as $k => $event) {
             if (empty($event['EventsSeries'])) {
                 continue;
@@ -368,16 +267,16 @@ class EventsController extends AppController
             $eventId = $event['Events']['id'];
             $seriesId = $event['EventSeries']['id'];
             $modified = $event['Events']['modified'];
-            if (isset($identicalSeriesMembers[$seriesId][$modified])) {
+            if (isset($identicalSeries[$seriesId][$modified])) {
                 unset($unapproved[$k]);
             }
-            $identicalSeriesMembers[$seriesId][$modified][] = $eventId;
+            $identicalSeries[$seriesId][$modified][] = $eventId;
         }
 
         $this->set([
             'titleForLayout' => 'Review Unapproved Content',
             'unapproved' => $unapproved,
-            'identicalSeriesMembers' => $identicalSeriesMembers
+            'identicalSeries' => $identicalSeries
         ]);
     }
 
@@ -540,20 +439,23 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $dates = explode(',', $this->request->event['date']);
             $tags = $this->request->event['tags'];
-            $is_series = count($dates) > 1;
+            $isSeries = count($dates) > 1;
             $userId = $this->request->session()->read('Auth.User.id');
 
-            // process data
-            $this->__formatFormData();
-            $this->__processCustomTags();
-
             // Correct date format
-            foreach ($dates as &$date) {
-                $date = trim($date);
-                $timestamp = strtotime($date);
-                $date = date('Y-m-d', $timestamp);
+            if ($isSeries) {
+                foreach ($dates as &$date) {
+                    $date = trim($date);
+                    $timestamp = strtotime($date);
+                    $date = date('Y-m-d', $timestamp);
+                }
+                unset($date);
             }
-            unset($date);
+            if (!$isSeries) {
+                $dates = trim($dates);
+                $timestamp = strtotime($dates);
+                $dates = date('Y-m-d', $timestamp);
+            }
 
             // auto-approve if posted by an admin
             $this->request->data['user_id'] = $userId;

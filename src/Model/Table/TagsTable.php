@@ -207,7 +207,7 @@ class TagsTable extends Table
 
     public function getIdFromSlug($slug)
     {
-        $split_slug = explode('_', $slug);
-        return (int) $split_slug[0];
+        $splitSlug = explode('_', $slug);
+        return (int) $splitSlug[0];
     }
 }
