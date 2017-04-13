@@ -40,6 +40,22 @@ class ImagesTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Josegonzalez/Upload.Upload', [
+            'images' => [
+                'fields' => [
+                    //obviously this is just serving as a reminder to myself
+                    //to deal w this and properly configure my new fancy file uploader plugin--edf
+                    'id' => '',
+                    'filename' => '',
+                    'is_flyer' => '',
+                    'user_id' => '',
+                    'created' => '',
+                    'modified' => '',
+                    '__joinData' => ''
+                ],
+                'path' => WWW_ROOT.DS.'img'.DS.'events'.DS.'full'
+            ]
+        ]);
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',

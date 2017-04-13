@@ -15,7 +15,7 @@
     <?php echo $this->element('rules'); ?>
 </div>
 
-<?= $this->Form->create($event) ?>
+<?= $this->Form->create($event, ['type' => 'file']) ?>
     <table class="event_form">
         <tbody>
             <tr>

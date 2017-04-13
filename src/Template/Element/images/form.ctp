@@ -22,7 +22,10 @@ $helpers = ['Html'];
 
         <div id="image_upload_container" class="collapse" role="tabpanel" aria-labelledby="image_upload_heading">
           <div class="card-block">
-            <a href="#" id="image_upload_button">Select image</a>
+              <?= $this->Form->input('images', [
+                  'type' => 'file',
+                  'label' => false
+              ]); ?>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
 
 /**
  * Images Controller
@@ -10,7 +11,6 @@ use App\Controller\AppController;
  */
 class ImagesController extends AppController
 {
-
     /**
      * Index method
      *

@@ -111,13 +111,10 @@ class EventsController extends AppController
         if (!$event['time_start']) {
             $event['time_start'] = '00:00:00';
         }
-        if ($event['has_end_time']) {
+        if ($this->has['end_time']) {
             if (!$event['time_end']) {
                 $event['time_end'] = '00:00:00';
             }
-        }
-        if (!$event['has_end_time']) {
-            $event['time_end'] = null;
         }
 
         // Fixes bug that prevents CakePHP from deleting all tags
@@ -131,8 +128,7 @@ class EventsController extends AppController
             if (empty($event['date'])) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
-            }
-            if ($event['date']) {
+            } else {
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
@@ -439,23 +435,16 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $dates = explode(',', $this->request->event['date']);
             $tags = $this->request->event['tags'];
-            $isSeries = count($dates) > 1;
+            #$isSeries = count($dates) > 1;
             $userId = $this->request->session()->read('Auth.User.id');
 
             // Correct date format
-            if ($isSeries) {
-                foreach ($dates as &$date) {
-                    $date = trim($date);
-                    $timestamp = strtotime($date);
-                    $date = date('Y-m-d', $timestamp);
-                }
-                unset($date);
+            foreach ($dates as &$date) {
+                $date = trim($date);
+                $timestamp = strtotime($date);
+                $date = date('Y-m-d', $timestamp);
             }
-            if (!$isSeries) {
-                $dates = trim($dates);
-                $timestamp = strtotime($dates);
-                $dates = date('Y-m-d', $timestamp);
-            }
+            unset($date);
 
             // auto-approve if posted by an admin
             $this->request->data['user_id'] = $userId;
