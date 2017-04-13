@@ -125,6 +125,7 @@ class UsersController extends AppController
 
         #$mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
         $this->set(compact('user'));
+        $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
 
@@ -147,7 +148,7 @@ class UsersController extends AppController
 
         $this->set('reset_url', $resetUrl);
 
-        if ($this->request->is(['post'])) {
+        if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
                 $data = $user->toArray();
@@ -157,6 +158,7 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
         }
+        $this->set(compact('user'));
     }
 
     public function forgotPassword()

@@ -42,7 +42,7 @@ class ImagesTable extends Table
         $this->addBehavior('Timestamp');
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'images' => [
-                'fields' => [
+                /*'fields' => [
                     //obviously this is just serving as a reminder to myself
                     //to deal w this and properly configure my new fancy file uploader plugin--edf
                     'id' => '',
@@ -52,8 +52,8 @@ class ImagesTable extends Table
                     'created' => '',
                     'modified' => '',
                     '__joinData' => ''
-                ],
-                'path' => WWW_ROOT.DS.'img'.DS.'events'.DS.'full'
+                ], */
+                'path' => 'webroot'.DS.'img'.DS.'events'.DS.'full'
             ]
         ]);
 
