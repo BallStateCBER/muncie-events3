@@ -51,18 +51,13 @@ class UsersTable extends Table
         $this->addBehavior('Timestamp');
 
         $userId = Router::getRequest()->session()->read('Auth.User.id');
-        $email = Router::getRequest()->getData('User.email');
-        if ((!$userId) && ($email)) {
-            $userId = $this->getIdFromEmail($email);
-        }
 
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'photo' => [
                 'nameCallback' => function (array $data, array $settings) {
                     $ext = pathinfo($data['name'], PATHINFO_EXTENSION);
-                    $oldFilename = pathinfo($data['name'], PATHINFO_EXTENSION);
                     $salt = Configure::read('profile_salt');
-                    $newFilename = md5($oldFilename.$salt);
+                    $newFilename = md5($data['name'].$salt);
                     return $newFilename.'.'.$ext;
                 },
                 'path' => 'webroot'.DS.'img'.DS.'users'.DS.$userId

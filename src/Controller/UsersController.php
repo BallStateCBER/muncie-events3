@@ -109,7 +109,6 @@ class UsersController extends AppController
     public function register()
     {
         $this->set('titleForLayout', 'Register');
-        ;
 
         $user = $this->Users->newEntity();
 
@@ -117,15 +116,15 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower(trim($user['email']));
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(__('Success! You have been registered.'));
+                $this->Auth->setUser($user);
+                return $this->redirect(['action' => 'account']);
             }
             $this->Flash->error(__('Sorry, we could not register you. Please try again.'));
         }
 
         #$mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
         $this->set(compact('user'));
-        $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
 
@@ -153,10 +152,11 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
-                $this->Flash->success(__('The user has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(__('Your account has been updated.'));
+                $this->redirect('/');
+            } else {
+                $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
             }
-            $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
         }
         $this->set(compact('user'));
     }
