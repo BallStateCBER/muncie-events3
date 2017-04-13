@@ -20,18 +20,6 @@
     <div class="col-lg-6">
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
-    <div class="col-lg-6">
-        <?= $this->Form->input('photo', [
-            'type' => 'file'
-            ])
-        ?>
-    </div>
-    <div class="col-lg-9">
-        <?= $this->Form->control('bio', [
-            'class' => 'form-control',
-            'type' => 'textarea'
-        ]); ?>
-    </div>
     <?= $this->Form->button(__('Submit')) ?>
     <?= $this->Form->end() ?>
 </div>

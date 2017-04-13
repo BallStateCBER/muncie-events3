@@ -22,7 +22,14 @@ $helpers = ['Html'];
 
         <div id="image_upload_container" class="collapse" role="tabpanel" aria-labelledby="image_upload_heading">
           <div class="card-block">
-              <?= $this->Form->input('images', [
+              <?php
+              if ($this->request->params['controller']=='Users') {
+                  $photoVar = 'photo';
+              }
+                if ($this->request->params['controller']=='Events') {
+                    $photoVar = 'images';
+                }
+              echo $this->Form->input($photoVar, [
                   'type' => 'file',
                   'label' => false
               ]); ?>

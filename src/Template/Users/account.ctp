@@ -8,18 +8,20 @@
     </h1>
 
     <div class="col-lg-6 userPhoto">
-        <?= $this->Html->image('users'.DS.$user->id.DS.$user->photo, [
+    <?php if ($user->photo) {
+        echo $this->Html->image('users'.DS.$user->id.DS.$user->photo, [
             'alt' => $user->name
-            ])
-        ?>
+        ]);
+    } ?>
     </div>
     <div class="col-lg-6">
         <?= $this->Form->control('name', ['class' => 'form-control', 'default' => $this->request->session()->read('Auth.User.name')]); ?>
     </div>
     <div class="col-lg-6">
-        <?= $this->Form->input('photo', [
+        <!--?= # $this->element('images/form'); ?-->
+        <?= $this->Form->control('photo', [
             'type' => 'file'
-            ])
+        ])
         ?>
     </div>
     <div class="col-lg-6">
