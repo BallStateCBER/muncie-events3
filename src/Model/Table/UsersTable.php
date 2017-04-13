@@ -3,6 +3,7 @@ namespace App\Model\Table;
 
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
+use Cake\Network\Session;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -49,6 +50,25 @@ class UsersTable extends Table
 
         $this->addBehavior('Timestamp');
 
+        $userId = Router::getRequest()->session()->read('Auth.User.id');
+        $email = Router::getRequest()->getData('User.email');
+        if ((!$userId) && ($email)) {
+            $userId = $this->getIdFromEmail($email);
+        }
+
+        $this->addBehavior('Josegonzalez/Upload.Upload', [
+            'photo' => [
+                'nameCallback' => function (array $data, array $settings) {
+                    $ext = pathinfo($data['name'], PATHINFO_EXTENSION);
+                    $oldFilename = pathinfo($data['name'], PATHINFO_EXTENSION);
+                    $salt = Configure::read('profile_salt');
+                    $newFilename = md5($oldFilename.$salt);
+                    return $newFilename.'.'.$ext;
+                },
+                'path' => 'webroot'.DS.'img'.DS.'users'.DS.$userId
+            ]
+        ]);
+
         $this->belongsTo('MailingList', [
             'foreignKey' => 'mailing_list_id'
         ]);
@@ -83,10 +103,6 @@ class UsersTable extends Table
             ->notEmpty('name');
 
         $validator
-            ->requirePresence('bio', 'create')
-            ->notEmpty('bio');
-
-        $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->notEmpty('email');
@@ -102,6 +118,9 @@ class UsersTable extends Table
                     'message' => 'Your passwords do not match'
                 ]
             ]);
+
+        $validator
+            ->allowEmpty('photo', 'update');
 
         return $validator;
     }
@@ -150,7 +169,6 @@ class UsersTable extends Table
 
     public function getResetPasswordHash($userId, $email)
     {
-        $
         $salt = Configure::read('password_reset_salt');
         $month = date('my');
         return md5($userId.$email.$salt.$month);

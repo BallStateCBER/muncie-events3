@@ -158,6 +158,7 @@ Security::salt(Configure::consume('Security.salt'));
 
 Configure::write('Captcha.secret', env('RECAPTCHA_KEY'));
 Configure::write('password_reset_salt', env('RESET_SALT'));
+Configure::write('profile_picture_salt', env('PROFILE_SALT'));
 
 /*
  * The default crypto extension in 3.0 is OpenSSL.
