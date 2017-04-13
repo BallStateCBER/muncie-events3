@@ -226,3 +226,4 @@ if (Configure::read('debug')) {
 }
 Plugin::load('CakeJs');
 Plugin::load('AkkaCKEditor', ['bootstrap' => false, 'routes' => true]);
+Plugin::load('Josegonzalez/Upload');
