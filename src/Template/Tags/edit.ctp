@@ -1,16 +1,15 @@
-<div class="tags form large-9 medium-8 columns content">
-    <?= $this->Form->create($tag) ?>
-    <fieldset>
-        <legend><?= __('Edit Tag') ?></legend>
-        <?php
-            echo $this->Form->control('parent_id', ['options' => $parentTags, 'empty' => true]);
-            echo $this->Form->control('name');
-            echo $this->Form->control('listed');
-            echo $this->Form->control('selectable');
-            echo $this->Form->control('user_id', ['options' => $users, 'empty' => true]);
-            echo $this->Form->control('events._ids', ['options' => $events]);
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<?php echo $this->Form->create('Tag');?>
+<?php echo $this->Form->input('id', array('type' => 'hidden')); ?>
+<?php echo $this->Form->input('name'); ?>
+<?php echo $this->Form->input('listed', array(
+	'after' => '<div class="footnote">Unlisted tags are excluded from listed/suggested tags in event adding/editing forms.</div>'
+)); ?>
+<?php echo $this->Form->input('selectable', array(
+	'after' => '<div class="footnote">Unselectable tags (generally group names, like "music genres") are excluded from auto-complete suggestions and are not selectable in event forms.</div>'
+)); ?>
+<?php echo $this->Form->input('Tag.parent_id', array(
+	'type' => 'text',
+	'label' => 'Parent ID',
+	'after' => '<div class="footnote">Leave blank to place at the root level.</div>'
+)); ?>
+<?php echo $this->Form->end('Update tag #'.$this->request->data['Tag']['id']); ?>
