@@ -18,4 +18,3 @@ exclude_paths:
  - "tests/"
  - "tmp/"
  - "vendor/"
- - "webroot/img"
