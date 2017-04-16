@@ -190,4 +190,12 @@ class UsersTable extends Table
             ));
         return $resetEmail->send();
     }
+
+    public function getImagesList($id)
+    {
+        return $this->Images->find('all', [
+            'conditions' => ['user_id' => $id],
+            'order' => 'created DESC'
+        ]);
+    }
 }

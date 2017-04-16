@@ -18,11 +18,10 @@
         <?= $this->Form->control('name', ['class' => 'form-control', 'default' => $this->request->session()->read('Auth.User.name')]); ?>
     </div>
     <div class="col-lg-6">
-        <!--?= # $this->element('images/form'); ?-->
-        <?= $this->Form->control('photo', [
-            'type' => 'file'
-        ])
-        ?>
+        <?= $this->Form->input('photo', [
+            'type' => 'file',
+            'label' => false
+        ]); ?>
     </div>
     <div class="col-lg-6">
         <?= $this->Form->control('email', ['class' => 'form-control', 'default' => $this->request->session()->read('Auth.User.email')]); ?>
