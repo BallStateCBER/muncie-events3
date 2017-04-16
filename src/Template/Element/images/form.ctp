@@ -22,17 +22,7 @@ $helpers = ['Html'];
 
         <div id="image_upload_container" class="collapse" role="tabpanel" aria-labelledby="image_upload_heading">
           <div class="card-block">
-              <?php
-              if ($this->request->params['controller']=='Users') {
-                  $photoVar = 'photo';
-              }
-                if ($this->request->params['controller']=='Events') {
-                    $photoVar = 'images';
-                }
-              echo $this->Form->input($photoVar, [
-                  'type' => 'file',
-                  'label' => false
-              ]); ?>
+	        <a href="#" id="image_upload_button">Select image</a>
           </div>
         </div>
       </div>
@@ -51,7 +41,7 @@ $helpers = ['Html'];
                             <?php foreach ($this->request->data['EventsImage'] as $selected_image): ?>
                                 <?php
                                     $id = $selected_image['image_id'];
-                                    $filename = $this->request->data['Image'][$id]['filename'];
+                                    $filename = $selected_image['filename'];
                                 ?>
                                 <li id="selectedimage_<?php echo $id; ?>" data-image-id="<?php echo $id; ?>">
                                     <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
@@ -60,7 +50,7 @@ $helpers = ['Html'];
                                         'filename' => $filename,
                                         'class' => 'selected_image'
                                     ]); ?>
-                                    <?php echo $this->Form->input("Image.$id", [
+                                    <?php echo $this->Form->input("Images.$id", [
                                         'label' => 'Caption:',
                                         'div' => false,
                                         'type' => 'text',

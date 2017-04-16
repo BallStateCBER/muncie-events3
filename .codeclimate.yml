@@ -1,6 +1,13 @@
 engines:
   phpmd:
     enabled: true
+    checks:
+        # wish I could just turn this one off
+        # for key pairs. but 75% of the time, it
+        # just returns that a local var in a foreach
+        # key pair was unused. darn.
+        UnusedLocalVariable:
+            enabled: false
 ratings:
   paths:
   - "**.php"
@@ -11,3 +18,4 @@ exclude_paths:
  - "tests/"
  - "tmp/"
  - "vendor/"
+ - "webroot/img"

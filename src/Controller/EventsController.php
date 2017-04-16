@@ -111,10 +111,8 @@ class EventsController extends AppController
         if (!$event['time_start']) {
             $event['time_start'] = '00:00:00';
         }
-        if ($this->has['end_time']) {
-            if (!$event['time_end']) {
-                $event['time_end'] = '00:00:00';
-            }
+        if ($this->has['end_time'] && !$event['time_end']) {
+            $event['time_end'] = '00:00:00';
         }
 
         // Fixes bug that prevents CakePHP from deleting all tags
@@ -122,6 +120,61 @@ class EventsController extends AppController
             $this->set('Tags', []);
         }
 
+        // Collect more image data:
+        // - Populate $this->request->data['Image'] with data about selected images
+        // - Provide $images to the view with a list of all of this User's images
+        $this->loadModel('Images');
+        $images = $this->Events->Users->getImagesList($userId);
+        if (! empty($this->request->data['EventsImage'])) {
+            foreach ($this->request->data['EventsImage'] as $association) {
+                $image_id = $association['image_id'];
+                if (isset($images[$image_id])) {
+                    $this->request->data['Images'][$image_id] = [
+                        'id' => $image_id,
+                        'filename' => $images[$image_id]
+                    ];
+                } else {
+                    /* If an image is in $this->request->data['EventsImage']
+                     * but not in the current user's images, then the user is
+                     * probably an admin editing someone else's event. */
+                    $this->Images->id = $image_id;
+                    $filename = $this->Images->field('filename');
+                    if ($filename) {
+                        $images[$image_id] = $filename;
+                        $this->request->data['Images'][$image_id] = [
+                            'id' => $image_id,
+                            'filename' => $images[$image_id]
+                        ];
+                    }
+                }
+            }
+        }
+        $this->set('images', $images);
+    }
+
+    private function __processImageData()
+    {
+        if (! isset($this->request->data['Images'])) {
+            $this->request->data['Images'] = [];
+        }
+        if (empty($this->request->data['Images'])) {
+            return;
+        }
+        $weight = 1;
+        $this->request->data['EventsImages'] = [];
+        foreach ($this->request->data['Images'] as $image_id => $caption) {
+            $this->request->data['EventsImages'][] = [
+                'image_id' => $image_id,
+                'weight' => $weight,
+                'caption' => $caption
+            ];
+            $weight++;
+        }
+        unset($this->request->data['Image']);
+    }
+
+    private function __prepareDatePicker()
+    {
         // Prepare date picker
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
             $dateFieldValues = [];
@@ -193,6 +246,7 @@ class EventsController extends AppController
         $this->set('_serialize', ['event']);
 
         $this->__prepareEventForm();
+        $this->__prepareDatePicker();
         $this->set('titleForLayout', 'Edit Event');
     }
 
@@ -214,29 +268,29 @@ class EventsController extends AppController
         $ids = $this->request->pass;
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
-        } else {
-            $seriesToApprove = [];
-            foreach ($ids as $id) {
-                $this->Events->id = $id;
-                $event = $this->Events->get($id);
-                if (!$this->Events->exists($id)) {
-                    $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
-                }
+            $this->redirect('/');
+        }
+        #$seriesToApprove = [];
+        foreach ($ids as $id) {
+            $this->Events->id = $id;
+            $event = $this->Events->get($id);
+            if (!$this->Events->exists($id)) {
+                $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
+            }
                 /*if ($seriesId = $this->Events->EventSeries->id) {
                     $seriesToApprove[$seriesId] = true;
                 } */
                 // approve & publish it
                 $event['approved_by'] = $this->request->session()->read('Auth.User.id');
-                $event['published'] = 1;
+            $event['published'] = 1;
 
-                $url = Router::url([
+            $url = Router::url([
                     'controller' => 'events',
                     'action' => 'view',
                     'id' => $id
                 ]);
-                if ($this->Events->save($event)) {
-                    $this->Flash->success(__("Event #$id approved <a href=$url>Go to event page</a>"), ['escape' => false]);
-                }
+            if ($this->Events->save($event)) {
+                $this->Flash->success(__("Event #$id approved <a href=$url>Go to event page</a>"), ['escape' => false]);
             }
         }
         $this->redirect($this->referer());
@@ -470,10 +524,11 @@ class EventsController extends AppController
         $categories = $this->Events->Categories->find('list');
         $images = $this->Events->Images->find('list');
         $tags = $this->Events->Tags->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries', 'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
         $this->set('_serialize', ['event']);
 
         $this->__prepareEventForm();
+        $this->__prepareDatePicker();
         $this->set('titleForLayout', 'Submit an Event');
     }
 }

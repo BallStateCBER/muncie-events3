@@ -173,7 +173,8 @@ class TagsController extends AppController
          $parentName = $this->request->data['parent_name'];
          if ($parentName == '') {
              $rootParentId = null;
-         } else {
+         }
+         if ($parentName != '') {
              $rootParentId = $this->Tags->getIdFromName($parentName);
              if (!$rootParentId) {
                  $this->Flash->error(__('Parent tag '.$parentName.' not found.'));
