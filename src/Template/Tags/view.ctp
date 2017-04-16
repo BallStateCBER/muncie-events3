@@ -1,135 +1,73 @@
-<div class="tags view large-9 medium-8 columns content">
-    <h3><?= h($tag->name) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th scope="row"><?= __('Parent Tag') ?></th>
-            <td><?= $tag->has('parent_tag') ? $this->Html->link($tag->parent_tag->name, ['controller' => 'Tags', 'action' => 'view', $tag->parent_tag->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Name') ?></th>
-            <td><?= h($tag->name) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User') ?></th>
-            <td><?= $tag->has('user') ? $this->Html->link($tag->user->name, ['controller' => 'Users', 'action' => 'view', $tag->user->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($tag->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Lft') ?></th>
-            <td><?= $this->Number->format($tag->lft) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Rght') ?></th>
-            <td><?= $this->Number->format($tag->rght) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($tag->created) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Listed') ?></th>
-            <td><?= $tag->listed ? __('Yes') : __('No'); ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Selectable') ?></th>
-            <td><?= $tag->selectable ? __('Yes') : __('No'); ?></td>
-        </tr>
-    </table>
-    <div class="related">
-        <h4><?= __('Related Tags') ?></h4>
-        <?php if (!empty($tag->child_tags)): ?>
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Parent Id') ?></th>
-                <th scope="col"><?= __('Lft') ?></th>
-                <th scope="col"><?= __('Rght') ?></th>
-                <th scope="col"><?= __('Name') ?></th>
-                <th scope="col"><?= __('Listed') ?></th>
-                <th scope="col"><?= __('Selectable') ?></th>
-                <th scope="col"><?= __('User Id') ?></th>
-                <th scope="col"><?= __('Created') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-            <?php foreach ($tag->child_tags as $childTags): ?>
-            <tr>
-                <td><?= h($childTags->id) ?></td>
-                <td><?= h($childTags->parent_id) ?></td>
-                <td><?= h($childTags->lft) ?></td>
-                <td><?= h($childTags->rght) ?></td>
-                <td><?= h($childTags->name) ?></td>
-                <td><?= h($childTags->listed) ?></td>
-                <td><?= h($childTags->selectable) ?></td>
-                <td><?= h($childTags->user_id) ?></td>
-                <td><?= h($childTags->created) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'Tags', 'action' => 'view', $childTags->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'Tags', 'action' => 'edit', $childTags->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'Tags', 'action' => 'delete', $childTags->id], ['confirm' => __('Are you sure you want to delete # {0}?', $childTags->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
-    </div>
-    <div class="related">
-        <h4><?= __('Related Events') ?></h4>
-        <?php if (!empty($tag->events)): ?>
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Title') ?></th>
-                <th scope="col"><?= __('Description') ?></th>
-                <th scope="col"><?= __('Location') ?></th>
-                <th scope="col"><?= __('Location Details') ?></th>
-                <th scope="col"><?= __('Address') ?></th>
-                <th scope="col"><?= __('User Id') ?></th>
-                <th scope="col"><?= __('Category Id') ?></th>
-                <th scope="col"><?= __('Series Id') ?></th>
-                <th scope="col"><?= __('Date') ?></th>
-                <th scope="col"><?= __('Time Start') ?></th>
-                <th scope="col"><?= __('Time End') ?></th>
-                <th scope="col"><?= __('Age Restriction') ?></th>
-                <th scope="col"><?= __('Cost') ?></th>
-                <th scope="col"><?= __('Source') ?></th>
-                <th scope="col"><?= __('Published') ?></th>
-                <th scope="col"><?= __('Approved By') ?></th>
-                <th scope="col"><?= __('Created') ?></th>
-                <th scope="col"><?= __('Modified') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-            <?php foreach ($tag->events as $events): ?>
-            <tr>
-                <td><?= h($events->id) ?></td>
-                <td><?= h($events->title) ?></td>
-                <td><?= h($events->description) ?></td>
-                <td><?= h($events->location) ?></td>
-                <td><?= h($events->location_details) ?></td>
-                <td><?= h($events->address) ?></td>
-                <td><?= h($events->user_id) ?></td>
-                <td><?= h($events->category_id) ?></td>
-                <td><?= h($events->series_id) ?></td>
-                <td><?= h($events->date) ?></td>
-                <td><?= h($events->time_start) ?></td>
-                <td><?= h($events->time_end) ?></td>
-                <td><?= h($events->age_restriction) ?></td>
-                <td><?= h($events->cost) ?></td>
-                <td><?= h($events->source) ?></td>
-                <td><?= h($events->published) ?></td>
-                <td><?= h($events->approved_by) ?></td>
-                <td><?= h($events->created) ?></td>
-                <td><?= h($events->modified) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'Events', 'action' => 'view', $events->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'Events', 'action' => 'edit', $events->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'Events', 'action' => 'delete', $events->id], ['confirm' => __('Are you sure you want to delete # {0}?', $events->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
-    </div>
+<h1 class="page_title">
+	<?php echo $title_for_layout; ?>
+</h1>
+
+<div id="page_intro">
+	<p>
+		Here's everything that's been given the "<?php echo $tag_name; ?>" tag.
+		<?php echo $this->Html->link(
+			'View all tags',
+			array('controller' => 'tags', 'action' => 'index')
+		); ?>.
+	</p>
 </div>
+
+<?php 
+$first_model = true; 
+?> 
+<?php if (empty($tagged_content)): ?>
+	Huh. That's weird. It doesn't seem like there's anything on the site right now that has been given that tag. How did you get here?
+<?php else: ?>
+	<div class="tagged_items_by_model">
+		<?php if (count($tagged_content) > 1): ?>
+			<strong>
+				Select a category:
+			</strong>
+			<ul class="models" id="viewtag_categoryoptions">
+				<?php foreach ($tagged_content as $model => $count): ?>
+					<li id="viewtag_category_<?php echo $model ?>" <?php if ($first_model): ?>style="background-image: url('/img/icons/fugue/icons/magnifier-medium.png')"<?php endif; ?>>
+						<?php 
+						$model_plural = Inflector::pluralize($model);
+						$model_plural_lower = strtolower($model_plural);
+						echo $this->Js->link(
+							'<span class="count">'.$count.'</span> '.$model_plural, 
+							array(
+								'controller' => strtolower($model_plural_lower), 
+								'action' => 'with_tag', 
+								$tag_id
+							),
+							array(
+								'update' => 'tagged_content_links_loading',
+								'before' => "$('viewtag_category_$model').style.backgroundImage = \"url('/img/loading_small.gif')\";",
+								'complete' => "$$('#viewtag_categoryoptions > li').each(function(li){li.style.backgroundImage = 'none';}); $('viewtag_category_$model').style.backgroundImage = \"url('/img/icons/fugue/icons/magnifier-medium.png')\";",
+								'escape' => false
+							)
+						); 
+						?>
+					</li>
+					<?php if ($first_model): $first_model = false; ?>
+						<script type="text/javascript">
+							new Ajax.Updater('tagged_content_links_loading','/<?php echo $model_plural_lower ?>/with_tag/<?php echo $tag_id; ?>', {
+								asynchronous:true, 
+								evalScripts:true, 
+								requestHeaders:['X-Update', 'tagged_content_links_loading']
+							}); 
+						</script>
+					<?php endif; ?>
+				<?php endforeach; ?>			
+			</ul>
+		<?php else: ?>
+			<?php foreach ($tagged_content as $model => $count): ?>
+				<script type="text/javascript">
+					new Ajax.Updater('tagged_content_links_loading','/<?php echo Inflector::pluralize(strtolower($model)); ?>/with_tag/<?php echo $tag_id; ?>', {
+						asynchronous:true, 
+						evalScripts:true, 
+						requestHeaders:['X-Update', 'tagged_content_links_loading']
+					}); 
+				</script>
+			<?php break; endforeach; ?>
+		<?php endif; ?>
+		<div id="tagged_content_links_loading"></div>
+	</div>
+	<br class="clear;" />
+<?php endif; ?>
