@@ -45,6 +45,7 @@ class TagsTable extends Table
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Tree');
+        $this->addBehavior('Search.Search');
 
         $this->belongsTo('ParentTags', [
             'className' => 'Tags',
@@ -62,6 +63,24 @@ class TagsTable extends Table
             'targetForeignKey' => 'event_id',
             'joinTable' => 'events_tags'
         ]);
+        $this->searchManager()
+            // Here we will alias the 'q' query param to search the `Articles.title`
+            // field and the `Articles.content` field, using a LIKE match, with `%`
+            // both before and after.
+            ->add('filter', 'Search.Like', [
+                'before' => true,
+                'after' => true,
+                'fieldMode' => 'OR',
+                'comparison' => 'LIKE',
+                'wildcardAny' => '*',
+                'wildcardOne' => '?',
+                'field' => ['name']
+            ])
+            ->add('foo', 'Search.Callback', [
+                'callback' => function ($query, $args, $filter) {
+                    // Modify $query as required
+                }
+            ]);
     }
 
     /**

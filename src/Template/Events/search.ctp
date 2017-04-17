@@ -1,6 +1,7 @@
 <?php
 
 use Cake\Routing\Router;
+use Cake\Utility\Inflector;
 
 ?>
 
@@ -49,8 +50,8 @@ use Cake\Routing\Router;
                 $url = Router::url([
                             'controller' => 'events',
                             'action' => 'search',
-                            'filter' => $this->request->data['Events']['filter'],
-                            'direction' => ($direction == 'upcoming') ? 'future' : 'past'
+                            'filter' => $filter['filter'],
+                            'direction' => ($direction == 'future') ? 'past' : 'future'
                         ], true);
                 $link_label = $eventsFoundInOtherDirection.' matching ';
                 $link_label .= (($direction == 'future') ? 'past ' : 'upcoming ');
@@ -73,16 +74,16 @@ use Cake\Routing\Router;
                 Want to narrow your search?
                 Some <?php echo $directionAdjective; ?> events have <?php echo __n('this', 'these', count($tags)); ?> matching <?php echo __n('tag', 'tags', count($tags)); ?>:
                 <?php
-                    $tag_links = [];
+                    $tagLinks = [];
                     foreach ($tags as $tag) {
-                        $tag_links[] = $this->Html->link($tag['Tag']['name'], [
+                        $tagLinks[] = $this->Html->link($tag->name, [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag['Tag']['id'].'_'.Inflector::slug($tag['Tag']['name']),
+                            'slug' => $tag->id.'_'.Inflector::slug($tag->name),
                             'direction' => $direction
                         ]);
                     }
-                    echo $this->Text->toList($tag_links);
+                    echo $this->Text->toList($tagLinks);
                 ?>
             </p>
         </div>
@@ -96,7 +97,7 @@ use Cake\Routing\Router;
 
     <?php elseif (!isset($this->request->data['Event']['filter']) && empty($this->request->data['Event']['filter'])): ?>
         <p class="alert alert-info">
-            Please enter a word or phrase in the search box to search for events.
+            No events have been found.
         </p>
     <?php endif; ?>
 </div>

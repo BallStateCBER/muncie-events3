@@ -67,7 +67,6 @@ class EventsTable extends Table
         ]);
 
         $this->searchManager()
-            ->value('author_id')
             // Here we will alias the 'q' query param to search the `Articles.title`
             // field and the `Articles.content` field, using a LIKE match, with `%`
             // both before and after.

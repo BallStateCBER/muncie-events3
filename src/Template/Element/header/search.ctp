@@ -1,4 +1,11 @@
 <div class="dropdown">
+    <?php
+        $formTemplate = [
+            'inputContainer' => '{{content}}',
+            'submitContainer' => '{{content}}'
+        ];
+        $this->Form->setTemplates($formTemplate);
+    ?>
     <?= $this->Form->create('Event', [
             'id' => 'EventSearchForm',
             'url' => array_merge(['action' => 'search'], $this->request->params['pass'])
@@ -6,12 +13,13 @@
     ?>
     <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" />
     <?= $this->Form->input('filter', [
-            'div' => false,
             'label' => false,
             'class' => 'form-control'
         ]);
     ?>
-    <?= $this->Form->submit(__('Search'), ['div' => false, 'class' => 'btn btn-secondary btn-sm']); ?>
+    <?= $this->Form->submit(__('Search'), [
+        'class' => 'btn btn-secondary btn-sm'
+    ]); ?>
     <button id="search_options_toggler" class="dropdown-toggle btn btn-secondary btn-sm" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Advanced</button>
     <div id="search_options" class="dropdown-menu" aria-labelledby="search_options_toggler">
         <div>
@@ -23,8 +31,7 @@
                     ],
                     'default' => 'future',
                     'type' => 'radio',
-                    'legend' => false,
-                    'separator' => '<br />'
+                    'legend' => false
                 ]);
             ?>
         </div>
