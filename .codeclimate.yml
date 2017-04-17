@@ -18,4 +18,4 @@ exclude_paths:
  - "tests/"
  - "tmp/"
  - "vendor/"
- - "webroot/jQueryFileUpload/"
+ - "webroot/"
