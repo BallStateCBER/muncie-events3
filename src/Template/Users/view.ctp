@@ -38,8 +38,10 @@
         <?php else: ?>
         <?php endif; ?>
         <?php if ($user->photo): ?>
-            <div class="col-lg-6">
-                <?= $this->Html->image('users/'.$user->id."/".$user->photo, ['alt' => $user->name]); ?>
+            <div class="col-lg-6 userPhoto">
+                <?= $this->Html->image('users/'.$user->id."/".$user->photo, [
+                    'alt' => $user->name
+                ]); ?>
             </div>
         <?php else: ?>
         <?php endif; ?>

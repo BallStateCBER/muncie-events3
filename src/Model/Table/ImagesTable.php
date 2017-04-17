@@ -52,8 +52,6 @@ class ImagesTable extends Table
         ]);
     }
 
-    private $__errors = [];
-    private $__fileToDelete = null;
     public $errors = [];
     public $maxHeight = 2000;
     public $maxWidth = 2000;
@@ -84,7 +82,7 @@ class ImagesTable extends Table
             ->boolean('is_flyer')
             ->requirePresence('is_flyer', 'create')
             ->notEmpty('is_flyer');
-            
+
         return $validator;
     }
 
@@ -128,13 +126,14 @@ class ImagesTable extends Table
 
         // Make longest side fit inside the maximum dimensions
         if ($width >= $height) {
-            $new_width = $this->maxWidth;
-            $new_height = 0;
-        } else {
-            $new_width = 0;
-            $new_height = $this->maxHeight;
+            $newWidth = $this->maxWidth;
+            $newHeight = 0;
         }
-        if ($this->resize($filepath, $filepath, $new_width, $new_height, $this->fullQuality)) {
+        if ($width < $height) {
+            $newWidth = 0;
+            $newHeight = $this->maxHeight;
+        }
+        if ($this->resize($filepath, $filepath, $newWidth, $newHeight, $this->fullQuality)) {
             return true;
         }
         return false;
@@ -144,27 +143,28 @@ class ImagesTable extends Table
      * Accepts the filename of an uploaded image and creates a tiny thumbnail
      * @param string $filename
      */
-    public function createTiny($source_file)
+    public function createTiny($sourceFile)
     {
         $path = WWW_ROOT.'img'.DS.'events'.DS.'tiny'.DS;
-        $filename = substr($source_file, strrpos($source_file, DS) + 1);
-        $destination_file = $path.$filename;
-        list($width, $height, $type, $attr) = getimagesize($source_file);
+        $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
+        $destinationFile = $path.$filename;
+        list($width, $height, $type, $attr) = getimagesize($sourceFile);
 
         // Make the shortest side fit inside the maximum dimensions
         if ($width >= $height) {
-            $new_width = 0; // Automatically determined in ResizeBehavior::resize()
-            $new_height = $this->tinyHeight;
-        } else {
-            $new_width = $this->tinyWidth;
-            $new_height = 0;
+            $newWidth = 0; // Automatically determined in ResizeBehavior::resize()
+            $newHeight = $this->tinyHeight;
         }
-        if (! $this->resize($source_file, $destination_file, $new_width, $new_height, $this->tinyQuality)) {
+        if ($width < $height) {
+            $newWidth = $this->tinyWidth;
+            $newHeight = 0;
+        }
+        if (!$this->resize($sourceFile, $destinationFile, $newWidth, $newHeight, $this->tinyQuality)) {
             return false;
         }
 
         // Crop down the remaining longer size
-        if (! $this->cropCenter($destination_file, $destination_file, $this->tinyWidth, $this->tinyHeight, $this->tinyQuality)) {
+        if (!$this->cropCenter($destinationFile, $destinationFile, $this->tinyWidth, $this->tinyHeight, $this->tinyQuality)) {
             return false;
         }
 
@@ -175,67 +175,67 @@ class ImagesTable extends Table
      * Accepts the filename of an uploaded image and creates a smaller (limited width) version
      * @param string $filename
      */
-    public function createSmall($source_file)
+    public function createSmall($sourceFile)
     {
         $path = WWW_ROOT.'img'.DS.'events'.DS.'small'.DS;
-        $filename = substr($source_file, strrpos($source_file, DS) + 1);
-        $destination_file = $path.$filename;
+        $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
+        $destinationFile = $path.$filename;
 
-        $new_width = $this->smallWidth;
-        $new_height = 0; // Automatically determined in ResizeBehavior::resize()
+        $newWidth = $this->smallWidth;
+        $newHeight = 0; // Automatically determined in ResizeBehavior::resize()
 
-        if (! $this->resize($source_file, $destination_file, $new_width, $new_height, $this->smallQuality)) {
+        if (!$this->resize($sourceFile, $destinationFile, $newWidth, $newHeight, $this->smallQuality)) {
             return false;
         }
 
         return true;
     }
 
-    public function resize($source_file, $new_filename, $new_width = 0, $new_height = 0, $quality = 100)
+    public function resize($sourceFile, $newFilename, $newWidth = 0, $newHeight = 0, $quality = 100)
     {
-        if (! ($image_params = getimagesize($source_file))) {
-            $this->errors[] = 'Original file is not a valid image: ' . $source_file;
+        if (!($imageParams = getimagesize($sourceFile))) {
+            $this->errors[] = 'Original file is not a valid image: ' . $sourceFile;
             return false;
         }
 
-        $width = $image_params[0];
-        $height = $image_params[1];
+        $width = $imageParams[0];
+        $height = $imageParams[1];
 
-        if (0 != $new_width && 0 == $new_height) {
-            $scaled_width = $new_width;
-            $scaled_height = floor($new_width * $height / $width);
-        } elseif (0 != $new_height && 0 == $new_width) {
-            $scaled_height = $new_height;
-            $scaled_width = floor($new_height * $width / $height);
-        } elseif (0 == $new_width && 0 == $new_height) { //assume we want to create a new image the same exact size
-            $scaled_width = $width;
-            $scaled_height = $height;
+        if (0 != $newWidth && 0 == $newHeight) {
+            $scaledWidth = $newWidth;
+            $scaledHeight = floor($newWidth * $height / $width);
+        } elseif (0 != $newHeight && 0 == $newWidth) {
+            $scaledHeight = $newHeight;
+            $scaledWidth = floor($newHeight * $width / $height);
+        } elseif (0 == $newWidth && 0 == $newHeight) { //assume we want to create a new image the same exact size
+            $scaledWidth = $width;
+            $scaledHeight = $height;
         } else { //assume we want to create an image with these exact dimensions, most likely resulting in distortion
-            $scaled_width = $new_width;
-            $scaled_height = $new_height;
+            $scaledWidth = $newWidth;
+            $scaledHeight = $newHeight;
         }
 
         //create image
-        $ext = $image_params[2];
+        $ext = $imageParams[2];
         switch ($ext) {
             case IMAGETYPE_GIF:
-                $return = $this->__resizeGif($source_file, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality);
+                $return = $this->__resizeGif($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             case IMAGETYPE_JPEG:
-                $return = $this->__resizeJpeg($source_file, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality);
+                $return = $this->__resizeJpeg($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             case IMAGETYPE_PNG:
-                $return = $this->__resizePng($source_file, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality);
+                $return = $this->__resizePng($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             default:
-                $return = $this->__resizeJpeg($source_file, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality);
+                $return = $this->__resizeJpeg($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
         }
 
         return $return;
     }
 
-    private function __resizeGif($original, $new_filename, $scaled_width, $scaled_height, $width, $height)
+    private function __resizeGif($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height)
     {
         $error = false;
 
@@ -244,17 +244,17 @@ class ImagesTable extends Table
             $error = true;
         }
 
-        if (!($tmp = imagecreatetruecolor($scaled_width, $scaled_height))) {
+        if (!($tmp = imagecreatetruecolor($scaledWidth, $scaledHeight))) {
             $this->errors[] = 'There was an error creating your true color image (gif).';
             $error = true;
         }
 
-        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaled_width, $scaled_height, $width, $height)) {
+        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaledWidth, $scaledHeight, $width, $height)) {
             $this->errors[] = 'There was an error creating your true color image (gif).';
             $error = true;
         }
 
-        if (!($new_image = imagegif($tmp, $new_filename))) {
+        if (!($newImage = imagegif($tmp, $newFilename))) {
             $this->errors[] = 'There was an error writing your image to file (gif).';
             $error = true;
         }
@@ -262,13 +262,13 @@ class ImagesTable extends Table
         imagedestroy($tmp);
 
         if (false == $error) {
-            return $new_image;
+            return $newImage;
         }
 
         return false;
     }
 
-    private function __resizeJpeg($original, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality)
+    private function __resizeJpeg($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
 
@@ -277,17 +277,17 @@ class ImagesTable extends Table
             $error = true;
         }
 
-        if (!($tmp = imagecreatetruecolor($scaled_width, $scaled_height))) {
+        if (!($tmp = imagecreatetruecolor($scaledWidth, $scaledHeight))) {
             $this->errors[] = 'There was an error creating your true color image (jpg).';
             $error = true;
         }
 
-        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaled_width, $scaled_height, $width, $height)) {
+        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaledWidth, $scaledHeight, $width, $height)) {
             $this->errors[] = 'There was an error creating your true color image (jpg).';
             $error = true;
         }
 
-        if (!($new_image = imagejpeg($tmp, $new_filename, $quality))) {
+        if (!($newImage = imagejpeg($tmp, $newFilename, $quality))) {
             $this->errors[] = 'There was an error writing your image to file (jpg).';
             $error = true;
         }
@@ -295,13 +295,13 @@ class ImagesTable extends Table
         imagedestroy($tmp);
 
         if (false == $error) {
-            return $new_image;
+            return $newImage;
         }
 
         return false;
     }
 
-    private function __resizePng($original, $new_filename, $scaled_width, $scaled_height, $width, $height, $quality)
+    private function __resizePng($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
         /**
@@ -313,7 +313,8 @@ class ImagesTable extends Table
         $quality = ceil($quality / 10); // 0 - 100 value
         if (0 == $quality) {
             $quality = 9;
-        } else {
+        }
+        if (0 != $quality) {
             $quality = ($quality - 1) % 9;
         }
 
@@ -322,21 +323,21 @@ class ImagesTable extends Table
             $error = true;
         }
 
-        if (!($tmp = imagecreatetruecolor($scaled_width, $scaled_height))) {
+        if (!($tmp = imagecreatetruecolor($scaledWidth, $scaledHeight))) {
             $this->errors[] = 'There was an error creating your true color image (png).';
             $error = true;
         }
 
         imagealphablending($tmp, false);
 
-        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaled_width, $scaled_height, $width, $height)) {
+        if (!imagecopyresampled($tmp, $src, 0, 0, 0, 0, $scaledWidth, $scaledHeight, $width, $height)) {
             $this->errors[] = 'There was an error creating your true color image (png).';
             $error = true;
         }
 
         imagesavealpha($tmp, true);
 
-        if (!($new_image = imagepng($tmp, $new_filename, $quality))) {
+        if (!($newImage = imagepng($tmp, $newFilename, $quality))) {
             $this->errors[] = 'There was an error writing your image to file (png).';
             $error = true;
         }
@@ -344,37 +345,37 @@ class ImagesTable extends Table
         imagedestroy($tmp);
 
         if (false == $error) {
-            return $new_image;
+            return $newImage;
         }
 
         return false;
     }
 
     /**
-     * Saves to $destination_file the cropped center of $source_file.
-     * @param string $source_file
-     * @param string $destination_file
+     * Saves to $destinationFile the cropped center of $sourceFile.
+     * @param string $sourceFile
+     * @param string $destinationFile
      * @param int $w
      * @param int $h
      * @param int $quality
      * @return boolean
      */
-    public function cropCenter($source_file, $destination_file, $w, $h, $quality)
+    public function cropCenter($sourceFile, $destinationFile, $w, $h, $quality)
     {
-        list($original_width, $original_height, $type, $attr) = getimagesize($source_file);
-        $center_x = round($original_width / 2);
-        $center_y = round($original_height / 2);
-        $half_new_width = round($w / 2);
-        $half_new_height = round($h / 2);
-        $x = max(0, ($center_x - $half_new_width));
-        $y = max(0, ($center_y - $half_new_height));
-        return $this->crop($source_file, $destination_file, $w, $h, $x, $y, $quality);
+        list($originalWidth, $originalHeight, $type, $attr) = getimagesize($sourceFile);
+        $centerX = round($originalWidth / 2);
+        $centerY = round($originalHeight / 2);
+        $halfNewWidth = round($w / 2);
+        $halfNewHeight = round($h / 2);
+        $x = max(0, ($centerX - $halfNewWidth));
+        $y = max(0, ($centerY - $halfNewHeight));
+        return $this->crop($sourceFile, $destinationFile, $w, $h, $x, $y, $quality);
     }
 
     /**
-     * Crops $source_file and saves the result to $destination_file.
-     * @param string $source_file
-     * @param string $destination_file
+     * Crops $sourceFile and saves the result to $destinationFile.
+     * @param string $sourceFile
+     * @param string $destinationFile
      * @param int $w
      * @param int $h
      * @param int $x
@@ -382,67 +383,67 @@ class ImagesTable extends Table
      * @param int $quality
      * @return boolean
      */
-    public function crop($source_file, $destination_file, $w, $h, $x, $y, $quality)
+    public function crop($sourceFile, $destinationFile, $w, $h, $x, $y, $quality)
     {
-        if (! $source_file || ! file_exists($source_file)) {
+        if (!$sourceFile || !file_exists($sourceFile)) {
             $this->errors[] = 'No image found to crop';
             return false;
         }
 
         // Use for overriding destination image type
-        $destination_img_type = false;
+        $destinationImgType = false;
 
         // get image details
-        $image_info = getimagesize($source_file);
+        $imageInfo = getimagesize($sourceFile);
 
         // set source as resource
-        switch ($image_info['mime']) {
+        switch ($imageInfo['mime']) {
             case 'image/gif':
-                $src = imagecreatefromgif($source_file);
-                $img_type = ($destination_img_type) ? $destination_img_type : 'gif';
+                $src = imagecreatefromgif($sourceFile);
+                $imgType = ($destinationImgType) ? $destinationImgType : 'gif';
                 break;
             case 'image/jpeg':
-                $src = imagecreatefromjpeg($source_file) ;
-                $img_type = ($destination_img_type) ? $destination_img_type : 'jpg';
+                $src = imagecreatefromjpeg($sourceFile) ;
+                $imgType = ($destinationImgType) ? $destinationImgType : 'jpg';
                 break;
             case 'image/png':
-                $src = imagecreatefrompng($source_file);
+                $src = imagecreatefrompng($sourceFile);
                 imagealphablending($src, true); // setting alpha blending on (we want to blend this image with the canvas)
                 imagesavealpha($src, true); // save alphablending setting
-                $img_type = ($destination_img_type) ? $destination_img_type : 'png';
+                $imgType = ($destinationImgType) ? $destinationImgType : 'png';
                 break;
             default:
-                $this->errors[] = 'Cannot crop an image of type '.$image_info['mime'];
+                $this->errors[] = 'Cannot crop an image of type '.$imageInfo['mime'];
                 return false;
         }
 
         // Source dimensions
-        $s_width = imagesx($src);
-        $s_height = imagesy($src);
+        $sWidth = imagesx($src);
+        $sHeight = imagesy($src);
 
         // Create target image
         $canvas = imagecreatetruecolor($w, $h);
 
         // Copy image
-        imagecopyresampled($canvas, $src, 0, 0, $x, $y, $s_width, $s_height, $s_width, $s_height);
+        imagecopyresampled($canvas, $src, 0, 0, $x, $y, $sWidth, $sHeight, $sWidth, $sHeight);
 
         // output image
-        switch ($img_type) {
+        switch ($imgType) {
             case 'gif':
-                $newImg = imagejpeg($canvas, $destination_file, $quality);
+                $newImg = imagejpeg($canvas, $destinationFile, $quality);
                 break;
             case 'png':
                 $quality = (intval($quality) > 90) ? 9 : round(intval($quality)/10);
-                $newImg = imagepng($canvas, $destination_file, $quality);
+                $newImg = imagepng($canvas, $destinationFile, $quality);
                 break;
             default:
-                $newImg = imagejpeg($canvas, $destination_file, $quality);
+                $newImg = imagejpeg($canvas, $destinationFile, $quality);
         }
 
         // clean up
         imagedestroy($src);
         imagedestroy($canvas);
 
-        return file_exists($destination_file);
+        return file_exists($destinationFile);
     }
 }

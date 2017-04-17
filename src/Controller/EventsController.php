@@ -155,7 +155,7 @@ class EventsController extends AppController
         $this->set('images', $images);
     }
 
-    private function __processImageData()
+/*    private function __processImageData()
     {
         if (! isset($this->request->data['Images'])) {
             $this->request->data['Images'] = [];
@@ -174,7 +174,7 @@ class EventsController extends AppController
             $weight++;
         }
         unset($this->request->data['Image']);
-    }
+    } */
 
     private function __prepareDatePicker()
     {
@@ -184,7 +184,8 @@ class EventsController extends AppController
             if (empty($event['date'])) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
-            } else {
+            }
+            if ($event['date']) {
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
