@@ -1,10 +1,13 @@
 <?php
-    if (!empty($flashMessage)) {
-        foreach ($flashMessage as $msg) {
-            $msg['message'] = str_replace('"', '\"', $msg['message']);
-            $this->Js->buffer('insertFlashMessage("'.str_replace("\n", "\\n", $msg['message']).'", "'.$msg['class'].'");');
-        }
+
+use Cake\Core\Configure;
+
+if (!empty($flashMessage)) {
+    foreach ($flashMessage as $msg) {
+        $msg['message'] = str_replace('"', '\"', $msg['message']);
+        $this->Js->buffer('insertFlashMessage("'.str_replace("\n", "\\n", $msg['message']).'", "'.$msg['class'].'");');
     }
+}
 
     // Only invoke Google Analytics if an ID is found and the page is not being served from the development server
     $google_analytics_id = Configure::read('google_analytics_id');

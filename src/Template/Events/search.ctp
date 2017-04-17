@@ -1,3 +1,9 @@
+<?php
+
+use Cake\Routing\Router;
+
+?>
+
 <h1 class="page_title">
     Search Results
 </h1>
@@ -12,8 +18,8 @@
                     $total = 'No';
                 }
                 echo "$total ";
-                if ($direction_adjective != 'all') {
-                    echo "$direction_adjective ";
+                if ($directionAdjective != 'all') {
+                    echo "$directionAdjective ";
                 }
                 echo __n('event', 'events', $total)." containing \"$term\"";
                 // Test
@@ -24,11 +30,11 @@
     <br />
 
     <?php
-        if ($direction_adjective == 'all') {
+        if ($directionAdjective == 'all') {
             $breakdown = [];
             foreach ($counts as $dir => $count) {
                 if ($count > 0) {
-                    $url = array_merge($this->request->params['named'], [
+                    $url = array_merge($this->request->params['filter'], [
                         'direction' => ($dir == 'upcoming') ? 'future' : 'past'
                     ]);
                     $link_label = "$count $dir ".__n('event', 'events', $count);
@@ -39,13 +45,16 @@
             }
             echo ucfirst(implode(', ', $breakdown)).'.';
         } else {
-            if ($events_found_in_other_direction) {
-                $url = array_merge($this->request->params['named'], [
-                    'direction' => ($direction == 'future') ? 'past' : 'future'
-                ]);
-                $link_label = $events_found_in_other_direction.' matching ';
+            if ($eventsFoundInOtherDirection) {
+                $url = Router::url([
+                            'controller' => 'events',
+                            'action' => 'search',
+                            'filter' => $this->request->data['Events']['filter'],
+                            'direction' => ($direction == 'upcoming') ? 'future' : 'past'
+                        ], true);
+                $link_label = $eventsFoundInOtherDirection.' matching ';
                 $link_label .= (($direction == 'future') ? 'past ' : 'upcoming ');
-                $link_label .= __n('event ', 'events ', $events_found_in_other_direction);
+                $link_label .= __n('event ', 'events ', $eventsFoundInOtherDirection);
                 $link_label .= 'found';
                 echo $this->Html->link($link_label, $url);
             } else {
@@ -62,7 +71,7 @@
         <div id="search_result_tags" class="alert alert-info">
             <p>
                 Want to narrow your search?
-                Some <?php echo $direction_adjective; ?> events have <?php echo __n('this', 'these', count($tags)); ?> matching <?php echo __n('tag', 'tags', count($tags)); ?>:
+                Some <?php echo $directionAdjective; ?> events have <?php echo __n('this', 'these', count($tags)); ?> matching <?php echo __n('tag', 'tags', count($tags)); ?>:
                 <?php
                     $tag_links = [];
                     foreach ($tags as $tag) {
@@ -81,16 +90,7 @@
 
     <?php if (isset($events) && !empty($events)): ?>
 
-        <?php echo $this->element('pagination'); ?>
-
-        <?php foreach ($events as $date => $days_events): ?>
-            <?php echo $this->Calendar->dayHeaders($date); ?>
-            <?php echo $this->element('events/accordion_day', [
-                'events' => $days_events
-            ]); ?>
-        <?php endforeach; ?>
-
-        <?php echo $this->element('pagination'); ?>
+        <?= $this->element('events/accordion_wrapper') ?>
 
         <?php $this->Js->buffer("setupEventAccordion();"); ?>
 

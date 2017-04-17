@@ -11,7 +11,7 @@
             Select All
         </label>
         <br />
-        <?php foreach ($categories as $category): ?>
+        <?php foreach ($headerVars['categories'] as $category): ?>
             <input type="checkbox" value="<?php echo $category['Category']['id']; ?>" id="WidgetCat<?php echo $category['Category']['id']; ?>" class="category" checked="checked" />
             <label for="WidgetCat<?php echo $category['Category']['id']; ?>">
                 <?php echo $this->Icon->category($category['Category']['name']); ?>

@@ -99,7 +99,14 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // widgets
-    $routes->connect('/widgets', ['controller' => 'Widgets', 'action' => 'index']);
+    Router::connect(
+        "/widgets/customize/feed",
+        ['controller' => 'widgets', 'action' => 'customize_feed']
+    );
+    Router::connect(
+        "/widgets/customize/month",
+        ['controller' => 'widgets', 'action' => 'customize_month']
+    );
 
     /**
      * Connect catchall routes for all controllers.

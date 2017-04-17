@@ -36,6 +36,35 @@ class WidgetsController extends AppController
         }
     }
 
+    public function getOptions()
+    {
+        if (empty($_SERVER['QUERY_STRING'])) {
+            return [];
+        }
+        $options = [];
+        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        foreach ($parameters as $option) {
+            $optionSplit = explode('=', $option);
+            if (count($optionSplit) != 2) {
+                continue;
+            }
+            list($key, $val) = $optionSplit;
+
+            // Clean up option and skip blanks
+            $val = trim($val);
+            if ($val == '') {
+                continue;
+            }
+            $key = str_replace('amp;', '', $key);
+
+            // Retain only valid options that differ from their default values
+            if ($this->isValidNondefaultOption($key, $val)) {
+                $options[$key] = $val;
+            }
+        }
+        return $options;
+    }
+
     public function getDefaults()
     {
         if (!$this->widgetType) {
@@ -111,35 +140,6 @@ class WidgetsController extends AppController
             }
         }
         return http_build_query($iframeParams, '', '&amp;');
-    }
-
-    public function getOptions()
-    {
-        if (empty($_SERVER['QUERY_STRING'])) {
-            return [];
-        }
-        $options = [];
-        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
-        foreach ($parameters as $option) {
-            $optionSplit = explode('=', $option);
-            if (count($optionSplit) != 2) {
-                continue;
-            }
-            list($key, $val) = $optionSplit;
-
-            // Clean up option and skip blanks
-            $val = trim($val);
-            if ($val == '') {
-                continue;
-            }
-            $key = str_replace('amp;', '', $key);
-
-            // Retain only valid options that differ from their default values
-            if ($this->isValidNondefaultOption($key, $val)) {
-                $options[$key] = $val;
-            }
-        }
-        return $options;
     }
 
     public function getIframeStyles($options)
@@ -306,11 +306,11 @@ class WidgetsController extends AppController
         $this->Widget->processCustomStyles($options);
 
         // Events displayed per day
-        if (isset($options['events_displayed_per_day'])) {
-            $eventsPerDay = $options['events_displayed_per_day'];
+        if (isset($options['eventsPerDay'])) {
+            $eventsPerDay = $options['eventsPerDay'];
         } else {
             $defaults = $this->Widget->getDefaults();
-            $eventsPerDay = $defaults['event_options']['events_displayed_per_day'];
+            $eventsPerDay = $defaults['event_options']['eventsPerDay'];
         }
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
