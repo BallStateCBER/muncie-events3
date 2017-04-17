@@ -15,7 +15,8 @@
         "facebook/graph-sdk": "^5.4",
         "ivanamat/cakephp3-captcha": "^1.0",
         "akkaweb/cakephp-ckeditor": "dev-master",
-        "josegonzalez/cakephp-upload": "^3.6"
+        "josegonzalez/cakephp-upload": "^3.6",
+        "friendsofcake/search": "^2.4"
     },
     "require-dev": {
         "psy/psysh": "@stable",

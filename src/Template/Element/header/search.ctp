@@ -1,7 +1,7 @@
 <div class="dropdown">
     <?= $this->Form->create('Event', [
             'id' => 'EventSearchForm',
-            # 'url' => array_merge(['action' => 'search'], $this->request->params['pass'])
+            'url' => array_merge(['action' => 'search'], $this->request->params['pass'])
         ]);
     ?>
     <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" />

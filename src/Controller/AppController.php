@@ -41,6 +41,7 @@ class AppController extends Controller
     public $helpers = ['AkkaCKEditor.CKEditor' =>
         ['distribution' => 'basic'],
         'CakeJs.Js',
+        'Flash',
         'Form',
         'Html'
     ];

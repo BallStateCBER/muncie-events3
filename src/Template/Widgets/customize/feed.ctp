@@ -46,14 +46,14 @@
                 <label for="WidgetHeight">
                     Height:
                 </label>
-                <input id="WidgetHeight" value="<?php echo $defaults['iframe_options']['height']; ?>px" name="height" type="text" class="style" />
+                <input id="WidgetHeight" value="<?php echo $defaults['iframeOptions']['height']; ?>px" name="height" type="text" class="style" />
 
                 <br />
 
                 <label for="WidgetWidth">
                     Width:
                 </label>
-                <input id="WidgetWidth" value="<?php echo $defaults['iframe_options']['width']; ?>px" name="width" type="text" class="style" />
+                <input id="WidgetWidth" value="<?php echo $defaults['iframeOptions']['width']; ?>px" name="width" type="text" class="style" />
                 <p class="text-muted">
                     Sizes can be in pixels (e.g. 300px) or percentages (e.g. 100%).
                     A <strong>minimum width</strong> of 200px is recommended.
@@ -70,8 +70,8 @@
 
 <?php
     $this->Html->script('/jPicker/jpicker-1.1.6.js', ['inline' => false]);
-    $this->Html->css('/jPicker/css/jpicker-1.1.6.min.css', null, ['inline' => false]);
-    $this->Html->css('/jPicker/jPicker.css', null, ['inline' => false]);
+    $this->Html->css('/jPicker/css/jpicker-1.1.6.min.css', [null], ['inline' => false]);
+    $this->Html->css('/jPicker/jPicker.css', [null], ['inline' => false]);
     $this->Html->script('widgets/customize.js', ['inline' => false]);
     $this->Js->buffer("widgetCustomizer.setupWidgetDemo('feed');");
 ?>

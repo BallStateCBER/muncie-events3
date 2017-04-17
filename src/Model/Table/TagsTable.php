@@ -210,4 +210,29 @@ class TagsTable extends Table
         $splitSlug = explode('_', $slug);
         return (int) $splitSlug[0];
     }
+
+    public function getIndentLevel($name)
+    {
+        $level = 0;
+        for ($i = 0; $i < strlen($name); $i++) {
+            if ($name[$i] == "\t" || $name[$i] == '-') {
+                $level++;
+            } else {
+                break;
+            }
+        }
+        return $level;
+    }
+
+    public function getIdFromName($name)
+    {
+        $result = $this->find()
+            ->select('id')
+            ->where(['name' => strtolower($name)])
+            ->first();
+        if (empty($result)) {
+            return false;
+        }
+        return $result->name;
+    }
 }

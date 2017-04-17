@@ -35,20 +35,20 @@
                             echo $this->Calendar->thumbnail('tiny', [
                                 'filename' => $image['Image']['filename'],
                                 'caption' => $image['caption'],
-                                'group' => 'event_minimized'.$event['Event']['id']
+                                'group' => 'event_minimized'.$event->id
                             ]);
                         ?>
                     <?php endif; ?>
-                    <?php $url = Router::url(array('controller' => 'events', 'action' => 'view', 'id' => $event['Event']['id'])); ?>
-                    <a href="<?php echo $url; ?>" title="Click for more info" class="event_link" id="event_link_<?php echo $event['Event']['id']; ?>">
-                        <?php echo $this->Icon->category($event['Category']['name']); ?>
+                    <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]); ?>
+                    <a href="<?php echo $url; ?>" title="Click for more info" class="event_link" id="event_link_<?php echo $event->id; ?>">
+                        <?php echo $this->Icon->category($event->Categories->name); ?>
                         <div class="title">
-                            <?php echo $event['Event']['title']; ?>
+                            <?php echo $event->title; ?>
                         </div>
                         <div class="when_where">
-                            <?php echo date('g:ia', strtotime($event['Event']['time_start'])); ?>
+                            <?php echo date('g:ia', strtotime($event->time_start)); ?>
                             @
-                            <?php echo $event['Event']['location'] ? $event['Event']['location'] : '&nbsp;'; ?>
+                            <?php echo $event->location ? $event->location : '&nbsp;'; ?>
                         </div>
                     </a>
                     <?php if (!empty($event['EventsImage'])): ?>
