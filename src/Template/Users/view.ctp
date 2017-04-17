@@ -29,12 +29,21 @@
     <p>
         <?= $user->name ?> has been a member of Muncie Events since <?= $this->Calendar->date($user->created); ?>.
     </p>
-    <?php if ($user->bio): ?>
-        <h3>Bio</h3>
-        <?= $user->bio ?>
-    <?php else: ?>
-    <?php endif; ?>
-
+    <div class="row">
+        <?php if ($user->bio): ?>
+            <div class="col-lg-6">
+                <h3>Bio</h3>
+                <?= $user->bio ?>
+            </div>
+        <?php else: ?>
+        <?php endif; ?>
+        <?php if ($user->photo): ?>
+            <div class="col-lg-6">
+                <?= $this->Html->image('users/'.$user->id."/".$user->photo, ['alt' => $user->name]); ?>
+            </div>
+        <?php else: ?>
+        <?php endif; ?>
+    </div>
     <h2>
         <?= $eventCount; ?> Event<?= $eventCount == 1 ? '' : 's'; ?> Contributed:
     </h2>
