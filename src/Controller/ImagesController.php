@@ -19,10 +19,10 @@ class ImagesController extends AppController
         $verifyToken = md5(Configure::read('upload_verify_token') . $_POST['timestamp']);
         if (! empty($_FILES) && $_POST['token'] == $verifyToken) {
             $tempFile = $_FILES['Filedata']['tmp_name'];
-            $image_id = $this->Images->getNextId();
+            $imageId = $this->Images->getNextId();
             $userId = $this->request->session()->read('Auth.User.id');
             $fileParts = pathinfo($_FILES['Filedata']['name']);
-            $filename = $image_id.'.'.strtolower($fileParts['extension']);
+            $filename = $imageId.'.'.strtolower($fileParts['extension']);
             $targetFile = $uploadDir.$filename;
             if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
                 if ($this->Images->autoResize($tempFile)) {
@@ -79,10 +79,10 @@ class ImagesController extends AppController
         exit(0);
     }
 
-    public function newest($user_id)
+    public function newest($userId)
     {
         $result = $this->Images->find('first', [
-            'conditions' => ['user_id' => $user_id],
+            'conditions' => ['user_id' => $userId],
             'order' => 'created DESC',
             'contain' => false,
             'fields' => ['id', 'filename']
@@ -95,10 +95,10 @@ class ImagesController extends AppController
         $this->render('/Pages/blank');
     }
 
-    public function filename($image_id)
+    public function filename($imageId)
     {
-        $image = $this->Images->get($image_id);
-        $image_id = $image->id;
+        $image = $this->Images->get($imageId);
+        $imageId = $image->id;
         $filename = $image->filename;
         echo $filename ? $filename : 0;
 
@@ -106,110 +106,12 @@ class ImagesController extends AppController
         $this->render('/Pages/blank');
     }
 
-    public function user_images($user_id)
+    public function userImages($userId)
     {
         $this->viewbuilder()->setLayout('ajax');
 
         $this->set([
-            'images' => $this->Images->Users->getImagesList($user_id)
+            'images' => $this->Images->Users->getImagesList($userId)
         ]);
-    }
-
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Users']
-        ];
-        $images = $this->paginate($this->Images);
-
-        $this->set(compact('images'));
-        $this->set('_serialize', ['images']);
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Image id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $image = $this->Images->get($id, [
-            'contain' => ['Users', 'Events']
-        ]);
-
-        $this->set('image', $image);
-        $this->set('_serialize', ['image']);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $image = $this->Images->newEntity();
-        if ($this->request->is('post')) {
-            $image = $this->Images->patchEntity($image, $this->request->getData());
-            if ($this->Images->save($image)) {
-                $this->Flash->success(__('The image has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The image could not be saved. Please, try again.'));
-        }
-        $users = $this->Images->Users->find('list', ['limit' => 200]);
-        $events = $this->Images->Events->find('list', ['limit' => 200]);
-        $this->set(compact('image', 'users', 'events'));
-        $this->set('_serialize', ['image']);
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Image id.
-     * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $image = $this->Images->get($id, [
-            'contain' => ['Events']
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $image = $this->Images->patchEntity($image, $this->request->getData());
-            if ($this->Images->save($image)) {
-                $this->Flash->success(__('The image has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The image could not be saved. Please, try again.'));
-        }
-        $users = $this->Images->Users->find('list', ['limit' => 200]);
-        $events = $this->Images->Events->find('list', ['limit' => 200]);
-        $this->set(compact('image', 'users', 'events'));
-        $this->set('_serialize', ['image']);
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Image id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $image = $this->Images->get($id);
-        if ($this->Images->delete($image)) {
-            $this->Flash->success(__('The image has been deleted.'));
-        } else {
-            $this->Flash->error(__('The image could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
     }
 }
