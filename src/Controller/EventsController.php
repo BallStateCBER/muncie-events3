@@ -30,7 +30,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'category', 'day', 'index', 'location', 'tag', 'view'
+            'category', 'day', 'index', 'location', 'search', 'tag', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -591,14 +591,23 @@ class EventsController extends AppController
             $this->set('eventsFoundInOtherDirection', $oppositeDirectionCount);
         }
 
+        $tags = $this->Events->Tags->find('search', [
+            'search' => $filter]);
+        $tagCount = null;
+        foreach ($tags as $tag) {
+            if ($tag-> id) {
+                $tagCount = true;
+            }
+        }
+
         $this->set([
             'titleForLayout' => 'Search Results',
             'direction' => $direction,
             'directionAdjective' => ($direction == 'future') ? 'upcoming' : $direction,
             'filter' => $filter,
             'dateQuery' => $dateQuery,
-            'tags' => $this->Events->Tags->find('search', [
-                'search' => $filter])
+            'tags' => $tags,
+            'tagCount' => $tagCount
         ]);
     }
 }

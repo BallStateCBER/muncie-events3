@@ -102,7 +102,6 @@ class AppController extends Controller
 
         $categories = $this->Categories->getAll();
 
-
         $this->set([
             'headerVars' => [
                 'categories' => $categories

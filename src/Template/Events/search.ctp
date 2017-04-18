@@ -68,7 +68,7 @@ use Cake\Utility\Inflector;
         }
     ?>
 
-    <?php if (isset($tags) && !empty($tags)): ?>
+    <?php if (isset($tags) && ($tagCount)): ?>
         <div id="search_result_tags" class="alert alert-info">
             <p>
                 Want to narrow your search?
