@@ -191,7 +191,7 @@ class TagsTable extends Table
         return $finalTags;
     }
 
-    public function getUpcoming($filter = array(), $sort = 'alpha')
+    public function getUpcoming($filter = [])
     {
         $filter['direction'] = 'future';
         return $this->getWithCounts($filter);
