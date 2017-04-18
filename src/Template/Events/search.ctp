@@ -46,16 +46,16 @@ use Cake\Utility\Inflector;
             }
             echo ucfirst(implode(', ', $breakdown)).'.';
         } else {
-            if ($eventsFoundInOtherDirection) {
+            if ($oppositeEvents) {
                 $url = Router::url([
                             'controller' => 'events',
                             'action' => 'search',
                             'filter' => $filter['filter'],
                             'direction' => ($direction == 'future') ? 'past' : 'future'
                         ], true);
-                $link_label = $eventsFoundInOtherDirection.' matching ';
+                $link_label = $oppositeEvents.' matching ';
                 $link_label .= (($direction == 'future') ? 'past ' : 'upcoming ');
-                $link_label .= __n('event ', 'events ', $eventsFoundInOtherDirection);
+                $link_label .= __n('event ', 'events ', $oppositeEvents);
                 $link_label .= 'found';
                 echo $this->Html->link($link_label, $url);
             } else {

@@ -360,16 +360,16 @@ class ImagesTable extends Table
      * @param int $quality
      * @return boolean
      */
-    public function cropCenter($sourceFile, $destinationFile, $w, $h, $quality)
+    public function cropCenter($sourceFile, $destinationFile, $wVar, $hVar, $quality)
     {
         list($originalWidth, $originalHeight, $type, $attr) = getimagesize($sourceFile);
         $centerX = round($originalWidth / 2);
         $centerY = round($originalHeight / 2);
-        $halfNewWidth = round($w / 2);
-        $halfNewHeight = round($h / 2);
-        $x = max(0, ($centerX - $halfNewWidth));
-        $y = max(0, ($centerY - $halfNewHeight));
-        return $this->crop($sourceFile, $destinationFile, $w, $h, $x, $y, $quality);
+        $halfNewWidth = round($wVar / 2);
+        $halfNewHeight = round($hVar / 2);
+        $xVar = max(0, ($centerX - $halfNewWidth));
+        $yVar = max(0, ($centerY - $halfNewHeight));
+        return $this->crop($sourceFile, $destinationFile, $wVar, $hVar, $xVar, $yVar, $quality);
     }
 
     /**
@@ -383,7 +383,7 @@ class ImagesTable extends Table
      * @param int $quality
      * @return boolean
      */
-    public function crop($sourceFile, $destinationFile, $w, $h, $x, $y, $quality)
+    public function crop($sourceFile, $destinationFile, $wVar, $hVar, $xVar, $yVar, $quality)
     {
         if (!$sourceFile || !file_exists($sourceFile)) {
             $this->errors[] = 'No image found to crop';
@@ -422,10 +422,10 @@ class ImagesTable extends Table
         $sHeight = imagesy($src);
 
         // Create target image
-        $canvas = imagecreatetruecolor($w, $h);
+        $canvas = imagecreatetruecolor($wVar, $h);
 
         // Copy image
-        imagecopyresampled($canvas, $src, 0, 0, $x, $y, $sWidth, $sHeight, $sWidth, $sHeight);
+        imagecopyresampled($canvas, $src, 0, 0, $xVar, $yVar, $sWidth, $sHeight, $sWidth, $sHeight);
 
         // output image
         switch ($imgType) {

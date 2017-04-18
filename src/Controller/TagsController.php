@@ -48,8 +48,8 @@ class TagsController extends AppController
     {
         // retrieve the node id that Ext JS posts via ajax
         $parent = 0;
-        if ($_POST['node'] != null) {
-            $parent = intval($_POST['node']);
+        if (filter_input(INPUT_POST, 'node') != null) {
+            $parent = intval(filter_input(INPUT_POST, 'node'));
             $this->set('nodes', $parent);
         }
 
@@ -57,7 +57,7 @@ class TagsController extends AppController
         // the second parameter (true) means we only want direct children
         $nodes = $this->Tags->find('children', ['for' => $parent]);
 
-        $rearranged_nodes = ['branches' => [], 'leaves' => []];
+        $rearrangedNodes = ['branches' => [], 'leaves' => []];
         foreach ($nodes as $key => &$node) {
             $tag_id = $node->Tags->id;
 
@@ -70,21 +70,22 @@ class TagsController extends AppController
             }
 
             // Check for children
-            $has_children = $this->Tags->childCount($tag_id, true);
-            if ($has_children) {
+            $hasChildren = $this->Tags->childCount($tag_id, true);
+            if ($hasChildren) {
                 $tag_name = $node->Tags->name;
-                $rearranged_nodes['branches'][$tag_name] = $node;
-            } else {
-                $rearranged_nodes['leaves'][$tag_id] = $node;
+                $rearrangedNodes['branches'][$tag_name] = $node;
+            }
+            if (!$hasChildren) {
+                $rearrangedNodes['leaves'][$tag_id] = $node;
             }
         }
 
         // Sort nodes by alphabetical branches, then alphabetical leaves
-        ksort($rearranged_nodes['branches']);
-        ksort($rearranged_nodes['leaves']);
+        ksort($rearrangedNodes['branches']);
+        ksort($rearrangedNodes['leaves']);
         $nodes = array_merge(
-            array_values($rearranged_nodes['branches']),
-            array_values($rearranged_nodes['leaves'])
+            array_values($rearrangedNodes['branches']),
+            array_values($rearrangedNodes['leaves'])
         );
 
         // Visually note categories with no data
