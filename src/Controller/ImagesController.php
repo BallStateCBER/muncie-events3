@@ -14,14 +14,15 @@ class ImagesController extends AppController
 {
     public function upload()
     {
+        $fileData = filter_input(INPUT_FILES, 'Filedata');
         $uploadDir = WWW_ROOT.'img'.DS.'events'.DS.'full'.DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $verifyToken = md5(Configure::read('upload_verify_token') . $_POST['timestamp']);
-        if (! empty($_FILES) && $_POST['token'] == $verifyToken) {
-            $tempFile = $_FILES['Filedata']['tmp_name'];
+        $verifyToken = md5(Configure::read('upload_verify_token') . filter_input(INPUT_POST, 'timestamp'));
+        if (! empty(filter_input_array(INPUT_FILES)) && filter_input(INPUT_POST, 'token') == $verifyToken) {
+            $tempFile = $fileData['tmp_name'];
             $imageId = $this->Images->getNextId();
             $userId = $this->request->session()->read('Auth.User.id');
-            $fileParts = pathinfo($_FILES['Filedata']['name']);
+            $fileParts = pathinfo($fileData['name']);
             $filename = $imageId.'.'.strtolower($fileParts['extension']);
             $targetFile = $uploadDir.$filename;
             if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
@@ -87,8 +88,7 @@ class ImagesController extends AppController
             'contain' => false,
             'fields' => ['id', 'filename']
         ]);
-        if ($result) {
-        } else {
+        if (!$result) {
             echo 0;
         }
         $this->viewbuilder()->setLayout('blank');

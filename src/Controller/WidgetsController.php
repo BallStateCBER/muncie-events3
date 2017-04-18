@@ -38,11 +38,11 @@ class WidgetsController extends AppController
 
     public function getOptions()
     {
-        if (empty($_SERVER['QUERY_STRING'])) {
+        if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING))) {
             return [];
         }
         $options = [];
-        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        $parameters = explode('&', urldecode(filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING)));
         foreach ($parameters as $option) {
             $optionSplit = explode('=', $option);
             if (count($optionSplit) != 2) {
@@ -110,12 +110,12 @@ class WidgetsController extends AppController
 
     public function getIframeQueryString()
     {
-        if (empty($_SERVER['QUERY_STRING'])) {
+        if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING))) {
             return '';
         }
         $defaults = $this->getDefaults();
         $iframeParams = [];
-        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        $parameters = explode('&', urldecode(filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING)));
         foreach ($parameters as $option) {
             $optionSplit = explode('=', $option);
             if (count($optionSplit) != 2) {
@@ -220,7 +220,7 @@ class WidgetsController extends AppController
         $this->__setDemoData('feed');
 
         // Get relevant event filters
-        $options = $_GET;
+        $options = filter_input_array(INPUT_GET);
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getWidgetPage($startDate, $filters);
         $eventIds = [];
@@ -234,7 +234,7 @@ class WidgetsController extends AppController
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
-        $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
+        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         $this->set([
             'titleForLayout' => 'Upcoming Events',
@@ -276,7 +276,7 @@ class WidgetsController extends AppController
         $today = date('Y').date('m').date('j');
 
         // Get relevant event filters
-        $options = $_GET;
+        $options = filter_input_array(INPUT_GET);
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getMonth($yearMonth, $filters);
         $eventsForJson = [];
@@ -318,7 +318,7 @@ class WidgetsController extends AppController
             'controller' => 'widgets',
             'action' => 'month'],
             true);
-        $queryString = str_replace($baseUrl, '', $_SERVER['QUERY_STRING']);
+        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         $this->set([
             'titleForLayout' => "$monthName $year",
@@ -344,7 +344,7 @@ class WidgetsController extends AppController
     {
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $day = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $options = $_GET;
+        $options = filter_input_array(INPUT_GET);
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
         $this->set([

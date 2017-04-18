@@ -130,23 +130,23 @@ class EventsController extends AppController
         $images = $this->Events->Users->getImagesList($userId);
         if (! empty($this->request->data['EventsImage'])) {
             foreach ($this->request->data['EventsImage'] as $association) {
-                $image_id = $association['image_id'];
-                if (isset($images[$image_id])) {
-                    $this->request->data['Images'][$image_id] = [
-                        'id' => $image_id,
-                        'filename' => $images[$image_id]
+                $imageId = $association['image_id'];
+                if (isset($images[$imageId])) {
+                    $this->request->data['Images'][$imageId] = [
+                        'id' => $imageId,
+                        'filename' => $images[$imageId]
                     ];
                 } else {
                     /* If an image is in $this->request->data['EventsImage']
                      * but not in the current user's images, then the user is
                      * probably an admin editing someone else's event. */
-                    $this->Images->id = $image_id;
+                    $this->Images->id = $imageId;
                     $filename = $this->Images->field('filename');
                     if ($filename) {
-                        $images[$image_id] = $filename;
-                        $this->request->data['Images'][$image_id] = [
-                            'id' => $image_id,
-                            'filename' => $images[$image_id]
+                        $images[$imageId] = $filename;
+                        $this->request->data['Images'][$imageId] = [
+                            'id' => $imageId,
+                            'filename' => $images[$imageId]
                         ];
                     }
                 }
@@ -165,9 +165,9 @@ class EventsController extends AppController
         }
         $weight = 1;
         $this->request->data['EventsImages'] = [];
-        foreach ($this->request->data['Images'] as $image_id => $caption) {
+        foreach ($this->request->data['Images'] as $imageId => $caption) {
             $this->request->data['EventsImages'][] = [
-                'image_id' => $image_id,
+                'image_id' => $imageId,
                 'weight' => $weight,
                 'caption' => $caption
             ];
@@ -184,8 +184,7 @@ class EventsController extends AppController
             if (empty($event['date'])) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
-            }
-            if ($event['date']) {
+            } else {
                 $dates = explode(',', $event['date']);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
@@ -578,17 +577,17 @@ class EventsController extends AppController
             // Determine if there are events in the opposite direction
             $this->passedArgs['direction'] = ($direction == 'future') ? 'past' : 'future';
             if ($this->passedArgs['direction'] == 'past') {
-                $oppositeDirectionCount = $this->Events->find('search', [
+                $oppositeCount = $this->Events->find('search', [
                     'search' => $filter])
                     ->where(['date <' => date('Y-m-d')])
                     ->count();
             } elseif ($this->passedArgs['direction'] == 'future') {
-                $oppositeDirectionCount = $this->Events->find('search', [
+                $oppositeCount = $this->Events->find('search', [
                     'search' => $filter])
                     ->where(['date >=' => date('Y-m-d')])
                     ->count();
             }
-            $this->set('eventsFoundInOtherDirection', $oppositeDirectionCount);
+            $this->set('oppositeEvents', $oppositeCount);
         }
 
         $tags = $this->Events->Tags->find('search', [
