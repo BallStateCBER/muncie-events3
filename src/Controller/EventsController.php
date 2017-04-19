@@ -74,7 +74,7 @@ class EventsController extends AppController
         return true;
     }
 
-    private function __prepareEventForm()
+    private function __prepareEventForm($event)
     {
         $userId = $this->request->session()->read('Auth.User.id');
         $this->set([
@@ -82,13 +82,23 @@ class EventsController extends AppController
             'userId' => $userId
         ]);
 
-        $event = $this->request->getData('Event');
         $available_tags = $this->Events->Tags->find('all', [
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
+        // have tags already been selected?
+        $selected_tags = null;
+        if (isset($this->request->data['data']['Tags'])) {
+            $selected_tags = $this->request->data['data']['Tags'];
+        }
+        if (isset($event['tags'])) {
+            $previous_tags = $event['tags'];
+        }
         $this->set([
-            'available_tags' => $available_tags
+            'available_tags' => $available_tags,
+            'previous_tags' => $previous_tags,
+            'selected_tags' => $selected_tags,
+            'isThisWorking' => $event
         ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
@@ -155,7 +165,7 @@ class EventsController extends AppController
         $this->set('images', $images);
     }
 
-/*    private function __processImageData()
+    private function __processImageData()
     {
         if (! isset($this->request->data['Images'])) {
             $this->request->data['Images'] = [];
@@ -174,7 +184,7 @@ class EventsController extends AppController
             $weight++;
         }
         unset($this->request->data['Image']);
-    } */
+    }
 
     private function __prepareDatePicker()
     {
@@ -228,11 +238,26 @@ class EventsController extends AppController
         $event = $this->Events->get($id, [
             'contain' => ['Images', 'Tags']
         ]);
+
+        // prepare form
+        $this->__prepareEventForm($event);
+        $this->__processImageData();
+        $this->__prepareDatePicker();
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
             if (!$this->request->data['has_end_time']) {
                 $this->request->data['time_end'] = null;
             }
+
+            // auto-approve if posted by an admin
+            $userId = $this->request->session()->read('Auth.User.id');
+            $this->request->data['user_id'] = $userId;
+            if ($this->request->session()->read('Auth.User.role') == 'admin') {
+                $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
+                $this->request->data['published'] = true;
+            }
+
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
@@ -243,13 +268,9 @@ class EventsController extends AppController
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         #$series = $this->Events->EventSeries->find('list');
-        $images = $this->Events->Images->find('list');
-        $tags = $this->Events->Tags->find('list');
-        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories' /*'eventseries', */));
         $this->set('_serialize', ['event']);
 
-        $this->__prepareEventForm();
-        $this->__prepareDatePicker();
         $this->set('titleForLayout', 'Edit Event');
     }
 
@@ -284,7 +305,7 @@ class EventsController extends AppController
                     $seriesToApprove[$seriesId] = true;
                 } */
                 // approve & publish it
-                $event['approved_by'] = $this->request->session()->read('Auth.User.id');
+            $event['approved_by'] = $this->request->session()->read('Auth.User.id');
             $event['published'] = 1;
 
             $url = Router::url([
@@ -307,7 +328,10 @@ class EventsController extends AppController
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
-            ->where(['approved_by IS' => null])
+            ->where([
+                'approved_by IS' => null,
+                'published' => 0
+            ])
             ->toArray();
 
         // Find sets of identical events (belonging to the same series
@@ -489,9 +513,13 @@ class EventsController extends AppController
     {
         $event = $this->Events->newEntity();
 
+        // prepare form
+        $this->__prepareEventForm($event);
+        $this->__processImageData();
+        $this->__prepareDatePicker();
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $dates = explode(',', $this->request->event['date']);
-            $tags = $this->request->event['tags'];
             #$isSeries = count($dates) > 1;
             $userId = $this->request->session()->read('Auth.User.id');
 
@@ -507,14 +535,13 @@ class EventsController extends AppController
             $this->request->data['user_id'] = $userId;
             if ($this->request->session()->read('Auth.User.role') == 'admin') {
                 $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
+                $this->request->data['published'] = true;
             }
 
             // kill the end time if it hasn't been set
             if (!$this->has['end_time']) {
                 $this->request->data['time_end'] = null;
             }
-
-            $this->request->data['Tags'] = $tags;
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
@@ -525,13 +552,8 @@ class EventsController extends AppController
         }
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        $images = $this->Events->Images->find('list');
-        $tags = $this->Events->Tags->find('list');
-        $this->set(compact('event', 'users', 'categories', /*'eventseries', */'images', 'tags'));
+        $this->set(compact('event', 'users', 'categories' /*'eventseries', */));
         $this->set('_serialize', ['event']);
-
-        $this->__prepareEventForm();
-        $this->__prepareDatePicker();
         $this->set('titleForLayout', 'Submit an Event');
     }
 
