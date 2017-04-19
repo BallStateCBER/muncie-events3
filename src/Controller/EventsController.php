@@ -82,12 +82,15 @@ class EventsController extends AppController
             'userId' => $userId
         ]);
 
+        // prepare the tag helper
         $availableTags = $this->Events->Tags->find('all', [
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
         // have tags already been selected?
+        // prepare those too
         $selectedTags = null;
+        $previousTags = null;
         if (isset($this->request->data['data']['Tags'])) {
             $selectedTags = $this->request->data['data']['Tags'];
         }
@@ -146,7 +149,8 @@ class EventsController extends AppController
                         'id' => $imageId,
                         'filename' => $images[$imageId]
                     ];
-                } else {
+                }
+                if (!isset($images[$imageId])) {
                     /* If an image is in $this->request->data['EventsImage']
                      * but not in the current user's images, then the user is
                      * probably an admin editing someone else's event. */
@@ -186,7 +190,7 @@ class EventsController extends AppController
         unset($this->request->data['Image']);
     }
 
-    private function __prepareDatePicker()
+/*    private function __prepareDatePicker()
     {
         // Prepare date picker
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
@@ -219,7 +223,7 @@ class EventsController extends AppController
             list($year, $month, $day) = explode('-', $event['date']);
             $event['date'] = "$month/$day/$year";
         }
-    }
+    } */
 
     public function datepickerPopulatedDates()
     {
@@ -242,7 +246,7 @@ class EventsController extends AppController
         // prepare form
         $this->__prepareEventForm($event);
         $this->__processImageData();
-        $this->__prepareDatePicker();
+#        $this->__prepareDatePicker();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
@@ -516,7 +520,7 @@ class EventsController extends AppController
         // prepare form
         $this->__prepareEventForm($event);
         $this->__processImageData();
-        $this->__prepareDatePicker();
+#        $this->__prepareDatePicker();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $dates = explode(',', $this->request->event['date']);

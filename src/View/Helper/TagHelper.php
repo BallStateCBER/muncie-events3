@@ -51,6 +51,7 @@ class TagHelper extends Helper
         if (is_array($selectedTags[0])) {
             return $selectedTags;
         }
+
         $tag = TableRegistry::get('Tags');
         $eventsTable = TableRegistry::get('EventsTags');
         $retval = [];
@@ -67,7 +68,9 @@ class TagHelper extends Helper
                 $retval[] = $result;
             }
         }
-        $retval += $previousTags;
+        if ($previousTags) {
+            $retval += $previousTags;
+        }
         return $retval;
     }
 
@@ -81,9 +84,18 @@ class TagHelper extends Helper
             $selectedTags = $previousTags;
         }
 
+        if (empty($selectedTags) && (empty($previousTags))) {
+            $selectedTags = [];
+        }
+
         $eventsTable = TableRegistry::get('Events');
-        $event = $eventsTable->get($eventId);
-        $eventsTable->Tags->link($event, $selectedTags);
+        if (!$eventId) {
+            $event = $eventsTable->newEntity();
+        }
+        if ($eventId) {
+            $event = $eventsTable->get($eventId);
+            $eventsTable->Tags->link($event, $selectedTags);
+        }
 
         $this->Js->buffer("
             TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJs($selectedTags)).";
