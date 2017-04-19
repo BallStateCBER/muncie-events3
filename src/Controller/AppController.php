@@ -125,11 +125,12 @@ class AppController extends Controller
             $dates[] = $evDate['date'];
         }
         // are there multiple events happening on a certain date?
+        $multipleDates = false;
         if (count(array_unique($dates))<count($dates)) {
             $multipleDates = true;
             $events = $this->multipleDateIndex($dates, $events);
-        } else {
-            $multipleDates = false;
+        }
+        if (count(array_unique($dates))>=count($dates)) {
             $events = array_combine($dates, $events);
         }
         $this->set([

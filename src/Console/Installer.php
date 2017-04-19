@@ -41,6 +41,8 @@ class Installer
         static::createAppConfig($rootDir, $ioV);
         static::createWritableDirectories($rootDir, $ioV);
 
+        static::setFolderPermissions($rootDir, $ioV);
+
         // ask if the permissions should be changed
         if ($ioV->isInteractive()) {
             $validator = function ($arg) {
@@ -59,8 +61,6 @@ class Installer
             if (in_array($setFolderPermissions, ['Y', 'y'])) {
                 static::setFolderPermissions($rootDir, $ioV);
             }
-        } else {
-            static::setFolderPermissions($rootDir, $ioV);
         }
 
         static::setSecuritySalt($rootDir, $ioV);
