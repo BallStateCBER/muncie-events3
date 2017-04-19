@@ -8,11 +8,11 @@ class TagHelper extends Helper
 {
     public $helpers = ['Html', 'Js'];
 
-    private function availableTagsForJs($available_tags)
+    private function availableTagsForJs($availableTags)
     {
         $arrayForJson = [];
-        if (is_array($available_tags)) {
-            foreach ($available_tags as $tag) {
+        if (is_array($availableTags)) {
+            foreach ($availableTags as $tag) {
                 $arrayForJson[] = [
                     'id' => $tag->id,
                     'name' => $tag->name,
@@ -24,11 +24,11 @@ class TagHelper extends Helper
         return $arrayForJson;
     }
 
-    private function selectedTagsForJs($selected_tags)
+    private function selectedTagsForJs($selectedTags)
     {
         $arrayForJson = [];
-        if (is_array($selected_tags)) {
-            foreach ($selected_tags as $tag) {
+        if (is_array($selectedTags)) {
+            foreach ($selectedTags as $tag) {
                 $arrayForJson[] = [
                     'id' => $tag->id,
                     'name' => $tag->name
@@ -39,22 +39,22 @@ class TagHelper extends Helper
     }
 
     /**
-     * If necessary, convert selected_tags from an array of IDs to a full array of tag info
-     * @param array $selected_tags
+     * If necessary, convert selectedTags from an array of IDs to a full array of tag info
+     * @param array $selectedTags
      * @return array
      */
-    private function formatSelectedTags($selected_tags, $previous_tags, $eventId)
+    private function formatSelectedTags($selectedTags, $previousTags, $eventId)
     {
-        if (empty($selected_tags)) {
+        if (empty($selectedTags)) {
             return [];
         }
-        if (is_array($selected_tags[0])) {
-            return $selected_tags;
+        if (is_array($selectedTags[0])) {
+            return $selectedTags;
         }
         $tag = TableRegistry::get('Tags');
         $eventsTable = TableRegistry::get('EventsTags');
         $retval = [];
-        foreach ($selected_tags as $tagId) {
+        foreach ($selectedTags as $tagId) {
             $result = $tag->getTagFromId($tagId);
             $event = $eventsTable->find()
                 ->select(['tag' => 'tag_id'])
@@ -67,30 +67,30 @@ class TagHelper extends Helper
                 $retval[] = $result;
             }
         }
-        $retval += $previous_tags;
+        $retval += $previousTags;
         return $retval;
     }
 
-    public function setup($available_tags, $containerId, $selected_tags = [], $previous_tags, $eventId)
+    public function setup($availableTags, $containerId, $selectedTags = [], $previousTags, $eventId)
     {
-        if (!empty($selected_tags)) {
-            $selected_tags = $this->formatSelectedTags($selected_tags, $previous_tags, $eventId);
+        if (!empty($selectedTags)) {
+            $selectedTags = $this->formatSelectedTags($selectedTags, $previousTags, $eventId);
         }
 
-        if (empty($selected_tags) && (!empty($previous_tags))) {
-            $selected_tags = $previous_tags;
+        if (empty($selectedTags) && (!empty($previousTags))) {
+            $selectedTags = $previousTags;
         }
 
         $eventsTable = TableRegistry::get('Events');
         $event = $eventsTable->get($eventId);
-        $eventsTable->Tags->link($event, $selected_tags);
+        $eventsTable->Tags->link($event, $selectedTags);
 
         $this->Js->buffer("
-            TagManager.selected_tags = ".$this->Js->object($this->selectedTagsForJs($selected_tags)).";
-            TagManager.preselectTags(TagManager.selected_tags);
+            TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJs($selectedTags)).";
+            TagManager.preselectTags(TagManager.selectedTags);
             ");
         $this->Js->buffer("
-            TagManager.tags = ".$this->Js->object($this->availableTagsForJs($available_tags)).";
+            TagManager.tags = ".$this->Js->object($this->availableTagsForJs($availableTags)).";
             TagManager.createTagList(TagManager.tags, $('#$containerId'));
             $('#new_tag_rules_toggler').click(function(event) {
                 event.preventDefault();

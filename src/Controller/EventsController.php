@@ -82,22 +82,22 @@ class EventsController extends AppController
             'userId' => $userId
         ]);
 
-        $available_tags = $this->Events->Tags->find('all', [
+        $availableTags = $this->Events->Tags->find('all', [
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
         // have tags already been selected?
-        $selected_tags = null;
+        $selectedTags = null;
         if (isset($this->request->data['data']['Tags'])) {
-            $selected_tags = $this->request->data['data']['Tags'];
+            $selectedTags = $this->request->data['data']['Tags'];
         }
         if (isset($event['tags'])) {
-            $previous_tags = $event['tags'];
+            $previousTags = $event['tags'];
         }
         $this->set([
-            'available_tags' => $available_tags,
-            'previous_tags' => $previous_tags,
-            'selected_tags' => $selected_tags,
+            'availableTags' => $availableTags,
+            'previousTags' => $previousTags,
+            'selectedTags' => $selectedTags,
             'isThisWorking' => $event
         ]);
 

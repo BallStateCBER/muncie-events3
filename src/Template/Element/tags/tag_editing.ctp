@@ -1,13 +1,6 @@
 <?php
-    // This element has $available_tags and (optionally) $selected_tags passed into it
+    // This element has $availableTags and (optionally) $selectedTags passed into it
 
-    // Counters CakePHP's variable-renaming weirdness
-    if (!isset($available_tags)) {
-        $available_tags = isset($availableTags) ? $availableTags : [];
-    }
-    if (!isset($selected_tags)) {
-        $selected_tags = isset($selectedTags) ? $selectedTags : [];
-    }
     if (!isset($hideLabel)) {
         $hideLabel = false;
     }
@@ -97,4 +90,4 @@
     </div>
 </div>
 
-<?php echo $this->Tag->setup($available_tags, 'available_tags', $selected_tags, $previous_tags, $eventId); ?>
+<?php echo $this->Tag->setup($availableTags, 'available_tags', $selectedTags, $previousTags, $eventId); ?>

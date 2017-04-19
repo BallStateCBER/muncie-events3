@@ -1,6 +1,6 @@
 var TagManager = {
     tags: [],
-    selected_tags: [],
+    selectedTags: [],
 
     /**
      * @param data An array of tag objects
@@ -91,9 +91,9 @@ var TagManager = {
     },
 
     tagIsSelected: function(tag_id) {
-        var selected_tags = $('#selected_tags a');
-        for (var i = 0; i < selected_tags.length; i++) {
-            var tag = $(selected_tags[i]);
+        var selectedTags = $('#selected_tags a');
+        for (var i = 0; i < selectedTags.length; i++) {
+            var tag = $(selectedTags[i]);
             if (tag.data('tag_id') == tag_id) {
                 return true;
             }
@@ -101,13 +101,13 @@ var TagManager = {
         return false;
     },
 
-    preselectTags: function(selected_tags) {
-        if (selected_tags.length == 0) {
+    preselectTags: function(selectedTags) {
+        if (selectedTags.length == 0) {
             return;
         }
         $('#selected_tags_container').show();
-        for (var i = 0; i < selected_tags.length; i++) {
-            TagManager.selectTag(selected_tags[i].id, selected_tags[i].name);
+        for (var i = 0; i < selectedTags.length; i++) {
+            TagManager.selectTag(selectedTags[i].id, selectedTags[i].name);
         }
     },
 
