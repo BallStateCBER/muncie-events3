@@ -3,10 +3,10 @@
 
     // Counters CakePHP's variable-renaming weirdness
     if (!isset($available_tags)) {
-        $available_tags = isset($available_tags) ? $available_tags : [];
+        $available_tags = isset($availableTags) ? $availableTags : [];
     }
     if (!isset($selected_tags)) {
-        $selected_tags = isset($selected_tags) ? $selected_tags : [];
+        $selected_tags = isset($selectedTags) ? $selectedTags : [];
     }
     if (!isset($hideLabel)) {
         $hideLabel = false;
@@ -97,4 +97,4 @@
     </div>
 </div>
 
-<?php echo $this->Tag->setup($available_tags, 'available_tags', $selected_tags); ?>
+<?php echo $this->Tag->setup($available_tags, 'available_tags', $selected_tags, $previous_tags, $eventId); ?>

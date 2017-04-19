@@ -254,4 +254,16 @@ class TagsTable extends Table
         }
         return $result->name;
     }
+
+    public function getTagFromId($tagId)
+    {
+        $result = $this->find()
+            ->select()
+            ->where(['id' => $tagId])
+            ->first();
+        if (empty($result)) {
+            return false;
+        }
+        return $result;
+    }
 }

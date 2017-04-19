@@ -212,8 +212,10 @@
                     <div class="form-group col-lg-8 col-xs-12">
                         <?= $this->element('tags/tag_editing', [
                             'available_tags' => $available_tags,
-                            'selected_tags' => isset($this->request->data['Tags']) ? $this->request->data['Tags'] : [],
-                            'hide_label' => true,
+                            'previous_tags' => $previous_tags,
+                            'selected_tags' => $selected_tags,
+                            'eventId' => $event->id,
+                            'hide_label' => true
                         ]); ?>
                     </div>
                 </td>
