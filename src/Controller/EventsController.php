@@ -100,8 +100,7 @@ class EventsController extends AppController
         $this->set([
             'availableTags' => $availableTags,
             'previousTags' => $previousTags,
-            'selectedTags' => $selectedTags,
-            'isThisWorking' => $event
+            'selectedTags' => $selectedTags
         ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
@@ -141,11 +140,11 @@ class EventsController extends AppController
         // - Provide $images to the view with a list of all of this User's images
         $this->loadModel('Images');
         $images = $this->Events->Users->getImagesList($userId);
-        if (! empty($this->request->data['EventsImage'])) {
-            foreach ($this->request->data['EventsImage'] as $association) {
+        if (!empty($this->request->data['images'])) {
+            foreach ($this->request->data['images'] as $association) {
                 $imageId = $association['image_id'];
                 if (isset($images[$imageId])) {
-                    $this->request->data['Images'][$imageId] = [
+                    $this->request->data['images'][$imageId] = [
                         'id' => $imageId,
                         'filename' => $images[$imageId]
                     ];
@@ -158,7 +157,7 @@ class EventsController extends AppController
                     $filename = $this->Images->field('filename');
                     if ($filename) {
                         $images[$imageId] = $filename;
-                        $this->request->data['Images'][$imageId] = [
+                        $this->request->data['images'][$imageId] = [
                             'id' => $imageId,
                             'filename' => $images[$imageId]
                         ];
@@ -171,23 +170,35 @@ class EventsController extends AppController
 
     private function __processImageData()
     {
-        if (!isset($this->request->data['Images'])) {
-            $this->request->data['Images'] = [];
-        }
-        if (empty($this->request->data['Images'])) {
-            return;
-        }
+        $eventId = $this->request->getParam('pass');
+        $eventId = $eventId[0];
+        $this->loadModel('EventsImages');
         $weight = 1;
         $this->request->data['EventsImages'] = [];
-        foreach ($this->request->data['Images'] as $imageId => $caption) {
-            $this->request->data['EventsImages'][] = [
-                'image_id' => $imageId,
-                'weight' => $weight,
-                'caption' => $caption
-            ];
-            $weight++;
+        $imageData = isset($this->request->data['data']['Image']) ? $this->request->data['data']['Image'] : null;
+        if ($imageData) {
+            foreach ($imageData as $imageId => $caption) {
+                $newImage = $this->Images->get($imageId);
+                $newImage->_joinData = $this->Events->EventsImages->newEntity();
+                $newImage->_joinData->weight = $weight;
+                $newImage->_joinData->caption = $caption;
+                $newImage->_joinData->created = $newImage->created;
+                $newImage->_joinData->modified = $newImage->modified;
+
+                if (!$eventId) {
+                    $event = $this->Events->newEntity();
+                }
+                if ($eventId) {
+                    $event = $this->Events->get($eventId);
+                    $this->Events->Images->link($event, [$newImage]);
+                }
+
+                array_push($this->request->data['EventsImages'], $newImage);
+                $weight++;
+            }
         }
-        unset($this->request->data['Image']);
+
+        unset($this->request->data['data']['Images']);
     }
 
 /*    private function __prepareDatePicker()
@@ -259,12 +270,12 @@ class EventsController extends AppController
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
         }
+
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         #$series = $this->Events->EventSeries->find('list');
         $this->set(compact('event', 'users', 'categories' /*'eventseries', */));
         $this->set('_serialize', ['event']);
-
         $this->set('titleForLayout', 'Edit Event');
     }
 
