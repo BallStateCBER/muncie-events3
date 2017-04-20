@@ -64,7 +64,7 @@ class TagHelper extends Helper
                     'tag_id' => $tagId
                 ])
                 ->first();
-            if ($result->id != $event->tag) {
+            if (!isset($event->tag)) {
                 $retval[] = $result;
             }
         }
