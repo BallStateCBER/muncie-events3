@@ -171,7 +171,7 @@ class EventsController extends AppController
 
     private function __processImageData()
     {
-        if (! isset($this->request->data['Images'])) {
+        if (!isset($this->request->data['Images'])) {
             $this->request->data['Images'] = [];
         }
         if (empty($this->request->data['Images'])) {
@@ -250,17 +250,7 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
-            if (!$this->request->data['has_end_time']) {
-                $this->request->data['time_end'] = null;
-            }
-
-            // auto-approve if posted by an admin
-            $userId = $this->request->session()->read('Auth.User.id');
-            $this->request->data['user_id'] = $userId;
-            if ($this->request->session()->read('Auth.User.role') == 'admin') {
-                $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
-                $this->request->data['published'] = true;
-            }
+            $this->__uponFormSubmission();
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
@@ -513,6 +503,22 @@ class EventsController extends AppController
         ]);
     }
 
+    private function __uponFormSubmission()
+    {
+        // kill the end time if it hasn't been set
+        if (!$this->has['end_time']) {
+            $this->request->data['time_end'] = null;
+        }
+
+        // auto-approve if posted by an admin
+        $userId = $this->request->session()->read('Auth.User.id');
+        $this->request->data['user_id'] = $userId;
+        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+            $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
+            $this->request->data['published'] = true;
+        }
+    }
+
     public function add()
     {
         $event = $this->Events->newEntity();
@@ -523,9 +529,10 @@ class EventsController extends AppController
 #        $this->__prepareDatePicker();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $this->__uponFormSubmission();
+
             $dates = explode(',', $this->request->event['date']);
             #$isSeries = count($dates) > 1;
-            $userId = $this->request->session()->read('Auth.User.id');
 
             // Correct date format
             foreach ($dates as &$date) {
@@ -534,18 +541,6 @@ class EventsController extends AppController
                 $date = date('Y-m-d', $timestamp);
             }
             unset($date);
-
-            // auto-approve if posted by an admin
-            $this->request->data['user_id'] = $userId;
-            if ($this->request->session()->read('Auth.User.role') == 'admin') {
-                $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
-                $this->request->data['published'] = true;
-            }
-
-            // kill the end time if it hasn't been set
-            if (!$this->has['end_time']) {
-                $this->request->data['time_end'] = null;
-            }
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {

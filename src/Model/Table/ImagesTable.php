@@ -422,7 +422,7 @@ class ImagesTable extends Table
         $sHeight = imagesy($src);
 
         // Create target image
-        $canvas = imagecreatetruecolor($wVar, $h);
+        $canvas = imagecreatetruecolor($wVar, $hVar);
 
         // Copy image
         imagecopyresampled($canvas, $src, 0, 0, $xVar, $yVar, $sWidth, $sHeight, $sWidth, $sHeight);
