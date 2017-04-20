@@ -37,8 +37,8 @@ $helpers = ['Html'];
         <div id="image_select_container" class="collapse" role="tabpanel" aria-labelledby="image_select_heading">
           <div class="card-block">
                     <ul id="selected_images">
-                        <?php if (!empty($this->request->data['EventsImage'])): ?>
-                            <?php foreach ($this->request->data['EventsImage'] as $selected_image): ?>
+                        <?php if (!empty($this->request->data['EventsImages'])): ?>
+                            <?php foreach ($this->request->data['EventsImages'] as $selected_image): ?>
                                 <?php
                                     $id = $selected_image['image_id'];
                                     $filename = $selected_image['filename'];

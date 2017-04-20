@@ -34,7 +34,7 @@ class ImagesController extends AppController
                             $newImage->user_id = $userId;
                             $newImage->filename = $filename;
                             if ($this->Images->save($newImage)) {
-                                // If the event ID is available, create association
+                                // great success!
                             } else {
                                 $this->response->statusCode(500);
                                 echo 'Error saving image';
