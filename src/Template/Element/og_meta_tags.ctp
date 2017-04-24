@@ -1,5 +1,4 @@
 <?php
-    use Cake\Routing\Router;
 
 $titleForLayout = "Muncie Events";
     # remember to make the title dynamic instead of static
@@ -9,7 +8,6 @@ $titleForLayout = "Muncie Events";
     $default_og_meta_tags = [
         'og:title' => $titleForLayout,
         'og:type' => 'website', // was muncieevents:website
-        'og:url' => Router::url([], true),
         'og:image' => 'http://muncieevents.com/img/facebook_logo.png',
         'og:site_name' => 'Muncie Events',
         'fb:admins' => [

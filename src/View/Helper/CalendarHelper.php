@@ -186,11 +186,11 @@ class CalendarHelper extends Helper
 
     public function eventTime($event)
     {
-        $startStamp = strtotime($event['time_start']);
-        if (substr($event['time_start'], 3, 5) == '00:00') {
-            $retval = date('ga', $startStamp);
+        $startStamp = $event->time_start;
+        if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
+            $retval = date('ga', strtotime($startStamp));
         } else {
-            $retval = date('g:ia', $startStamp);
+            $retval = date('g:ia', strtotime($startStamp));
         }
         if ($event['time_end']) {
             $endStamp = strtotime($event['time_end']);
