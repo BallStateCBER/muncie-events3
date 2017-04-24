@@ -166,12 +166,18 @@ class EventsController extends AppController
             }
         }
         $this->set('images', $images);
+
+        if ($event->images) {
+            $this->set('eventImages', $event->images);
+        }
     }
 
     private function __processImageData()
     {
         $eventId = $this->request->getParam('pass');
-        $eventId = $eventId[0];
+        if (isset($eventId[0])) {
+            $eventId = $eventId[0];
+        }
         $this->loadModel('EventsImages');
         $weight = 1;
         $this->request->data['EventsImages'] = [];
@@ -179,7 +185,7 @@ class EventsController extends AppController
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Images->get($imageId);
-                $newImage->_joinData = $this->Events->EventsImages->newEntity();
+                $newImage->_joinData = $this->EventsImages->newEntity();
                 $newImage->_joinData->weight = $weight;
                 $newImage->_joinData->caption = $caption;
                 $newImage->_joinData->created = $newImage->created;

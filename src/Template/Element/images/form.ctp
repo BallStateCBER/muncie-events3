@@ -37,11 +37,11 @@ $helpers = ['Html'];
         <div id="image_select_container" class="collapse" role="tabpanel" aria-labelledby="image_select_heading">
           <div class="card-block">
                     <ul id="selected_images">
-                        <?php if (!empty($this->request->data['EventsImages'])): ?>
-                            <?php foreach ($this->request->data['EventsImages'] as $selected_image): ?>
+                        <?php if (!empty($eventImages)): ?>
+                            <?php foreach ($eventImages as $eventImage): ?>
                                 <?php
-                                    $id = $selected_image['image_id'];
-                                    $filename = $selected_image['filename'];
+                                    $id = $eventImage['id'];
+                                    $filename = $eventImage['filename'];
                                 ?>
                                 <li id="selectedimage_<?php echo $id; ?>" data-image-id="<?php echo $id; ?>">
                                     <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
@@ -54,7 +54,7 @@ $helpers = ['Html'];
                                         'label' => 'Caption:',
                                         'div' => false,
                                         'type' => 'text',
-                                        'value' => $selected_image['caption'],
+                                        'value' => $eventImage['caption'],
                                         'placeholder' => "Enter a caption for this image",
                                         'class' => 'caption'
                                     ]); ?>
