@@ -2,24 +2,24 @@
 
 use Cake\Routing\Router;
 
-if (!isset($can_edit)) {
-    $user_id = $this->request->session()->read('Auth.User.id');
+if (!isset($canEdit)) {
+    $userId = $this->request->session()->read('Auth.User.id');
     $user_role = $this->request->session()->read('Auth.User.role');
-    $can_edit = $user_id && ($user_role == 'admin' || $user_id == $event['user_id']);
+    $canEdit = $userId && ($user_role == 'admin' || $userId == $event['user_id']);
 }
-    $event_url = Router::url(array(
+    $eventUrl = Router::url([
         'controller' => 'events',
         'action' => 'view',
         'id' => $event['id']
-    ), true);
+    ], true);
 ?>
 <div class="actions">
-    <?php /* echo $this->Facebook->like(array(
-        'href' => $event_url,
+    <?php /* echo $this->Facebook->like([
+        'href' => $eventUrl,
         'show_faces' => false,
         'layout' => 'button_count',
         'app_id' => '496726620385625'
-    )); */ ?>
+    ]); */ ?>
     <div class="export_options_container">
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',
@@ -70,7 +70,7 @@ if (!isset($can_edit)) {
                     $description,
                     1000,
                     [
-                        'ellipsis' => "... (continued at $event_url)",
+                        'ellipsis' => "... (continued at $eventUrl)",
                         'exact' => false
                     ]
                 );
@@ -129,7 +129,7 @@ if (!isset($can_edit)) {
                 $yahoo_cal_url .= '&in_st='.urlencode($event['address']);
                 $yahoo_cal_url .= '&in_csz='.urlencode('Muncie, IN');
                 $yahoo_cal_url .= '&TITLE='.urlencode($event['title']);
-                $yahoo_cal_url .= '&URL='.urlencode($event_url);
+                $yahoo_cal_url .= '&URL='.urlencode($eventUrl);
                 $yahoo_cal_url .= '&ST='.$start_est;
                 if ($start_est != $end_est) {
                     $yahoo_cal_url .= '&ET='.$end_est;
@@ -157,7 +157,7 @@ if (!isset($can_edit)) {
             ['escape' => false]
         ); ?>
     <?php endif; ?>
-    <?php if ($can_edit): ?>
+    <?php if ($canEdit): ?>
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/pencil.png').'Edit',
             [

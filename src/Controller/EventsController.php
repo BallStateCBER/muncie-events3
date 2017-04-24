@@ -79,7 +79,7 @@ class EventsController extends AppController
         $userId = $this->request->session()->read('Auth.User.id');
         $this->set([
             'previous_locations' => $this->Events->getPastLocations(),
-            'userId' => $userId
+            'userId' => $userId,
         ]);
 
         // prepare the tag helper
