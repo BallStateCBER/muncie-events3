@@ -193,11 +193,9 @@ class CalendarHelper extends Helper
             $retval = date('g:ia', strtotime($startStamp));
         }
         if ($event['time_end']) {
-            $endStamp = strtotime($event['time_end']);
-            if (substr($event['time_end'], 3, 5) == '00:00') {
-                $retval .= ' to '.date('ga', $endStamp);
-            } else {
-                $retval .= ' to '.date('g:ia', $endStamp);
+            $endStamp = $event->time_end;
+            if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
+                $retval .= ' to '.date('ga', strtotime($endStamp));
             }
         }
         return $retval;

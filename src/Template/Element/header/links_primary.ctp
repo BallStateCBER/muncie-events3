@@ -12,61 +12,25 @@
         <div id="header_nav_datepicker" class="collapse" aria-labelledby="date_picker_toggler">
             <div>
                 <?php
-                    $day_links = [];
-                    for ($n = 0; $n < 30; $n++) {
-                        // Skip if date has no events
-                        $timestamp = strtotime("+$n days");
-                        $month_year = date('m-Y', $timestamp);
-                        if (!isset($header_vars['populatedDates'][$month_year])) {
-                            continue;
-                        }
-                        $day = date('d', $timestamp);
-                        $pop_dates_in_month = $header_vars['populatedDates'][$month_year];
-                        if (!in_array($day, $pop_dates_in_month)) {
-                            continue;
-                        }
-
-                        // Today
-                        if ($n == 0) {
-                            $day_links[] = $this->Html->link('Today', [
-                                'controller' => 'events',
-                                'action' => 'today'
-                            ]);
-                        // Tomorrow
-                        } elseif ($n == 1) {
-                            $day_links[] = $this->Html->link('Tomorrow', [
-                                'controller' => 'events',
-                                'action' => 'tomorrow'
-                            ]);
-                        // Monday, Tuesday, etc.
-                        } elseif ($n < 7) {
-                            $day_links[] = $this->Html->link(date('l', $timestamp), [
-                                'controller' => 'events',
-                                'action' => 'day',
-                                date('m', $timestamp),
-                                date('d', $timestamp),
-                                date('Y', $timestamp)
-                            ]);
-                        // A week or more in the future
-                        } else {
-                            $day_links[] = $this->Html->link(date('D, M j', $timestamp), [
-                                'controller' => 'events',
-                                'action' => 'day',
-                                date('m', $timestamp),
-                                date('d', $timestamp),
-                                date('Y', $timestamp)
-                            ]);
-                        }
-                        if (count($day_links) == 7) {
+                $dayLinks = [];
+                    foreach ($headerVars['populatedDates'] as $date) {
+                        $dayLinks[] = $this->Html->link($date[0].', '.$date[1].' '.$date[3], [
+                            'controller' => 'events',
+                            'action' => 'day',
+                            $date[2],
+                            $date[3],
+                            $date[4]
+                        ]);
+                        if (count($dayLinks) == 7) {
                             break;
                         }
                     }
                 ?>
-                <?php if (!empty($day_links)): ?>
+                <?php if (!empty($dayLinks)): ?>
                     <ul>
-                        <?php foreach ($day_links as $day_link): ?>
+                        <?php foreach ($dayLinks as $dayLink): ?>
                             <li class="nav-item">
-                                <?php echo $day_link; ?>
+                                <?php echo $dayLink; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

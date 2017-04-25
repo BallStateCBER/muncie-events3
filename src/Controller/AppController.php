@@ -102,9 +102,16 @@ class AppController extends Controller
 
         $categories = $this->Categories->getAll();
 
+        $results = $this->Events->getFutureEvents();
+        $populatedDates = [];
+        foreach ($results as $result) {
+            $populatedDates[] = $result;
+        }
+
         $this->set([
             'headerVars' => [
-                'categories' => $categories
+                'categories' => $categories,
+                'populatedDates' => $populatedDates
             ],
             'sidebarVars' => [
                 'locations' => $this->Events->getLocations(),

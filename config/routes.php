@@ -41,6 +41,9 @@ use Cake\Routing\Route\DashedRoute;
  * `:action` markers.
  *
  */
+
+Router::extensions(['ics']);
+
 Router::defaultRouteClass(DashedRoute::class);
 
 Router::scope('/', function (RouteBuilder $routes) {

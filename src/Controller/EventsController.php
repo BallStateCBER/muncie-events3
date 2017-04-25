@@ -15,11 +15,11 @@ class EventsController extends AppController
 {
     public $name = 'Events';
     public $helpers = ['Tag'];
-    /* public $components = [
-        'Calendar',
+    public $components = [
+    //    'Calendar',
         'Search.Prg',
         'RequestHandler'
-    ]; */
+    ];
     public $uses = ['Event'];
     public $eventFilter = [];
     public $adminActions = ['publish', 'approve', 'moderate'];
@@ -329,6 +329,14 @@ class EventsController extends AppController
             }
         }
         $this->redirect($this->referer());
+    }
+
+    public function ics()
+    {
+        $this->response->type('text/calendar');
+        $this->response->download('foo.bar');
+        $this->viewBuilder()->setLayout('ics/default');
+        return $this->render('/Events/ics/view');
     }
 
     public function moderate()
