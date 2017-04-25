@@ -328,6 +328,23 @@ class EventsTable extends Table
         return $retval;
     }
 
+    public function getFutureEvents()
+    {
+        $results = $this->find()
+            ->select('Events.date')
+            ->distinct('Events.date')
+            ->where(['Events.date >=' => date('Y-m-d')])
+            ->toArray();
+        $events = [];
+        foreach ($results as $result) {
+            $events[] = $result->date;
+        }
+        foreach ($events as $event) {
+            $evDates[] = [$event->format('l'), $event->format('M'), $event->format('m'), $event->format('d'), $event->format('Y')];
+        }
+        return $evDates;
+    }
+
     public function getIdsFromTag($tagId)
     {
         $eventId = $this->EventsTags->find();
