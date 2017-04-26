@@ -43,7 +43,8 @@ class AppController extends Controller
         'CakeJs.Js',
         'Flash',
         'Form',
-        'Html'
+        'Html',
+        'iCal'
     ];
 
     public function initialize()
