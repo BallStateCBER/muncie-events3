@@ -111,6 +111,14 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'widgets', 'action' => 'customize_month']
     );
 
+    // downloadable content
+    Router::connect(
+        "/event/:id.ics",
+        ['controller' => 'events',
+        'action' => 'ics'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
+
     /**
      * Connect catchall routes for all controllers.
      *

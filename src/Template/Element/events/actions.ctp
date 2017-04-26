@@ -36,9 +36,8 @@ if (!isset($canEdit)) {
                 'iCal',
                 [
                     'controller' => 'events',
-                    'action' => 'view',
-                    'id' => $event['id'],
-                    'ext' => 'ics'
+                    'action' => 'ics',
+                    $event['id']
                 ],
                 [
                     'title' => 'Download iCalendar (.ICS) file'
@@ -109,9 +108,8 @@ if (!isset($canEdit)) {
                 'Outlook',
                 [
                     'controller' => 'events',
-                    'action' => 'view',
-                    'id' => $event['id'],
-                    'ext' => 'ics'
+                    'action' => 'ics',
+                    $event['id']
                 ],
                 [
                     'title' => 'Add to Microsoft Outlook'
