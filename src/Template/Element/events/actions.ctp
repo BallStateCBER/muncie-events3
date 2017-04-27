@@ -115,31 +115,6 @@ if (!isset($canEdit)) {
                     'title' => 'Add to Microsoft Outlook'
                 ]
             ); ?>
-            <?php
-                $location = $event['location'];
-                if ($event['location_details']) {
-                    $location .= ', '.$event['location_details'];
-                }
-                $yahoo_cal_url = 'http://calendar.yahoo.com/?';
-                $yahoo_cal_url .= 'in_loc='.urlencode($location);
-                $yahoo_cal_url .= '&in_st='.urlencode($event['address']);
-                $yahoo_cal_url .= '&in_csz='.urlencode('Muncie, IN');
-                $yahoo_cal_url .= '&TITLE='.urlencode($event['title']);
-                $yahoo_cal_url .= '&URL='.urlencode($eventUrl);
-                $yahoo_cal_url .= '&ST='.$start_est;
-                if ($start_est != $end_est) {
-                    $yahoo_cal_url .= '&ET='.$end_est;
-                }
-                $yahoo_cal_url .= '&DESC='.urlencode($description);
-                $yahoo_cal_url .= '&v=60';
-                echo $this->Html->link(
-                    'Yahoo!',
-                    $yahoo_cal_url,
-                    [
-                        'title' => 'Add to Yahoo!Calendar'
-                    ]
-                );
-            ?>
         </div>
     </div>
     <?php if ($user_role == 'admin' && !$event['approved_by']): ?>

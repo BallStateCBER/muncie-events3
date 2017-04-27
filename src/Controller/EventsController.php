@@ -30,7 +30,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'category', 'day', 'index', 'location', 'search', 'tag', 'view'
+            'category', 'day', 'ics', 'index', 'location', 'search', 'tag', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
