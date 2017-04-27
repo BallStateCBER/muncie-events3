@@ -8,14 +8,14 @@ if ($event->time_end) {
     $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
 }
 
-$start = gmdate('Ymd', $date).'T'.gmdate('His', $startTime).'Z';
+$start = date('Ymd', $date).'T'.date('His', $startTime).'Z';
 
 $endStamp = $startTime;
 if ($event->time_end) {
     $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
     $endStamp = $endTime;
 }
-$end = gmdate('Ymd', $date).'T'.gmdate('His', $endStamp).'Z';
+$end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
 
 $vCalendar = new \Eluceo\iCal\Component\Calendar('www.muncieevents.com');
 
@@ -23,10 +23,14 @@ $vEvent = new \Eluceo\iCal\Component\Event();
 $vEvent
     ->setDtStart(new \Datetime($start))
     ->setDtEnd(new \Datetime($end))
-    ->setDescription('Hell yes, this new plugin is great, and everything works, and all I have to do is set everything!')
-    ->setUseTimezone('US/Eastern');
+    ->setDescriptionHTML($event->description)
+    ->setLocation($event->location.' ('.$event->address.')')
+    ->setUniqueId($event->id.'@muncieevents.com')
+    ->setUrl('www.muncieevents.com/event/'.$event->id)
+    ->setCategories($event->category->name);
 
 $vCalendar
+    ->setTimezone('US/Eastern')
     ->addComponent($vEvent);
 
 echo $vCalendar->render();
