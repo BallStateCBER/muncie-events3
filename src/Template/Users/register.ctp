@@ -3,7 +3,7 @@
         'type' => 'file'
     ]); ?>
     <h1 class="page_title">
-        <?php echo $titleForLayout; ?>
+        <?= $titleForLayout; ?>
     </h1>
     <div class="col-lg-6">
         <?= $this->Form->control('name', ['class' => 'form-control']); ?>

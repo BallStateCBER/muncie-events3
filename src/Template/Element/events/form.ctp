@@ -4,7 +4,7 @@
 ?>
 
 <h1 class="page_title">
-    <?php echo $titleForLayout; ?>
+    <?= $titleForLayout; ?>
 </h1>
 
 <a href="#posting_rules" id="posting_rules_toggler" data-toggle="collapse">
@@ -12,7 +12,7 @@
 </a>
 
 <div id="posting_rules" class="alert alert-info collapse" aria-expanded="false">
-    <?php echo $this->element('rules'); ?>
+    <?= $this->element('rules'); ?>
 </div>
 
 <?= $this->Form->create($event, [
@@ -86,7 +86,7 @@
                     <th>Series Name</th>
                     <td>
                         <div class="form-group col-lg-8 col-xs-12">
-                            <?php echo $this->Form->input('EventSeries.title', [
+                            <?= $this->Form->input('EventSeries.title', [
                                 'label' => false,
                                 'class' => 'form-control',
                                 'id' => 'EventSeriesTitle'
@@ -94,7 +94,7 @@
                             <div class="text-muted">
                                 By default, the series and its events have the same title.
                             </div>
-                            <?php echo $this->Form->input('series_id', [
+                            <?= $this->Form->input('series_id', [
                                 'type' => 'hidden'
                             ]); ?>
                         </div>
@@ -148,7 +148,7 @@
                                 ]
                             ]);
                         ?>
-                        <?php echo $this->Form->hidden('has_end_time', [
+                        <?= $this->Form->hidden('has_end_time', [
                             'id' => 'eventform_hasendtime_boolinput',
                             'value' => $has['end_time'] ? 1 : 0
                         ]); ?>
@@ -171,7 +171,7 @@
                             'label' => false,
                             'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
                         ]); ?>
-                        <a href="#" id="eventform_noaddress" <?php echo $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
+                        <a href="#" id="eventform_noaddress" <?= $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
                     </div>
                 </td>
             </tr>
@@ -195,12 +195,12 @@
                 </th>
                 <td>
                     <div class="form-group col-lg-8 col-xs-12">
-                        <?php echo $this->CKEditor->loadJs(); ?>
-                        <?php echo $this->Form->control('description', [
+                        <?= $this->CKEditor->loadJs(); ?>
+                        <?= $this->Form->control('description', [
                             'label' => false,
                             'id' => 'EventDescription'
                         ]); ?>
-                        <?php echo $this->CKEditor->replace('description'); ?>
+                        <?= $this->CKEditor->replace('description'); ?>
                     </div>
                 </td>
             </tr>
@@ -242,7 +242,7 @@
                 <th>Cost</th>
                 <td>
                     <div class="form-group col-lg-8 col-xs-12">
-                        <?php echo $this->Form->input('cost', [
+                        <?= $this->Form->input('cost', [
                             'maxLength' => 200,
                             'label' => false,
                             'class' => 'form-control',
@@ -265,7 +265,7 @@
                 <th>Age Restriction</th>
                 <td>
                     <div class="form-group col-lg-8 col-xs-12">
-                        <?php echo $this->Form->input('age_restriction', [
+                        <?= $this->Form->input('age_restriction', [
                             'label' => false,
                             'class' => 'form-control',
                             'maxLength' => 30,
@@ -288,7 +288,7 @@
                 <th>Source</th>
                 <td>
                     <div class="form-group col-lg-8 col-xs-12">
-                        <?php echo $this->Form->input('source', [
+                        <?= $this->Form->input('source', [
                             'label' => false,
                             'class' => 'form-control',
                             'id' => 'EventSource'
