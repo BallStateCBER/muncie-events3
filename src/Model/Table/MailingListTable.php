@@ -267,33 +267,33 @@ class MailingListTable extends Table
         return (boolean) $this->field('new_subscriber', ['MailingList.id' => $id]);
     }
 
-    public function getHash($recipient_id)
+    public function getHash($recipientId)
     {
-        return md5('recipient'.$recipient_id);
+        return md5('recipient'.$recipientId);
     }
 
-    public function markDailyAsProcessed($recipient_id, $result)
+    public function markDailyAsProcessed($recipientId, $result)
     {
         $this->MailingListLogTable->save([
-            'recipient_id' => $recipient_id,
+            'recipient_id' => $recipientId,
             'result' => $result,
             'is_daily' => 1
         ]);
-        $this->id = $recipient_id;
+        $this->id = $recipientId;
         return (
             $this->saveField('processed_daily', date('Y-m-d H:i:s')) &&
             $this->saveField('new_subscriber', 0)
         );
     }
 
-    public function markWeeklyAsProcessed($recipient_id, $result)
+    public function markWeeklyAsProcessed($recipientId, $result)
     {
         $this->MailingListLogTable->save([
-            'recipient_id' => $recipient_id,
+            'recipient_id' => $recipientId,
             'result' => $result,
             'is_weekly' => 1
         ]);
-        $this->id = $recipient_id;
+        $this->id = $recipientId;
         return (
             $this->saveField('processed_weekly', date('Y-m-d H:i:s')) &&
             $this->saveField('new_subscriber', 0)
@@ -408,15 +408,15 @@ class MailingListTable extends Table
     }
 
     /**
-     * Returns a welcome message if $recipient_id is not set or
+     * Returns a welcome message if $recipientId is not set or
      * corresponds to a user who hasn't received any emails yet,
      * null otherwise.
-     * @param int $recipient_id
+     * @param int $recipientId
      * @return NULL|string
      */
-    public function getWelcomeMessage($recipient_id = null)
+    public function getWelcomeMessage($recipientId = null)
     {
-        if ($recipient_id && $this->isNewSubscriber($recipient_id)) {
+        if ($recipientId && $this->isNewSubscriber($recipientId)) {
             $message = 'Thanks for signing up for the Muncie Events ';
             $message .= 'mailing list! Don\'t hesitate to contact us ';
             $message .= '('.Router::url(['controller' => 'pages', 'action' => 'contact'], true).') ';
@@ -437,15 +437,15 @@ class MailingListTable extends Table
      */
     public function sendDaily($recipient, $events, $testing = false)
     {
-        $recipient_id = $recipient['MailingList']['id'];
+        $recipientId = $recipient['MailingList']['id'];
 
-        if ($this->testing_mode && $recipient_id != 1) {
+        if ($this->testing_mode && $recipientId != 1) {
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because the mailing list is in testing mode.'];
         }
 
         // Make sure there are events to begin with
         if (empty($events)) {
-            $this->markDailyAsProcessed($recipient_id, 2);
+            $this->markDailyAsProcessed($recipientId, 2);
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because there are no events to report.'];
         }
 
@@ -458,7 +458,7 @@ class MailingListTable extends Table
             foreach ($events as $k => $event) {
                 $event_categories[] = $event->Categories->id;
             }
-            $this->markDailyAsProcessed($recipient_id, 3);
+            $this->markDailyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from '.$recipient['MailingList']['email'].'\'s settings<br />';
             $message .= 'Selected: '.$recipient['MailingList']['categories'].'<br />';
             $message .= 'Available: '.(empty($event_categories) ? 'None' : implode(',', $event_categories));
@@ -476,7 +476,7 @@ class MailingListTable extends Table
         }
 
         // Send real email
-        $recipient_id = $recipient['MailingList']['id'];
+        $recipientId = $recipient['MailingList']['id'];
         $email = new Email('mailing_list');
         $subject = 'Today in Muncie: '.date("l, M j");
         $email
@@ -489,17 +489,17 @@ class MailingListTable extends Table
                 'titleForLayout' => $subject,
                 'events' => $events,
                 'recipient_email' => $recipient['MailingList']['email'],
-                'recipient_id' => $recipient['MailingList']['id'],
+                'recipientId' => $recipient['MailingList']['id'],
                 'date' => date("l, F jS, Y"),
-                'hash' => $this->getHash($recipient_id),
-                'welcome_message' => $this->getWelcomeMessage($recipient_id),
+                'hash' => $this->getHash($recipientId),
+                'welcome_message' => $this->getWelcomeMessage($recipientId),
                 'settings_display' => $this->getSettingsDisplay($recipient)
             ]);
         if ($email->send()) {
-            $this->markDailyAsProcessed($recipient_id, 0);
+            $this->markDailyAsProcessed($recipientId, 0);
             return [true, 'Email sent to '.$recipient['MailingList']['email']];
         } else {
-            $this->markDailyAsProcessed($recipient_id, 1);
+            $this->markDailyAsProcessed($recipientId, 1);
             return [false, 'Error sending email to '.$recipient['MailingList']['email']];
         }
     }
@@ -512,9 +512,9 @@ class MailingListTable extends Table
      */
     public function sendWeekly($recipient, $events, $testing = false)
     {
-        $recipient_id = $recipient['MailingList']['id'];
+        $recipientId = $recipient['MailingList']['id'];
 
-        if ($this->testing_mode && $recipient_id != 1) {
+        if ($this->testing_mode && $recipientId != 1) {
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because the mailing list is in testing mode.'];
         }
 
@@ -524,7 +524,7 @@ class MailingListTable extends Table
             $events_count += count($d_events);
         }
         if (! $events_count) {
-            $this->markWeeklyAsProcessed($recipient_id, 2);
+            $this->markWeeklyAsProcessed($recipientId, 2);
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because there are no events to report.'];
         }
 
@@ -538,7 +538,7 @@ class MailingListTable extends Table
             foreach ($events as $k => $event) {
                 $event_categories[] = $event->Categories->id;
             }
-            $this->markWeeklyAsProcessed($recipient_id, 3);
+            $this->markWeeklyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from '.$recipient['MailingList']['email'].'\'s settings<br />';
             $message .= 'Selected: '.$recipient['MailingList']['categories'].'<br />';
             $message .= 'Available: '.(empty($event_categories) ? 'None' : implode(',', $event_categories));
@@ -558,7 +558,7 @@ class MailingListTable extends Table
         }
 
         // Send real email
-        $recipient_id = $recipient['MailingList']['id'];
+        $recipientId = $recipient['MailingList']['id'];
         $email = new Email('mailing_list');
         $subject = 'Upcoming Week in Muncie: '.date("M j");
         $email
@@ -571,17 +571,17 @@ class MailingListTable extends Table
                 'titleForLayout' => $subject,
                 'events' => $events,
                 'recipient_email' => $recipient['MailingList']['email'],
-                'recipient_id' => $recipient['MailingList']['id'],
+                'recipientId' => $recipient['MailingList']['id'],
                 'date' => date("l, F jS, Y"),
-                'hash' => $this->getHash($recipient_id),
-                'welcome_message' => $this->getWelcomeMessage($recipient_id),
+                'hash' => $this->getHash($recipientId),
+                'welcome_message' => $this->getWelcomeMessage($recipientId),
                 'settings_display' => $this->getSettingsDisplay($recipient)
             ]);
         if ($email->send()) {
-            $this->markWeeklyAsProcessed($recipient_id, 0);
+            $this->markWeeklyAsProcessed($recipientId, 0);
             return [true, 'Email sent to '.$recipient['MailingList']['email']];
         } else {
-            $this->markWeeklyAsProcessed($recipient_id, 1);
+            $this->markWeeklyAsProcessed($recipientId, 1);
             return [false, 'Error sending email to '.$recipient['MailingList']['email']];
         }
     }

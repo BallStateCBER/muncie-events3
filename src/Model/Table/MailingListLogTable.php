@@ -26,10 +26,10 @@ class MailingListLogTable extends Table
      * 	3: No applicable events today
      * 	4: Settings forbid sending email today
      */
-    public function addLogEntry($recipient_id, $result, $flavor, $testing = false)
+    public function addLogEntry($recipientId, $result, $flavor, $testing = false)
     {
         $this->create();
         $testing = $testing ? 1 : 0;
-        return $this->save(compact('recipient_id', 'result', 'flavor', 'testing'));
+        return $this->save(compact('recipientId', 'result', 'flavor', 'testing'));
     }
 }
