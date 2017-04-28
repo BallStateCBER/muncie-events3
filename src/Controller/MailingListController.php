@@ -145,12 +145,12 @@ class MailingListController extends AppController
 
         // All event types
         // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
-        $allCategoriesSelected = ($mailingList['event_categories'] == 'all');
-        if (!$allCategoriesSelected) {
-            $selectedCategoryCount = count($mailingList->selected_categories);
-            $allCategoriesCount = count($allCategories);
-            if ($selectedCategoryCount == $allCategoriesCount) {
-                $allCategoriesSelected = true;
+        $allCatSelected = ($mailingList['event_categories'] == 'all');
+        if (!$allCatSelected) {
+            $selectedCatCount = count($mailingList->selected_categories);
+            $allCatCount = count($allCategories);
+            if ($selectedCatCount == $allCatCount) {
+                $allCatSelected = true;
                 $mailingList->all_categories = 1;
                 $mailingList->Categories = $allCategories;
             }
