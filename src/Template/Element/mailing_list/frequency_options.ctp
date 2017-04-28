@@ -1,51 +1,57 @@
 <fieldset class="col-md-6">
     <legend>Frequency</legend>
-    <?php echo $this->Form->input(
-        'frequency',
-        [
-            'type' => 'radio',
-            'options' => [
-                'weekly' => 'Weekly <span class="text-muted">(Thursday, next week\'s events)</span>'
-            ],
-            'class' => 'frequency_options',
-            'div' => [
-                'class'=>'form-control mailing-options'
-            ],
-            'legend' => false
-        ]
-    ); ?>
-    <?php echo $this->Form->input(
-        'frequency',
-        [
-            'type' => 'radio',
-            'options' => [
-                'daily' => 'Daily <span class="text-muted">(Every morning, today\'s events)</span>'
-            ],
-            'class' => 'frequency_options',
-            'div' => [
-                'class'=>'form-control mailing-options'
-            ],
-            'legend' => false
-        ]
-    ); ?>
-    <?php echo $this->Form->input(
-        'frequency',
-        [
-            'type' => 'radio',
-            'options' => [
-                'custom' => 'Custom'
-            ],
-            'class' => 'frequency_options',
-            'div' => [
-                'class'=>'form-control mailing-options'
-            ],
-            'legend' => false
-        ]
-    ); ?>
+    <?php
+        $formTemplate = [
+            'inputContainer' => '{{content}}'
+        ];
+        $this->Form->setTemplates($formTemplate);
+    ?>
+    <div class="form-control mailing-options">
+        <?= $this->Form->input(
+            'frequency',
+            [
+                'type' => 'radio',
+                'options' => [
+                    'weekly' => 'Weekly (Thursday, next week\'s events)'
+                ],
+                'class' => 'frequency_options',
+                'legend' => false,
+                'label' => false
+            ]
+        ); ?>
+    </div>
+    <div class="form-control mailing-options">
+        <?= $this->Form->input(
+            'frequency',
+            [
+                'type' => 'radio',
+                'options' => [
+                    'daily' => 'Daily (Every morning, today\'s events)'
+                ],
+                'class' => 'frequency_options',
+                'legend' => false,
+                'label' => false
+            ]
+        ); ?>
+    </div>
+    <div class="form-control mailing-options">
+        <?= $this->Form->input(
+            'frequency',
+            [
+                'type' => 'radio',
+                'options' => [
+                    'custom' => 'Custom'
+                ],
+                'class' => 'frequency_options',
+                'legend' => false,
+                'label' => false
+            ]
+        ); ?>
+    </div>
     <div id="custom_frequency_options">
         <?php if (isset($frequency_error)): ?>
             <div class="error">
-                <?php echo $frequency_error; ?>
+                <?= $frequency_error; ?>
             </div>
         <?php endif; ?>
         <table>
@@ -54,12 +60,11 @@
                     Weekly:
                 </th>
                 <td>
-                    <?php echo $this->Form->input(
+                    <?= $this->Form->input(
                         'weekly',
                         [
                             'type' => 'checkbox',
-                            'label' => ' Thursday',
-                            'div' => false
+                            'label' => ' Thursday'
                         ]
                     ); ?>
                 </td>
@@ -70,17 +75,16 @@
                 </th>
                 <td>
                     <?php foreach ($days as $code => $day): ?>
-                        <?php echo $this->Form->input(
+                        <?= $this->Form->input(
                             "daily_$code",
                             [
                                 'type' => 'checkbox',
                                 'label' => false,
-                                'div' => false,
                                 'id' => 'daily_'.$code
                             ]
                         ); ?>
-                        <label for="daily_<?php echo $code; ?>">
-                            <?php echo $day; ?>
+                        <label for="daily_<?= $code; ?>">
+                            <?= $day; ?>
                         </label>
                         <br />
                     <?php endforeach; ?>

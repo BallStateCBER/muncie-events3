@@ -390,30 +390,8 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-function mailingListFormValidate() {
-    var unsubscribe_field = $('#MailingListUnsubscribe');
-    if (unsubscribe_field.length != 0 && unsubscribe_field.is(':checked')) {
-        return confirm('Are you sure you want to unsubscribe?');
-    }
-    if ($('#MailingListFrequencyCustom').is(':checked')) {
-        var selected_days = $('#custom_frequency_options input[type=checkbox]:checked');
-        if (selected_days.length == 0) {
-            alert('Please select at least one day on which to receive emails.');
-            return false;
-        }
-    }
-    if ($('#MailingListEventCategoriesCustom').is(':checked')) {
-        var selected_categories = $('#custom_event_type_options input[type=checkbox]:checked');
-        if (selected_categories.length == 0) {
-            alert('Please select at least one event category.');
-            return false;
-        }
-    }
-    return true;
-}
-
 function MailingListToggleFreqOptions() {
-    if ($('#MailingListFrequencyCustom').is(':checked')) {
+    if ($('#frequency-custom').is(':checked')) {
         $('#custom_frequency_options').slideDown(300);
     } else {
         $('#custom_frequency_options').slideUp(300);
@@ -421,7 +399,7 @@ function MailingListToggleFreqOptions() {
 }
 
 function MailingListToggleEventTypeOptions() {
-    if ($('#MailingListEventCategoriesCustom').is(':checked')) {
+    if ($('#event-categories-custom').is(':checked')) {
         $('#custom_event_type_options').slideDown(300);
     } else {
         $('#custom_event_type_options').slideUp(300);
@@ -429,7 +407,7 @@ function MailingListToggleEventTypeOptions() {
 }
 
 function MailingListToggleBasicOptions() {
-    if ($('#MailingListSettingsCustom').is(':checked')) {
+    if ($('#settings-custom').is(':checked')) {
         $('#custom_options').slideDown(300);
     } else {
         $('#custom_options').slideUp(300);
@@ -448,9 +426,6 @@ function setupMailingListForm() {
     });
     $('.settings_options').change(function(event) {
         MailingListToggleBasicOptions();
-    });
-    $('#MailingListForm').submit(function(event) {
-        return mailingListFormValidate();
     });
 }
 
