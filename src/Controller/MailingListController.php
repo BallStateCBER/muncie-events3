@@ -34,7 +34,7 @@ class MailingListController extends AppController
         return $result;
     }
 
-    public function send_daily()
+    public function sendDaily()
     {
         // Make sure there are recipients
         $recipients = $this->MailingList->getDailyRecipients();
@@ -47,8 +47,8 @@ class MailingListController extends AppController
         }
 
         // Make sure there are events to report
-        list($y, $m, $d) = $this->MailingList->getTodayYMD();
-        $events = $this->Event->getEventsOnDay($y, $m, $d, true);
+        list($year, $mon, $day) = $this->MailingList->getTodayYMD();
+        $events = $this->Event->getEventsOnDay($year, $mon, $day, true);
         if (empty($events)) {
             $this->MailingList->markAllDailyAsProcessed($recipients, 'd');
             return $this->renderMessage([
@@ -59,19 +59,19 @@ class MailingListController extends AppController
         }
 
         // Send emails
-        $email_addresses = [];
+        $emailAddresses = [];
         foreach ($recipients as $recipient) {
             $this->__sendDailyEmail($events, $recipient);
-            $email_addresses[] = $recipient['MailingList']['email'];
+            $emailAddresses[] = $recipient['MailingList']['email'];
         }
         return $this->renderMessage([
             'title' => 'Daily Emails Sent',
-            'message' => count($events).' total events, sent to '.count($recipients).' recipients: '.implode(', ', $email_addresses),
+            'message' => count($events).' total events, sent to '.count($recipients).' recipients: '.implode(', ', $emailAddresses),
             'class' => 'success'
         ]);
     }
 
-    public function send_weekly()
+    public function sendWeekly()
     {
         // Make sure that today is the correct day
         if (! $this->MailingList->testing_mode && ! $this->MailingList->isWeeklyDeliveryDay()) {
@@ -93,8 +93,8 @@ class MailingListController extends AppController
         }
 
         // Make sure there are events to report
-        list($y, $m, $d) = $this->MailingList->getTodayYMD();
-        $events = $this->Event->getEventsUpcomingWeek($y, $m, $d, true);
+        list($year, $mon, $day) = $this->MailingList->getTodayYMD();
+        $events = $this->Event->getEventsUpcomingWeek($year, $mon, $day, true);
         if (empty($events)) {
             $this->MailingList->markAllWeeklyAsProcessed($recipients);
             return $this->renderMessage([
@@ -105,26 +105,21 @@ class MailingListController extends AppController
         }
 
         // Send emails
-        $success_count = 0;
+        $successCount = 0;
         foreach ($recipients as $recipient) {
             if ($this->__sendWeeklyEmail($events, $recipient)) {
-                $success_count++;
+                $successCount++;
             }
         }
-        $events_count = 0;
-        foreach ($events as $day => $d_events) {
-            $events_count += count($d_events);
+        $eventsCount = 0;
+        foreach ($events as $day => $dEvents) {
+            $eventsCount += count($dEvents);
         }
         return $this->renderMessage([
             'title' => 'Weekly Emails Sent',
-            'message' => $events_count.' total events, sent to '.$success_count.' recipients.',
+            'message' => $eventsCount.' total events, sent to '.$successCount.' recipients.',
             'class' => 'success'
         ]);
-    }
-
-    private function __setDefaultValues($recipient = null)
-    {
-        $this->request->data = $this->MailingList->getDefaultFormValues($recipient);
     }
 
     private function __readFormData($mailingList)
