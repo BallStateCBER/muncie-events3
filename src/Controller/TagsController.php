@@ -59,24 +59,24 @@ class TagsController extends AppController
 
         $rearrangedNodes = ['branches' => [], 'leaves' => []];
         foreach ($nodes as $key => &$node) {
-            $tag_id = $node->Tags->id;
+            $tagId = $node->Tags->id;
 
             // Check for events associated with this tag
             if ($node->Tags->selectable) {
                 $count = $this->Tags->EventsTag->find('count', [
-                    'conditions' => ['tag_id' => $tag_id]
+                    'conditions' => ['tagId' => $tagId]
                 ]);
                 $node->Tags->no_events = $count == 0;
             }
 
             // Check for children
-            $hasChildren = $this->Tags->childCount($tag_id, true);
+            $hasChildren = $this->Tags->childCount($tagId, true);
             if ($hasChildren) {
-                $tag_name = $node->Tags->name;
-                $rearrangedNodes['branches'][$tag_name] = $node;
+                $tagName = $node->Tags->name;
+                $rearrangedNodes['branches'][$tagName] = $node;
             }
             if (!$hasChildren) {
-                $rearrangedNodes['leaves'][$tag_id] = $node;
+                $rearrangedNodes['leaves'][$tagId] = $node;
             }
         }
 

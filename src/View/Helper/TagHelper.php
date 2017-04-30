@@ -8,7 +8,7 @@ class TagHelper extends Helper
 {
     public $helpers = ['Html', 'Js'];
 
-    private function availableTagsForJs($availableTags)
+    private function availableTagsForJsPr($availableTags)
     {
         $arrayForJson = [];
         if (is_array($availableTags)) {
@@ -17,14 +17,14 @@ class TagHelper extends Helper
                     'id' => $tag->id,
                     'name' => $tag->name,
                     'selectable' => (boolean) $tag->selectable,
-                    'children' => $this->availableTagsForJs($tag->children)
+                    'children' => $this->availableTagsForJsPr($tag->children)
                 ];
             }
         }
         return $arrayForJson;
     }
 
-    private function selectedTagsForJs($selectedTags)
+    private function selectedTagsForJsPr($selectedTags)
     {
         $arrayForJson = [];
         if (is_array($selectedTags)) {
@@ -43,7 +43,7 @@ class TagHelper extends Helper
      * @param array $selectedTags
      * @return array
      */
-    private function formatSelectedTags($selectedTags, $previousTags, $eventId)
+    private function formatSelectedTagsPr($selectedTags, $previousTags, $eventId)
     {
         if (empty($selectedTags)) {
             return [];
@@ -77,7 +77,7 @@ class TagHelper extends Helper
     public function setup($availableTags, $containerId, $selectedTags = [], $previousTags, $eventId)
     {
         if (!empty($selectedTags)) {
-            $selectedTags = $this->formatSelectedTags($selectedTags, $previousTags, $eventId);
+            $selectedTags = $this->formatSelectedTagsPr($selectedTags, $previousTags, $eventId);
         }
 
         if (empty($selectedTags) && (!empty($previousTags))) {
@@ -98,11 +98,11 @@ class TagHelper extends Helper
         }
 
         $this->Js->buffer("
-            TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJs($selectedTags)).";
+            TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJsPr($selectedTags)).";
             TagManager.preselectTags(TagManager.selectedTags);
             ");
         $this->Js->buffer("
-            TagManager.tags = ".$this->Js->object($this->availableTagsForJs($availableTags)).";
+            TagManager.tags = ".$this->Js->object($this->availableTagsForJsPr($availableTags)).";
             TagManager.createTagList(TagManager.tags, $('#$containerId'));
             $('#new_tag_rules_toggler').click(function(event) {
                 event.preventDefault();

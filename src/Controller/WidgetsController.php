@@ -188,7 +188,7 @@ class WidgetsController extends AppController
         return $iframeStyles;
     }
 
-    private function __setDemoData($widgetType)
+    private function setDemoDataPr($widgetType)
     {
         $this->setType($widgetType);
         $iframeQueryString = $this->getIframeQueryString();
@@ -217,7 +217,7 @@ class WidgetsController extends AppController
      */
     public function feed($startDate = null)
     {
-        $this->__setDemoData('feed');
+        $this->setDemoDataPr('feed');
 
         // Get relevant event filters
         $options = filter_input_array(INPUT_GET);
@@ -245,7 +245,7 @@ class WidgetsController extends AppController
             'customStyles' => $this->Widget->customStyles,
             'filters' => $filters,
             'categories' => $this->Events->Categories->getList(),
-            'all_events_url' => $this->__getAllEventsUrl('feed', $queryString)
+            'all_events_url' => $this->getAllEventsUrlPr('feed', $queryString)
         ]);
     }
 
@@ -255,7 +255,7 @@ class WidgetsController extends AppController
      */
     public function month($yearMonth = null)
     {
-        $this->__setDemoData('month');
+        $this->setDemoDataPr('month');
 
         // Process various date information
         if (!$yearMonth) {
@@ -324,7 +324,7 @@ class WidgetsController extends AppController
             'titleForLayout' => "$monthName $year",
             'eventsPerDay' => $eventsPerDay,
             'customStyles' => $this->Widget->customStyles,
-            'all_events_url' => $this->__getAllEventsUrl('month', $queryString),
+            'all_events_url' => $this->getAllEventsUrlPr('month', $queryString),
             'categories' => $this->Events->Category->getList()
         ]);
         $this->set(compact(
@@ -358,7 +358,7 @@ class WidgetsController extends AppController
      * @param string $queryString
      * @return string
      */
-    private function __getAllEventsUrl($action, $queryString)
+    private function getAllEventsUrlPr($action, $queryString)
     {
         if (empty($queryString)) {
             $newQueryString = '';
@@ -469,21 +469,21 @@ class WidgetsController extends AppController
 
     public function demoFeed()
     {
-        $this->__setDemoData('feed');
+        $this->setDemoDataPr('feed');
         $this->viewBuilder()->layout('ajax');
         $this->render('customize/demo');
     }
 
     public function demoMonth()
     {
-        $this->__setDemoData('month');
+        $this->setDemoDataPr('month');
         $this->viewBuilder()->layout('ajax');
         $this->render('customize/demo');
     }
 
     public function customizeFeed()
     {
-        $this->__setDemoData('feed');
+        $this->setDemoDataPr('feed');
         $this->set('titleForLayout', 'Customize Feed Widget');
         $this->viewBuilder()->layout('no_sidebar');
         $this->render('customize/feed');
@@ -491,7 +491,7 @@ class WidgetsController extends AppController
 
     public function customizeMonth()
     {
-        $this->__setDemoData('month');
+        $this->setDemoDataPr('month');
         $this->set('titleForLayout', 'Customize Month Widget');
         $this->viewBuilder()->layout('no_sidebar');
         $this->render('customize/month');

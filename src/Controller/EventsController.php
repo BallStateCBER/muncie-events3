@@ -37,7 +37,7 @@ class EventsController extends AppController
         ]);
     }
 
-    private function __isAdminOrAuthor($eventId)
+    private function isAdminOrAuthorPr($eventId)
     {
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
             return true;
@@ -67,14 +67,14 @@ class EventsController extends AppController
         // Otherwise, only authors can modify authored content
         $authorOnly = ['edit', 'delete'];
         if (in_array($this->action, $authorOnly)) {
-            return $this->__isAdminOrAuthor($this->request->params['named']['id']);
+            return $this->isAdminOrAuthorPr($this->request->params['named']['id']);
         }
 
         // Logged-in users can access everything else
         return true;
     }
 
-    private function __prepareEventForm($event)
+    private function prepareEventFormPr($event)
     {
         $userId = $this->request->session()->read('Auth.User.id');
         $this->set([
@@ -172,7 +172,7 @@ class EventsController extends AppController
         }
     }
 
-    private function __processImageData()
+    private function processImageDataPr()
     {
         $eventId = $this->request->getParam('pass');
         if (isset($eventId[0])) {
@@ -261,13 +261,13 @@ class EventsController extends AppController
         ]);
 
         // prepare form
-        $this->__prepareEventForm($event);
-        $this->__processImageData();
+        $this->prepareEventFormPr($event);
+        $this->processImageDataPr();
 #        $this->__prepareDatePicker();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
-            $this->__uponFormSubmission();
+            $this->uponFormSubmissionPr();
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
@@ -528,7 +528,7 @@ class EventsController extends AppController
         ]);
     }
 
-    private function __uponFormSubmission()
+    private function uponFormSubmissionPr()
     {
         // kill the end time if it hasn't been set
         if (!$this->has['end_time']) {
@@ -549,12 +549,12 @@ class EventsController extends AppController
         $event = $this->Events->newEntity();
 
         // prepare form
-        $this->__prepareEventForm($event);
-        $this->__processImageData();
+        $this->prepareEventFormPr($event);
+        $this->processImageDataPr();
 #        $this->__prepareDatePicker();
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $this->__uponFormSubmission();
+            $this->uponFormSubmissionPr();
 
             $dates = explode(',', $this->request->event['date']);
             #$isSeries = count($dates) > 1;
