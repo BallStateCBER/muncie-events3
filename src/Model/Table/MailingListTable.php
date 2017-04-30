@@ -1,4 +1,4 @@
-<?php
+eventsCount<?php
 namespace App\Model\Table;
 
 use Cake\Mailer\Email;
@@ -155,12 +155,12 @@ class MailingListTable extends Table
 
     public function getDailyRecipients()
     {
-        list($y, $m, $d) = $this->getTodayYMD();
+        list($year, $mon, $day) = $this->getTodayYMD();
         $conditions = [
         'MailingList.daily_'.strtolower(date('D')) => 1,
         'OR' => [
             'MailingList.processed_daily' => null,
-            'MailingList.processed_daily <' => "$y-$m-$d 00:00:00"
+            'MailingList.processed_daily <' => "$year-$mon-$day 00:00:00"
         ]
     ];
         if ($this->testing_mode) {
@@ -180,12 +180,12 @@ class MailingListTable extends Table
 
     public function getWeeklyRecipients()
     {
-        list($y, $m, $d) = $this->getTodayYMD();
+        list($year, $mon, $day) = $this->getTodayYMD();
         $conditions = [
         'MailingList.weekly' => 1,
         'OR' => [
             'MailingList.processed_weekly' => null,
-            'MailingList.processed_weekly <' => "$y-$m-$d 00:00:00"
+            'MailingList.processed_weekly <' => "$year-$mon-$day 00:00:00"
         ]
     ];
         if ($this->testing_mode) {
@@ -209,57 +209,6 @@ class MailingListTable extends Table
             'fri' => 'Friday',
             'sat' => 'Saturday'
         ];
-    }
-
-    public function getDefaultFormValues($recipient = null)
-    {
-        $data = [];
-        $days = $this->getDays();
-
-        // Settings page: Recipient data provided
-        if ($recipient) {
-            $daysSelected = 0;
-            foreach ($days as $dayAbbrev => $dayName) {
-                $daysSelected += $recipient['MailingList']['daily_'.$dayAbbrev];
-            }
-            if ($recipient['MailingList']['weekly'] && $daysSelected == 0) {
-                $data['MailingList']['frequency'] = 'weekly';
-            } elseif (! $recipient['MailingList']['weekly'] && $daysSelected == 7) {
-                $data['MailingList']['frequency'] = 'daily';
-            } else {
-                $data['MailingList']['frequency'] = 'custom';
-            }
-            if ($recipient['MailingList']['all_categories']) {
-                $data['MailingList']['event_categories'] = 'all';
-            } else {
-                $data['MailingList']['event_categories'] = 'custom';
-            }
-            foreach ($recipient['Categories'] as $category) {
-                $data['MailingList']['selected_categories'][$category['id']] = true;
-            }
-            foreach ($days as $code => $day) {
-                $data['MailingList']["daily_$code"] = $recipient['MailingList']["daily_$code"];
-            }
-            $data['MailingList']['weekly'] = $recipient['MailingList']['weekly'];
-            $data['MailingList']['email'] = $recipient['MailingList']['email'];
-            if (isset($_GET['unsubscribe'])) {
-                $data['unsubscribe'] = 1;
-            }
-
-        // Join page: No recipient data
-        } else {
-            $data['MailingList']['frequency'] = 'weekly';
-            $data['MailingList']['event_categories'] = 'all';
-            foreach ($days as $code => $day) {
-                $data['MailingList']['daily'][$code] = true;
-            }
-            $categories = $this->Categories->getAll();
-            foreach ($categories as $categoryId => $categoryName) {
-                $data['MailingList']['selected_categories'][$categoryId] = true;
-            }
-        }
-
-        return $data;
     }
 
     public function isNewSubscriber($id)
@@ -316,17 +265,17 @@ class MailingListTable extends Table
 
     public function filterWeeksEvents($recipient, $events)
     {
-        if (! $recipient['MailingList']['all_categories']) {
-            $selected_categories = explode(',', $recipient['MailingList']['categories']);
-            foreach ($events as $timestamp => $days_events) {
-                foreach ($days_events as $k => $event) {
-                    if (! in_array($event->Categories->id, $selected_categories)) {
+        if (!$recipient['MailingList']['all_categories']) {
+            $selectedCategories = explode(',', $recipient['MailingList']['categories']);
+            foreach ($events as $timestamp => $daysEvents) {
+                foreach ($daysEvents as $k => $event) {
+                    if (! in_array($event->Categories->id, $selectedCategories)) {
                         unset($events[$timestamp][$k]);
                     }
                 }
             }
-            foreach ($events as $timestamp => $days_events) {
-                if (empty($days_events)) {
+            foreach ($events as $timestamp => $daysEvents) {
+                if (empty($daysEvents)) {
                     unset($events[$timestamp]);
                 }
             }
@@ -336,10 +285,10 @@ class MailingListTable extends Table
 
     public function filterDaysEvents($recipient, $events)
     {
-        if (! $recipient['MailingList']['all_categories']) {
-            $selected_categories = explode(',', $recipient['MailingList']['categories']);
+        if (!$recipient['MailingList']['all_categories']) {
+            $selectedCategories = explode(',', $recipient['MailingList']['categories']);
             foreach ($events as $k => $event) {
-                if (! in_array($event->Categories->id, $selected_categories)) {
+                if (! in_array($event->Categories->id, $selectedCategories)) {
                     unset($events[$k]);
                 }
             }
@@ -362,7 +311,8 @@ class MailingListTable extends Table
             $retval .= $and;
             $retval .= array_pop($list);
             return $retval;
-        } else {
+        }
+        if (count($list) <= 1) {
             return array_pop($list);
         }
     }
@@ -371,40 +321,42 @@ class MailingListTable extends Table
     {
         // Categories
         if ($recipient['MailingList']['all_categories']) {
-            $event_types = 'All events';
+            $eventTypes = 'All events';
         } else {
-            $selected_categories = $recipient['Categories'];
-            $category_names = [];
-            foreach ($selected_categories as $sc) {
-                $category_names[] = $sc['name'];
+            $selectedCategories = $recipient['Categories'];
+            $categoryNames = [];
+            foreach ($selectedCategories as $sc) {
+                $categoryNames[] = $sc['name'];
             }
-            $event_types = 'Only '.$this->toList($category_names);
+            $eventTypes = 'Only '.$this->toList($categoryNames);
         }
 
         // Frequency
         $days = $this->getDays();
-        $selected_days = [];
+        $selectedDays = [];
         foreach (array_keys($days) as $day) {
             if ($recipient['MailingList']["daily_$day"]) {
-                $selected_days[] = $days[$day];
+                $selectedDays[] = $days[$day];
             }
         }
-        $day_count = count($selected_days);
-        if ($day_count == 7) {
+        $dayCount = count($selectedDays);
+        if ($dayCount == 7) {
             $frequency = 'Daily';
             if ($recipient['MailingList']['weekly']) {
                 $frequency .= ' and weekly';
             }
-        } elseif ($day_count > 0) {
-            $frequency = 'Daily on '.$this->toList($selected_days);
+        }
+        if ($dayCount > 0) {
+            $frequency = 'Daily on '.$this->toList($selectedDays);
             if ($recipient['MailingList']['weekly']) {
                 $frequency .= ' and weekly';
             }
-        } else {
+        }
+        if ($dayCount == 0) {
             $frequency = $recipient['MailingList']['weekly'] ? 'Weekly' : '?';
         }
 
-        return compact('event_types', 'frequency');
+        return compact('eventTypes', 'frequency');
     }
 
     /**
@@ -454,24 +406,24 @@ class MailingListTable extends Table
 
         // Make sure there are events left
         if (empty($events)) {
-            $event_categories = [];
+            $eventCategories = [];
             foreach ($events as $k => $event) {
-                $event_categories[] = $event->Categories->id;
+                $eventCategories[] = $event->Categories->id;
             }
             $this->markDailyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from '.$recipient['MailingList']['email'].'\'s settings<br />';
             $message .= 'Selected: '.$recipient['MailingList']['categories'].'<br />';
-            $message .= 'Available: '.(empty($event_categories) ? 'None' : implode(',', $event_categories));
+            $message .= 'Available: '.(empty($eventCategories) ? 'None' : implode(',', $eventCategories));
             return [false, $message];
         }
 
         // Fake sending an email if testing
         if ($testing) {
-            $event_titles = [];
+            $eventTitles = [];
             foreach ($events as $e) {
-                $event_titles[] = $e['Event']['title'];
+                $eventTitles[] = $e['Event']['title'];
             }
-            $message = 'Email would have been sent to '.$recipient['MailingList']['email'].'<br />Events: '.implode('; ', $event_titles);
+            $message = 'Email would have been sent to '.$recipient['MailingList']['email'].'<br />Events: '.implode('; ', $eventTitles);
             return [true, $message];
         }
 
@@ -519,11 +471,11 @@ class MailingListTable extends Table
         }
 
         // Make sure there are events to begin with
-        $events_count = 0;
-        foreach ($events as $day => $d_events) {
-            $events_count += count($d_events);
+        $eventsCount = 0;
+        foreach ($events as $day => $dEvents) {
+            $eventsCount += count($dEvents);
         }
-        if (! $events_count) {
+        if (!$events_count) {
             $this->markWeeklyAsProcessed($recipientId, 2);
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because there are no events to report.'];
         }
@@ -534,26 +486,26 @@ class MailingListTable extends Table
         // Make sure there are events left
         if (empty($events)) {
             // No events to report to this user today.
-            $event_categories = [];
+            $eventCategories = [];
             foreach ($events as $k => $event) {
-                $event_categories[] = $event->Categories->id;
+                $eventCategories[] = $event->Categories->id;
             }
             $this->markWeeklyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from '.$recipient['MailingList']['email'].'\'s settings<br />';
             $message .= 'Selected: '.$recipient['MailingList']['categories'].'<br />';
-            $message .= 'Available: '.(empty($event_categories) ? 'None' : implode(',', $event_categories));
+            $message .= 'Available: '.(empty($eventCategories) ? 'None' : implode(',', $eventCategories));
             return [false, $message];
         }
 
         // Fake sending an email if testing
         if ($testing) {
-            $event_titles = [];
-            foreach ($events as $timestamp => $days_events) {
-                foreach ($days_events as $k => $e) {
-                    $event_titles[] = $e['Event']['title'];
+            $eventTitles = [];
+            foreach ($events as $timestamp => $daysEvents) {
+                foreach ($daysEvents as $k => $e) {
+                    $eventTitles[] = $e['Event']['title'];
                 }
             }
-            $message = 'Email would have been sent to '.$recipient['MailingList']['email'].'<br />Events: '.implode('; ', $event_titles);
+            $message = 'Email would have been sent to '.$recipient['MailingList']['email'].'<br />Events: '.implode('; ', $eventTitles);
             return [true, $message];
         }
 
