@@ -50,7 +50,7 @@ class MailingListController extends AppController
         list($year, $mon, $day) = $this->MailingList->getTodayYMD();
         $events = $this->Event->getEventsOnDay($year, $mon, $day, true);
         if (empty($events)) {
-            $this->MailingList->markAllDailyAsProcessed($recipients, 'd');
+            $this->MailingList->setAllDailyAsProcessed($recipients, 'd');
             return $this->renderMessage([
                 'title' => 'Daily Emails Not Sent',
                 'message' => 'No events to inform anyone about today',
@@ -74,7 +74,7 @@ class MailingListController extends AppController
     public function sendWeekly()
     {
         // Make sure that today is the correct day
-        if (! $this->MailingList->testing_mode && ! $this->MailingList->isWeeklyDeliveryDay()) {
+        if (! $this->MailingList->testing_mode && ! $this->MailingList->getWeeklyDeliveryDay()) {
             return $this->renderMessage([
                 'title' => 'Weekly Emails Not Sent',
                 'message' => 'Today is not the day of the week designated for delivering weekly emails.',
@@ -96,7 +96,7 @@ class MailingListController extends AppController
         list($year, $mon, $day) = $this->MailingList->getTodayYMD();
         $events = $this->Event->getEventsUpcomingWeek($year, $mon, $day, true);
         if (empty($events)) {
-            $this->MailingList->markAllWeeklyAsProcessed($recipients);
+            $this->MailingList->setAllWeeklyAsProcessed($recipients);
             return $this->renderMessage([
                 'title' => 'Weekly Emails Not Sent',
                 'message' => 'No events to inform anyone about this week',

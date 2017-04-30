@@ -11,7 +11,7 @@ class CalendarHelper extends Helper
     /**
      * Returns a header describing the dates included in this selection
      */
-    public function selectionHeader($events, $boundary, $startingDate, $endingDate)
+/*    public function selectionHeader($events, $boundary, $startingDate, $endingDate)
     {
         if (empty($events)) {
             $boundaryDate = ($boundary[1] == date('Y-m-d')) ? 'Today' : date('M j, Y', strtotime($boundary[1]));
@@ -111,7 +111,7 @@ class CalendarHelper extends Helper
 
     /**
      * Returns subheader reflecting current tag filter(s)
-     */
+
     public function tagFilterHeader($filter)
     {
         $retval = '';
@@ -134,7 +134,7 @@ class CalendarHelper extends Helper
             );
         }
         return $retval;
-    }
+    }   */
 
     /**
      * Return filter parameters to be used in 'previous' and 'next' links
