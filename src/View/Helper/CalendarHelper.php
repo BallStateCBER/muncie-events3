@@ -60,7 +60,7 @@ class CalendarHelper extends Helper
                     'action' => 'accordion',
                     'end_date' => date('Y-m-d', strtotime("$startingDate - 1 day"))
                 ],
-                $this->__getFilterUrlParams($filter)
+                $this->getFilterUrlParamsPr($filter)
             );
             return $this->Js->link(
                 '&larr; <span>Previous</span> <img id="event_accordion_prev_indicator" src="/img/loading_small.gif" style="visibility: hidden;" />',
@@ -89,7 +89,7 @@ class CalendarHelper extends Helper
                     'action' => 'accordion',
                     'startDate' => date('Y-m-d', strtotime("$endingDate + 1 day"))
                 ],
-                $this->__getFilterUrlParams($filter)
+                $this->getFilterUrlParamsPr($filter)
             );
             return $this->Js->link(
                 '<img id="event_accordion_next_indicator" src="/img/loading_small.gif" style="visibility: hidden;" /> <span>Next</span> &rarr;',
@@ -141,7 +141,7 @@ class CalendarHelper extends Helper
      * @param Array $filter
      * @return Array
      */
-    private function __getFilterUrlParams($filter)
+    private function getFilterUrlParamsPr($filter)
     {
         $filterUrlParams = [];
         if (isset($filter['tag'])) {

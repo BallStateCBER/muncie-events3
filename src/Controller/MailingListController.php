@@ -12,7 +12,7 @@ use Cake\ORM\TableRegistry;
  */
 class MailingListController extends AppController
 {
-    private function __sendDailyEmail($events, $recipient, $testing = false)
+    private function sendDailyEmailPr($events, $recipient, $testing = false)
     {
         list($result, $message) = $this->MailingList->sendDaily($recipient, $events, $testing);
         if ($result) {
@@ -23,7 +23,7 @@ class MailingListController extends AppController
         return $result;
     }
 
-    private function __sendWeeklyEmail($events, $recipient, $testing = false)
+    private function sendWeeklyEmailPr($events, $recipient, $testing = false)
     {
         list($result, $message) = $this->MailingList->sendWeekly($recipient, $events, $testing);
         if ($result) {
@@ -61,7 +61,7 @@ class MailingListController extends AppController
         // Send emails
         $emailAddresses = [];
         foreach ($recipients as $recipient) {
-            $this->__sendDailyEmail($events, $recipient);
+            $this->sendDailyEmailPr($events, $recipient);
             $emailAddresses[] = $recipient['MailingList']['email'];
         }
         return $this->renderMessage([
@@ -107,7 +107,7 @@ class MailingListController extends AppController
         // Send emails
         $successCount = 0;
         foreach ($recipients as $recipient) {
-            if ($this->__sendWeeklyEmail($events, $recipient)) {
+            if ($this->sendWeeklyEmailPr($events, $recipient)) {
                 $successCount++;
             }
         }
@@ -122,7 +122,7 @@ class MailingListController extends AppController
         ]);
     }
 
-    private function __readFormData($mailingList)
+    private function readFormDataPr($mailingList)
     {
         $this->loadModel('Categories');
         $this->loadModel('CategoriesMailingList');
@@ -197,7 +197,7 @@ class MailingListController extends AppController
         $mailingList = $this->MailingList->newEntity();
         if ($this->request->is('post')) {
             $mailingList = $this->MailingList->patchEntity($mailingList, $this->request->getData());
-            $mailingList = $this->__readFormData($mailingList);
+            $mailingList = $this->readFormDataPr($mailingList);
             if ($this->MailingList->save($mailingList)) {
                 $this->Flash->success(__('The mailing list has been saved.'));
 

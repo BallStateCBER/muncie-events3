@@ -219,23 +219,23 @@ class ImagesTable extends Table
         $ext = $imageParams[2];
         switch ($ext) {
             case IMAGETYPE_GIF:
-                $return = $this->__resizeGif($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
+                $return = $this->resizeGifPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             case IMAGETYPE_JPEG:
-                $return = $this->__resizeJpeg($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
+                $return = $this->resizeJpegPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             case IMAGETYPE_PNG:
-                $return = $this->__resizePng($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
+                $return = $this->resizePngPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
             default:
-                $return = $this->__resizeJpeg($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
+                $return = $this->resizeJpegPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
                 break;
         }
 
         return $return;
     }
 
-    private function __resizeGif($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height)
+    private function resizeGifPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height)
     {
         $error = false;
 
@@ -268,7 +268,7 @@ class ImagesTable extends Table
         return false;
     }
 
-    private function __resizeJpeg($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
+    private function resizeJpegPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
 
@@ -301,7 +301,7 @@ class ImagesTable extends Table
         return false;
     }
 
-    private function __resizePng($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
+    private function resizePngPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
         /**

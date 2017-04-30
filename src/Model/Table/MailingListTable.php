@@ -1,4 +1,4 @@
-eventsCount<?php
+<?php
 namespace App\Model\Table;
 
 use Cake\Mailer\Email;
@@ -475,7 +475,7 @@ class MailingListTable extends Table
         foreach ($events as $day => $dEvents) {
             $eventsCount += count($dEvents);
         }
-        if (!$events_count) {
+        if (!$eventsCount) {
             $this->markWeeklyAsProcessed($recipientId, 2);
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because there are no events to report.'];
         }
