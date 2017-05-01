@@ -217,20 +217,19 @@ class WidgetsController extends AppController
      */
     public function feed($startDate = null)
     {
+        $this->loadModel('Events');
         $this->setDemoDataPr('feed');
 
-        // Get relevant event filters
-        $options = filter_input_array(INPUT_GET);
-        $filters = $this->Events->getValidFilters($options);
-        $events = $this->Events->getWidgetPage($startDate, $filters);
-        $eventIds = [];
-        foreach ($events as $date => $daysEvents) {
-            foreach ($daysEvents as $event) {
-                $eventIds[] = $event->id;
-            }
-        }
+        $events = $this->Events
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d')])
+            ->toArray();
+        $this->indexEvents($events);
+
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
-        $this->Widget->processCustomStyles($options);
 
         // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
@@ -238,14 +237,7 @@ class WidgetsController extends AppController
 
         $this->set([
             'titleForLayout' => 'Upcoming Events',
-            'events' => $events,
-            'eventIds' => $eventIds,
-            'is_ajax' => $this->request->is('ajax'),
-            'nextStartDate' => $this->Events->getNextStartDate($events),
-            'customStyles' => $this->Widget->customStyles,
-            'filters' => $filters,
-            'categories' => $this->Events->Categories->getList(),
-            'all_events_url' => $this->getAllEventsUrlPr('feed', $queryString)
+            'isAjax' => $this->request->is('ajax')
         ]);
     }
 
@@ -255,6 +247,7 @@ class WidgetsController extends AppController
      */
     public function month($yearMonth = null)
     {
+        $this->loadModel('Events');
         $this->setDemoDataPr('month');
 
         // Process various date information
@@ -275,63 +268,57 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y').date('m').date('j');
 
-        // Get relevant event filters
-        $options = filter_input_array(INPUT_GET);
-        $filters = $this->Events->getValidFilters($options);
-        $events = $this->Events->getMonth($yearMonth, $filters);
+        $events = $this->Events
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d')])
+            ->toArray();
+        $this->indexEvents($events);
+
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
+
+        // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
+        $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'month'], true);
+        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
+
         $eventsForJson = [];
-        foreach ($events as $date => &$daysEvents) {
-            if (!isset($eventsForJson[$date])) {
+        foreach ($events as $date => &$days_events) {
+            if (! isset($eventsForJson[$date])) {
                 $eventsForJson[$date] = [
                     'heading' => 'Events on '.date('F j, Y', strtotime($date)),
                     'events' => []
                 ];
             }
-            foreach ($daysEvents as &$event) {
-                $timeSplit = explode(':', $event['time_start']);
-                $timestamp = mktime($timeSplit[0], $timeSplit[1]);
-                $displayedTime = date('g:ia', $timestamp);
-                $event['displayed_time'] = $displayedTime;
+            foreach ($days_events as &$event) {
+                $time_split = explode(':', $event->time_start);
+                $timestamp = mktime($time_split[0], $time_split[1]);
+                $displayed_time = date('g:ia', $timestamp);
+                $event->displayed_time = $displayed_time;
                 $eventsForJson[$date]['events'][] = [
-                    'id' => $event['id'],
-                    'title' => $event['title'],
-                    'category_name' => $event->Categories->name,
-                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->Categories->name)),
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'category_name' => $event->category->name,
+                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->category->name)),
                     'url' => Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]),
-                    'time' => $displayedTime
+                    'time' => $displayed_time
                 ];
             }
-        }
-        $this->viewBuilder->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
-        $this->Widget->processCustomStyles($options);
 
-        // Events displayed per day
-        if (isset($options['eventsPerDay'])) {
-            $eventsPerDay = $options['eventsPerDay'];
-        } else {
-            $defaults = $this->Widget->getDefaults();
-            $eventsPerDay = $defaults['event_options']['eventsPerDay'];
-        }
-
-        // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
-        $baseUrl = Router::url([
-            'controller' => 'widgets',
-            'action' => 'month'],
-            true);
-        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
-
-        $this->set([
-            'titleForLayout' => "$monthName $year",
-            'eventsPerDay' => $eventsPerDay,
-            'customStyles' => $this->Widget->customStyles,
-            'all_events_url' => $this->getAllEventsUrlPr('month', $queryString),
-            'categories' => $this->Events->Category->getList()
+            $this->set([
+            'titleForLayout' => 'Upcoming Events',
+            'year' => $year,
+            'month' => $month,
+            'preSpacer' => $preSpacer,
+            'lastDay' => $lastDay,
+            'today' => $today,
+            'eventsForJson' => $eventsForJson,
+            'eventsDisplayedPerDay' => 7,
+            'monthName' => date('F'),
+            'isAjax' => $this->request->is('ajax')
         ]);
-        $this->set(compact(
-            'month', 'year', 'timestamp', 'monthName', 'preSpacer', 'lastDay', 'postSpacer',
-            'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'events',
-            'eventsForJson', 'filters'
-        ));
+        }
     }
 
     /**

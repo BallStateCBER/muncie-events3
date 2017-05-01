@@ -1,16 +1,21 @@
+<?php
+
+use Cake\Routing\Router;
+
+?>
 <?php if (empty($events)): ?>
     <p class="no_events">
-        <?php if ($is_ajax): ?>
+        <?php if ($isAjax): ?>
             No more events found.
         <?php else: ?>
             No upcoming events found.
             <br />
-            <?php echo $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
+            <?= $this->Html->link('Add an upcoming event', ['controller' => 'events', 'action' => 'add']); ?>
         <?php endif; ?>
     </p>
     <?php $this->Js->buffer("muncieEventsFeedWidget.setNoMoreEvents();"); ?>
 <?php else: ?>
-    <?php foreach ($events as $date => $days_events): ?>
+    <?php foreach ($events as $date => $daysEvents): ?>
         <?php
             if ($date == date('Y-m-d')) {
                 $day = 'Today';
@@ -20,14 +25,15 @@
                 $day = date('l', strtotime($date));
             }
         ?>
+        <?php if (count($daysEvents) > 1): ?>
         <h2 class="short_date">
-            <?php echo date('M j', strtotime($date)); ?>
+            <?= date('M j', strtotime($date)); ?>
         </h2>
         <h2 class="day">
-            <?php echo $day; ?>
+            <?= $day; ?>
         </h2>
         <ul>
-            <?php foreach ($days_events as $event): ?>
+            <?php foreach ($daysEvents as $event): ?>
                 <li <?php if (!empty($event['EventsImage'])): ?>class="with_images"<?php endif; ?>>
                     <?php if (!empty($event['EventsImage'])): ?>
                         <?php
@@ -40,21 +46,21 @@
                         ?>
                     <?php endif; ?>
                     <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]); ?>
-                    <a href="<?php echo $url; ?>" title="Click for more info" class="event_link" id="event_link_<?php echo $event->id; ?>">
-                        <?php echo $this->Icon->category($event->Categories->name); ?>
+                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $event->id; ?>">
+                        <?= $this->Icon->category($event->category->name); ?>
                         <div class="title">
-                            <?php echo $event->title; ?>
+                            <?= $event->title; ?>
                         </div>
                         <div class="when_where">
-                            <?php echo date('g:ia', strtotime($event->time_start)); ?>
+                            <?= date('g:ia', strtotime($event->time_start)); ?>
                             @
-                            <?php echo $event->location ? $event->location : '&nbsp;'; ?>
+                            <?= $event->location ? $event->location : '&nbsp;'; ?>
                         </div>
                     </a>
                     <?php if (!empty($event['EventsImage'])): ?>
                         <div class="hidden_images">
                             <?php foreach ($event['EventsImage'] as $image): ?>
-                                <?php echo $this->Calendar->thumbnail('tiny', [
+                                <?= $this->Calendar->thumbnail('tiny', [
                                     'filename' => $image['Image']['filename'],
                                     'caption' => $image['caption'],
                                     'group' => 'event_minimized'.$event['Event']['id']
@@ -65,10 +71,50 @@
                 </li>
             <?php endforeach; ?>
         </ul>
+    <?php elseif (count($daysEvents) == 1): ?>
+        <h2 class="short_date">
+            <?= date('M j', strtotime($date)); ?>
+        </h2>
+        <h2 class="day">
+            <?= $day; ?>
+        </h2>
+        <ul>
+                <li <?php if (!empty($daysEvents['EventsImage'])): ?>class="with_images"<?php endif; ?>>
+                    <?php if (!empty($daysEvents['EventsImage'])): ?>
+                        <?php
+                            $image = array_shift($daysEvents['EventsImage']);
+                            echo $this->Calendar->thumbnail('tiny', [
+                                'filename' => $image['Image']['filename'],
+                                'caption' => $image['caption'],
+                                'group' => 'event_minimized'.$daysEvents->id
+                            ]);
+                        ?>
+                    <?php endif; ?>
+                    <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $daysEvents->id]); ?>
+                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $daysEvents->id; ?>">
+                        <?= $this->Icon->category($daysEvents->category->name); ?>
+                        <div class="title">
+                            <?= $daysEvents->title; ?>
+                        </div>
+                        <div class="when_where">
+                            <?= date('g:ia', strtotime($daysEvents->time_start)); ?>
+                            @
+                            <?= $daysEvents->location ? $daysEvents->location : '&nbsp;'; ?>
+                        </div>
+                    </a>
+                    <?php if (!empty($daysEvents['EventsImage'])): ?>
+                        <div class="hidden_images">
+                            <?php foreach ($daysEvents['EventsImage'] as $image): ?>
+                                <?= $this->Calendar->thumbnail('tiny', [
+                                    'filename' => $image['Image']['filename'],
+                                    'caption' => $image['caption'],
+                                    'group' => 'event_minimized'.$daysEvents['Event']['id']
+                                ]); ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </li>
+        </ul>
+    <?php endif; ?>
     <?php endforeach; ?>
-
-    <?php $this->Js->buffer("
-        muncieEventsFeedWidget.setNextStartDate('$nextStartDate');
-        muncieEventsFeedWidget.prepareLinks([".implode(',', $eventIds)."]);
-    "); ?>
 <?php endif; ?>
