@@ -388,7 +388,10 @@ class EventsController extends AppController
             ->where(['date >=' => date('Y-m-d')])
             ->toArray();
         $this->indexEvents($events);
-        $this->set('titleForLayout', '');
+        $this->set([
+            'titleForLayout', '',
+            'nextStartDate' => $this->Events->getNextStartDate($events)
+        ]);
     }
 
     public function tag($slug = '')
@@ -541,6 +544,19 @@ class EventsController extends AppController
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
             $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
             $this->request->data['published'] = true;
+        }
+
+        // delete tags if necessary
+        if ($this->selectedTags == null && $this->previousTags != null) {
+            $this->request->data['tags'] = [];
+        } elseif ($this->selectedTags != null && $this->previousTags !=null) {
+            foreach ($this->previousTags as $tag) {
+                if (!in_array($tag->id, $this->selectedTags)) {
+                    if (($key = array_search($tag->id, $this->selectedTags)) !== false) {
+                        unset($this->selectedTags[$key]);
+                    }
+                }
+            }
         }
     }
 

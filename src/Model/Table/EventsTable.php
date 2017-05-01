@@ -206,6 +206,13 @@ class EventsTable extends Table
         return $filters;
     }
 
+    public function getNextStartDate($events)
+    {
+        $eventKeys = array_keys($events);
+        $lastDate = end($eventKeys);
+        return date('Y-m-d', strtotime("$lastDate + 1 day"));
+    }
+
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
