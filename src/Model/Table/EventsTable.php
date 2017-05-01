@@ -56,11 +56,15 @@ class EventsTable extends Table
             'foreignKey' => 'series_id'
         ]);
         $this->belongsToMany('Images', [
+            'dependent' => true,
+            'cascadeCallbacks' => true,
             'foreignKey' => 'event_id',
             'targetForeignKey' => 'image_id',
             'joinTable' => 'events_images'
         ]);
         $this->belongsToMany('Tags', [
+            'dependent' => true,
+            'cascadeCallbacks' => true,
             'foreignKey' => 'event_id',
             'targetForeignKey' => 'tag_id',
             'joinTable' => 'events_tags'
@@ -150,8 +154,8 @@ class EventsTable extends Table
             }
 
             // Turn specified options into arrays if they're comma-delimited strings
-            $expectedArrays = ['category', 'tags_included', 'tags_excluded'];
-            if (in_array($var, $expectedArrays) && ! is_[$val]) {
+            $expectedArrays = ['categories', 'tags_included', 'tags_excluded'];
+            if (in_array($var, $expectedArrays) && ! is_array($val)) {
                 $val = explode(',', $val);
                 $correctedArray = [];
                 foreach ($val as $member) {
@@ -166,7 +170,7 @@ class EventsTable extends Table
             // Only include if not empty
             /* Note: A value of 0 is a valid Widget parameter elsewhere (e.g. the
              * boolean 'outerBorder'), but not valid for any event filters. */
-            if (! empty($val)) {
+            if (!empty($val)) {
                 $correctedOptions[$var] = $val;
             }
         }
@@ -203,6 +207,53 @@ class EventsTable extends Table
             }
         }
 
+        return $filters;
+    }
+
+    public function getMonth($yearMonth = null, $filters = [])
+    {
+        if (! $yearMonth) {
+            $yearMonth = date('my');
+        }
+        $split = explode('-', $yearMonth);
+        $year = reset($split);
+        $month = end($split);
+        $filters = $this->formatWidgetFilters($filters);
+        $dates = $this->getPopulatedDates($month, $year, $filters);
+        return $this->getFilteredEventsOnDates($dates, $filters, true);
+    }
+
+    public function getPage($startDate = null, $filters = [], $forWidget = false)
+    {
+        if (!$start_date) {
+            $start_date = date('Y-m-d');
+        }
+        $dates_per_page = 7;
+        $dates = $this->getNextPopulatedDays($start_date, $dates_per_page, $filters);
+        return $this->getFilteredEventsOnDates($dates, $filters, $for_widget);
+    }
+
+    public function getWidgetPage($startDate = null, $filters = [])
+    {
+        $filters = $this->formatWidgetFilters($filters);
+        return $this->getPage($startDate, $filters, true);
+    }
+
+    public function formatWidgetFilters($filters)
+    {
+        foreach (['included', 'excluded'] as $foocluded) {
+            if (isset($filters["tags_$foocluded"])) {
+                foreach ($filters["tags_$foocluded"] as $k => $tagName) {
+                    $tagId = $this->Tags->getIdFromName($tagName);
+                    if ($tagId) {
+                        $filters["tags_$foocluded"][$k] = $tagId;
+                    } else {
+                        unset($filters["tags_$foocluded"][$k]);
+                    }
+                }
+                $filters["tags_$foocluded"] = array_values($filters["tags_$foocluded"]);
+            }
+        }
         return $filters;
     }
 

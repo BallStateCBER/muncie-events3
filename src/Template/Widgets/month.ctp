@@ -1,4 +1,4 @@
-<table class="calendar" id="calendar_<?php echo "$year-$month"; ?>" data-year="<?php echo $year; ?>" data-month="<?php echo $month; ?>">
+<table class="calendar" id="calendar_<?= "$year-$month"; ?>" data-year="<?= $year; ?>" data-month="<?= $month; ?>">
      <thead>
           <tr>
                <td class="prev_month">
@@ -7,7 +7,7 @@
                     </a>
                </td>
                <th colspan="5" class="month_name">
-                    <?php echo $monthName; ?>
+                    <?= $monthName; ?>
                </th>
                <td class="next_month">
                     <a href="#" class="next_month" title="Next month">
@@ -18,28 +18,28 @@
           <tr>
                <?php foreach (['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $letter): ?>
                     <th class="day_header">
-                         <?php echo $letter; ?>
+                         <?= $letter; ?>
                     </th>
                <?php endforeach; ?>
           </tr>
      </thead>
      <tbody>
           <?php
-            for ($cell_num = 0; $cell_num <= 42; $cell_num++) {
+            for ($callNum = 0; $callNum <= 42; $callNum++) {
 
                 // Beginning of row
-                if ($cell_num % 7 == 0) {
+                if ($callNum % 7 == 0) {
                     echo '<tr>';
                 }
 
                 // Pre-spacer
-                if ($cell_num < $preSpacer) {
+                if ($callNum < $preSpacer) {
                     echo '<td class="spacer">&nbsp;</td>';
                 }
 
                 // Calendar date
-                if ($cell_num >= $preSpacer && $cell_num < $preSpacer + $lastDay) {
-                    $day = $cell_num - $preSpacer + 1;
+                if ($callNum >= $preSpacer && $callNum < $preSpacer + $lastDay) {
+                    $day = $callNum - $preSpacer + 1;
                     echo ("$year$month$day" == $today) ? '<td class="today">' : '<td>';
                     echo '<div>';
                     //echo '<span class="number">'.$day.'</span>';
@@ -62,49 +62,47 @@
                     $date = $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-'.str_pad($day, 2, '0', STR_PAD_LEFT);
                     if (isset($events[$date]) && !empty($events[$date])) {
                         echo '<ul>';
-                        // Testing
-                        //$events[$date] = array_merge($events[$date], $events[$date]);
-                        //$events[$date] = array_merge($events[$date], $events[$date]);
-                        //$events[$date] = array_merge($events[$date], $events[$date]);
-                        for ($n = 0; $eventsDisplayedPerDay == 0 || $n < $eventsDisplayedPerDay; $n++) {
-                            if (!isset($events[$date][$n])) {
-                                break;
+                        if (!isset($events[$date][0])) {
+                            $event = $events[$date];
+                        } else {
+                            foreach ($events[$date] as $day => $dayEvent) {
+                                $event = $dayEvent;
                             }
-                            $event = $events[$date][$n];
-                            echo "<li>";
+                        }
+                        echo "<li>";
 
                             // Event link
                             $link_text = $this->Text->truncate(
-                                $event['Event']['title'],
+                                $event->title,
                                 50,
                                 [
                                     'ending' => '...',
                                     'exact' => false
                                 ]
                             );
-                            $category_name = $event['Category']['name'];
-                            $link_text = $this->Icon->category($category_name).$link_text;
-                            echo $this->Html->link(
+                        $category_name = $event->category->name;
+                        $link_text = $this->Icon->category($category_name).$link_text;
+                        echo $this->Html->link(
                                 $link_text,
                                 [
                                     'controller' => 'events',
                                     'action' => 'view',
-                                    'id' => $event['Event']['id']
+                                    'id' => $event->id
                                 ],
                                 [
                                     'escape' => false,
                                     'class' => 'event',
-                                    'data-event-id' => $event['Event']['id'],
-                                    'title' => $event['Event']['displayed_time'].' - '.$event['Event']['title']
+                                    'data-event-id' => $event->id,
+                                    'title' => $event->displayed_time.' - '.$event->title
                                 ]
                             );
 
-                            echo '</li>';
-                        }
-                        echo '</ul>';
-                        $count = count($events[$date]);
-                        if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
-                            echo $this->Html->link(
+                        echo '</li>';
+                    }
+                    echo '</ul>';
+    /*                $count = count($events[$date]);
+                    if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
+                        echo $this->Html->link(
                                 $count - $eventsDisplayedPerDay.' more',
                                 [
                                     'controller' => 'events',
@@ -119,18 +117,18 @@
                                     'title' => 'View all events on this date'
                                 ]
                             );
-                        }
-                    }
-                    echo '</div></td>';
+                    } */
                 }
+                echo '</div></td>';
+            }
 
                 // After the last day
-                if ($cell_num >= $preSpacer + $lastDay - 1) {
+                if ($callNum >= $preSpacer + $lastDay - 1) {
 
                     // End of calendar
-                    if ($cell_num % 7 == 6) {
+                    if ($callNum % 7 == 6) {
                         echo '</tr>';
-                        break;
+                    #    break;
 
                     // Normal spacer
                     } else {
@@ -139,10 +137,10 @@
                 }
 
                 // End of row
-                if ($cell_num % 7 == 6) {
+                if ($callNum % 7 == 6) {
                     echo '</tr>';
                 }
-            }
+            #}
         ?>
      </tbody>
 </table>
