@@ -24,7 +24,7 @@
 </head>
 <body>
     <div class="header">
-        <?= $this->element('widgets/header'); ?>
+        <?= $this->request->params['action'] == 'event' ? '' : $this->element('widgets/header'); ?>
     </div>
     <div id="event_list">
         <?= $this->fetch('content'); ?>
