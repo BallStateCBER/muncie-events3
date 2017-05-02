@@ -63,41 +63,17 @@
                     if (isset($events[$date]) && !empty($events[$date])) {
                         echo '<ul>';
                         if (!isset($events[$date][0])) {
-                            $event = $events[$date];
-                        } else {
-                            foreach ($events[$date] as $day => $dayEvent) {
-                                $event = $dayEvent;
+                            echo $this->element('widgets/month_event', [
+                                'event' => $events[$date]
+                            ]);
+                        }
+                        for ($n = 0; $eventsDisplayedPerDay == 0 || $n < $eventsDisplayedPerDay; $n++) {
+                            if (isset($events[$date][$n])) {
+                                echo $this->element('widgets/month_event', [
+                                    'event' => $events[$date][$n]
+                                ]);
                             }
                         }
-                        echo "<li>";
-
-                            // Event link
-                            $link_text = $this->Text->truncate(
-                                $event->title,
-                                50,
-                                [
-                                    'ending' => '...',
-                                    'exact' => false
-                                ]
-                            );
-                        $category_name = $event->category->name;
-                        $link_text = $this->Icon->category($category_name).$link_text;
-                        echo $this->Html->link(
-                                $link_text,
-                                [
-                                    'controller' => 'events',
-                                    'action' => 'view',
-                                    'id' => $event->id
-                                ],
-                                [
-                                    'escape' => false,
-                                    'class' => 'event',
-                                    'data-event-id' => $event->id,
-                                    'title' => $event->displayed_time.' - '.$event->title
-                                ]
-                            );
-
-                        echo '</li>';
                     }
                     echo '</ul>';
     /*                $count = count($events[$date]);
