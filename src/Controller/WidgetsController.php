@@ -307,17 +307,16 @@ class WidgetsController extends AppController
             }
 
             $this->set([
-            'titleForLayout' => 'Upcoming Events',
-            'year' => $year,
-            'month' => $month,
-            'preSpacer' => $preSpacer,
-            'lastDay' => $lastDay,
-            'today' => $today,
-            'eventsForJson' => $eventsForJson,
+            'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 7,
-            'monthName' => date('F'),
-            'isAjax' => $this->request->is('ajax')
+            'allEventsUrl' => $this->getAllEventsUrlPr('month', $queryString),
+            'categories' => $this->Events->Categories->getAll()
         ]);
+            $this->set(compact(
+            'month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'postSpacer',
+            'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today',
+            'eventsForJson', 'monthName'
+        ));
         }
     }
 
@@ -371,19 +370,19 @@ class WidgetsController extends AppController
 
     public function event($id)
     {
-      $this->loadModel('Events');
-      $event = $this->Events->get($id, [
+        $this->loadModel('Events');
+        $event = $this->Events->get($id, [
           'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
       ]);
-      if (empty($event)) {
-          return $this->renderMessage([
+        if (empty($event)) {
+            return $this->renderMessage([
               'title' => 'Event Not Found',
               'message' => "Sorry, but we couldn't find the event (#$id) you were looking for.",
               'class' => 'error'
           ]);
-      }
-      $this->viewBuilder()->layout('Widgets'.DS.'feed');
-      $this->set([
+        }
+        $this->viewBuilder()->layout('Widgets'.DS.'feed');
+        $this->set([
           'event' => $event
           ]
       );
