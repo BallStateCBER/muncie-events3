@@ -371,42 +371,22 @@ class WidgetsController extends AppController
 
     public function event($id)
     {
-        $event = $this->Events->find('first', [
-            'conditions' => ['Event.id' => $id],
-            'contain' => [
-                'User' => [
-                    'fields' => ['User.id', 'User.name']
-                ],
-                'Category' => [
-                    'fields' => ['Category.id', 'Category.name', 'Category.slug']
-                ],
-                'EventSeries' => [
-                    'fields' => ['EventSeries.id', 'EventSeries.title']
-                ],
-                'Tag' => [
-                    'fields' => ['Tag.id', 'Tag.name']
-                ],
-                'EventsImage' => [
-                    'fields' => ['EventsImage.id', 'EventsImage.caption'],
-                    'Image' => [
-                        'fields' => ['Image.id', 'Image.filename']
-                    ]
-                ]
-            ]
-        ]);
-
-        if (empty($event)) {
-            return $this->renderMessage([
-                'title' => 'Event Not Found',
-                'message' => "Sorry, but we couldn't find the event (#$id) you were looking for.",
-                'class' => 'error'
-            ]);
-        }
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
-        $this->set([
-            'event' => $event
-            ]
-        );
+      $this->loadModel('Events');
+      $event = $this->Events->get($id, [
+          'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
+      ]);
+      if (empty($event)) {
+          return $this->renderMessage([
+              'title' => 'Event Not Found',
+              'message' => "Sorry, but we couldn't find the event (#$id) you were looking for.",
+              'class' => 'error'
+          ]);
+      }
+      $this->viewBuilder()->layout('Widgets'.DS.'feed');
+      $this->set([
+          'event' => $event
+          ]
+      );
     }
 
     public function index()
