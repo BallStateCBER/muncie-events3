@@ -16,6 +16,8 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\I18n\Time;
+use Cake\Routing\Router;
 
 /**
  * Application Controller
@@ -140,32 +142,68 @@ class AppController extends Controller
         if (count(array_unique($dates))>=count($dates)) {
             $events = array_combine($dates, $events);
         }
-        $this->set([
-            'dates' => $dates,
-            'events' => $events,
-            'multipleDates' => $multipleDates,
-        ]);
+    /*    if ($this->request->getParam('controller') == 'Widgets' && $this->request->getParam('action') == 'month') {
+            $eventsForJson = $this->getEventsForJson($events);
+        } else {
+            $eventsForJson = '';
+        } */
+        $this->set(compact('dates', 'events', /* 'eventsForJson',*/ 'multipleDates'));
     }
 
-        // to index dates with multiple events happening during them
-        public function multipleDateIndex($dates, $events)
-        {
-
-            // assign each event a date as a key
-            foreach ($dates as $i => $k) {
-                $events[$k][] = $events[$i];
-                unset($events[$i]);
+    public function getEventsForJson($events)
+    {
+        $eventsForJson = [];
+        foreach ($events as $date => $daysEvents) {
+            if (!isset($eventsForJson[$date])) {
+                $eventsForJson[$date] = [
+                    'heading' => 'Events on '.date('F j, Y', (strtotime($date))),
+                    'events' => []
+                ];
             }
-
-            // if a date has more than one event, add the event to its end, as a new array
-            array_walk($events, create_function('&$v',
-                '$v = (count($v) == 1)? array_pop($v): $v;'
-            ));
-
-            // remove any null or empty events from the array
-            $events = array_filter($events, function ($value) {
-                return $value !== null;
-            });
-            return $events;
+            if (isset($daysEvents[0])) {
+                foreach ($daysEvents as $daysEvents) {
+                    $this->setJsonArrayPr($date, $daysEvents);
+                }
+            } else {
+                $this->setJsonArrayPr($date, $daysEvents);
+            }
         }
+    }
+
+    private function setJsonArrayPr($date, $daysEvents)
+    {
+        $timestamp = strtotime($daysEvents->time_start->i18nFormat('yyyyMMddHHmmss'));
+        $displayedTime = date('g:ia', $timestamp);
+        $daysEvents->displayed_time = $displayedTime;
+        $eventsForJson[$date]['events'][] = [
+            'id' => $daysEvents->id,
+            'title' => $daysEvents->title,
+            'category_name' => $daysEvents->category->name,
+            'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $daysEvents->category->name)),
+            'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $daysEvents->id]),
+            'time' => $displayedTime
+        ];
+    }
+
+    // to index dates with multiple events happening during them
+    public function multipleDateIndex($dates, $events)
+    {
+
+        // assign each event a date as a key
+        foreach ($dates as $i => $k) {
+            $events[$k][] = $events[$i];
+            unset($events[$i]);
+        }
+
+        // if a date has more than one event, add the event to its end, as a new array
+        array_walk($events, create_function('&$v',
+            '$v = (count($v) == 1)? array_pop($v): $v;'
+        ));
+
+        // remove any null or empty events from the array
+        $events = array_filter($events, function ($value) {
+            return $value !== null;
+        });
+        return $events;
+    }
 }

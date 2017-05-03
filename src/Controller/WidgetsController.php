@@ -261,7 +261,6 @@ class WidgetsController extends AppController
         $monthName = date('F', $timestamp);
         $preSpacer = date('w', $timestamp);
         $lastDay = date('t', $timestamp);
-        $postSpacer = 6 - date('w', mktime(0, 0, 0, $month, $lastDay, $year));
         $prevYear = ($month == 1) ? $year - 1 : $year;
         $prevMonth = ($month == 1) ? 12 : $month - 1;
         $nextYear = ($month == 12) ? $year + 1 : $year;
@@ -283,41 +282,31 @@ class WidgetsController extends AppController
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'month'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
-        $eventsForJson = [];
-        foreach ($events as $date => &$days_events) {
-            if (! isset($eventsForJson[$date])) {
-                $eventsForJson[$date] = [
-                    'heading' => 'Events on '.date('F j, Y', strtotime($date)),
-                    'events' => []
-                ];
-            }
-            foreach ($days_events as &$event) {
-                $timeSplit = explode(':', $event->time_start);
-                $timestamp = mktime($timeSplit[0], $timeSplit[1]);
-                $displayedTime = date('g:ia', $timestamp);
-                $event->displayed_time = $displayedTime;
-                $eventsForJson[$date]['events'][] = [
-                    'id' => $event->id,
-                    'title' => $event->title,
-                    'category_name' => $event->category->name,
-                    'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->category->name)),
-                    'url' => Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]),
-                    'time' => $displayedTime
-                ];
-            }
+        // manually set $eventsForJson just for debugging purposes...
+        $eventsForJson['2017-06-03'] = [
+            'heading' => 'Events on '.date('F j, Y', (strtotime('2017-06-03'))),
+            'events' => []
+        ];
+        $eventsForJson['2017-06-03']['events'][] = [
+            'id' => '4459',
+            'title' => 'The Steampunk Kids go to the park and wear corsets',
+            'category_name' => 'General Events',
+            'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', 'General Events')),
+            'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => 4459]),
+            'time' => '2 PM'
+        ];
 
-            $this->set([
+        $this->set([
             'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 1,
             'allEventsUrl' => $this->getAllEventsUrlPr('month', $queryString),
             'categories' => $this->Events->Categories->getAll()
         ]);
-            $this->set(compact(
-            'month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'postSpacer',
+        $this->set(compact(
+            'month', 'year', 'timestamp', 'preSpacer', 'lastDay',
             'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today',
-            'eventsForJson', 'monthName'
+            'monthName', 'eventsForJson'
         ));
-        }
     }
 
     /**

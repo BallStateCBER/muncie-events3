@@ -25,24 +25,23 @@
      </thead>
      <tbody>
           <?php
-            for ($callNum = 0; $callNum <= 42; $callNum++) {
+            for ($cellNum = 0; $cellNum <= 42; $cellNum++) {
 
                 // Beginning of row
-                if ($callNum % 7 == 0) {
+                if ($cellNum % 7 == 0) {
                     echo '<tr>';
                 }
 
                 // Pre-spacer
-                if ($callNum < $preSpacer) {
+                if ($cellNum < $preSpacer) {
                     echo '<td class="spacer">&nbsp;</td>';
                 }
 
                 // Calendar date
-                if ($callNum >= $preSpacer && $callNum < $preSpacer + $lastDay) {
-                    $day = $callNum - $preSpacer + 1;
+                if ($cellNum >= $preSpacer && $cellNum < $preSpacer + $lastDay) {
+                    $day = $cellNum - $preSpacer + 1;
                     echo ("$year$month$day" == $today) ? '<td class="today">' : '<td>';
                     echo '<div>';
-                    //echo '<span class="number">'.$day.'</span>';
 
                     echo $this->Html->link(
                         $day,
@@ -96,27 +95,25 @@
                     echo '</ul>';
                 }
                 echo '</div></td>';
+            // After the last day
+            if ($cellNum >= $preSpacer + $lastDay - 1) {
+
+                // End of calendar
+                if ($cellNum % 7 == 6) {
+                    echo '</tr>';
+                    break;
+
+                // Normal spacer
+                } else {
+                    echo '<td class="spacer">&nbsp;</td>';
+                }
             }
 
-                // After the last day
-                if ($callNum >= $preSpacer + $lastDay - 1) {
-
-                    // End of calendar
-                    if ($callNum % 7 == 6) {
-                        echo '</tr>';
-                    #    break;
-
-                    // Normal spacer
-                    } else {
-                        echo '<td class="spacer">&nbsp;</td>';
-                    }
-                }
-
-                // End of row
-                if ($callNum % 7 == 6) {
-                    echo '</tr>';
-                }
-            #}
+            // End of row
+            if ($cellNum % 7 == 6) {
+                echo '</tr>';
+            }
+            }
         ?>
      </tbody>
 </table>

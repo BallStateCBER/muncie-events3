@@ -198,6 +198,40 @@ class EventsTable extends Table
         return $retval;
     }
 
+    public function getPopulatedDates($month = null, $year = null, $filters = null)
+    {
+        $findParams = [
+            'conditions' => ['Events.published' => 1],
+            'fields' => ['DISTINCT Events.date'],
+            'contain' => [],
+            'order' => ['Events.date ASC']
+        ];
+
+        // Apply optional month/year limits
+        if ($month && $year) {
+            $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+            $findParams['conditions']['Events.date LIKE'] = "$year-$month-%";
+            $findParams['limit'] = 31;
+        } elseif ($year) {
+            $findParams['conditions']['Events.date LIKE'] = "$year-%";
+        }
+
+        // Apply optional filters
+    #    if ($filters) {
+    #        $startDate = null;
+    #        $findParams = $this->applyFiltersToFindParams($findParams, $filters, $startDate);
+    #    }
+
+        $dateResults = $this->find('all', $findParams);
+        $dates = [];
+        foreach ($dateResults as $result) {
+            if (isset($result['Events']['date'])) {
+                $dates[] = $result['Events']['date'];
+            }
+        }
+        return $dates;
+    }
+
     public function getAllUpcomingEventCounts()
     {
         $results = $this->find();

@@ -134,17 +134,6 @@ var muncieEventsMonthWidget = {
                event_link.append(event.title);
                event_list.append(event_link);
           }
-          /*
-          var close_button = $('<a href="#" class="close"><span class="x">x</span>Close</a>');
-          close_button.click(function(event) {
-               event.preventDefault();
-               event_lists_container.fadeOut(muncieEventsMonthWidget.fade_duration, function() {
-                    event_list.hide();
-                    calendar_container.fadeIn(muncieEventsMonthWidget.fade_duration);
-               });
-          });
-          event_list.prepend(close_button);
-          */
           var back_link = $('<a href="#" class="back">&larr; Back</a>').click(function (event) {
                event.preventDefault();
                event_list.fadeOut(muncieEventsMonthWidget.fade_duration, function() {
@@ -237,8 +226,8 @@ var muncieEventsMonthWidget = {
                success: function(data) {
                     $('#calendar_container table.calendar:visible').fadeOut(muncieEventsMonthWidget.fade_duration, function() {
                          $(this).parent().hide().append(data).fadeIn(muncieEventsMonthWidget.fade_duration);
+                         console.log(muncieEventsMonthWidget);
                     });
-                    alert('your life is still as mistable as you think it is');
                },
                error: function() {
                     alert('There was an error loading that month. Please try again.');
@@ -259,11 +248,6 @@ var muncieEventsMonthWidget = {
                     continue;
                }
                this.events[date] = events_on_date;
-               /*
-               for (var i = 0; i < events_on_date.length; i++) {
-                    var event = events_on_date[i];
-               }
-               */
           }
      },
 

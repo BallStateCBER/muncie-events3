@@ -6,7 +6,7 @@
     <?= $this->Html->charset(); ?>
     <title>
         Muncie Events
-        <?php if ($titleForLayout): ?>
+        <?php if (isset($titleForLayout)): ?>
             - <?= $titleForLayout ?>
         <?php else: ?>
         <?php endif; ?>

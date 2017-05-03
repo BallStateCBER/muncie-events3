@@ -1,5 +1,9 @@
 engines:
+  duplication:
+    enabled: true
   phpcodesniffer:
+    enabled: true
+  phpmd:
     enabled: true
 ratings:
   paths:
