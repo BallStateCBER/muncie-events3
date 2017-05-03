@@ -72,28 +72,28 @@
                                 echo $this->element('widgets/month_event', [
                                     'event' => $events[$date][$n]
                                 ]);
+                                $count = count($events[$date]);
+                                if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
+                                    echo $this->Html->link(
+                                            $count - $eventsDisplayedPerDay.' more',
+                                            [
+                                                'controller' => 'events',
+                                                'action' => 'day',
+                                                $month,
+                                                $day,
+                                                $year
+                                            ],
+                                            [
+                                                'class' => 'more',
+                                                'data-day' => str_pad($day, 2, '0', STR_PAD_LEFT),
+                                                'title' => 'View all events on this date'
+                                            ]
+                                        );
+                                }
                             }
                         }
                     }
                     echo '</ul>';
-    /*                $count = count($events[$date]);
-                    if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
-                        echo $this->Html->link(
-                                $count - $eventsDisplayedPerDay.' more',
-                                [
-                                    'controller' => 'events',
-                                    'action' => 'day',
-                                    $month,
-                                    $day,
-                                    $year
-                                ],
-                                [
-                                    'class' => 'more',
-                                    'data-day' => str_pad($day, 2, '0', STR_PAD_LEFT),
-                                    'title' => 'View all events on this date'
-                                ]
-                            );
-                    } */
                 }
                 echo '</div></td>';
             }

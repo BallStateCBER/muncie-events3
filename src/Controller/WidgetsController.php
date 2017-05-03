@@ -292,23 +292,23 @@ class WidgetsController extends AppController
                 ];
             }
             foreach ($days_events as &$event) {
-                $time_split = explode(':', $event->time_start);
-                $timestamp = mktime($time_split[0], $time_split[1]);
-                $displayed_time = date('g:ia', $timestamp);
-                $event->displayed_time = $displayed_time;
+                $timeSplit = explode(':', $event->time_start);
+                $timestamp = mktime($timeSplit[0], $timeSplit[1]);
+                $displayedTime = date('g:ia', $timestamp);
+                $event->displayed_time = $displayedTime;
                 $eventsForJson[$date]['events'][] = [
                     'id' => $event->id,
                     'title' => $event->title,
                     'category_name' => $event->category->name,
                     'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $event->category->name)),
                     'url' => Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]),
-                    'time' => $displayed_time
+                    'time' => $displayedTime
                 ];
             }
 
             $this->set([
             'titleForLayout' => "$monthName $year",
-            'eventsDisplayedPerDay' => 7,
+            'eventsDisplayedPerDay' => 1,
             'allEventsUrl' => $this->getAllEventsUrlPr('month', $queryString),
             'categories' => $this->Events->Categories->getAll()
         ]);
