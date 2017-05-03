@@ -1,5 +1,5 @@
 <?php
-    $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'edit_series');
+    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'edit_series');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
@@ -55,7 +55,7 @@
                     <div class="col-xs-12 col-lg-8">
                         <div id="datepicker" class="multi"></div>
                         <?php
-                    /*    if ($multipleDatesAllowed) {
+                        if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
                                 var defaultDate = $defaultDate;
@@ -64,15 +64,14 @@
                             ");
                         } else {
                             $this->Js->buffer("
-                                var defaultDate = '".$this->request->Event['date']."';
+                                var defaultDate = '".$event->date."';
                                 setupDatepickerSingle(defaultDate);
                             ");
                         }
-                            echo $this->Js->writeBuffer(); */
+                            echo $this->Js->writeBuffer();
                             echo $this->Form->input('date', [
-                                //'type' => 'hidden',
-                                'id' => 'datepicker'
-                                //'id' => 'datepicker_hidden'
+                                'type' => 'hidden',
+                                'id' => 'datepicker_hidden'
                             ]);
                         ?>
                         <div class="text-muted">

@@ -104,7 +104,7 @@ class EventsController extends AppController
         ]);
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
-            $hasSeries = count(explode(',', $event['date'])) > 1;
+            $hasSeries = count(explode(',', $event->date)) > 1;
             $hasEndTime = isset($event['has_end_time']) ? $event['has_end_time'] : false;
         } elseif ($this->request->action == 'edit') {
             $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
@@ -207,16 +207,16 @@ class EventsController extends AppController
         unset($this->request->data['data']['Images']);
     }
 
-/*    private function __prepareDatePicker()
+    private function prepareDatePickerPr($event)
     {
         // Prepare date picker
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
             $dateFieldValues = [];
-            if (empty($event['date'])) {
+            if (empty($event->date)) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
             } else {
-                $dates = explode(',', $event['date']);
+                $dates = explode(',', $event->date);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
                     if (!isset($defaultDate)) {
@@ -231,23 +231,20 @@ class EventsController extends AppController
                 $datesForJs = implode(',', $datesForJs);
                 $preselectedDates = "[$datesForJs]";
             }
-            $this->set([
-                'defaultDate' => $defaultDate,
-                'preselectedDates' => $preselectedDates
-            ]);
-            $event['date'] = implode(',', $dateFieldValues);
+            $this->set(compact('defaultDate', 'preselectedDates'));
+            $event->date = implode(',', $dateFieldValues);
         } elseif ($this->action == 'edit') {
-            list($year, $month, $day) = explode('-', $event['date']);
-            $event['date'] = "$month/$day/$year";
+            list($year, $month, $day) = explode('-', $event->date);
+            $event->date = "$month/$day/$year";
         }
-    } */
+    }
 
     public function datepickerPopulatedDates()
     {
         $results = $this->Events->getPopulatedDates();
         $dates = [];
         foreach ($results as $result) {
-            list($year, $month, $day) = explode('-', $result->Events->date);
+            list($year, $month, $day) = explode('-', $result->date);
             $dates["$month-$year"][] = $day;
         }
         $this->set(compact('dates'));
@@ -263,7 +260,7 @@ class EventsController extends AppController
         // prepare form
         $this->prepareEventFormPr($event);
         $this->processImageDataPr();
-#        $this->__prepareDatePicker();
+        $this->prepareDatePickerPr($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
@@ -567,21 +564,10 @@ class EventsController extends AppController
         // prepare form
         $this->prepareEventFormPr($event);
         $this->processImageDataPr();
-#        $this->__prepareDatePicker();
+        $this->prepareDatePickerPr($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
-
-            $dates = explode(',', $this->request->event['date']);
-            #$isSeries = count($dates) > 1;
-
-            // Correct date format
-            foreach ($dates as &$date) {
-                $date = trim($date);
-                $timestamp = strtotime($date);
-                $date = date('Y-m-d', $timestamp);
-            }
-            unset($date);
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {
