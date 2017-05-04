@@ -12,10 +12,10 @@
         </label>
         <br />
         <?php foreach ($headerVars['categories'] as $category): ?>
-            <input type="checkbox" value="<?= $category['Category']['id']; ?>" id="WidgetCat<?= $category['Category']['id']; ?>" class="category" checked="checked" />
-            <label for="WidgetCat<?= $category['Category']['id']; ?>">
-                <?= $this->Icon->category($category['Category']['name']); ?>
-                <?= $category['Category']['name']; ?>
+            <input type="checkbox" value="<?= $category->id; ?>" id="WidgetCat<?= $category->id; ?>" class="category" checked="checked" />
+            <label for="WidgetCat<?= $category->id; ?>">
+                <?= $this->Icon->category($category->name); ?>
+                <?= $category->name; ?>
             </label>
             <br />
         <?php endforeach; ?>
