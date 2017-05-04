@@ -147,10 +147,10 @@
     </tbody>
 </table>
 
-<?php $this->Js->buffer("
+<?= $this->Html->scriptBlock("
     muncieEventsMonthWidget.setCurrentMonth('$month');
     muncieEventsMonthWidget.setCurrentYear('$year');
     muncieEventsMonthWidget.prepareLinks('#calendar_$year-$month');
     var events = ".$this->Js->object($eventsForJson).";
     muncieEventsMonthWidget.setEvents(events);
-"); ?>
+", ['defer' => true]); ?>
