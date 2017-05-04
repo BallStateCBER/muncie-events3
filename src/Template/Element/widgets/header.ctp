@@ -14,7 +14,7 @@
         </li>
     <?php endif; ?>
     <li>
-        <?php echo $this->Html->link('Add Event', ['controller' => 'events', 'action' => 'add']); ?>
+        <?= $this->Html->link('Add Event', ['controller' => 'events', 'action' => 'add']); ?>
     </li>
 </ul>
 <?php if (!empty($filters)): ?>
@@ -25,7 +25,7 @@
                 <?php if (isset($filters['category'])): ?>
                     <li>
                         <strong>
-                            <?php echo count($filters['category']) == 1 ? 'Category' : 'Categories'; ?>:
+                            <?= count($filters['category']) == 1 ? 'Category' : 'Categories'; ?>:
                         </strong>
                         <?php
                             $category_names = [];
@@ -41,23 +41,23 @@
                         <strong>
                             Location:
                         </strong>
-                        <?php echo $filters['location']; ?>
+                        <?= $filters['location']; ?>
                     </li>
                 <?php endif; ?>
                 <?php if (isset($filters['tags_included'])): ?>
                     <li>
                         <strong>
-                            With <?php echo count($filters['tags_included']) == 1 ? 'tag' : 'tags'; ?>:
+                            With <?= count($filters['tags_included']) == 1 ? 'tag' : 'tags'; ?>:
                         </strong>
-                        <?php echo $this->Text->toList($filters['tags_included']); ?>
+                        <?= $this->Text->toList($filters['tags_included']); ?>
                     </li>
                 <?php endif; ?>
                 <?php if (isset($filters['tags_excluded'])): ?>
                     <li>
                         <strong>
-                            Without <?php echo count($filters['tags_excluded']) == 1 ? 'tag' : 'tags'; ?>:
+                            Without <?= count($filters['tags_excluded']) == 1 ? 'tag' : 'tags'; ?>:
                         </strong>
-                        <?php echo $this->Text->toList($filters['tags_excluded']); ?>
+                        <?= $this->Text->toList($filters['tags_excluded']); ?>
                     </li>
                 <?php endif; ?>
             </ul>

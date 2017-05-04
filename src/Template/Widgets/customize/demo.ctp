@@ -1,7 +1,7 @@
-<iframe style="<?php echo $iframeStyles; ?>" src="<?php echo $iframeUrl; ?>"></iframe>
+<iframe style="<?= $iframeStyles; ?>" src="<?= $iframeUrl; ?>"></iframe>
 <p>
-    To include this widget in your webpage, insert the following code where you would like it to appear:
-    <code>
-        &lt;iframe style="<?php echo $iframeStyles; ?>" src="<?php echo $code_url; ?>"&gt;&lt;/iframe&gt;
-    </code>
+	To include this widget in your webpage, insert the following code where you would like it to appear:
+	<code>
+		&lt;iframe style="<?= $iframeStyles; ?>" src="<?= $codeUrl; ?>"&gt;&lt;/iframe&gt;
+	</code>
 </p>

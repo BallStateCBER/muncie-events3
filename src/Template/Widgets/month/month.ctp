@@ -1,4 +1,4 @@
-<table class="calendar" id="calendar_<?php echo "$year-$month"; ?>" data-year="<?php echo $year; ?>" data-month="<?php echo $month; ?>">
+<table class="calendar" id="calendar_<?= "$year-$month"; ?>" data-year="<?= $year; ?>" data-month="<?= $month; ?>">
     <thead>
         <tr>
             <td class="prev_month">
@@ -7,7 +7,7 @@
                 </a>
             </td>
             <th colspan="5" class="month_name">
-                <?php echo $monthName; ?>
+                <?= $monthName; ?>
             </th>
             <td class="next_month">
                 <a href="#" class="next_month" title="Next month">
@@ -18,7 +18,7 @@
         <tr>
             <?php foreach (['S', 'M', 'T', 'W', 'T', 'F', 'S'] as $letter): ?>
                 <th class="day_header">
-                    <?php echo $letter; ?>
+                    <?= $letter; ?>
                 </th>
             <?php endforeach; ?>
         </tr>
