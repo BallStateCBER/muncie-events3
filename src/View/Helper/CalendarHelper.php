@@ -290,6 +290,42 @@ class CalendarHelper extends Helper
     }
 
     /**
+     * Returns a linked arrow to the previous day
+     * @param int $timestamp Of the previous day
+     */
+    public function prevMonth($month, $year)
+    {
+        return $this->Html->link(
+            '&larr; Previous Month',
+            [
+                'controller' => 'events',
+                'action' => 'month',
+                $month - 1,
+                $year
+            ],
+            ['escape' => false]
+        );
+    }
+
+    /**
+     * Returns a linked arrow to the next day
+     * @param int $timestamp Of the next day
+     */
+    public function nextMonth($month, $year)
+    {
+        return $this->Html->link(
+            'Next Month &rarr;',
+            [
+                'controller' => 'events',
+                'action' => 'month',
+                $month + 1,
+                $year
+            ],
+            ['escape' => false]
+        );
+    }
+
+    /**
      * Outputs either a thumbnail (square) image or a small (width-limited) image
      * @param string $type 'small' or 'tiny'
      * @param array $params

@@ -2,17 +2,19 @@
      <thead>
           <tr>
                <td class="prev_month">
-                    <a href="#" class="prev_month" title="Previous month">
+                    <!--a href="#" class="prev_month" title="Previous month">
                          &larr;
-                    </a>
+                    </a-->
+                    <?php echo $this->Calendar->prevMonth($month, $year); ?>
                </td>
                <th colspan="5" class="month_name">
                     <?= $monthName; ?>
                </th>
                <td class="next_month">
-                    <a href="#" class="next_month" title="Next month">
+                    <!--a href="#" class="next_month" title="Next month">
                          &rarr;
-                    </a>
+                    </a-->
+                    <?php echo $this->Calendar->nextMonth($month, $year); ?>
                </td>
           </tr>
           <tr>

@@ -34,13 +34,13 @@ use Cake\Routing\Router;
         </h2>
         <ul>
             <?php foreach ($daysEvents as $event): ?>
-                <li <?php if (!empty($event['EventsImage'])): ?>class="with_images"<?php endif; ?>>
-                    <?php if (!empty($event['EventsImage'])): ?>
+                <li <?php if (!empty($event['images'])): ?>class="with_images"<?php endif; ?>>
+                    <?php if (!empty($event['images'])): ?>
                         <?php
-                            $image = array_shift($event['EventsImage']);
+                            $image = array_shift($event['images']);
                             echo $this->Calendar->thumbnail('tiny', [
-                                'filename' => $image['Image']['filename'],
-                                'caption' => $image['caption'],
+                                'filename' => $image->filename,
+                                'caption' => $image->caption,
                                 'group' => 'event_minimized'.$event->id
                             ]);
                         ?>
@@ -57,13 +57,13 @@ use Cake\Routing\Router;
                             <?= $event->location ? $event->location : '&nbsp;'; ?>
                         </div>
                     </a>
-                    <?php if (!empty($event['EventsImage'])): ?>
+                    <?php if (!empty($event['images'])): ?>
                         <div class="hidden_images">
-                            <?php foreach ($event['EventsImage'] as $image): ?>
+                            <?php foreach ($event['images'] as $image): ?>
                                 <?= $this->Calendar->thumbnail('tiny', [
-                                    'filename' => $image['Image']['filename'],
-                                    'caption' => $image['caption'],
-                                    'group' => 'event_minimized'.$event['Event']['id']
+                                    'filename' => $image->filename,
+                                    'caption' => $image->caption,
+                                    'group' => 'event_minimized'.$event->id
                                 ]); ?>
                             <?php endforeach; ?>
                         </div>
@@ -79,13 +79,13 @@ use Cake\Routing\Router;
             <?= $day; ?>
         </h2>
         <ul>
-                <li <?php if (!empty($daysEvents['EventsImage'])): ?>class="with_images"<?php endif; ?>>
-                    <?php if (!empty($daysEvents['EventsImage'])): ?>
+                <li <?php if (!empty($daysEvents['images'])): ?>class="with_images"<?php endif; ?>>
+                    <?php if (!empty($daysEvents['images'])): ?>
                         <?php
-                            $image = array_shift($daysEvents['EventsImage']);
+                            $image = array_shift($daysEvents['images']);
                             echo $this->Calendar->thumbnail('tiny', [
-                                'filename' => $image['Image']['filename'],
-                                'caption' => $image['caption'],
+                                'filename' => $image->filename,
+                                'caption' => $image->caption,
                                 'group' => 'event_minimized'.$daysEvents->id
                             ]);
                         ?>
@@ -102,13 +102,13 @@ use Cake\Routing\Router;
                             <?= $daysEvents->location ? $daysEvents->location : '&nbsp;'; ?>
                         </div>
                     </a>
-                    <?php if (!empty($daysEvents['EventsImage'])): ?>
+                    <?php if (!empty($daysEvents['images'])): ?>
                         <div class="hidden_images">
-                            <?php foreach ($daysEvents['EventsImage'] as $image): ?>
+                            <?php foreach ($daysEvents['images'] as $image): ?>
                                 <?= $this->Calendar->thumbnail('tiny', [
-                                    'filename' => $image['Image']['filename'],
-                                    'caption' => $image['caption'],
-                                    'group' => 'event_minimized'.$daysEvents['Event']['id']
+                                    'filename' => $image->filename,
+                                    'caption' => $image->caption,
+                                    'group' => 'event_minimized'.$daysEvents->id
                                 ]); ?>
                             <?php endforeach; ?>
                         </div>

@@ -528,6 +528,37 @@ class EventsController extends AppController
         ]);
     }
 
+    public function month($month = null, $year = null)
+    {
+        if (!$month || !$year) {
+            $this->redirect('/');
+        }
+
+        // Zero-pad day and month numbers
+        $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+        $date = "$year-$month";
+        $events = $this->Events
+            ->find('all', [
+            'conditions' => [
+                'MONTH(date)' => $month,
+                'YEAR(date)' => $year
+                ],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'asc']
+            ])
+            ->toArray();
+        if ($events) {
+            $this->indexEvents($events);
+        }
+        $timestamp = mktime(0, 0, 0, $month, 01, $year);
+        $dateString = date('F, Y', $timestamp);
+        $this->set(compact('month', 'year'));
+        $this->set([
+            'titleForLayout' => 'Events in '.$dateString,
+            'displayedDate' => date('F, Y', $timestamp)
+        ]);
+    }
+
     private function uponFormSubmissionPr()
     {
         // kill the end time if it hasn't been set
