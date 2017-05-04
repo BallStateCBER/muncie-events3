@@ -37,7 +37,7 @@
                 </label>
                 <select id="WidgetEventsDisplayedPerDay" name="events_displayed_per_day">
                     <?php for ($n = 1; $n <= 10; $n++): ?>
-                        <option value="<?= $n; ?>" <?php if ($n == $defaults['event_options']['events_displayed_per_day']): ?>selected="selected"<?php endif; ?>>
+                        <option value="<?= $n; ?>" <?php if ($n == $defaults['eventOptions']['eventsDisplayedPerDay']): ?>selected="selected"<?php endif; ?>>
                             <?= $n; ?>
                         </option>
                     <?php endfor; ?>
@@ -105,4 +105,4 @@
 <?= $this->Html->css('/jPicker/css/jPicker-1.1.6.min.css'); ?>
 <?= $this->Html->css('/jPicker/jPicker.css'); ?>
 <?= $this->Html->script('widgets/customize.js'); ?>
-<?= $this->Html->scriptBlock("widgetCustomizer.setupWidgetDemo('feed');", ['defer' => true]); ?>
+<?= $this->Html->scriptBlock("widgetCustomizer.setupWidgetDemo('month');", ['defer' => true]); ?>
