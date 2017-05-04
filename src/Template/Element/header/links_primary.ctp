@@ -1,5 +1,5 @@
 <ul class="navbar-nav">
-    <li class="<?php echo (($this->request->params['controller']=='Events') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
+    <li class="<?= (($this->request->params['controller']=='Events') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
         <?= $this->Html->link(__('Home'), ['controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']); ?>
     </li>
     <li class="nav-item">
@@ -30,7 +30,7 @@
                     <ul>
                         <?php foreach ($dayLinks as $dayLink): ?>
                             <li class="nav-item">
-                                <?php echo $dayLink; ?>
+                                <?= $dayLink; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -39,10 +39,10 @@
             </div>
         </div>
     </li>
-    <li class="<?php echo (($this->request->params['controller']=='Events') && ($this->request->params['action']=='add'))?'active ' :'' ?>nav-item">
+    <li class="<?= (($this->request->params['controller']=='Events') && ($this->request->params['action']=='add'))?'active ' :'' ?>nav-item">
         <?= $this->Html->link(__('Add Event'), ['controller' => 'Events', 'action' => 'add'], ['class' => 'nav-link']); ?>
     </li>
-    <li class="<?php echo (($this->request->params['controller']=='Widgets') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
+    <li class="<?= (($this->request->params['controller']=='Widgets') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
         <?= $this->Html->link(__('Widgets'), ['controller' => 'Widgets', 'action' => 'index'], ['class' => 'nav-link']); ?>
     </li>
 </ul>

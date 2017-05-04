@@ -13,17 +13,17 @@ var widgetCustomizer = {
 			complete: function() {}
 		});
 	},
-	
+
 	getOptionsQueryString: function() {
 		// Begin constructing query string
 		var options = [];
-		
+
 		// Style (colors and dimensions) input
 		$('.widget_controls input[type=text].style').each(function () {
 			var field = $(this);
 			options.push(this.name+'='+encodeURIComponent(field.val()));
 		});
-		
+
 		// Checkboxes with 'option' class
 		$('.widget_controls input[type=checkbox].option').each(function () {
 			var field = $(this);
@@ -34,7 +34,7 @@ var widgetCustomizer = {
 			}
 			options.push(this.name+'='+value);
 		});
-		
+
 		// Categories
 		if ($('#WidgetFilterToggler_categories').is(':checked')) {
 			var categories = [];
@@ -45,7 +45,7 @@ var widgetCustomizer = {
 			});
 			options.push('category='+encodeURIComponent(categories.join(',')));
 		}
-		
+
 		// Location
 		if ($('#WidgetFilterToggler_location').is(':checked')) {
 			var location_name = $('#WidgetFilter_location_input').val();
@@ -53,7 +53,7 @@ var widgetCustomizer = {
 				options.push('location='+encodeURIComponent(location_name));
 			}
 		}
-		
+
 		// Included tags
 		if ($('#WidgetFilterToggler_tag_include').is(':checked')) {
 			var tags_inc = $('#WidgetFilter_tag_include_input').val();
@@ -61,7 +61,7 @@ var widgetCustomizer = {
 				options.push('tags_included='+encodeURIComponent(tags_inc));
 			}
 		}
-		
+
 		// Excluded tags
 		if ($('#WidgetFilterToggler_tag_exclude').is(':checked')) {
 			var tags_exc = $('#WidgetFilter_tag_exclude_input').val();
@@ -69,13 +69,13 @@ var widgetCustomizer = {
 				options.push('tags_excluded='+encodeURIComponent(tags_exc));
 			}
 		}
-		
+
 		// Max visible events (month widget)
 		var events_displayed_per_day = $('#WidgetEventsDisplayedPerDay');
 		if (events_displayed_per_day) {
 			options.push('events_displayed_per_day='+encodeURIComponent(events_displayed_per_day.val()));
 		}
-		
+
 		return options.join('&amp;');
 	},
 
@@ -93,12 +93,12 @@ var widgetCustomizer = {
 			$(field).val('rgba('+all.r+', '+all.g+', '+all.b+', '+alpha+')');
 		}
 	},
-	
+
 	setupWidgetDemo: function(version) {
 		// Have the demo (on the right) automatically update to reflect form values
 		// (so if the user enters stuff and refreshes, the demo looks like it should)
 		this.updateWidgetDemo(version);
-		
+
 		// Have color picker pop up
 		/*
 		$('.color_input').colorpicker({
@@ -107,7 +107,7 @@ var widgetCustomizer = {
 			parts: ['map', 'bar', 'hex', 'rgb', 'alpha', 'preview', 'swatches', 'footer']
 		});
 		*/
-		
+
 		$('.color_input').each(function() {
 			var color_field = this;
 			var color_picker = $('<span id="'+this.id+'_color_picker"></span>');
@@ -149,7 +149,7 @@ var widgetCustomizer = {
 				}
 			);
 		});
-		
+
 		// Expand control sections
 		$('.widget_controls h3').each(function() {
 			var header = $(this);
@@ -160,21 +160,21 @@ var widgetCustomizer = {
 				section.slideToggle(300);
 			});
 		});
-		
+
 		// 'All categories' checkbox
 		$('#WidgetCatAll').click(function() {
 			var checked = $(this).is(':checked');
 			var checkboxes = $('.widget_controls input[type=checkbox].category');
 			checkboxes.prop('checked', checked);
 		});
-		
+
 		// When form is submitted...
 		$('.widget_controls form').submit(function(event) {
 			event.preventDefault();
 			var options = widgetCustomizer.getOptionsQueryString();
 			widgetCustomizer.updateWidgetDemo(version, options);
 		});
-		
+
 		// Categories filter
 		var categories_toggler = $('#WidgetFilterToggler_categories');
 		var categories_wrapper = $('#WidgetFilter_categories');
@@ -190,7 +190,7 @@ var widgetCustomizer = {
 				categories_wrapper.slideUp(300);
 			}
 		});
-		
+
 		// Location filter
 		var location_toggler = $('#WidgetFilterToggler_location');
 		var location_wrapper = $('#WidgetFilter_location');
@@ -212,7 +212,7 @@ var widgetCustomizer = {
 				location_wrapper.slideUp(300);
 			}
 		});
-		
+
 		// Tag include filters
 		var tag_include_toggler = $('#WidgetFilterToggler_tag_include');
 		var tag_include_wrapper = $('#WidgetFilter_tag_include');
@@ -234,7 +234,7 @@ var widgetCustomizer = {
 				tag_include_wrapper.slideUp(300);
 			}
 		});
-		
+
 		// Tag exclude filters
 		var tag_exclude_toggler = $('#WidgetFilterToggler_tag_exclude');
 		var tag_exclude_wrapper = $('#WidgetFilter_tag_exclude');
@@ -256,7 +256,7 @@ var widgetCustomizer = {
 				tag_exclude_wrapper.slideUp(300);
 			}
 		});
-		
+
 		// Icon options
 		$('#WidgetShowIcons').change(function () {
 			var hide_ge_icon_wrapper = $('#WidgetHideGEIcon_wrapper');

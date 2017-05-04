@@ -110,7 +110,7 @@ body {
 }
 
 /* HEADER */
-#EventFilter {
+#filter {
     border-bottom-right-radius: 0px;
     border-top-right-radius: 0px;
     display: inline-block;
@@ -465,6 +465,7 @@ body {
         font-size: 90%;
         line-height: normal;
         text-shadow: none;
+        display: block;
     }
 }
 
@@ -1746,17 +1747,10 @@ table.calendar {
         display: inline-block;
         margin-left: 10px;
     }
-    #EventLocation,
-    #EventLocationDetails,
-    #EventCost,
-    #EventAgeRestriction,
-    #EventSource {
+    #EventLocationDetails {
         display: inline-block;
     }
-    #eventform_noaddress,
-    #event_remove_cost,
-    #event_remove_age_restriction,
-    #event_remove_source {
+    #eventform_noaddress {
         display: inline-block;
         margin-left: 10px;
         vertical-align: bottom;
@@ -2139,13 +2133,16 @@ iframe.widgets {
 }
 .widget_controls_wrapper {
     clear: both;
+    width: 970px;
 }
 .widget_controls {
+    border: 1px solid black;
     float: left;
     font-size: 80%;
     margin-bottom: 15px;
     margin-right: 15px;
     padding: 5px;
+    width: 250px;
     .ContentArea;
 
     h2 {
@@ -2173,7 +2170,6 @@ iframe.widgets {
             margin-bottom: 15px;
             margin-left: 10px;
             padding: 0;
-            border: 0px;
         }
     }
     label {
@@ -2196,7 +2192,7 @@ iframe.widgets {
     .borders label,
     .backgrounds label,
     .color_input {
-        width: 33%;
+        width: 100px;
     }
     .checkbox {
         label {
@@ -2226,8 +2222,9 @@ iframe.widgets {
     }
 }
 .widget_demo {
+    margin-left: 275px;
     text-align: center;
-    float: right;
+    width: 650px;
 
     p {
         text-align: left;
@@ -2419,7 +2416,14 @@ iframe.widgets {
     }
 }
 
-
+.userPhoto {
+    float: right;
+    img{
+        max-height: 250px;
+        max-width: 100%;
+        float: right;
+    }
+}
 
 /* ACCOUNT */
 #my_account {

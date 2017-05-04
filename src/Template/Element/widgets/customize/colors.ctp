@@ -17,15 +17,15 @@
 ?>
 <?php foreach ($form_setup as $header => $fields): ?>
     <h3>
-        <a href="#"><?php echo $header; ?></a>
+        <a href="#"><?= $header; ?></a>
     </h3>
 
     <div>
         <?php foreach ($fields as $label => $field_name): ?>
-            <label for="Widget<?php echo $field_name; ?>">
-                <?php echo $label; ?>:
+            <label for="Widget<?= $field_name; ?>">
+                <?= $label; ?>:
             </label>
-            <input id="Widget<?php echo $field_name; ?>" value="<?php echo $defaults['styles'][$field_name]; ?>" name="<?php echo $field_name; ?>" type="text" class="color_input style" />
+            <input id="Widget<?= $field_name; ?>" value="<?= $defaults['styles'][$field_name]; ?>" name="<?= $field_name; ?>" type="text" class="color_input style" />
             <br />
         <?php endforeach; ?>
     </div>
