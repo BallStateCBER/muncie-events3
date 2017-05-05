@@ -22,6 +22,7 @@ class WidgetsController extends AppController
         $this->Auth->allow([
             'day', 'event', 'feed', 'index', 'month'
         ]);
+        $this->loadModel('Events');
     }
 
     public function getDefaults()
@@ -45,7 +46,7 @@ class WidgetsController extends AppController
                 'outerBorder' => 1
             ],
             'eventOptions' => [
-                'category' => '',
+                'category_id' => '',
                 'location' => '',
                 'tags_included' => '',
                 'tags_excluded' => ''
@@ -468,7 +469,7 @@ class WidgetsController extends AppController
             'iframeStyles' => $iframeStyles,
             'iframeUrl' => str_replace('0=', '', urldecode($iframeUrl)),
             'codeUrl' => str_replace('0=', '', urldecode($codeUrl)),
-            'categories' => $this->Categories,
+            'categories' => $this->Events->Categories->getAll(),
             'options' => $options,
             'iframeQueryString' => $iframeQueryString
         ]);
@@ -480,17 +481,16 @@ class WidgetsController extends AppController
      */
     public function feed($startDate = null)
     {
-        $this->loadModel('Events');
         $this->setDemoDataPr('feed');
 
         $options = $_GET;
-        $events = $this->Events
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => date('Y-m-d')])
-            ->toArray();
+        $filters = $this->Events->getValidFilters($options);
+    #    if (!empty($options)) {
+    #        $events = $this->Events->getUpcomingFilteredEvents($options);
+    #    }
+    #    if (empty($options)) {
+            $events = $this->Events->getUpcomingEvents();
+    #    }
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
@@ -503,6 +503,7 @@ class WidgetsController extends AppController
         $this->set([
             'titleForLayout' => 'Upcoming Events',
             'isAjax' => $this->request->is('ajax'),
+            'filters' => $filters,
             'customStyles' => $this->customStyles
         ]);
     }
@@ -513,10 +514,10 @@ class WidgetsController extends AppController
      */
     public function month($yearMonth = null)
     {
-        $this->loadModel('Events');
         $this->setDemoDataPr('month');
 
         $options = $_GET;
+        $filters = $this->Events->getValidFilters($options);
         // Process various date information
         if (!$yearMonth) {
             $yearMonth = date('Y-m');
@@ -534,13 +535,7 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y').date('m').date('j');
 
-        $events = $this->Events
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => date('Y-m-d')])
-            ->toArray();
+        $events = $this->Events->getUpcomingEvents();
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
@@ -574,7 +569,7 @@ class WidgetsController extends AppController
         $this->set(compact(
             'month', 'year', 'timestamp', 'preSpacer', 'lastDay',
             'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today',
-            'monthName', 'eventsForJson'
+            'monthName', 'eventsForJson', 'filters'
         ));
     }
 
@@ -609,7 +604,7 @@ class WidgetsController extends AppController
         } else {
             $parameters = explode('&', urldecode($queryString));
             $filteredParams = [];
-            $defaults = $this->Widget->getDefaults();
+            $defaults = $this->getDefaults();
             foreach ($parameters as $paramPair) {
                 $pairSplit = explode('=', $paramPair);
                 list($var, $val) = $pairSplit;
@@ -628,7 +623,6 @@ class WidgetsController extends AppController
 
     public function event($id)
     {
-        $this->loadModel('Events');
         $event = $this->Events->get($id, [
           'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
       ]);

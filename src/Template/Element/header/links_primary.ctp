@@ -29,7 +29,7 @@
                 <?php if (!empty($dayLinks)): ?>
                     <ul>
                         <?php foreach ($dayLinks as $dayLink): ?>
-                            <li class="nav-item">
+                            <li>
                                 <?= $dayLink; ?>
                             </li>
                         <?php endforeach; ?>

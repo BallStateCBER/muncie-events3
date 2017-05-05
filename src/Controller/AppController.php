@@ -142,12 +142,7 @@ class AppController extends Controller
         if (count(array_unique($dates))>=count($dates)) {
             $events = array_combine($dates, $events);
         }
-    /*    if ($this->request->getParam('controller') == 'Widgets' && $this->request->getParam('action') == 'month') {
-            $eventsForJson = $this->getEventsForJson($events);
-        } else {
-            $eventsForJson = '';
-        } */
-        $this->set(compact('dates', 'events', /* 'eventsForJson',*/ 'multipleDates'));
+        $this->set(compact('dates', 'events', 'multipleDates'));
     }
 
     public function getEventsForJson($events)
