@@ -130,6 +130,35 @@ class EventsTable extends Table
         'pastWithTag' => true
     ];
 
+    public function getUpcomingEvents()
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d')])
+            ->toArray();
+        return $events;
+    }
+
+    public function getUpcomingFilteredEvents($options)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+        ]);
+        foreach ($options as $key => $val) {
+            if (!is_int($val)) {
+                $val= intval($val);
+            }
+            $events->where([$key => $val]);
+        };
+        $events->toArray();
+        return $events;
+    }
+
     public function getUnapproved()
     {
         $count = $this->find();
@@ -329,5 +358,79 @@ class EventsTable extends Table
             ->where(['tag_id' => $tagId])
             ->toArray();
         return $eventId;
+    }
+
+    public function getValidFilters($options)
+    {
+        // Correct formatting of $options
+        $correctedOptions = [];
+        foreach ($options as $var => $val) {
+            if (is_string($val)) {
+                $val = trim($val);
+            }
+            if (stripos($var, 'amp;') === 0) {
+                $var = str_replace('amp;', '', $var);
+            }
+
+            // Turn specified options into arrays if they're comma-delimited strings
+            $expectedArrays = ['category_id', 'tags_included', 'tags_excluded'];
+            if (in_array($var, $expectedArrays) && ! is_array($val)) {
+                $val = explode(',', $val);
+                $correctedArray = [];
+                foreach ($val as $member) {
+                    $member = trim($member);
+                    if ($member != '') {
+                        $correctedArray[] = $member;
+                    }
+                }
+                $val = $correctedArray;
+            }
+
+            // Only include if not empty
+            /* Note: A value of 0 is a valid Widget parameter elsewhere (e.g. the
+             * boolean 'outerBorder'), but not valid for any event filters. */
+            if (! empty($val)) {
+                $correctedOptions[$var] = $val;
+            }
+        }
+        $options = $correctedOptions;
+
+        // Pull event filters out of options
+        $filters = [];
+        $filter_types = ['category_id', 'location', 'tags_included', 'tags_excluded'];
+        foreach ($filter_types as $type) {
+            if (isset($options[$type])) {
+                $filters[$type] = $options[$type];
+            }
+        }
+
+        // Remove categories filter if it specifies all categories
+        if (isset($filters['category_id'])) {
+            sort($filters['category_id']);
+            $allCategoryIds = [];
+            $categories = $this->Categories->getAll();
+            foreach ($categories as $category) {
+                $allCategoryIds[] .= $category->id;
+            }
+            $allCategoryIds = array_keys($allCategoryIds);
+            $excludedCategories = array_diff($allCategoryIds, $filters['category_id']);
+            if (empty($excludedCategories)) {
+                unset($filters['category_id']);
+            }
+        }
+
+        // If a tag is both excluded and included, favor excluding
+        if (isset($filters['tags_included']) && isset($filters['tags_excluded'])) {
+            foreach ($filters['tags_included'] as $k => $id) {
+                if (in_array($id, $filters['tags_excluded'])) {
+                    unset($filters['tags_included'][$k]);
+                }
+            }
+            if (empty($filters['tags_included'])) {
+                unset($filters['tags_included']);
+            }
+        }
+
+        return $filters;
     }
 }

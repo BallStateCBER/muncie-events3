@@ -128,7 +128,7 @@ body {
     float: right;
     width: 100%;
     ul {
-        li {
+        li.nav-item {
             color: #fff !important;
             font-weight: bold;
             @media @large {
@@ -465,6 +465,7 @@ body {
         font-size: 90%;
         line-height: normal;
         text-shadow: none;
+        display: block;
     }
 }
 
@@ -899,6 +900,10 @@ div.event_accordion,
 }
 #EventSearchForm {
     @media @x-large {
+        input {
+            width: auto;
+            display: inline-block;
+        }
     }
 }
 hgroup.event_accordion {
@@ -2419,7 +2424,14 @@ iframe.widgets {
     }
 }
 
-
+.userPhoto {
+    float: right;
+    img{
+        max-height: 250px;
+        max-width: 100%;
+        float: right;
+    }
+}
 
 /* ACCOUNT */
 #my_account {
