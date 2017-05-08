@@ -252,7 +252,7 @@ class TagsTable extends Table
         if (empty($result)) {
             return false;
         }
-        return $result->name;
+        return $result->id;
     }
 
     public function getTagFromId($tagId)
