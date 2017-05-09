@@ -823,18 +823,20 @@ class TagsController extends AppController
                 'listed' => 1,
                 'selectable' => 1
             ]]); */
-        #    $newTag = $this->Events->patchEntity($newTag, $this->request->getData());
+            $newTag->name = $name;
+            $newTag->user_id = $this->request->session()->read('Auth.User.id');
             if ($this->Tags->save($newTag)) {
-                $message .= "Created tag #{$newTag->id}: $name<br />";
-                $parents[$level + 1] = $newTags->id;
+                $message .= "Created tag #{$newTag->id}: $name";
+                $parents[$level + 1] = $newTag->id;
             } else {
                 $class = 'error';
-                $message .= "Error creating the tag \"$name\"<br />";
+                $message .= "Error creating the tag \"$name\"";
             }
         }
 
         $this->Flash->set($message, [
             'element' => $class
         ]);
+        $this->autoRender = false;
     }
 }
