@@ -247,14 +247,14 @@ class WidgetsController extends AppController
             } else {
                 continue;
             }
-            if (method_exists($this, "style_$var")) {
-                $method = "style_$var";
+            if (method_exists($this, $var."Style")) {
+                $method = $var."Style";
                 $this->$method($val);
             }
         }
     }
 
-    private function style_textColorDefault($val)
+    private function textColorDefaultStyle($val)
     {
         $this->addCustomStyle(
             'body',
@@ -273,7 +273,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_textColorLight($val)
+    private function textColorLightStyle($val)
     {
         $this->addCustomStyle(
             [
@@ -302,7 +302,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_textColorLink($val)
+    private function textColorLinkStyle($val)
     {
         $this->addCustomStyle(
             'a',
@@ -316,7 +316,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_borderColorLight($val)
+    private function borderColorLightStyle($val)
     {
         $this->addCustomStyle(
             'a.back:first-child',
@@ -351,7 +351,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_borderColorDark($val)
+    private function borderColorDarkStyle($val)
     {
         if ($this->widgetType == 'feed') {
             $this->addCustomStyle(
@@ -369,7 +369,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_backgroundColorDefault($val)
+    private function backgroundColorDefaultStyle($val)
     {
         $this->addCustomStyle(
             [
@@ -386,7 +386,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_backgroundColorAlt($val)
+    private function backgroundColorAltStyle($val)
     {
         $this->addCustomStyle(
             '#widget_filters',
@@ -409,7 +409,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_fontSize($val)
+    private function fontSizeStyle($val)
     {
         if ($this->widgetType == 'month') {
             $this->addCustomStyle(
@@ -422,7 +422,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_showIcons($val)
+    private function showIconsStyle($val)
     {
         if ($val) {
             return;
@@ -435,7 +435,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function style_hideGeneralEventsIcon($val)
+    private function hideGeneralEventsIconStyle($val)
     {
         if (!$val) {
             return;
