@@ -178,6 +178,7 @@ class AppController extends Controller
             'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $daysEvents->id]),
             'time' => $displayedTime
         ];
+        $this->set(compact('eventsForJson'));
     }
 
     // to index dates with multiple events happening during them

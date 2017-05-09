@@ -1,6 +1,9 @@
 engines:
   phpmd:
     enabled: true
+    checks:
+      UnusedLocalVariable:
+        enabled: false
 ratings:
   paths:
   - "**.php"

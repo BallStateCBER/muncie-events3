@@ -138,7 +138,7 @@ Vegetables
                 <br />If the tree structure in the database (lft and rght fields) has gotten screwed up
             </li>
             <li>
-                <?= $this->Html->link('Remove unlisted, unused, root-level, childless tags', ['controller' => 'tags', 'action' => 'remove_unlisted_unused']); ?>
+                <?= $this->Html->link('Remove unlisted, unused, root-level, childless tags', ['controller' => 'tags', 'action' => 'removeUnlistedUnused']); ?>
                 <br />These are probably just taking up space.
             </li>
             <li>
