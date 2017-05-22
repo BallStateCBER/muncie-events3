@@ -51,6 +51,7 @@ class AppController extends Controller
     public function initialize()
     {
         parent::initialize();
+        $this->loadComponent('Paginator');
         $this->loadComponent('Captcha.Captcha');
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');

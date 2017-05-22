@@ -1,6 +1,12 @@
 <?php
     use Cake\Core\Configure;
 
+$this->Form->setTemplates([
+        'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}" id="{{name}}"{{attrs}} hidden>'
+    ]);
+
+
+
 $helpers = ['Html'];
     $upload_max = ini_get('upload_max_filesize');
     $post_max = ini_get('post_max_size');
@@ -37,24 +43,27 @@ $helpers = ['Html'];
         <div id="image_select_container" class="collapse" role="tabpanel" aria-labelledby="image_select_heading">
           <div class="card-block">
                     <ul id="selected_images">
-                        <?php if (!empty($eventImages)): ?>
-                            <?php foreach ($eventImages as $eventImage): ?>
+                        <?php if (!empty($event->images)): ?>
+                            <?php foreach ($event->images as $eventImage): ?>
                                 <?php
                                     $id = $eventImage['id'];
                                     $filename = $eventImage['filename'];
                                 ?>
-                                <li id="selectedimage_<?php echo $id; ?>" data-image-id="<?php echo $id; ?>">
+                                <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
                                     <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
-                                    <a href="#" class="remove"><img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /></a>
-                                    <?php echo $this->Calendar->thumbnail('tiny', [
+                                    <label for="delete[<?= $id ?>]">
+                                        <img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" />
+                                    </label>
+                                    <?= $this->Form->checkbox("delete[$id]"); ?>
+                                    <?= $this->Calendar->thumbnail('tiny', [
                                         'filename' => $filename,
                                         'class' => 'selected_image'
                                     ]); ?>
-                                    <?php echo $this->Form->input("Images.$id", [
+                                    <?= $this->Form->input("newImages[$id]", [
                                         'label' => 'Caption:',
                                         'div' => false,
                                         'type' => 'text',
-                                        'value' => $eventImage['caption'],
+                                        'value' => $eventImage['_joinData']['caption'],
                                         'placeholder' => "Enter a caption for this image",
                                         'class' => 'caption'
                                     ]); ?>
@@ -78,7 +87,7 @@ $helpers = ['Html'];
             <h3>Uploading</h3>
                   <ul class="footnote">
                       <li>Images must be .jpg, .jpeg, .gif, or .png.</li>
-                      <li>Each file cannot exceed <?php echo $manual_filesize_limit; ?>B</li>
+                      <li>Each file cannot exceed <?= $manual_filesize_limit; ?>B</li>
                       <li>You can upload an image once and re-use it in multiple events.</li>
                       <li>By uploading an image, you affirm that you are not violating any copyrights.</li>
                       <li>Images must not include offensive language, nudity, or graphic violence</li>
