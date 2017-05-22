@@ -121,7 +121,9 @@ body {
     }
 }
 #EventSearchForm {
-    line-height: 8rem;
+    @media @x-large {
+        line-height: 8rem;
+    }
     @media @large {
         line-height: 3rem;
     }
@@ -372,7 +374,14 @@ body {
     padding: 0;
     position: absolute;
     text-shadow: none;
+    width: 100%;
     z-index: 4;
+    @media @medium {
+        width: 50%;
+    }
+    @media @small {
+        width: 75%;
+    }
     @media @x-small {
         left: 0px;
         max-width: 100%;
@@ -424,11 +433,11 @@ body {
         display: none;
     }
     @media @medium {
-        margin: -60px -15px;
+        margin: -10px -15px;
     }
     @media @small {
         float: none;
-        margin: -60px -15px;
+        margin: -10px -15px;
     }
     @media @x-large {
         display: none;
@@ -515,11 +524,18 @@ body {
     @media @medium {
         top: 100%;
     }
+    @media @small {
+        right: 20%;
+    }
+    @media @x-large {
+        top: 150px;
+    }
     > div {
         padding: 10px;
     }
     label {
         color: @DefaultTextColor;
+        display: block;
         font-size: 90%;
         line-height: normal;
         text-shadow: none;
@@ -1127,6 +1143,9 @@ ul.event_accordion {
     .details {
         font-size: 80%;
         min-height: 15px;
+        td {
+            word-break: break-word;
+        }
         @media @x-small {
             font-size: 12px;
             margin-left: 5px;
@@ -1631,34 +1650,27 @@ table.calendar {
         border: 1px solid #999;
         list-style-type: none;
         margin: 5px;
-        padding: 5px 5px 5px 80px;
-
+        padding: 5px;
         &:first-child {
             border-color: #666;
             border-width: 2px;
-            padding: 4px 4px 4px 79px;
+        }
+        div.input.text {
+            display: inline-block;
         }
     }
     img {
-        &.handle {
-            margin-left: -75px;
-        }
     }
     p.caption {
         margin: 0 0 5px 0;
     }
     input.caption {
         margin-top: 5px;
-        width: 75%;
         @media @x-small {
-            left: -75px;
             position: relative;
-            width: 150%;
         }
         @media @small {
-            left: -75px;
             position: relative;
-            width: 140%;
         }
     }
     label {
@@ -2469,7 +2481,12 @@ iframe.widgets {
         display: inline;
     }
 }
-
+.userPhoto {
+    float: right;
+    img {
+        max-width: 100%;
+    }
+}
 
 
 /* ACCOUNT */
