@@ -90,4 +90,4 @@
     </div>
 </div>
 
-<?= $this->Tag->setup($availableTags, 'available_tags', $selectedTags, $previousTags, $eventId); ?>
+<?= $this->Tag->setup($availableTags, 'available_tags', $selectedTags, $event); ?>

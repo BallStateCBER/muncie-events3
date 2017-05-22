@@ -43,7 +43,7 @@ class TagHelper extends Helper
      * @param array $selectedTags
      * @return array
      */
-    private function formatSelectedTagsPr($selectedTags, $previousTags, $eventId)
+    private function formatSelectedTagsPr($selectedTags, $event)
     {
         if (empty($selectedTags)) {
             return [];
@@ -57,43 +57,19 @@ class TagHelper extends Helper
         $retval = [];
         foreach ($selectedTags as $tagId) {
             $result = $tag->getTagFromId($tagId);
-            $event = $eventsTable->find()
-                ->select(['tag' => 'tag_id'])
-                ->where([
-                    'event_id' => $eventId,
-                    'tag_id' => $tagId
-                ])
-                ->first();
-            if (!isset($event->tag)) {
-                $retval[] = $result;
-            }
-        }
-        if ($previousTags) {
-            $retval += $previousTags;
+            $retval[] = $result;
         }
         return $retval;
     }
 
-    public function setup($availableTags, $containerId, $selectedTags = [], $previousTags, $eventId)
+    public function setup($availableTags, $containerId, $selectedTags = [], $event)
     {
         if (!empty($selectedTags)) {
-            $selectedTags = $this->formatSelectedTagsPr($selectedTags, $previousTags, $eventId);
-        }
-
-        if (empty($selectedTags) && (!empty($previousTags))) {
-            $selectedTags = $previousTags;
-        }
-
-        if (empty($selectedTags) && (empty($previousTags))) {
-            $selectedTags = [];
+            $selectedTags = $this->formatSelectedTagsPr($selectedTags, $event);
         }
 
         $eventsTable = TableRegistry::get('Events');
-        if (!$eventId) {
-            $event = $eventsTable->newEntity();
-        }
-        if ($eventId) {
-            $event = $eventsTable->get($eventId);
+        if ($event->id && $selectedTags != null) {
             $eventsTable->Tags->link($event, $selectedTags);
         }
 

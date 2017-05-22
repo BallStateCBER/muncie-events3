@@ -90,16 +90,11 @@ class EventsController extends AppController
         // have tags already been selected?
         // prepare those too
         $selectedTags = null;
-        $previousTags = null;
         if (isset($this->request->data['data']['Tags'])) {
             $selectedTags = $this->request->data['data']['Tags'];
         }
-        if (isset($event['tags'])) {
-            $previousTags = $event['tags'];
-        }
         $this->set([
             'availableTags' => $availableTags,
-            'previousTags' => $previousTags,
             'selectedTags' => $selectedTags
         ]);
 
@@ -552,16 +547,9 @@ class EventsController extends AppController
         }
 
         // delete tags if necessary
-        if ($this->selectedTags == null && $this->previousTags != null) {
+        if ($this->selectedTags == null) {
             $this->request->data['tags'] = [];
-        } elseif ($this->selectedTags != null && $this->previousTags !=null) {
-            foreach ($this->previousTags as $tag) {
-                if (!in_array($tag->id, $this->selectedTags)) {
-                    if (($key = array_search($tag->id, $this->selectedTags)) !== false) {
-                        unset($this->selectedTags[$key]);
-                    }
-                }
-            }
+        } elseif ($this->selectedTags != null) {
         }
     }
 
