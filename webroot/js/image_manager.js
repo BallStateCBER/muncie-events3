@@ -30,7 +30,7 @@ var ImageManager = {
 	},
 
 	getRemoveButton: function(image_id) {
-		var remove_handle = $('<img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" />');
+		var remove_handle = $('<label class="remove" for="delete'+image_id+'"><img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /></label>');
 		remove_handle.click(function (event) {
 			event.preventDefault();
 			var container = $(this).parent('li');

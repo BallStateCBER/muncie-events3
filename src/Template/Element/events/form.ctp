@@ -224,7 +224,7 @@
                     Images
                 </th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class="form-group col-xs-12">
                         <?= $this->element('images/form'); ?>
                     </div>
                 </td>

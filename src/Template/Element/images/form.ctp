@@ -2,10 +2,8 @@
     use Cake\Core\Configure;
 
 $this->Form->setTemplates([
-        'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}" id="{{name}}"{{attrs}} hidden>'
+        'checkbox' => '<input type="checkbox" name="{{name}}" value="{{value}}" id="{{name}}"{{attrs}}>'
     ]);
-
-
 
 $helpers = ['Html'];
     $upload_max = ini_get('upload_max_filesize');
@@ -51,8 +49,8 @@ $helpers = ['Html'];
                                 ?>
                                 <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
                                     <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
-                                    <label for="delete[<?= $id ?>]">
-                                        <img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" />
+                                    <label class="remove" for="delete[<?= $id ?>]">
+                                        Delete?
                                     </label>
                                     <?= $this->Form->checkbox("delete[$id]"); ?>
                                     <?= $this->Calendar->thumbnail('tiny', [
