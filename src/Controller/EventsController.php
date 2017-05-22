@@ -134,77 +134,52 @@ class EventsController extends AppController
         if (null !== $this->request->getData('Tags')) {
             $this->set('Tags', []);
         }
-
-        // Collect more image data:
-        // - Populate $this->request->data['Image'] with data about selected images
-        // - Provide $images to the view with a list of all of this User's images
-        $this->loadModel('Images');
-        $images = $this->Events->Users->getImagesList($userId);
-        if (!empty($this->request->data['images'])) {
-            foreach ($this->request->data['images'] as $association) {
-                $imageId = $association['image_id'];
-                if (isset($images[$imageId])) {
-                    $this->request->data['images'][$imageId] = [
-                        'id' => $imageId,
-                        'filename' => $images[$imageId]
-                    ];
-                }
-                if (!isset($images[$imageId])) {
-                    /* If an image is in $this->request->data['EventsImage']
-                     * but not in the current user's images, then the user is
-                     * probably an admin editing someone else's event. */
-                    $this->Images->id = $imageId;
-                    $filename = $this->Images->field('filename');
-                    if ($filename) {
-                        $images[$imageId] = $filename;
-                        $this->request->data['images'][$imageId] = [
-                            'id' => $imageId,
-                            'filename' => $images[$imageId]
-                        ];
-                    }
-                }
-            }
-        }
-        $this->set('images', $images);
-
-        if ($event->images) {
-            $this->set('eventImages', $event->images);
-        }
     }
 
-    private function processImageDataPr()
+    private function processImageDataPr($event)
     {
-        $eventId = $this->request->getParam('pass');
-        if (isset($eventId[0])) {
-            $eventId = $eventId[0];
+        if ($event->id) {
+            $eventId = $event->id;
         }
-        $this->loadModel('EventsImages');
         $weight = 1;
-        $this->request->data['EventsImages'] = [];
+        $place = 0;
+        $imageData = isset($this->request->data['newImages']) ? $this->request->data['newImages'] : null;
+        if ($imageData) {
+            foreach ($imageData as $imageId => $caption) {
+                $newImage = $this->Events->Images->get($imageId);
+                $delete = $this->request->data['delete'][$imageId];
+                if ($delete == 1) {
+                    $this->Events->Images->unlink($event, [$newImage]);
+                }
+                if ($delete == 0) {
+                    $event->images[$place]->_joinData->weight = $weight;
+                    $event->images[$place]->_joinData->caption = $caption;
+                    $event->images[$place]->_joinData->created = $newImage->created;
+                    $event->images[$place]->_joinData->modified = $newImage->modified;
+                }
+
+                $weight++;
+                $place++;
+            }
+        }
         $imageData = isset($this->request->data['data']['Image']) ? $this->request->data['data']['Image'] : null;
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-                $newImage = $this->Images->get($imageId);
-                $newImage->_joinData = $this->EventsImages->newEntity();
+                $newImage = $this->Events->Images->get($imageId);
+
+                $newImage->_joinData = $this->Events->EventsImages->newEntity();
                 $newImage->_joinData->weight = $weight;
                 $newImage->_joinData->caption = $caption;
                 $newImage->_joinData->created = $newImage->created;
                 $newImage->_joinData->modified = $newImage->modified;
 
-                if (!$eventId) {
-                    $event = $this->Events->newEntity();
-                }
-                if ($eventId) {
-                    $event = $this->Events->get($eventId);
-                    $this->Events->Images->link($event, [$newImage]);
-                }
+                $this->Events->Images->link($event, [$newImage]);
 
-                array_push($this->request->data['EventsImages'], $newImage);
                 $weight++;
+                $place++;
             }
         }
-
-        unset($this->request->data['data']['Images']);
+        $event->dirty('images', true);
     }
 
     private function prepareDatePickerPr($event)
@@ -259,7 +234,7 @@ class EventsController extends AppController
 
         // prepare form
         $this->prepareEventFormPr($event);
-        $this->processImageDataPr();
+        $this->processImageDataPr($event);
         $this->prepareDatePickerPr($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -267,7 +242,9 @@ class EventsController extends AppController
             $this->uponFormSubmissionPr();
 
             $event = $this->Events->patchEntity($event, $this->request->getData());
-            if ($this->Events->save($event)) {
+            if ($this->Events->save($event, [
+                'associated' => ['Images']
+            ])) {
                 $this->Flash->success(__('The event has been saved.'));
             } else {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
@@ -590,11 +567,11 @@ class EventsController extends AppController
 
     public function add()
     {
-        $event = $this->Events->newEntity();
+        $event = $this->Events->newEntity(['contain' => 'Images']);
 
         // prepare form
         $this->prepareEventFormPr($event);
-        $this->processImageDataPr();
+        $this->processImageDataPr($event);
         $this->prepareDatePickerPr($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {

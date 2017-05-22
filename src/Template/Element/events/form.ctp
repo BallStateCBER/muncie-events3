@@ -53,9 +53,9 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <div id="datepicker" class="multi"></div>
+                        <div id="datepicker_hidden" class="multi"></div>
                         <?php
-                        if ($multipleDatesAllowed) {
+                        /*if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
                                 var defaultDate = $defaultDate;
@@ -68,10 +68,10 @@
                                 setupDatepickerSingle(defaultDate);
                             ");
                         }
-                            echo $this->Js->writeBuffer();
+                            echo $this->Js->writeBuffer(); */
                             echo $this->Form->input('date', [
-                                'type' => 'hidden',
-                                'id' => 'datepicker_hidden'
+                        #        'type' => 'hidden',
+                                'id' => 'datepicker'
                             ]);
                         ?>
                         <div class="text-muted">

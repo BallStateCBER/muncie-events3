@@ -239,4 +239,79 @@ class UsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function search()
+    {
+        $filter= $this->request->query;
+
+        // Determine the direction (past or future)
+        $direction = $filter['direction'];
+
+        $dateQuery = ($direction == 'future') ? 'date >=' : 'date <';
+        if ($direction == 'all') {
+            $dateQuery = 'date !=';
+        };
+        $dir = ($direction == 'future') ? 'ASC' : 'DESC';
+        $dateWhen = ($direction == 'all') ? '1900-01-01' : date('Y-m-d');
+
+        $events = $this->Events->find('search', [
+            'search' => $filter,
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']])
+            ->where([$dateQuery => $dateWhen])
+            ->order(['date' => $dir])
+            ->toArray();
+
+        if ($events) {
+            $this->indexEvents($events);
+        }
+
+        if ($direction == 'all') {
+            $currentDate = date('Y-m-d');
+            $counts = ['upcoming' => 0, 'past' => 0];
+            foreach ($events as $date => $dateEvents) {
+                if ($date >= $currentDate) {
+                    $counts['upcoming']++;
+                }
+                if ($date < $currentDate) {
+                    $counts['past']++;
+                }
+            }
+            $this->set(compact('counts'));
+        }
+        if ($direction == 'past' || $direction = 'future') {
+            // Determine if there are events in the opposite direction
+            $this->passedArgs['direction'] = ($direction == 'future') ? 'past' : 'future';
+            if ($this->passedArgs['direction'] == 'past') {
+                $oppositeCount = $this->Events->find('search', [
+                    'search' => $filter])
+                    ->where(['date <' => date('Y-m-d')])
+                    ->count();
+            } elseif ($this->passedArgs['direction'] == 'future') {
+                $oppositeCount = $this->Events->find('search', [
+                    'search' => $filter])
+                    ->where(['date >=' => date('Y-m-d')])
+                    ->count();
+            }
+            $this->set('oppositeEvents', $oppositeCount);
+        }
+
+        $tags = $this->Events->Tags->find('search', [
+            'search' => $filter]);
+        $tagCount = null;
+        foreach ($tags as $tag) {
+            if ($tag-> id) {
+                $tagCount = true;
+            }
+        }
+
+        $this->set([
+            'titleForLayout' => 'Search Results',
+            'direction' => $direction,
+            'directionAdjective' => ($direction == 'future') ? 'upcoming' : $direction,
+            'filter' => $filter,
+            'dateQuery' => $dateQuery,
+            'tags' => $tags,
+            'tagCount' => $tagCount
+        ]);
+    }
 }
