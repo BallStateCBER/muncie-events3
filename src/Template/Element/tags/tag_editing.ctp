@@ -1,10 +1,18 @@
 <?php
-    // This element has $availableTags and (optionally) $selectedTags passed into it
+// This element has $availableTags and (optionally) $selectedTags passed into it
 
-    if (!isset($hideLabel)) {
-        $hideLabel = false;
-    }
-    echo $this->Html->script('tag_manager.js');
+// Counters CakePHP's variable-renaming weirdness
+if (! isset($availableTags)) {
+    $availableTags = isset($availableTags) ? $availableTags : [];
+}
+if (! isset($selectedTags)) {
+    $selectedTags = isset($selectedTags) ? $selectedTags : [];
+}
+
+if (!isset($hideLabel)) {
+    $hideLabel = false;
+}
+echo $this->Html->script('tag_manager.js');
 ?>
 
 <div class="input" id="tag_editing">

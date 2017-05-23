@@ -43,40 +43,61 @@ class TagHelper extends Helper
      * @param array $selectedTags
      * @return array
      */
-    private function formatSelectedTagsPr($selectedTags, $event)
+    private function formatSelectedTagsPr($newTags, $event)
     {
-        if (empty($selectedTags)) {
+        $tag = TableRegistry::get('Tags');
+        $eventsTable = TableRegistry::get('Events');
+        $retval = [];
+
+        // clear it out first to prevent duplicates
+        $oldTags = $eventsTable
+            ->EventsTags
+            ->find()
+            ->where(['event_id' => $event->id])
+            ->toArray();
+
+        foreach ($oldTags as $oldTag) {
+            $result = $tag->getTagFromId($oldTag->tag_id);
+            $eventsTable->Tags->unlink($event, [$result]);
+        };
+
+        // $_POST but no data? all tags have been deleted.
+        if (empty($newTags) && $_POST) {
             return [];
         }
-        if (is_array($selectedTags[0])) {
-            return $selectedTags;
+
+        // no data but there are previous tags? page is just now being edited.
+        if (empty($newTags) && $event->tags) {
+            return $event->tags;
         }
 
-        $tag = TableRegistry::get('Tags');
-        $eventsTable = TableRegistry::get('EventsTags');
-        $retval = [];
-        foreach ($selectedTags as $tagId) {
-            $result = $tag->getTagFromId($tagId);
-            $retval[] = $result;
+        // finally, are there new or remaining tags? link them.
+        foreach ($newTags as $tagId) {
+            $prevTag = $eventsTable
+                ->EventsTags
+                ->find()
+                ->where(['tag_id' => $tagId])
+                ->andWhere(['event_id' => $event->id])
+                ->count();
+            if ($prevTag < 1) {
+                $result = $tag->getTagFromId($tagId);
+                $eventsTable->Tags->link($event, [$result]);
+                $retval[] = $result;
+            }
         }
         return $retval;
     }
 
     public function setup($availableTags, $containerId, $selectedTags = [], $event)
     {
-        if (!empty($selectedTags)) {
-            $selectedTags = $this->formatSelectedTagsPr($selectedTags, $event);
-        }
-
-        $eventsTable = TableRegistry::get('Events');
-        if ($event->id && $selectedTags != null) {
-            $eventsTable->Tags->link($event, $selectedTags);
-        }
+        $newTags = empty($this->request->data['data']['Tags']) ? [] : $this->request->data['data']['Tags'];
+        $selectedTags = $this->formatSelectedTagsPr($newTags, $event);
 
         $this->Js->buffer("
             TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJsPr($selectedTags)).";
             TagManager.preselectTags(TagManager.selectedTags);
-            ");
+        ");
+
         $this->Js->buffer("
             TagManager.tags = ".$this->Js->object($this->availableTagsForJsPr($availableTags)).";
             TagManager.createTagList(TagManager.tags, $('#$containerId'));
