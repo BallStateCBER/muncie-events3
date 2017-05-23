@@ -13,3 +13,7 @@ exclude_paths:
  - "tmp/"
  - "vendor/"
  - "webroot/"
+ - "**/*"
+ - "!**/*.php"
+ - "!**/*.ctp"
+ - "/code/src/Template/Element/website"

@@ -508,7 +508,7 @@ class TagsController extends AppController
      */
     public function merge($removedTagName = '', $retainedTagName = '')
     {
-        $this->layout = 'ajax';
+        $this->viewBuilder()->setLayout('ajax');
         $removedTagName = trim($removedTagName);
         $retainedTagName = trim($retainedTagName);
 
@@ -609,7 +609,7 @@ class TagsController extends AppController
     public function removeBrokenAssociations()
     {
         set_time_limit(120);
-        $this->layout = 'ajax';
+        $this->viewBuilder()->setLayout('ajax');
 
         $associations = $this->Tags->EventsTag->find('all', ['contain' => false]);
         $tags = $this->Tags->find('list');
@@ -667,7 +667,7 @@ class TagsController extends AppController
     public function edit($tagName = null)
     {
         if ($this->request->is('ajax')) {
-            $this->layout = 'ajax';
+            $this->viewBuilder()->setLayout('ajax');
         }
         if ($this->request->is('put') || $this->request->is('post')) {
             $this->request->data['Tag']['name'] = strtolower(trim($this->request->data['Tag']['name']));
@@ -695,12 +695,12 @@ class TagsController extends AppController
 
             // Set flag to recover tag tree if necessary
             $this->Tags->id = $this->request->data['Tag']['id'];
-            $previous_parent_id = $this->Tags->field('parent_id');
-            $new_parent_id = $this->request->data['Tag']['parent_id'];
-            $recover_tag_tree = ($previous_parent_id != $new_parent_id);
+            $previousParentId = $this->Tags->field('parent_id');
+            $newParentId = $this->request->data['Tag']['parent_id'];
+            $recoverTagTree = ($previousParentId != $newParentId);
 
             if ($this->Tags->save($this->request->data)) {
-                if ($recover_tag_tree) {
+                if ($recoverTagTree) {
                     $this->Tags->recover();
                 }
                 $message = 'Tag successfully edited.';
