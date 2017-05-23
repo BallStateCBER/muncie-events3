@@ -407,7 +407,7 @@ class MailingListTable extends Table
         // Make sure there are events left
         if (empty($events)) {
             $eventCategories = [];
-            foreach ($events as $k => $event) {
+            foreach ($events as $event) {
                 $eventCategories[] = $event->Categories->id;
             }
             $this->setDailyAsProcessed($recipientId, 3);
@@ -450,7 +450,8 @@ class MailingListTable extends Table
         if ($email->send()) {
             $this->setDailyAsProcessed($recipientId, 0);
             return [true, 'Email sent to '.$recipient['MailingList']['email']];
-        } else {
+        }
+        if (!$email->send()) {
             $this->setDailyAsProcessed($recipientId, 1);
             return [false, 'Error sending email to '.$recipient['MailingList']['email']];
         }
@@ -472,7 +473,7 @@ class MailingListTable extends Table
 
         // Make sure there are events to begin with
         $eventsCount = 0;
-        foreach ($events as $day => $dEvents) {
+        foreach ($events as $dEvents) {
             $eventsCount += count($dEvents);
         }
         if (!$eventsCount) {
@@ -500,7 +501,7 @@ class MailingListTable extends Table
         // Fake sending an email if testing
         if ($testing) {
             $eventTitles = [];
-            foreach ($events as $timestamp => $daysEvents) {
+            foreach ($events as $daysEvents) {
                 foreach ($daysEvents as $k => $e) {
                     $eventTitles[] = $e['Event']['title'];
                 }
@@ -532,7 +533,8 @@ class MailingListTable extends Table
         if ($email->send()) {
             $this->setWeeklyAsProcessed($recipientId, 0);
             return [true, 'Email sent to '.$recipient['MailingList']['email']];
-        } else {
+        }
+        if (!$email->send()) {
             $this->setWeeklyAsProcessed($recipientId, 1);
             return [false, 'Error sending email to '.$recipient['MailingList']['email']];
         }

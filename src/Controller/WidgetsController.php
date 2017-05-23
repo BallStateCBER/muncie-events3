@@ -82,11 +82,11 @@ class WidgetsController extends AppController
 
     public function getOptions()
     {
-        if (empty($_SERVER['QUERY_STRING'])) {
+        if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING'))) {
             return [];
         }
         $options = [];
-        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        $parameters = explode('&', urldecode(filter_input(INPUT_SERVER, 'QUERY_STRING')));
         foreach ($parameters as $option) {
             $optionSplit = explode('=', $option);
             if (count($optionSplit) != 2) {
@@ -111,12 +111,12 @@ class WidgetsController extends AppController
 
     public function getIframeQueryString()
     {
-        if (empty($_SERVER['QUERY_STRING'])) {
+        if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING'))) {
             return '';
         }
         $defaults = $this->getDefaults();
         $iframeParams = [];
-        $parameters = explode('&', urldecode($_SERVER['QUERY_STRING']));
+        $parameters = explode('&', urldecode(filter_input(INPUT_SERVER, 'QUERY_STRING')));
         foreach ($parameters as $option) {
             $optionSplit = explode('=', $option);
             if (count($optionSplit) != 2) {
@@ -178,7 +178,8 @@ class WidgetsController extends AppController
             if (isset($options[$dimension])) {
                 $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
                 $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            } else {
+            }
+            if (!isset($options[$dimension])) {
                 $unit = 'px';
                 $value = $defaults['iframeOptions'][$dimension];
             }
@@ -189,7 +190,8 @@ class WidgetsController extends AppController
             if (isset($options[$dimension])) {
                 $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
                 $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            } else {
+            }
+            if (isset($options[$dimension])) {
                 $unit = '%';
                 $value = $defaults['iframeOptions'][$dimension];
             }
@@ -202,7 +204,8 @@ class WidgetsController extends AppController
         } else {
             if (isset($options['borderColorDark'])) {
                 $outerBorderColor = $options['borderColorDark'];
-            } else {
+            }
+            if (!isset($options['borderColorDark'])) {
                 $outerBorderColor = $defaults['styles']['borderColorDark'];
             }
             $iframeStyles .= "border:1px solid $outerBorderColor;";
@@ -496,7 +499,7 @@ class WidgetsController extends AppController
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
         $this->processCustomStyles($options);
 
-        // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
+        // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
@@ -541,7 +544,7 @@ class WidgetsController extends AppController
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
         $this->processCustomStyles($options);
 
-        // $_SERVER['QUERY_STRING'] includes the base url in AJAX requests for some reason
+        // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'month'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
@@ -601,7 +604,8 @@ class WidgetsController extends AppController
     {
         if (empty($queryString)) {
             $newQueryString = '';
-        } else {
+        }
+        if (!empty($queryString)) {
             $parameters = explode('&', urldecode($queryString));
             $filteredParams = [];
             $defaults = $this->getDefaults();
@@ -673,7 +677,8 @@ class WidgetsController extends AppController
         }
         if ($this->request->is('ajax')) {
             $this->viewBuilder()->layout('widgets/ajax');
-        } else {
+        }
+        if (!$this->request->is('ajax')) {
             $this->viewBuilder()->layout('widgets/venue');
         }
         $this->set([

@@ -153,10 +153,9 @@ class UsersController extends AppController
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
                 $this->Flash->success(__('Your account has been updated.'));
-                $this->redirect('/');
-            } else {
-                $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
+                return $this->redirect('/');
             }
+            $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
         }
         $this->set(compact('user'));
     }
@@ -177,9 +176,9 @@ class UsersController extends AppController
                 if ($userId) {
                     if ($this->Users->sendPasswordResetEmail($userId, $email)) {
                         $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
-                    } else {
-                        $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
+                        return $this->redirect('/');
                     }
+                    $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
                 }
                 if (!$userId) {
                     $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
@@ -220,10 +219,10 @@ class UsersController extends AppController
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
                 $this->Flash->success('Password changed. You are now logged in.');
-                $this->redirect('/');
-            } else {
-                $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
+                return $this->redirect('/');
             }
+            $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
+            return $this->redirect('/');
         }
     }
 
@@ -233,10 +232,9 @@ class UsersController extends AppController
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            return $this->redirect('/');
         }
-
+        $this->Flash->error(__('The user could not be deleted. Please, try again.'));
         return $this->redirect(['action' => 'index']);
     }
 
