@@ -52,7 +52,7 @@ echo $this->Html->script('tag_manager.js');
             </span>
         </label>
         <?php
-            echo $this->Form->input('custom_tags', [
+            echo $this->Form->input('customTags', [
                 'label' => false,
                 'class' => 'form-control',
                 'id' => 'custom_tag_input'
