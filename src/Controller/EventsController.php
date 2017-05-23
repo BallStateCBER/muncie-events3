@@ -122,6 +122,67 @@ class EventsController extends AppController
         }
     }
 
+    private function processCustomTagsPr($event)
+    {
+        if (!isset($event->customTags)) {
+            return;
+        }
+        $customTags = trim($event->customTags);
+        if (empty($customTags)) {
+            return;
+        }
+        $customTags = explode(',', $customTags);
+
+        // Force lowercase and remove leading/trailing whitespace
+        foreach ($customTags as &$ct) {
+            $ct = strtolower(trim($ct));
+        }
+        unset($ct);
+
+        // Remove duplicates
+        $customTags = array_unique($customTags);
+
+        foreach ($customTags as $ct) {
+            // Skip over blank tags
+            if ($ct == '') {
+                continue;
+            }
+
+            // Get ID of existing tag, if it exists
+            $tagId = $this->Events->Tags->find()
+                     ->select('id')
+                     ->where(['name' => $ct])
+                     ->first();
+
+            // Include this tag if it exists and is selectable
+            if ($tagId) {
+                $selectable = $this->Events->Tags->find()
+                              ->select('selectable')
+                              ->where(['id' => $tagId])
+                              ->toArray();
+                if ($selectable) {
+                    $this->request->data['data']['Tags'][] = $tagId;
+                } else {
+                    continue;
+                }
+
+                // Create the custom tag if it does not already exist
+            } else {
+                $newTag = $this->Events->Tags->newEntity();
+                $newTag->name = $ct;
+                $newTag->user_id = $this->Auth->user('id');
+                $newTag->parent_id = 1012; // 'Unlisted' group
+                $newTag->listed = 0;
+                $newTag->selectable = 1;
+
+                $this->Events->Tags->save($newTag);
+                $this->request->data['data']['Tags'][] = $newTag->id;
+            }
+        }
+        $this->request->data['data']['Tags'] = array_unique($this->request->data['data']['Tags']);
+        $event->customTags = '';
+    }
+
     private function processImageDataPr($event)
     {
         if ($event->id) {
@@ -226,8 +287,8 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
             $this->uponFormSubmissionPr();
-
             $event = $this->Events->patchEntity($event, $this->request->getData());
+            $this->processCustomTagsPr($event);
             if ($this->Events->save($event, [
                 'associated' => ['Images']
             ])) {
@@ -549,8 +610,8 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
-
             $event = $this->Events->patchEntity($event, $this->request->getData());
+            $this->processCustomTagsPr($event);
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
             } else {

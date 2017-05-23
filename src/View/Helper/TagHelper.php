@@ -73,12 +73,15 @@ class TagHelper extends Helper
 
         // finally, are there new or remaining tags? link them.
         foreach ($newTags as $tagId) {
+            // check for duplicates
             $prevTag = $eventsTable
                 ->EventsTags
                 ->find()
                 ->where(['tag_id' => $tagId])
                 ->andWhere(['event_id' => $event->id])
                 ->count();
+
+            // proceed if there are no duplicates
             if ($prevTag < 1) {
                 $result = $tag->getTagFromId($tagId);
                 $eventsTable->Tags->link($event, [$result]);
