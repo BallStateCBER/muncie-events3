@@ -1,4 +1,4 @@
-<fieldset class="col-md-6">
+<fieldset class="col-md-5">
     <legend>Event Types</legend>
     <?php
         $formTemplate = [

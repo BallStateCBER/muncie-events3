@@ -87,16 +87,7 @@ class EventsController extends AppController
             'order' => ['parent_id' => 'ASC']
             ])
             ->toArray();
-        // have tags already been selected?
-        // prepare those too
-        $selectedTags = null;
-        if (isset($this->request->data['data']['Tags'])) {
-            $selectedTags = $this->request->data['data']['Tags'];
-        }
-        $this->set([
-            'availableTags' => $availableTags,
-            'selectedTags' => $selectedTags
-        ]);
+        $this->set(compact('availableTags'));
 
         if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
             $hasSeries = count(explode(',', $event->date)) > 1;
@@ -544,12 +535,6 @@ class EventsController extends AppController
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
             $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
             $this->request->data['published'] = true;
-        }
-
-        // delete tags if necessary
-        if ($this->selectedTags == null) {
-            $this->request->data['tags'] = [];
-        } elseif ($this->selectedTags != null) {
         }
     }
 
