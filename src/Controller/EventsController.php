@@ -160,14 +160,13 @@ class EventsController extends AppController
                               ->select('selectable')
                               ->where(['id' => $tagId])
                               ->toArray();
-                if ($selectable) {
-                    $this->request->data['data']['Tags'][] = $tagId;
-                } else {
+                if (!$selectable) {
                     continue;
                 }
-
-                // Create the custom tag if it does not already exist
-            } else {
+                $this->request->data['data']['Tags'][] = $tagId;
+            }
+            // Create the custom tag if it does not already exist
+            if (!$tagID) {
                 $newTag = $this->Events->Tags->newEntity();
                 $newTag->name = $ct;
                 $newTag->user_id = $this->Auth->user('id');
@@ -185,9 +184,6 @@ class EventsController extends AppController
 
     private function processImageDataPr($event)
     {
-        if ($event->id) {
-            $eventId = $event->id;
-        }
         $weight = 1;
         $place = 0;
         $imageData = isset($this->request->data['newImages']) ? $this->request->data['newImages'] : null;
@@ -237,7 +233,8 @@ class EventsController extends AppController
             if (empty($event->date)) {
                 $defaultDate = 0; // Today
                 $preselectedDates = '[]';
-            } else {
+            }
+            if (!empty($event->date)) {
                 $dates = explode(',', $event->date);
                 foreach ($dates as $date) {
                     list($year, $month, $day) = explode('-', $date);
@@ -293,9 +290,9 @@ class EventsController extends AppController
                 'associated' => ['Images']
             ])) {
                 $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                return $this->redirect(['action' => 'view', $id]);
             }
+            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
 
         $users = $this->Events->Users->find('list');
@@ -312,10 +309,9 @@ class EventsController extends AppController
         $event = $this->Events->get($id);
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
-        } else {
-            $this->Flash->error(__('The event could not be deleted. Please, try again.'));
+            return $this->redirect(['action' => 'index']);
         }
-
+        $this->Flash->error(__('The event could not be deleted. Please, try again.'));
         return $this->redirect(['action' => 'index']);
     }
 
@@ -560,7 +556,6 @@ class EventsController extends AppController
 
         // Zero-pad day and month numbers
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $date = "$year-$month";
         $events = $this->Events
             ->find('all', [
             'conditions' => [
@@ -614,9 +609,10 @@ class EventsController extends AppController
             $this->processCustomTagsPr($event);
             if ($this->Events->save($event)) {
                 $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                return $this->redirect(['action' => 'view', $id]);
             }
+            $this->Flash->error(__('The event could not be saved. Please, try again.'));
+            return $this->redirect(['action' => 'index']);
         }
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');

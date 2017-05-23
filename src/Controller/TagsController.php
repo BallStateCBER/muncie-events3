@@ -92,17 +92,17 @@ class TagsController extends AppController
 
     public function auto_complete($onlyListed = true, $onlySelectable = true)
     {
-        $string_to_complete = htmlspecialchars_decode($_GET['term']);
+        $stringToComplete = htmlspecialchars_decode(filter_input(INPUT_GET, 'term'));
         $limit = 10;
 
         // Tag.name will be compared via LIKE to each of these,
         // in order, until $limit tags are found.
         $like_conditions = [
-            $string_to_complete,
-            $string_to_complete.' %',
-            $string_to_complete.'%',
-            '% '.$string_to_complete.'%',
-            '%'.$string_to_complete.'%'
+            $stringToComplete,
+            $stringToComplete.' %',
+            $stringToComplete.'%',
+            '% '.$stringToComplete.'%',
+            '%'.$stringToComplete.'%'
         ];
 
         // Collect tags up to $limit
@@ -224,8 +224,9 @@ class TagsController extends AppController
     public function getnodes()
     {
         $this->loadModel('EventsTags');
+        $node = filter_input(INPUT_POST, 'node');
         // retrieve the node id that Ext JS posts via ajax
-        $parent = isset($_POST['node']) ? intval($_POST['node']) : 0;
+        $parent = isset($node) ? intval($node) : 0;
 
         // find all the nodes underneath the parent node defined above
         $nodes = $this->Tags
@@ -282,8 +283,8 @@ class TagsController extends AppController
         // retrieve the node instructions from javascript
         // delta is the difference in position (1 = next node, -1 = previous node)
 
-        $node = intval($_POST['node']);
-        $delta = intval($_POST['delta']);
+        $node = intval(filter_input(INPUT_POST, 'node'));
+        $delta = intval(filter_input(INPUT_POST, 'delta'));
 
         if ($delta > 0) {
             $this->Tags->moveDown($node, abs($delta));
@@ -297,10 +298,10 @@ class TagsController extends AppController
 
     public function reparent()
     {
-        $node = intval($_POST['node']);
-        $parent = ($_POST['parent'] == 'root') ? 0 : intval($_POST['parent']);
+        $node = intval(filter_input(INPUT_POST, 'node'));
+        $parent = (filter_input(INPUT_POST, 'parent') == 'root') ? 0 : intval(filter_input(INPUT_POST, 'parent'));
         $in_unlisted_before = $this->Tags->isUnderUnlistedGroup($node);
-        $in_unlisted_after = ($_POST['parent'] == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent);
+        $in_unlisted_after = (filter_input(INPUT_POST, 'parent') == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent);
         $this->Tags->id = $node;
 
         // Moving out of the 'Unlisted' group
@@ -322,7 +323,7 @@ class TagsController extends AppController
         // otherwise we calculate the distance to move ($delta).
         // We have to check if $delta > 0 before moving due to a bug
         // in the tree behaviour (https://trac.cakephp.org/ticket/4037)
-        $position = intval($_POST['position']);
+        $position = intval(filter_input(INPUT_POST, 'position'));
         if ($position == 0) {
             $this->Tags->moveUp($node, true);
         } else {
