@@ -201,7 +201,8 @@ class WidgetsController extends AppController
         // Border
         if (isset($options['outerBorder']) && $options['outerBorder'] == 0) {
             $iframeStyles .= "border:0;";
-        } else {
+        }
+        if (!isset($options['outerBorder']) || !$options['outerBorder'] == 0) {
             if (isset($options['borderColorDark'])) {
                 $outerBorderColor = $options['borderColorDark'];
             }
@@ -482,7 +483,7 @@ class WidgetsController extends AppController
      * Produces a view that lists seven event-populated days, starting with $startDate
      * @param string $startDate 'yyyy-mm-dd', today by default
      */
-    public function feed($startDate = null)
+    public function feed()
     {
         $this->setDemoDataPr('feed');
 
@@ -501,7 +502,6 @@ class WidgetsController extends AppController
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
-        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         $this->set([
             'titleForLayout' => 'Upcoming Events',

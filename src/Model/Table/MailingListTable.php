@@ -320,9 +320,8 @@ class MailingListTable extends Table
     public function getSettingsDisplay($recipient)
     {
         // Categories
-        if ($recipient['MailingList']['all_categories']) {
-            $eventTypes = 'All events';
-        } else {
+        $eventTypes = 'All events';
+        if (!$recipient['MailingList']['all_categories']) {
             $selectedCategories = $recipient['Categories'];
             $categoryNames = [];
             foreach ($selectedCategories as $sc) {
@@ -387,7 +386,7 @@ class MailingListTable extends Table
      * @param array $events
      * @return array:boolean string
      */
-    public function sendDaily($recipient, $events, $testing = false)
+    public function sendDaily($recipient, $events, $testing)
     {
         $recipientId = $recipient['MailingList']['id'];
 
@@ -463,7 +462,7 @@ class MailingListTable extends Table
      * @param array $events
      * @return array:boolean string
      */
-    public function sendWeekly($recipient, $events, $testing = false)
+    public function sendWeekly($recipient, $events, $testing)
     {
         $recipientId = $recipient['MailingList']['id'];
 
