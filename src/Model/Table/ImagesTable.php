@@ -118,7 +118,7 @@ class ImagesTable extends Table
 
     public function autoResize($filepath)
     {
-        list($width, $height, $type, $attr) = getimagesize($filepath);
+        list($width, $height) = getimagesize($filepath);
         if ($width < $this->maxWidth && $height < $this->maxHeight) {
             // No resize necessary
             return true;
@@ -148,7 +148,7 @@ class ImagesTable extends Table
         $path = WWW_ROOT.'img'.DS.'events'.DS.'tiny'.DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
         $destinationFile = $path.$filename;
-        list($width, $height, $type, $attr) = getimagesize($sourceFile);
+        list($width, $height) = getimagesize($sourceFile);
 
         // Make the shortest side fit inside the maximum dimensions
         if ($width >= $height) {
@@ -201,6 +201,10 @@ class ImagesTable extends Table
         $width = $imageParams[0];
         $height = $imageParams[1];
 
+        //assume we want to create an image with these exact dimensions, most likely resulting in distortion
+        $scaledWidth = $newWidth;
+        $scaledHeight = $newHeight;
+
         if (0 != $newWidth && 0 == $newHeight) {
             $scaledWidth = $newWidth;
             $scaledHeight = floor($newWidth * $height / $width);
@@ -210,10 +214,8 @@ class ImagesTable extends Table
         } elseif (0 == $newWidth && 0 == $newHeight) { //assume we want to create a new image the same exact size
             $scaledWidth = $width;
             $scaledHeight = $height;
-        } else { //assume we want to create an image with these exact dimensions, most likely resulting in distortion
-            $scaledWidth = $newWidth;
-            $scaledHeight = $newHeight;
         }
+
 
         //create image
         $ext = $imageParams[2];
@@ -362,7 +364,7 @@ class ImagesTable extends Table
      */
     public function cropCenter($sourceFile, $destinationFile, $wVar, $hVar, $quality)
     {
-        list($originalWidth, $originalHeight, $type, $attr) = getimagesize($sourceFile);
+        list($originalWidth, $originalHeight) = getimagesize($sourceFile);
         $centerX = round($originalWidth / 2);
         $centerY = round($originalHeight / 2);
         $halfNewWidth = round($wVar / 2);

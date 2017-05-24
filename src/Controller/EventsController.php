@@ -166,7 +166,7 @@ class EventsController extends AppController
                 $this->request->data['data']['Tags'][] = $tagId;
             }
             // Create the custom tag if it does not already exist
-            if (!$tagID) {
+            if (!$tagId) {
                 $newTag = $this->Events->Tags->newEntity();
                 $newTag->name = $ct;
                 $newTag->user_id = $this->Auth->user('id');

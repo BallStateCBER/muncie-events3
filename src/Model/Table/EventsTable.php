@@ -83,11 +83,7 @@ class EventsTable extends Table
                 'wildcardOne' => '?',
                 'field' => ['title', 'description', 'location']
             ])
-            ->add('foo', 'Search.Callback', [
-                'callback' => function ($query, $args, $filter) {
-                    // Modify $query as required
-                }
-            ]);
+            ->add('foo', 'Search.Callback');
     }
 
     /**
@@ -230,7 +226,7 @@ class EventsTable extends Table
         return $retval;
     }
 
-    public function getPopulatedDates($month = null, $year = null, $filters = null)
+    public function getPopulatedDates($month = null, $year = null)
     {
         $findParams = [
             'conditions' => ['Events.published' => 1],
@@ -247,12 +243,6 @@ class EventsTable extends Table
         } elseif ($year) {
             $findParams['conditions']['Events.date LIKE'] = "$year-%";
         }
-
-        // Apply optional filters
-    #    if ($filters) {
-    #        $startDate = null;
-    #        $findParams = $this->applyFiltersToFindParams($findParams, $filters, $startDate);
-    #    }
 
         $dateResults = $this->find('all', $findParams);
         $dates = [];
@@ -400,8 +390,8 @@ class EventsTable extends Table
 
         // Pull event filters out of options
         $filters = [];
-        $filter_types = ['category_id', 'location', 'tags_included', 'tags_excluded'];
-        foreach ($filter_types as $type) {
+        $filterTypes = ['category_id', 'location', 'tags_included', 'tags_excluded'];
+        foreach ($filterTypes as $type) {
             if (isset($options[$type])) {
                 $filters[$type] = $options[$type];
             }
