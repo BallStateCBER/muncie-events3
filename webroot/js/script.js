@@ -349,7 +349,7 @@ function setupEventActions(container_selector) {
  * Loads another chunk of events at the bottom of the event accordion
  */
 function loadMoreEvents() {
-    var more_events_url = '/events/accordion/'+muncieEventsFeed.nextStartDate+'/';
+    var more_events_url = '/events/'+muncieEventsFeed.nextStartDate+'/';
     if (muncieEvents.requestEventFilters.category) {
         more_events_url += 'category:'+muncieEvents.requestEventFilters.category;
     } else if (muncieEvents.requestEventFilters.tag) {
