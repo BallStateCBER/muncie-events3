@@ -55,7 +55,7 @@ function setupHeaderNav() {
             } else {
                 var selectable = true;
                 var class_name = 'has_events';
-                var tooltip = 'tooltip text?';
+                var tooltip = month+'-'+day+'-'+year;
             }
 
             return [selectable, class_name, tooltip];
