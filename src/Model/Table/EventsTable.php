@@ -170,11 +170,14 @@ class EventsTable extends Table
         return $total;
     }
 
-    public function getNextStartDate($events)
+    public function getNextStartDate($dates)
     {
-        $eventKeys = array_keys($events);
-        $lastDate = end($eventKeys);
-        return date('Y-m-d', strtotime("$lastDate + 1 day"));
+        $lastDate = end($dates);
+        $lastDate = strtotime($lastDate.' +1 day');
+        $lastDate = date('Y-m-d', $lastDate);
+        list($year, $month, $day) = explode('-', $lastDate);
+        $lastDate = 'index/'.$month.'/'.$day.'/'.$year;
+        return $lastDate;
     }
 
     public function buildRules(RulesChecker $rules)

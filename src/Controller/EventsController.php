@@ -288,12 +288,13 @@ class EventsController extends AppController
             $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
             if ($this->Events->save($event, [
-                'associated' => ['Images']
+                'associated' => ['Images', 'Tags']
             ])) {
+                $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
-                return $this->redirect(['action' => 'view', $id]);
+            } else {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
 
         $users = $this->Events->Users->find('list');
@@ -394,21 +395,23 @@ class EventsController extends AppController
         ]);
     }
 
-
     // home page
-    public function index()
+    public function index($nextStartDate = null)
     {
+        if ($nextStartDate == null) {
+            $nextStartDate = date('Y-m-d');
+        }
         $events = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
-            ->where(['date >=' => date('Y-m-d')])
+            ->where(['date >=' => $nextStartDate])
+            ->limit(5)
             ->toArray();
         $this->indexEvents($events);
         $this->set([
-            'titleForLayout', '',
-            'nextStartDate' => $this->Events->getNextStartDate($events)
+            'titleForLayout', ''
         ]);
     }
 
@@ -597,7 +600,7 @@ class EventsController extends AppController
 
     public function add()
     {
-        $event = $this->Events->newEntity(['contain' => 'Images']);
+        $event = $this->Events->newEntity();
 
         // prepare form
         $this->prepareEventFormPr($event);
@@ -607,10 +610,13 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
             $event = $this->Events->patchEntity($event, $this->request->getData());
+            $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
-            if ($this->Events->save($event)) {
+            if ($this->Events->save($event, [
+                'associated' => ['Images', 'Tags']
+            ])) {
+                $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
-                return $this->redirect(['action' => 'view', $id]);
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
             return $this->redirect(['action' => 'index']);

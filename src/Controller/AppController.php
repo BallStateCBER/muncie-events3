@@ -143,7 +143,8 @@ class AppController extends Controller
         if (count(array_unique($dates))>=count($dates)) {
             $events = array_combine($dates, $events);
         }
-        $this->set(compact('dates', 'events', 'multipleDates'));
+        $nextStartDate = $this->Events->getNextStartDate($dates);
+        $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate'));
     }
 
     public function getEventsForJson($events)
