@@ -285,6 +285,7 @@ class EventsController extends AppController
             // make sure the end time stays null if it needs to
             $this->uponFormSubmissionPr();
             $event = $this->Events->patchEntity($event, $this->request->getData());
+            $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
             if ($this->Events->save($event, [
                 'associated' => ['Images']

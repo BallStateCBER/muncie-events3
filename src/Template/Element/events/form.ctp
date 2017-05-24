@@ -53,30 +53,31 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <div id="datepicker_hidden" class="multi"></div>
+                        <div id="datepicker" class="<?= ($multipleDatesAllowed ? 'multi' : 'single'); ?>"></div>
                         <?php
-                        /*if ($multipleDatesAllowed) {
+                        if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
-                                var defaultDate = $defaultDate;
-                                var preselectedDates = $preselectedDates;
-                                setupDatepickerMultiple(defaultDate, preselectedDates);
+                                var default_date = $defaultDate;
+                                var preselected_dates = $preselectedDates;
+                                setupDatepickerMultiple(default_date, preselected_dates);
                             ");
                         } else {
                             $this->Js->buffer("
-                                var defaultDate = '".$event->date."';
-                                setupDatepickerSingle(defaultDate);
+                                var default_date = '".$event->date."';
+                                setupDatepickerSingle(default_date);
                             ");
                         }
-                            echo $this->Js->writeBuffer(); */
-                            echo $this->Form->input('date', [
-                        #        'type' => 'hidden',
-                                'id' => 'datepicker'
-                            ]);
+                        echo $this->Form->input('date', [
+                            'id' => 'datepicker_hidden',
+                            'type' => 'hidden'
+                        ]);
                         ?>
-                        <div class="text-muted">
-                            Select more than one date to create multiple events connected by a series.
-                        </div>
+                        <?php if ($multipleDatesAllowed): ?>
+                            <div class="text-muted">
+                                Select more than one date to create multiple events connected by a series.
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </td>
             </tr>
