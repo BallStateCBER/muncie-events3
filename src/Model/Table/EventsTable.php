@@ -172,7 +172,7 @@ class EventsTable extends Table
         $lastDate = strtotime($lastDate.' +1 day');
         $lastDate = date('Y-m-d', $lastDate);
         list($year, $month, $day) = explode('-', $lastDate);
-        $lastDate = 'index/'.$month.'/'.$day.'/'.$year;
+        $lastDate = $year.$month.$day;
         return $lastDate;
     }
 

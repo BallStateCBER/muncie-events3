@@ -131,19 +131,23 @@ class AppController extends Controller
         foreach ($events as $event) {
             $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
         }
-        foreach ($evDates as $evDate) {
-            $dates[] = $evDate['date'];
+        if (isset($evDates)) {
+            foreach ($evDates as $evDate) {
+                $dates[] = $evDate['date'];
+            }
         }
         // are there multiple events happening on a certain date?
         $multipleDates = false;
-        if (count(array_unique($dates))<count($dates)) {
-            $multipleDates = true;
-            $events = $this->multipleDateIndex($dates, $events);
+        if (isset($dates)) {
+            if (count(array_unique($dates))<count($dates)) {
+                $multipleDates = true;
+                $events = $this->multipleDateIndex($dates, $events);
+            }
+            if (count(array_unique($dates))>=count($dates)) {
+                $events = array_combine($dates, $events);
+            }
+            $nextStartDate = $this->Events->getNextStartDate($dates);
         }
-        if (count(array_unique($dates))>=count($dates)) {
-            $events = array_combine($dates, $events);
-        }
-        $nextStartDate = $this->Events->getNextStartDate($dates);
         $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate'));
     }
 
