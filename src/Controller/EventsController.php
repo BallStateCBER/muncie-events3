@@ -400,13 +400,15 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
+        // the app breaks if there is a 1-month gap in between events
+        $endDate = strtotime($nextStartDate.' + 1 month');
         $events = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
             ->where(['date >=' => $nextStartDate])
-            ->limit(7)
+            ->andwhere(['date <=' => $endDate])
             ->toArray();
         $this->indexEvents($events);
         $this->set([
@@ -414,8 +416,11 @@ class EventsController extends AppController
         ]);
     }
 
-    public function tag($slug = '')
+    public function tag($slug = '', $nextStartDate = null)
     {
+        if ($nextStartDate == null) {
+            $nextStartDate = date('Y-m-d');
+        }
         // Get tag
         $tagId = $this->Events->Tags->getIdFromSlug($slug);
         $tag = $this->Events->Tags->find('all', [
@@ -435,9 +440,11 @@ class EventsController extends AppController
         $events = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'DESC']
+                'order' => ['date' => 'ASC']
             ])
             ->where(['Events.id IN' => $eventId])
+            ->andWhere(['date >=' => $nextStartDate])
+            ->limit(10)
             ->toArray();
         $this->indexEvents($events);
 
@@ -496,8 +503,11 @@ class EventsController extends AppController
         $this->set('titleForLayout', $event['title']);
     }
 
-    public function category($slug)
+    public function category($slug, $nextStartDate = null)
     {
+        if ($nextStartDate == null) {
+            $nextStartDate = date('Y-m-d');
+        }
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
             ])
@@ -505,8 +515,10 @@ class EventsController extends AppController
         $events = $this->Events->find('all', [
             'conditions' => ['category_id' => $category->id],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+            'order' => ['date' => 'ASC']
             ])
+            ->where(['date >=' => $nextStartDate])
+            ->limit(5)
             ->toArray();
         if (empty($events)) {
             return $this->renderMessage([
