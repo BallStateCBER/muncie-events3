@@ -49,6 +49,7 @@ Router::defaultRouteClass(DashedRoute::class);
 Router::scope('/', function (RouteBuilder $routes) {
     // home
     $routes->connect('/', ['controller' => 'Events', 'action' => 'index']);
+    $routes->connect('/index/*', ['controller' => 'Events', 'action' => 'index']);
 
     // events actions
     foreach (['edit', 'edit_series', 'publish', 'approve', 'delete'] as $action) {

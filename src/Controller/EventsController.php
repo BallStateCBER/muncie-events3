@@ -14,9 +14,8 @@ use Cake\Routing\Router;
 class EventsController extends AppController
 {
     public $name = 'Events';
-    public $helpers = ['Tag'];
+    public $helpers = ['Tag', 'Calendar'];
     public $components = [
-    //    'Calendar',
         'Search.Prg',
         'RequestHandler'
     ];
@@ -407,7 +406,7 @@ class EventsController extends AppController
             'order' => ['date' => 'ASC']
             ])
             ->where(['date >=' => $nextStartDate])
-            ->limit(5)
+            ->limit(7)
             ->toArray();
         $this->indexEvents($events);
         $this->set([

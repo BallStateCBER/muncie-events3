@@ -349,7 +349,7 @@ function setupEventActions(container_selector) {
  * Loads another chunk of events at the bottom of the event accordion
  */
 function loadMoreEvents() {
-    var more_events_url = '/events/'+muncieEventsFeed.nextStartDate+'/';
+    var more_events_url = '/index/'+muncieEventsFeed.nextStartDate+'/';
     if (muncieEvents.requestEventFilters.category) {
         more_events_url += 'category:'+muncieEvents.requestEventFilters.category;
     } else if (muncieEvents.requestEventFilters.tag) {
@@ -362,6 +362,7 @@ function loadMoreEvents() {
             $('#event_accordion_loading_indicator').show();
         },
         success: function(data) {
+            $('#event_accordion_loading_indicator').hide();
             $('#event_accordion').append(data);
             muncieEventsImagePopups.prepare();
         },
@@ -369,7 +370,6 @@ function loadMoreEvents() {
             alert('There was an error loading more events. Please try again.');
         },
         complete: function() {
-            $('#event_accordion_loading_indicator').hide();
             if (muncieEventsFeed.no_more_events) {
                 $('#event_accordion').append('<p class=\"no_events\">No more events found.</p>');
                 $('#load_more_events').hide();
