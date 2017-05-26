@@ -71,8 +71,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // Categories
-    $category_slugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
-    foreach ($category_slugs as $slug) {
+    $categorySlugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
+    foreach ($categorySlugs as $slug) {
         $routes->connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
     }
 
