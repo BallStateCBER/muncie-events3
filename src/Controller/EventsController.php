@@ -23,6 +23,13 @@ class EventsController extends AppController
     public $eventFilter = [];
     public $adminActions = ['publish', 'approve', 'moderate'];
 
+    public $paginate = [
+        'limit' => 25,
+        'order' => [
+            'title' => 'desc'
+        ]
+    ];
+
     public function initialize()
     {
         parent::initialize();
@@ -421,6 +428,7 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
+        $endDate = strtotime($nextStartDate.' + 1 month');
         // Get tag
         $tagId = $this->Events->Tags->getIdFromSlug($slug);
         $tag = $this->Events->Tags->find('all', [
@@ -440,11 +448,9 @@ class EventsController extends AppController
         $events = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'ASC']
+                'order' => ['date' => 'DESC']
             ])
             ->where(['Events.id IN' => $eventId])
-            ->andWhere(['date >=' => $nextStartDate])
-            ->limit(10)
             ->toArray();
         $this->indexEvents($events);
 
@@ -508,17 +514,16 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
+        $endDate = strtotime($nextStartDate.' + 3 months');
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
             ])
             ->first();
         $events = $this->Events->find('all', [
-            'conditions' => ['category_id' => $category->id],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+            'order' => ['date' => 'DESC']
             ])
-            ->where(['date >=' => $nextStartDate])
-            ->limit(5)
+            ->where(['category_id' => $category->id])
             ->toArray();
         if (empty($events)) {
             return $this->renderMessage([
