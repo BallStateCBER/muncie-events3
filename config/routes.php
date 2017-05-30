@@ -70,6 +70,15 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
+    // series actions
+    $routes->connect('/eventseries/delete/*', ['controller' => 'eventSeries', 'action' => 'delete']);
+    $routes->connect('/eventseries/edit/*', ['controller' => 'eventSeries', 'action' => 'edit']);
+    // viewing series
+    Router::connect("eventseries/:id",
+        ['controller' => 'eventSeries', 'action' => 'view'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
+
     // Categories
     $categorySlugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
     foreach ($categorySlugs as $slug) {

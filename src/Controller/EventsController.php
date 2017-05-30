@@ -95,7 +95,7 @@ class EventsController extends AppController
             ->toArray();
         $this->set(compact('availableTags'));
 
-        if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
+        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
             $hasSeries = count(explode(',', $event->date)) > 1;
             $hasEndTime = isset($event['has_end_time']) ? $event['has_end_time'] : false;
         } elseif ($this->request->action == 'edit') {
@@ -234,7 +234,7 @@ class EventsController extends AppController
     private function prepareDatePickerPr($event)
     {
         // Prepare date picker
-        if ($this->request->action == 'add' || $this->request->action == 'edit_series') {
+        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
             $dateFieldValues = [];
             if (empty($event->date)) {
                 $defaultDate = 0; // Today
@@ -262,6 +262,98 @@ class EventsController extends AppController
             list($year, $month, $day) = explode('-', $event->date);
             $event->date = "$month/$day/$year";
         }
+    }
+
+    public function editSeries($seriesId)
+    {
+        // Get information about series
+        $this->Events->EventSeries->id = $seriesId;
+        if (!$this->Events->EventSeries->exists()) {
+            return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
+        }
+        $saveDisplayField = $this->Events->displayField;
+        $this->Events->displayField = 'date';
+        $events = $this->Events->find('list', [
+            'conditions' => ['series_id' => $seriesId],
+            'contain' => false
+        ]);
+        $this->Events->displayField = $saveDisplayField;
+        $dates = array_values($events);
+
+        // Pick an arbitrary event in the series
+        $eventIds = array_keys($events);
+        $this->Events->id = $eventIds[0];
+        $this->Events->set('date', implode(',', $dates));
+
+        if ($this->request->is('put') || $this->request->is('post')) {
+            $dates = explode(',', $this->request->data['date']);
+
+            // Process data
+            $this->__processCustomTags();
+            foreach ($dates as &$date) {
+                $date = date('Y-m-d', strtotime(trim($date)));
+            }
+            unset($date);
+            // Prevent anonymously-submitted events from being saved with user id 0 instead of null
+            if (!$this->request->data['user_id']) {
+                $this->request->data['user_id'] = null;
+            }
+
+            $this->Events->set($this->request->data);
+            if ($this->Events->validates()) {
+                // Update series title
+                if (trim($this->request->data['EventSeries']['title']) == '') {
+                    $this->request->data['EventSeries']['title'] = $this->request->data['Event']['title'];
+                }
+                $this->Events->EventSeries->saveField('title', $this->request->data['EventSeries']['title']);
+
+                // Update/add event for each submitted date
+                $errorFlag = false;
+                foreach ($dates as $date) {
+                    $eventId = array_search($date, $events);
+                    if ($eventId === false) {
+                        $this->Events->create($this->request->data);
+                    } else {
+                        $this->Events->id = $eventId;
+                        $this->Events->set($this->request->data);
+                    }
+                    $this->Events->set('date', $date);
+                    if (! $this->Events->save(null, false)) {
+                        $errorFlag = true;
+                    }
+                }
+
+                // Remove events
+                foreach ($events as $eventId => $date) {
+                    if (! in_array($date, $dates)) {
+                        $this->Events->delete($eventId);
+                    }
+                }
+
+                if ($errorFlag) {
+                    $this->Flash->error('There was an error updating the events in this series.');
+                } else {
+                    $this->Flash->success('Series updated.');
+                    if ($this->Events->EventSeries->field('published')) {
+                        // If event is published, go to series view page
+                        $this->redirect(['controller' => 'eventseries', 'action' => 'view', 'id' => $seriesId]);
+                    } else {
+                        // Otherwise, it's assumed an admin needs to be redirected back to the moderation page
+                        $this->redirect(['controller' => 'events', 'action' => 'moderate']);
+                    }
+                }
+            }
+        } else {
+            $this->request->data = $this->Events->read();
+            $this->Flash->set('All events in this series will be overwritten.');
+        }
+
+        $this->request->data['date'] = implode(',', $dates);
+        $this->__prepareEventForm();
+        $this->set([
+            'titleForLayout' => 'Edit Event Series: '.$this->Events->EventSeries->field('title')
+        ]);
+        $this->render('form');
     }
 
     public function datepickerPopulatedDates()
@@ -294,7 +386,7 @@ class EventsController extends AppController
             $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
             if ($this->Events->save($event, [
-                'associated' => ['Images', 'Tags']
+                'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
@@ -305,8 +397,8 @@ class EventsController extends AppController
 
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        #$series = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories' /*'eventseries', */));
+        $eventseries = $this->Events->EventSeries->find('list');
+        $this->set(compact('event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Edit Event');
     }
@@ -330,16 +422,16 @@ class EventsController extends AppController
             $this->Flash->error('No events approved because no IDs were specified');
             $this->redirect('/');
         }
-        #$seriesToApprove = [];
+        $seriesToApprove = [];
         foreach ($ids as $id) {
             $this->Events->id = $id;
             $event = $this->Events->get($id);
             if (!$this->Events->exists($id)) {
                 $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
             }
-                /*if ($seriesId = $this->Events->EventSeries->id) {
-                    $seriesToApprove[$seriesId] = true;
-                } */
+            if ($seriesId = $this->Events->EventSeries->id) {
+                $seriesToApprove[$seriesId] = true;
+            }
                 // approve & publish it
             $event['approved_by'] = $this->request->session()->read('Auth.User.id');
             $event['published'] = 1;
@@ -628,8 +720,9 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
+            
             if ($this->Events->save($event, [
-                'associated' => ['Images', 'Tags']
+                'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
@@ -639,7 +732,8 @@ class EventsController extends AppController
         }
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        $this->set(compact('event', 'users', 'categories' /*'eventseries', */));
+        $eventseries = $this->Events->EventSeries->find('list');
+        $this->set(compact('event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
     }
