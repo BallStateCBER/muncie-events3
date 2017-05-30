@@ -78,6 +78,8 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'eventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
+    // editing series
+    $routes->connect('/event/editseries/*', ['controller' => 'events', 'action' => 'editSeries']);
 
     // Categories
     $categorySlugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];

@@ -1,5 +1,5 @@
 <?php
-    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'edit_series');
+    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'editSeries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 

@@ -128,6 +128,7 @@ class AppController extends Controller
     // to index events
     public function indexEvents($events)
     {
+        $this->loadModel('Events');
         foreach ($events as $event) {
             $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
         }
@@ -147,8 +148,9 @@ class AppController extends Controller
                 $events = array_combine($dates, $events);
             }
             $nextStartDate = $this->Events->getNextStartDate($dates);
+            $prevStartDate = $this->Events->getPrevStartDate($dates);
         }
-        $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate'));
+        $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate', 'prevStartDate'));
     }
 
     public function getEventsForJson($events)

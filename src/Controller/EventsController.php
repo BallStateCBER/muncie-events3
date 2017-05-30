@@ -267,29 +267,29 @@ class EventsController extends AppController
     public function editSeries($seriesId)
     {
         // Get information about series
-        $this->Events->EventSeries->id = $seriesId;
+        #$this->Events->EventSeries->id = $seriesId;
         if (!$this->Events->EventSeries->exists()) {
             return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
         }
-        $saveDisplayField = $this->Events->displayField;
-        $this->Events->displayField = 'date';
-        $events = $this->Events->find('list', [
+        #$saveDisplayField = $this->Events->displayField;
+        #$this->Events->displayField = 'date';
+        $event = $this->Events->find('list', [
             'conditions' => ['series_id' => $seriesId],
             'contain' => false
         ]);
-        $this->Events->displayField = $saveDisplayField;
-        $dates = array_values($events);
+        #$this->Events->displayField = $saveDisplayField;
+        $dates = array_values($event);
 
         // Pick an arbitrary event in the series
-        $eventIds = array_keys($events);
+        $eventIds = array_keys($event);
         $this->Events->id = $eventIds[0];
-        $this->Events->set('date', implode(',', $dates));
+        $this->set('date', implode(',', $dates));
 
         if ($this->request->is('put') || $this->request->is('post')) {
             $dates = explode(',', $this->request->data['date']);
 
             // Process data
-            $this->__processCustomTags();
+            $this->processCustomTagsPr();
             foreach ($dates as &$date) {
                 $date = date('Y-m-d', strtotime(trim($date)));
             }
@@ -310,7 +310,7 @@ class EventsController extends AppController
                 // Update/add event for each submitted date
                 $errorFlag = false;
                 foreach ($dates as $date) {
-                    $eventId = array_search($date, $events);
+                    $eventId = array_search($date, $event);
                     if ($eventId === false) {
                         $this->Events->create($this->request->data);
                     } else {
@@ -324,7 +324,7 @@ class EventsController extends AppController
                 }
 
                 // Remove events
-                foreach ($events as $eventId => $date) {
+                foreach ($event as $eventId => $date) {
                     if (! in_array($date, $dates)) {
                         $this->Events->delete($eventId);
                     }
@@ -334,7 +334,7 @@ class EventsController extends AppController
                     $this->Flash->error('There was an error updating the events in this series.');
                 } else {
                     $this->Flash->success('Series updated.');
-                    if ($this->Events->EventSeries->field('published')) {
+                    if ($this->Events->EventSeries['published']) {
                         // If event is published, go to series view page
                         $this->redirect(['controller' => 'eventseries', 'action' => 'view', 'id' => $seriesId]);
                     } else {
@@ -344,16 +344,16 @@ class EventsController extends AppController
                 }
             }
         } else {
-            $this->request->data = $this->Events->read();
             $this->Flash->set('All events in this series will be overwritten.');
         }
 
         $this->request->data['date'] = implode(',', $dates);
-        $this->__prepareEventForm();
+        $this->prepareEventFormPr();
         $this->set([
-            'titleForLayout' => 'Edit Event Series: '.$this->Events->EventSeries->field('title')
+    #        'titleForLayout' => 'Edit Event Series: '.$this->Events['EventSeries']['title']
         ]);
-        $this->render('form');
+        $this->set(compact('event'));
+        $this->render('/Element/events/form');
     }
 
     public function datepickerPopulatedDates()
@@ -720,7 +720,7 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
-            
+
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
