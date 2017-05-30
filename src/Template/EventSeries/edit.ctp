@@ -1,8 +1,8 @@
 <?php
     /* TO DO:
      *         If event->delete is checked, have confirmation dialogue box pop up upon hitting submit
-     *         Add (functionally useless) [done] buttons to compliment [edit] buttons
      */
+     echo $this->Html->script('event_form.js');
 ?>
 <h1 class="page_title">
     <?= $titleForLayout; ?>
@@ -43,7 +43,7 @@
                             <?php foreach ($eventSeries->events as $event): ?>
                                 <tr class="display" id="eventinseries_display_<?= $event['id']; ?>">
                                     <td class="action">
-                                        <a href="#" data-event-id="<?= $event['id']; ?>">
+                                        <a href="#" class="toggler" data-event-id="<?= $event['id']; ?>">
                                             Edit
                                         </a>
                                     </td>
@@ -59,7 +59,7 @@
                                 </tr>
                                 <tr class="edit" id="eventinseries_edit_<?= $event['id']; ?>" style="display: none;">
                                     <td class="action">
-                                        <a href="#" data-event-id="<?= $event['id']; ?>">
+                                        <a href="#" class="toggler" data-event-id="<?= $event['id']; ?>">
                                             Done
                                         </a>
                                     </td>
@@ -146,7 +146,6 @@
 </table>
 
 <?php
-    $this->Html->script('event_form.js', ['inline' => false]);
     $this->Js->buffer("
         event_ids = ".$this->Js->object($eventIds).";
         setup_eventseries_edit_form();

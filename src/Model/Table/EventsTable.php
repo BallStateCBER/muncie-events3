@@ -176,6 +176,16 @@ class EventsTable extends Table
         return $lastDate;
     }
 
+    public function getPrevStartDate($dates)
+    {
+        $firstDate = current($dates);
+        $firstDate = strtotime($firstDate.' -1 day');
+        $firstDate = date('Y-m-d', $firstDate);
+        list($year, $month, $day) = explode('-', $firstDate);
+        $firstDate = $year.$month.$day;
+        return $firstDate;
+    }
+
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));

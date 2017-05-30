@@ -17,7 +17,7 @@ function setup_eventseries_edit_form() {
 	// 'Edit' buttons
 	$('#events_in_series tbody tr.display a.toggler').each(function() {
 		var link = $(this);
-		var event_id = link.data('eventId');
+		var event_id = link.data('event-id');
 		link.click(function(event) {
 			event.preventDefault();
 			$('#eventinseries_display_'+event_id).hide();
@@ -28,7 +28,7 @@ function setup_eventseries_edit_form() {
 	// 'Done' buttons
 	$('#events_in_series tbody tr.edit a.toggler').each(function() {
 		$(this).click(function(event) {
-			var event_id = $(this).data('eventId');
+			var event_id = $(this).data('event-id');
 			event.preventDefault();
 			if ($('#Event'+event_id+'Title').val() == '') {
 				alert('A title is required for this event.');

@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
+use Cake\Event\Event;
 use Cake\Routing\Router;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
@@ -22,6 +23,11 @@ class UsersController extends AppController
         $this->Auth->allow([
             'register', 'forgotPassword', 'resetPassword', 'view'
         ]);
+    }
+
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
     }
 
     public function index()

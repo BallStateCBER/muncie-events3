@@ -10,6 +10,7 @@ use App\Controller\AppController;
  */
 class EventSeriesController extends AppController
 {
+    public $helpers = ['Html'];
 
     /**
      * Index method
@@ -63,7 +64,9 @@ class EventSeriesController extends AppController
             ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
-            if ($this->EventSeries->save($eventSeries)) {
+            if ($this->EventSeries->save($eventSeries,
+                ['contain' => ['Events']]
+            )) {
                 $this->Flash->success(__('The event series has been saved.'));
                 return $this->redirect(['action' => 'view', $id]);
             }
