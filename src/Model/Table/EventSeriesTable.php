@@ -43,6 +43,9 @@ class EventSeriesTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasMany('Events', [
+            'foreignKey' => 'series_id'
+        ]);
     }
 
     /**

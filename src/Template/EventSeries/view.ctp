@@ -1,45 +1,78 @@
 <?php
-/**
-  * @var \App\View\AppView $this
-  */
+    $userId = $this->request->session()->read('Auth.User.id');
+    $userRole = $this->request->session()->read('Auth.User.role');
+    $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id']);
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('Edit Event Series'), ['action' => 'edit', $eventSeries->id]) ?> </li>
-        <li><?= $this->Form->postLink(__('Delete Event Series'), ['action' => 'delete', $eventSeries->id], ['confirm' => __('Are you sure you want to delete # {0}?', $eventSeries->id)]) ?> </li>
-        <li><?= $this->Html->link(__('List Event Series'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Event Series'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?> </li>
-    </ul>
-</nav>
-<div class="eventSeries view large-9 medium-8 columns content">
-    <h3><?= h($eventSeries->title) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th scope="row"><?= __('Title') ?></th>
-            <td><?= h($eventSeries->title) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User') ?></th>
-            <td><?= $eventSeries->has('user') ? $this->Html->link($eventSeries->user->name, ['controller' => 'Users', 'action' => 'view', $eventSeries->user->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($eventSeries->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($eventSeries->created) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($eventSeries->modified) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Published') ?></th>
-            <td><?= $eventSeries->published ? __('Yes') : __('No'); ?></td>
-        </tr>
-    </table>
+
+<h1 class="page_title">
+    <?= $titleForLayout; ?>
+</h1>
+
+<div class="event_series">
+    <?php if ($canEdit): ?>
+        <div class="controls">
+            <?= $this->Html->link(
+                $this->Html->image('/img/icons/pencil.png').'Edit',
+                ['controller' => 'eventSeries', 'action' => 'edit', $eventSeries->id],
+                ['escape' => false]
+            ); ?>
+            &nbsp;
+            <?= $this->Form->postLink(
+                $this->Html->image('/img/icons/cross.png').'Delete',
+                ['controller' => 'eventSeries', 'action' => 'delete', $eventSeries->id],
+                ['escape' => false],
+                'Are you sure that you want to delete this event series? All events will be permanently deleted.'
+            ); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php
+        $dividedEvents = ['upcoming' => [], 'past' => []];
+        foreach ($eventSeries->events as $key => $event) {
+            if (date('Y-m-d', strtotime($event->date)) < date('Y-m-d')) {
+                $dividedEvents['past'][] = $event;
+            } else {
+                $dividedEvents['upcoming'][] = $event;
+            }
+        }
+        rsort($dividedEvents['past']);
+    ?>
+    <?php foreach ($dividedEvents as $section => $events): ?>
+        <?php if (empty($events)) {
+        continue;
+    } ?>
+        <h2>
+            <?= ucwords($section); ?> Events
+        </h2>
+        <table>
+            <tbody>
+                <?php foreach ($events as $key => $event): ?>
+                    <tr>
+                        <td>
+                            <?= date('M j, Y', strtotime($event->date)); ?>
+                        </td>
+                        <td>
+                            <?= date('g:ia', strtotime($event['time_start'])); ?>
+                        </td>
+                        <td>
+                            <?= $this->Html->link($event['title'],
+                                ['controller' => 'events', 'action' => 'view', 'id' => $event->id]
+                            ); ?>
+                        </td>
+                    </tr>
+                <?php endforeach;?>
+            </tbody>
+        </table>
+    <?php endforeach; ?>
+
+    <p class="author">
+        <?php if (isset($eventSeries->user['name'])): ?>
+            Author:
+            <?= $this->Html->link($eventSeries->user['name'], [
+                'controller' => 'users', 'action' => 'view', 'id' => $eventSeries->user['id']
+            ]); ?>
+        <?php else: ?>
+            This event series was posted anonymously.
+        <?php endif; ?>
+    </p>
 </div>

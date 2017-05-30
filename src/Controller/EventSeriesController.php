@@ -37,33 +37,12 @@ class EventSeriesController extends AppController
     public function view($id = null)
     {
         $eventSeries = $this->EventSeries->get($id, [
-            'contain' => ['Users']
+            'contain' => ['Events', 'Users']
         ]);
 
         $this->set('eventSeries', $eventSeries);
         $this->set('_serialize', ['eventSeries']);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $eventSeries = $this->EventSeries->newEntity();
-        if ($this->request->is('post')) {
-            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
-            if ($this->EventSeries->save($eventSeries)) {
-                $this->Flash->success(__('The event series has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The event series could not be saved. Please, try again.'));
-        }
-        $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
-        $this->set(compact('eventSeries', 'users'));
-        $this->set('_serialize', ['eventSeries']);
+        $this->set(['titleForLayout' => 'Event Series: '.$eventSeries->title]);
     }
 
     /**
@@ -76,20 +55,24 @@ class EventSeriesController extends AppController
     public function edit($id = null)
     {
         $eventSeries = $this->EventSeries->get($id, [
-            'contain' => []
+            'contain' => ['Events']
         ]);
+        $eventIds = $this->EventSeries->Events->find('list');
+        $eventIds
+            ->select('id')
+            ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
             if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', $id]);
             }
             $this->Flash->error(__('The event series could not be saved. Please, try again.'));
         }
         $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
-        $this->set(compact('eventSeries', 'users'));
+        $this->set(compact('eventIds', 'eventSeries', 'users'));
         $this->set('_serialize', ['eventSeries']);
+        $this->set(['titleForLayout' => 'Edit Series: '.$eventSeries->title]);
     }
 
     /**
@@ -105,6 +88,7 @@ class EventSeriesController extends AppController
         $eventSeries = $this->EventSeries->get($id);
         if ($this->EventSeries->delete($eventSeries)) {
             $this->Flash->success(__('The event series has been deleted.'));
+            return $this->redirect(['controller' => 'events', 'action' => 'index']);
         } else {
             $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
         }
