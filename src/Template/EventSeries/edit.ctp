@@ -28,7 +28,9 @@
             <td><?php
                 echo $this->Form->input('title', [
                     'label' => false,
+                    'class' => 'form-control',
                     'div' => false,
+                    'value' => $eventSeries['title']
                 ]);
             ?></td>
         </tr>
@@ -40,7 +42,13 @@
                 <?php else: ?>
                     <table id="events_in_series">
                         <tbody>
+                            <?php $x = 0; ?>
                             <?php foreach ($eventSeries->events as $event): ?>
+                                <?php
+                                    $this->Form->setTemplates([
+                                        'select' => '<select name="{{name}}" {{attrs}}>{{content}}</select>'
+                                    ]);
+                                ?>
                                 <tr class="display" id="eventinseries_display_<?= $event['id']; ?>">
                                     <td class="action">
                                         <a href="#" class="toggler" data-event-id="<?= $event['id']; ?>">
@@ -68,13 +76,21 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <td>
-                                                    <?= $this->Form->input('Event.'.$event['id'].'.date', [
-                                                        'div' => false,
+                                                    <?= $this->Form->date('events.'.$x.'.date', [
                                                         'label' => false,
-                                                        'type' => 'date',
-                                                        'dateFormat' => 'MDY',
-                                                        'minYear' => min(date('Y'), substr($event['date'], 0, 4)),
                                                         'maxYear' => date('Y') + 1,
+                                                        'year' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'year'
+                                                        ],
+                                                        'month' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'month'
+                                                        ],
+                                                        'day' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'day'
+                                                        ],
                                                         'default' => $event['date']
                                                     ]); ?>
                                                 </td>
@@ -82,23 +98,35 @@
                                             <tr>
                                                 <th>Time</th>
                                                 <td>
-                                                    <?= $this->Form->input('Event.'.$event['id'].'.time_start', $options = [
+                                                    <?= $this->Form->time('events.'.$x.'.time_start', [
                                                         'label' => false,
                                                         'interval' => 5,
-                                                        'div' => false,
+                                                        'timeFormat' => '12',
+                                                        'hour' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'hour'
+                                                        ],
+                                                        'minute' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'minute'
+                                                        ],
+                                                        'meridian' => [
+                                                            'class' => 'form-control event_time_form',
+                                                            'id' => ''.$event['id'].'meridian'
+                                                        ],
                                                         'default' => $event['time_start']
-                                                    ]); ?>
+                                                    ],
+                                                    'form-control event_time_form'); ?>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Title</th>
                                                 <td>
-                                                    <?= $this->Form->input('Event.'.$event['id'].'.title', [
-                                                        'div' => false,
+                                                    <?= $this->Form->input('events.'.$x.'.title', [
+                                                        'class' => 'form-control',
+                                                        'id' => ''.$event['id'].'title',
                                                         'label' => false,
-                                                        'style' => 'width: 150px;',
-                                                        'default' => $event['title'],
-                                                        //'maxLength' => 100
+                                                        'default' => $event['title']
                                                     ]); ?>
                                                 </td>
                                             </tr>
@@ -107,20 +135,24 @@
                                                     <label for="eventinseries_delete_<?= $event['id']; ?>">Delete</label>
                                                 </th>
                                                 <td>
-                                                    <?= $this->Form->checkbox('Event.'.$event['id'].'.delete', [
+                                                    <?= $this->Form->checkbox('events.'.$x.'.delete', [
                                                         'id' => 'eventinseries_delete_'.$event['id'],
                                                         'class' => 'delete_event',
                                                         'data-event-id' => $event['id']
                                                     ]); ?>
-                                                    <?= $this->Form->hidden('Event.'.$event['id'].'.edited', [
+                                                    <?= $this->Form->hidden('events.'.$x.'.edited', [
                                                         'id' => 'eventinseries_edited_'.$event['id'],
                                                         'value' => 0
+                                                    ]); ?>
+                                                    <?= $this->Form->hidden('events.'.$x.'.id', [
+                                                        'value' => $event['id']
                                                     ]); ?>
                                                 </td>
                                             </tr>
                                         </table>
                                     </td>
                                 </tr>
+                                <?php $x = $x + 1; ?>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

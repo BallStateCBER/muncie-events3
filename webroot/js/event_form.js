@@ -51,14 +51,14 @@ function setup_eventseries_edit_form() {
 
 function editEventSeries_updateRow(event_id) {
 	var months = ['', 'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-	var month = months[parseInt($('#Event'+event_id+'DateMonth').val())];
-	var day = parseInt($('#Event'+event_id+'DateDay').val(), 10);
-	var year = $('#Event'+event_id+'DateYear').val();
+	var month = months[parseInt($('#'+event_id+'month').val())];
+	var day = parseInt($('#'+event_id+'day').val(), 10);
+	var year = $('#'+event_id+'year').val();
 	var date = month + ' ' + day + ', ' + year;
 	$('#eventinseries_display_'+event_id+'_date').html(date);
-	var title = $('#Event'+event_id+'Title').val();
+	var title = $('#'+event_id+'title').val();
 	$('#eventinseries_display_'+event_id+'_title').html(title);
-	var time = $('#Event'+event_id+'TimeStartHour').val()+':'+$('#Event'+event_id+'TimeStartMin').val()+$('#Event'+event_id+'TimeStartMeridian').val();
+	var time = $('#'+event_id+'hour').val()+':'+$('#'+event_id+'minute').val()+$('#'+event_id+'meridian').val();
 	$('#eventinseries_display_'+event_id+'_time').html(time);
 	if ($('#eventinseries_delete_' + event_id).is(':checked')) {
 		$('#eventinseries_display_' + event_id).addClass('deleted');
