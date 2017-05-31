@@ -267,29 +267,29 @@ class EventsController extends AppController
     public function editSeries($seriesId)
     {
         // Get information about series
-        #$this->Events->EventSeries->id = $seriesId;
-        if (!$this->Events->EventSeries->exists()) {
+        $eventSeries = $this->Events->EventSeries->get($seriesId);
+        if (!$eventSeries) {
             return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
         }
-        #$saveDisplayField = $this->Events->displayField;
-        #$this->Events->displayField = 'date';
-        $event = $this->Events->find('list', [
+        $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
-            'contain' => false
-        ]);
-        #$this->Events->displayField = $saveDisplayField;
-        $dates = array_values($event);
+            'contain' => ['EventSeries']
+            ])
+            ->toArray();
+        $dates = [];
+        foreach ($events as $event) {
+            $dates[] = $event->date;
+        }
 
-        // Pick an arbitrary event in the series
-        $eventIds = array_keys($event);
-        $this->Events->id = $eventIds[0];
-        $this->set('date', implode(',', $dates));
+        // Pick the first event in the series
+        $eventId = $events[0]->id;
+        $event = $this->Events->get($eventId);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             $dates = explode(',', $this->request->data['date']);
 
             // Process data
-            $this->processCustomTagsPr();
+            $this->processCustomTagsPr($event);
             foreach ($dates as &$date) {
                 $date = date('Y-m-d', strtotime(trim($date)));
             }
@@ -344,15 +344,17 @@ class EventsController extends AppController
                 }
             }
         } else {
-            $this->Flash->set('All events in this series will be overwritten.');
+            $this->Flash->error('Warning: all events in this series will be overwritten.');
         }
 
         $this->request->data['date'] = implode(',', $dates);
-        $this->prepareEventFormPr();
+        $categories = $this->Events->Categories->find('list');
+        $this->prepareEventFormPr($event);
+        $this->prepareDatePickerPr($event);
         $this->set([
-    #        'titleForLayout' => 'Edit Event Series: '.$this->Events['EventSeries']['title']
+            'titleForLayout' => 'Edit Event Series: '.$eventSeries['title']
         ]);
-        $this->set(compact('event'));
+        $this->set(compact('categories', 'event', 'events', 'eventSeries'));
         $this->render('/Element/events/form');
     }
 
