@@ -59,7 +59,7 @@
                                         <?= date('M j, Y', strtotime($event['date'])); ?>
                                     </td>
                                     <td class="time" id="eventinseries_display_<?= $event['id']; ?>_time">
-                                        <?= date('g:ia', strtotime($event['time_start'])); ?>
+                                        <?= date('h:ia', strtotime($event['time_start'])); ?>
                                     </td>
                                     <td class="title" id="eventinseries_display_<?= $event['id']; ?>_title">
                                         <?= $event['title']; ?>

@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\I18n\Time;
 
 /**
  * EventSeries Controller
@@ -37,6 +38,13 @@ class EventSeriesController extends AppController
      */
     public function view($id = null)
     {
+        $eventSeries = $this->EventSeries->find('all', [
+            'conditions' => ['id' => $id]
+        ])->first();
+        if ($eventSeries == null) {
+            $this->Flash->error(__('Sorry, we can\'t find that event series.'));
+            return $this->redirect(['controller' => 'events', 'action' => 'index']);
+        }
         $eventSeries = $this->EventSeries->get($id, [
             'contain' => ['Events', 'Users']
         ]);
@@ -55,17 +63,32 @@ class EventSeriesController extends AppController
      */
     public function edit($id = null)
     {
+        $eventSeries = $this->EventSeries->find('all', [
+            'conditions' => ['id' => $id]
+        ])->first();
+        if ($eventSeries == null) {
+            $this->Flash->error(__('Sorry, we can\'t find that event series.'));
+            return $this->redirect(['controller' => 'events', 'action' => 'index']);
+        }
         $eventSeries = $this->EventSeries->get($id, [
-            'contain' => ['events']
+            'contain' => ['events' => [
+                'sort' => ['date' => 'ASC']
+                ]
+            ]
         ]);
         $eventIds = $this->EventSeries->Events->find('list');
         $eventIds
             ->select('id')
             ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData(), [
-                'associated' => ['events']
-            ]);
+            if ($this->request->data['delete']) {
+                if ($this->EventSeries->delete($eventSeries)) {
+                    $this->Flash->success(__('The event series has been deleted.'));
+                    return $this->redirect(['controller' => 'events', 'action' => 'index']);
+                }
+                $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
+            }
+            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
             if (isset($this->request->data['events'])) {
                 $x = 0;
                 foreach ($this->request->data['events'] as $event) {
@@ -73,9 +96,25 @@ class EventSeriesController extends AppController
                         $x = $x + 1;
                         continue;
                     }
-                    $eventSeries->events[$x]->date = $event['date'];
-                    $eventSeries->events[$x]->time_start = $event['time_start'];
+                    if ($event['delete']) {
+                        if ($this->EventSeries->Events->delete($eventSeries->events[$x])) {
+                            $this->Flash->success(__('Event deleted: '.$event['id'].'.'));
+                        }
+                        $x = $x + 1;
+                        continue;
+                    }
+                    $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
+                    $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
+                    $eventSeries->events[$x]->time_start = new Time(date('H:i',
+                        strtotime($event['time_start']['hour'].':'.$event['time_start']['minute'].' '.$event['time_start']['meridian'])
+                    ));
                     $eventSeries->events[$x]->title = $event['title'];
+                    if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
+                        $this->Flash->success(__('Event #'.$event['id'].' has been saved.'));
+                        $x = $x + 1;
+                        continue;
+                    }
+                    $this->Flash->error(__('Event #'.$event['id'].' was not saved.'));
                     $x = $x + 1;
                 }
             }
