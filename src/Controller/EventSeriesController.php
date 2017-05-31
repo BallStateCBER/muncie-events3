@@ -56,24 +56,37 @@ class EventSeriesController extends AppController
     public function edit($id = null)
     {
         $eventSeries = $this->EventSeries->get($id, [
-            'contain' => ['Events']
+            'contain' => ['events']
         ]);
         $eventIds = $this->EventSeries->Events->find('list');
         $eventIds
             ->select('id')
             ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
-            if ($this->EventSeries->save($eventSeries,
-                ['contain' => ['Events']]
-            )) {
+            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData(), [
+                'associated' => ['events']
+            ]);
+            if (isset($this->request->data['events'])) {
+                $x = 0;
+                foreach ($this->request->data['events'] as $event) {
+                    if (!$event['edited']) {
+                        $x = $x + 1;
+                        continue;
+                    }
+                    $eventSeries->events[$x]->date = $event['date'];
+                    $eventSeries->events[$x]->time_start = $event['time_start'];
+                    $eventSeries->events[$x]->title = $event['title'];
+                    $x = $x + 1;
+                }
+            }
+            if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
                 return $this->redirect(['action' => 'view', $id]);
             }
             $this->Flash->error(__('The event series could not be saved. Please, try again.'));
         }
         $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
-        $this->set(compact('eventIds', 'eventSeries', 'users'));
+        $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
         $this->set('_serialize', ['eventSeries']);
         $this->set(['titleForLayout' => 'Edit Series: '.$eventSeries->title]);
     }
