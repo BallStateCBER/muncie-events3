@@ -297,26 +297,15 @@ class EventsController extends AppController
 
             // Process data
             $this->processCustomTagsPr($event);
-            /* foreach ($dates as &$date) {
-                $date = date('Y-m-d', strtotime(trim($date)));
-            } */
-            // Prevent anonymously-submitted events from being saved with user id 0 instead of null
-            /* if (!$this->request->data['user_id']) {
-                $this->request->data['user_id'] = null;
-            } */
 
-            /* $event = $this->Events->patchEntity($event, $this->request->getData(), [
-                'associated' => ['EventSeries']
-            ]); */
-            #if ($this->Events->validates()) {
-                // Update series title
-                if (trim($this->request->data['event_series']['title']) == '') {
-                    $this->request->data['event_series']['title'] = $this->request->data['title'];
-                }
+            // Update series title
+            if (trim($this->request->data['event_series']['title']) == '') {
+                $this->request->data['event_series']['title'] = $this->request->data['title'];
+            }
             $event->eventSeries['title'] = $this->request->data['event_series']['title'];
 
-                // Update/add event for each submitted date
-                $errorFlag = false;
+            // Update/add event for each submitted date
+            $errorFlag = false;
             $oldDates = [];
             foreach ($event->date as $oldDate) {
                 $oldDates[] = date_format($oldDate, 'Y-m-d');
@@ -338,29 +327,22 @@ class EventsController extends AppController
                 }
             }
 
-                // Remove events
-                foreach ($event as $eventId => $date) {
-                    if (!in_array($date, $dates)) {
-                        $this->Events->delete($eventId);
-                    }
+            // Remove events
+            foreach ($event as $eventId => $date) {
+                if (!in_array($date, $dates)) {
+                    $this->Events->delete($eventId);
                 }
+            }
 
             if ($errorFlag) {
                 $this->Flash->error('There was an error updating the events in this series.');
-            } else {
-                $this->Flash->success('Series updated.');
-                if ($this->Events->EventSeries['published']) {
-                    // If event is published, go to series view page
-                        $this->redirect(['controller' => 'eventSeries', 'action' => 'view', 'id' => $seriesId]);
-                } else {
-                    // Otherwise, it's assumed an admin needs to be redirected back to the moderation page
-                        $this->redirect(['controller' => 'events', 'action' => 'moderate']);
-                }
+                $this->redirect(['controller' => 'eventseries', 'action' => 'view', $seriesId]);
             }
-    #        }
-        } else {
-            $this->Flash->error('Warning: all events in this series will be overwritten.');
+            if (!$errorFlag) {
+                $this->Flash->success('Series updated.');
+            }
         }
+        $this->Flash->error('Warning: all events in this series will be overwritten.');
 
         $categories = $this->Events->Categories->find('list');
         $this->prepareEventFormPr($event);
@@ -535,7 +517,6 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        $endDate = strtotime($nextStartDate.' + 1 month');
         // Get tag
         $tagId = $this->Events->Tags->getIdFromSlug($slug);
         $tag = $this->Events->Tags->find('all', [
@@ -621,7 +602,6 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        $endDate = strtotime($nextStartDate.' + 3 months');
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
             ])
