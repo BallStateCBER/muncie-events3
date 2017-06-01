@@ -58,7 +58,7 @@
                         if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
-                                var default_date = $defaultDate;
+                                var default_date = '".$defaultDate."';
                                 var preselected_dates = $preselectedDates;
                                 setupDatepickerMultiple(default_date, preselected_dates);
                             ");
@@ -86,7 +86,7 @@
                     <th>Series Name</th>
                     <td>
                         <div class="form-group col-lg-8 col-xs-12">
-                            <?= $this->Form->input('EventSeries.title', [
+                            <?= $this->Form->input('event_series.title', [
                                 'label' => false,
                                 'class' => 'form-control',
                                 'id' => 'EventSeriesTitle'

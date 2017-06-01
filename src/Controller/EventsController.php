@@ -96,7 +96,7 @@ class EventsController extends AppController
         $this->set(compact('availableTags'));
 
         if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
-            $hasSeries = count(explode(',', $event->date)) > 1;
+            $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['has_end_time']) ? $event['has_end_time'] : false;
         } elseif ($this->request->action == 'edit') {
             $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
@@ -247,20 +247,17 @@ class EventsController extends AppController
                     if (!isset($defaultDate)) {
                         $defaultDate = "$month/$day/$year";
                     }
-                    $dateFieldValues[] = "$month/$day/$year";
+                    $dateFieldValues[] = date_create("$month/$day/$year");
                 }
                 $datesForJs = [];
                 foreach ($dateFieldValues as $date) {
-                    $datesForJs[] = "'".$date."'";
+                    $datesForJs[] = "'".date_format($date, 'm/d/Y')."'";
                 }
                 $datesForJs = implode(',', $datesForJs);
                 $preselectedDates = "[$datesForJs]";
             }
             $this->set(compact('defaultDate', 'preselectedDates'));
-            $event->date = implode(',', $dateFieldValues);
-        } elseif ($this->action == 'edit') {
-            list($year, $month, $day) = explode('-', $event->date);
-            $event->date = "$month/$day/$year";
+            $event->date = $dateFieldValues;
         }
     }
 
@@ -278,83 +275,99 @@ class EventsController extends AppController
             ->toArray();
         $dates = [];
         foreach ($events as $event) {
-            $dates[] = $event->date;
+            $dateString = date_format($event->date, 'Y-m-d');
+            $dates[] = $dateString;
         }
+
+        $dates = implode(',', $dates);
 
         // Pick the first event in the series
         $eventId = $events[0]->id;
-        $event = $this->Events->get($eventId);
+        $event = $this->Events->get($eventId, [
+            'contain' => ['EventSeries']
+        ]);
+
+        $event->date = $dates;
+
+        $this->request->data['date'] = $dates;
+        $this->prepareDatePickerPr($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             $dates = explode(',', $this->request->data['date']);
 
             // Process data
             $this->processCustomTagsPr($event);
-            foreach ($dates as &$date) {
+            /* foreach ($dates as &$date) {
                 $date = date('Y-m-d', strtotime(trim($date)));
-            }
-            unset($date);
+            } */
             // Prevent anonymously-submitted events from being saved with user id 0 instead of null
-            if (!$this->request->data['user_id']) {
+            /* if (!$this->request->data['user_id']) {
                 $this->request->data['user_id'] = null;
-            }
+            } */
 
-            $this->Events->set($this->request->data);
-            if ($this->Events->validates()) {
+            /* $event = $this->Events->patchEntity($event, $this->request->getData(), [
+                'associated' => ['EventSeries']
+            ]); */
+            #if ($this->Events->validates()) {
                 // Update series title
-                if (trim($this->request->data['EventSeries']['title']) == '') {
-                    $this->request->data['EventSeries']['title'] = $this->request->data['Event']['title'];
+                if (trim($this->request->data['event_series']['title']) == '') {
+                    $this->request->data['event_series']['title'] = $this->request->data['title'];
                 }
-                $this->Events->EventSeries->saveField('title', $this->request->data['EventSeries']['title']);
+            $event->eventSeries['title'] = $this->request->data['event_series']['title'];
 
                 // Update/add event for each submitted date
                 $errorFlag = false;
-                foreach ($dates as $date) {
-                    $eventId = array_search($date, $event);
-                    if ($eventId === false) {
-                        $this->Events->create($this->request->data);
-                    } else {
-                        $this->Events->id = $eventId;
-                        $this->Events->set($this->request->data);
-                    }
-                    $this->Events->set('date', $date);
-                    if (! $this->Events->save(null, false)) {
-                        $errorFlag = true;
-                    }
+            $oldDates = [];
+            foreach ($event->date as $oldDate) {
+                $oldDates[] = date_format($oldDate, 'Y-m-d');
+            }
+            foreach ($dates as $date) {
+                $eventId = array_search($date, $oldDates);
+                if ($eventId === false) {
+                    $event = $this->Events->newEntity();
+                    $event = $this->Events->patchEntity($event, $this->request->getData(), [
+                        'associated' => ['EventSeries']
+                    ]);
+                } else {
+                    $event = $this->Events->patchEntity($event, $this->request->getData(), [
+                        'associated' => ['EventSeries']
+                    ]);
                 }
+                if (!$this->Events->save($event)) {
+                    $errorFlag = true;
+                }
+            }
 
                 // Remove events
                 foreach ($event as $eventId => $date) {
-                    if (! in_array($date, $dates)) {
+                    if (!in_array($date, $dates)) {
                         $this->Events->delete($eventId);
                     }
                 }
 
-                if ($errorFlag) {
-                    $this->Flash->error('There was an error updating the events in this series.');
+            if ($errorFlag) {
+                $this->Flash->error('There was an error updating the events in this series.');
+            } else {
+                $this->Flash->success('Series updated.');
+                if ($this->Events->EventSeries['published']) {
+                    // If event is published, go to series view page
+                        $this->redirect(['controller' => 'eventSeries', 'action' => 'view', 'id' => $seriesId]);
                 } else {
-                    $this->Flash->success('Series updated.');
-                    if ($this->Events->EventSeries['published']) {
-                        // If event is published, go to series view page
-                        $this->redirect(['controller' => 'eventseries', 'action' => 'view', 'id' => $seriesId]);
-                    } else {
-                        // Otherwise, it's assumed an admin needs to be redirected back to the moderation page
+                    // Otherwise, it's assumed an admin needs to be redirected back to the moderation page
                         $this->redirect(['controller' => 'events', 'action' => 'moderate']);
-                    }
                 }
             }
+    #        }
         } else {
             $this->Flash->error('Warning: all events in this series will be overwritten.');
         }
 
-        $this->request->data['date'] = implode(',', $dates);
         $categories = $this->Events->Categories->find('list');
         $this->prepareEventFormPr($event);
-        $this->prepareDatePickerPr($event);
         $this->set([
             'titleForLayout' => 'Edit Event Series: '.$eventSeries['title']
         ]);
-        $this->set(compact('categories', 'event', 'events', 'eventSeries'));
+        $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
         $this->render('/Element/events/form');
     }
 
