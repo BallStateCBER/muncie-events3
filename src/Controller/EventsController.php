@@ -336,10 +336,10 @@ class EventsController extends AppController
 
             if ($errorFlag) {
                 $this->Flash->error('There was an error updating the events in this series.');
-                $this->redirect(['controller' => 'eventseries', 'action' => 'view', $seriesId]);
             }
             if (!$errorFlag) {
                 $this->Flash->success('Series updated.');
+                $this->redirect(['controller' => 'eventSeries', 'action' => 'view', $seriesId]);
             }
         }
         $this->Flash->error('Warning: all events in this series will be overwritten.');
