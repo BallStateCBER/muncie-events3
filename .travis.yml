@@ -28,3 +28,11 @@ script:
 
 notifications:
   email: false
+  slack: cber:ZeUxtjnpHNEYCkMtUBhskwXl
+
+addons:
+  code_climate:
+    repo_token: 234563002b595ccee04d56dc2c0b39848d0c4af9cdda1104187bbd3241fd4c03
+
+after_success:
+  - vendor/bin/test-reporter
