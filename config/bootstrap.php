@@ -229,3 +229,4 @@ Plugin::load('CakeJs');
 Plugin::load('AkkaCKEditor', ['bootstrap' => false, 'routes' => true]);
 Plugin::load('Josegonzalez/Upload');
 Plugin::load('Search');
+Plugin::load('Setup');

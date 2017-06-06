@@ -18,7 +18,8 @@
         "josegonzalez/cakephp-upload": "^3.6",
         "friendsofcake/search": "^2.4",
         "dereuromark/cakephp-tools": "^1.4",
-        "eluceo/ical": "^0.11.3"
+        "eluceo/ical": "^0.11.3",
+        "dereuromark/cakephp-setup": "dev-master"
     },
     "require-dev": {
         "psy/psysh": "@stable",
