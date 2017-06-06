@@ -194,12 +194,17 @@
                     Description
                 </th>
                 <td>
+                    <script src="/emojione/lib/js/emojione.min.js"></script>
                     <div class="form-group col-lg-8 col-xs-12">
                         <?= $this->CKEditor->loadJs(); ?>
                         <?= $this->Form->control('description', [
                             'label' => false,
                             'id' => 'EventDescription'
                         ]); ?>
+                        <script>
+                            CKEDITOR.plugins.addExternal('emojione', '/ckeditor-emojione/', 'plugin.js');
+                            CKEDITOR.config.extraPlugins = 'emojione';
+                        </script>
                         <?= $this->CKEditor->replace('description'); ?>
                     </div>
                 </td>

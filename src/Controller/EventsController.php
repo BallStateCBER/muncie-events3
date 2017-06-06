@@ -289,7 +289,7 @@ class EventsController extends AppController
 
         $event->date = $dates;
 
-        $this->request->data['date'] = $dates;
+        #$this->request->data['date'] = $dates;
         $this->prepareDatePickerPr($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
@@ -310,7 +310,7 @@ class EventsController extends AppController
             foreach ($event->date as $oldDate) {
                 $oldDates[] = date_format($oldDate, 'Y-m-d');
             }
-            foreach ($dates as $date) {
+            foreach ($event->date as $date) {
                 $eventId = array_search($date, $oldDates);
                 if ($eventId === false) {
                     $event = $this->Events->newEntity();
@@ -461,10 +461,8 @@ class EventsController extends AppController
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
-            ->where([
-                'approved_by IS' => null,
-                'published' => 0
-            ])
+            ->where(['Events.approved_by' => null])
+            ->orWhere(['Events.published' => '0'])
             ->toArray();
 
         // Find sets of identical events (belonging to the same series
@@ -725,6 +723,7 @@ class EventsController extends AppController
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
             return $this->redirect(['action' => 'index']);
         }
+
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
