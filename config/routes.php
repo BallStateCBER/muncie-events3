@@ -48,43 +48,50 @@ Router::defaultRouteClass(DashedRoute::class);
 
 Router::scope('/', function (RouteBuilder $routes) {
     // home
-    $routes->connect('/', ['controller' => 'Events', 'action' => 'index']);
-    $routes->connect('/index/*', ['controller' => 'Events', 'action' => 'index']);
+    $routes->connect('/', ['controller' => 'events', 'action' => 'index']);
 
-    // events actions
-    foreach (['edit', 'edit_series', 'publish', 'approve', 'delete'] as $action) {
-        Router::connect(
-            "/event/$action/:id",
-            ['controller' => 'events', 'action' => $action],
-            ['id' => '[0-9]+', 'pass' => ['id']]
-        );
+    // Categories
+    $categorySlugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
+    foreach ($categorySlugs as $slug) {
+        $routes->connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
     }
-
-    // location index
-    $routes->connect('/location/*', ['controller' => 'events', 'action' => 'location']);
-    $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
 
     // viewing events
     Router::connect("event/:id",
         ['controller' => 'events', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
+    // events actions
+    foreach (['approve', 'delete', 'edit',
+        'editseries' /*in progress*/,
+        'location', 'publish'] as $action) {
+        Router::connect(
+            "/event/$action/:id",
+            ['controller' => 'events', 'action' => $action],
+            ['id' => '[0-9]+', 'pass' => ['id']]
+        );
+    }
+    // location index
+    $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
 
-    // series actions
-    $routes->connect('/eventseries/delete/*', ['controller' => 'eventSeries', 'action' => 'delete']);
-    $routes->connect('/eventseries/edit/*', ['controller' => 'eventSeries', 'action' => 'edit']);
-    // viewing series
-    Router::connect("eventseries/:id",
+    // viewing event series
+    Router::connect("event-series/:id",
         ['controller' => 'eventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
-    // editing series
-    $routes->connect('/event/editseries/*', ['controller' => 'events', 'action' => 'editSeries']);
+    // eventseries actions
+    foreach (['edit', 'delete'] as $action) {
+        Router::connect(
+            "/event-series/$action/:id",
+            ['controller' => 'eventSeries', 'action' => $action],
+            ['id' => '[0-9]+', 'pass' => ['id']]
+        );
+    }
 
-    // Categories
-    $categorySlugs = ['music', 'art', 'theater', 'film', 'activism', 'general', 'education', 'government', 'sports', 'religion'];
-    foreach ($categorySlugs as $slug) {
-        $routes->connect("/$slug/*", ['controller' => 'events', 'action' => 'category', $slug]);
+    // pages
+    $pages = ['about', 'contact', 'terms'];
+    foreach ($pages as $page) {
+        $routes->connect('/'.$page, ['controller' => 'pages', 'action' => $page]);
     }
 
     // Tag
@@ -95,17 +102,16 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // Tags
-    $routes->connect('/tags', ['controller' => 'tags', 'action' => 'index', 'future']);
-    $routes->connect('/tags/past', ['controller' => 'tags', 'action' => 'index', 'past']);
+    Router::scope('/tags', ['controller' => 'tags'], function (RouteBuilder $routes) {
+        $routes->connect('/', ['action' => 'index', 'future']);
+        $routes->connect('/past', ['action' => 'index', 'past']);
+    });
 
-    // pages
-    $routes->connect('/about', ['controller' => 'Pages', 'action' => 'about']);
-    $routes->connect('/contact', ['controller' => 'Pages', 'action' => 'contact']);
-    $routes->connect('/terms', ['controller' => 'Pages', 'action' => 'terms']);
-
-    // users actions
-    $routes->connect('/login', ['controller' => 'Users', 'action' => 'login']);
-    $routes->connect('/register', ['controller' => 'Users', 'action' => 'register']);
+    // user actions
+    $userActions = ['account', 'login', 'logout', 'register'];
+    foreach ($userActions as $action) {
+        $routes->connect('/'.$action, ['controller' => 'users', 'action' => $action]);
+    }
 
     // viewing users
     Router::connect("user/:id",
@@ -114,14 +120,10 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // widgets
-    Router::connect(
-        "/widgets/customize/feed",
-        ['controller' => 'widgets', 'action' => 'customize_feed']
-    );
-    Router::connect(
-        "/widgets/customize/month",
-        ['controller' => 'widgets', 'action' => 'customize_month']
-    );
+    Router::scope('/widgets/customize', ['controller' => 'widgets'], function (RouteBuilder $routes) {
+        $routes->connect('/feed', ['action' => 'customize_feed']);
+        $routes->connect('/month', ['action' => 'customize_month']);
+    });
 
     // downloadable content
     Router::connect(

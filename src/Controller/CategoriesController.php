@@ -30,13 +30,13 @@ class CategoriesController extends AppController
     /**
      * View method
      *
-     * @param string|null $idC Category id.
+     * @param string|null $id Category id.
      * @return \Cake\Network\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($idC = null)
+    public function view($id = null)
     {
-        $category = $this->Categories->get($idC, [
+        $category = $this->Categories->get($id, [
             'contain' => ['MailingList', 'Events']
         ]);
 
@@ -69,13 +69,13 @@ class CategoriesController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $idC Category id.
+     * @param string|null $id Category id.
      * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($idC = null)
+    public function edit($id = null)
     {
-        $category = $this->Categories->get($idC, [
+        $category = $this->Categories->get($id, [
             'contain' => ['MailingList']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {

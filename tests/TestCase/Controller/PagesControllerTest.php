@@ -27,10 +27,8 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesControllerTest extends IntegrationTestCase
 {
-    /**
-     * testMultipleGet method
-     *
-     * @return void
+    /*
+     * test that pages are loading.
      */
     public function testMultipleGet()
     {
@@ -40,58 +38,35 @@ class PagesControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
     }
 
-    /**
-     * testDisplay method
-     *
-     * @return void
-     */
-    public function testDisplay()
+    public function testAboutPageLoads()
     {
-        $this->get('/pages/home');
+        $this->get('/about');
         $this->assertResponseOk();
-        $this->assertResponseContains('CakePHP');
-        $this->assertResponseContains('<html>');
+        $this->assertResponseContains('Erica Dee Fox');
+        $this->assertResponseContains('</html>');
     }
 
-    /**
-     * Test that missing template renders 404 page in production
-     *
-     * @return void
-     */
-    public function testMissingTemplate()
+    public function testContactPageLoads()
     {
-        Configure::write('debug', false);
-        $this->get('/pages/not_existing');
-
-        $this->assertResponseError();
-        $this->assertResponseContains('Error');
+        $this->get('/contact');
+        $this->assertResponseOk();
+        $this->assertResponseContains('site administrator');
+        $this->assertResponseContains('</html>');
     }
 
-    /**
-     * Test that missing template in debug mode renders missing_template error page
-     *
-     * @return void
-     */
-    public function testMissingTemplateInDebug()
+    public function testTermsPageLoads()
     {
-        Configure::write('debug', true);
-        $this->get('/pages/not_existing');
-
-        $this->assertResponseFailure();
-        $this->assertResponseContains('Missing Template');
-        $this->assertResponseContains('Stacktrace');
-        $this->assertResponseContains('not_existing.ctp');
+        $this->get('/terms');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Revisions and Errata');
+        $this->assertResponseContains('</html>');
     }
 
-    /**
-     * Test directory traversal protection
-     *
-     * @return void
+    /*
+     * test that contact page can send the form
      */
-    public function testDirectoryTraversalProtection()
+    public function testContactPageSendsForms()
     {
-        $this->get('/pages/../Layout/ajax');
-        $this->assertResponseCode(403);
-        $this->assertResponseContains('Forbidden');
+        // tbd
     }
 }

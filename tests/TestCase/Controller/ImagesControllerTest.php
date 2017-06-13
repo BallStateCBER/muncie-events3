@@ -21,11 +21,8 @@ class ImagesControllerTest extends IntegrationTestCase
         'app.events',
         'app.categories',
         'app.mailing_list',
-        'app.categories_mailing_list',
-        'app.series',
-        'app.events_images',
-        'app.tags',
-        'app.events_tags'
+        'app.event_series',
+        'app.tags'
     ];
 
     /**

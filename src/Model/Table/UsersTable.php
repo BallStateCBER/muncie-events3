@@ -50,7 +50,7 @@ class UsersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $userId = Router::getRequest()->session()->read('Auth.User.id');
+        $userId = $this->request->session()->read('Auth.User.id');
 
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'photo' => [
