@@ -45,13 +45,13 @@ class UsersFixture extends TestFixture
     public $records = [
         [
             'id' => 1,
-            'name' => 'Lorem ipsum dolor sit amet',
-            'role' => 'Lorem ipsum dolor ',
+            'name' => 'Cat Marnell',
+            'role' => 'admin',
             'bio' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'email' => 'Lorem ipsum dolor sit amet',
-            'password' => 'Lorem ipsum dolor sit amet',
-            'mailing_list_id' => 1,
-            'facebook_id' => 1,
+            'email' => 'cat@xojane.com',
+            'password' => 'dprkillyourselfmyman',
+            'mailing_list_id' => null,
+            'facebook_id' => 0,
             'created' => '2017-03-21 14:03:34',
             'modified' => '2017-03-21 14:03:34'
         ],

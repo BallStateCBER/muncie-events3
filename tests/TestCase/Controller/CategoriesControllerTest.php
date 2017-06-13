@@ -19,7 +19,6 @@ class CategoriesControllerTest extends IntegrationTestCase
         'app.categories',
         'app.events',
         'app.mailing_list',
-        'app.categories_mailing_list'
     ];
 
     /**

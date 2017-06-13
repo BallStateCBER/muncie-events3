@@ -80,7 +80,7 @@ class CategoriesTable extends Table
         $result = $this->find('all')
             ->toArray();
         if (empty($result)) {
-            throw new InternalErrorException("No categories found");
+            return "No categories found";
         } else {
             return $result;
         }

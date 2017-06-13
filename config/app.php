@@ -300,9 +300,9 @@ $config = [
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD'),
-            'database' => env('DB_DATABASE', 'okbvtfr_muncieevents'),
+            'username' => env('DB_USERNAME') ?: 'root',
+            'password' => env('DB_PASSWORD') ?: null,
+            'database' => env('DB_DATABASE') ?: 'me_testing',
             'encoding' => 'utf8mb4',
             'timezone' => 'America/Indiana/Indianapolis',
             'flags' => [],
@@ -334,23 +334,23 @@ $config = [
         /**
          * The test connection is used during the test suite.
          */
-        'test' => [
-            'className' => 'Cake\Database\Connection',
-            'driver' => 'Cake\Database\Driver\Mysql',
-            'persistent' => false,
-            'host' => 'localhost',
-            //'port' => 'non_standard_port_number',
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD'),
-            'database' => env('DB_DATABASE', 'okbvtfr_muncieevents'),
-            'encoding' => 'utf8mb4',
-            'timezone' => 'America/Indiana/Indianapolis',
-            'cacheMetadata' => true,
-            'quoteIdentifiers' => false,
-            'log' => false,
-            //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
-            'url' => env('DATABASE_TEST_URL', null),
-        ],
+         'test' => [
+             'className' => 'Cake\Database\Connection',
+             'driver' => 'Cake\Database\Driver\Mysql',
+             'persistent' => false,
+             'host' => 'localhost',
+             //'port' => 'nonstandard_port_number',
+             'username' => env('DB_USERNAME') ?: 'root',
+             'password' => env('DB_PASSWORD') ?: null,
+             'database' => env('DB_DATABASE') ?: 'me_testing',
+             'encoding' => 'utf8',
+             'timezone' => 'America/Indiana/Indianapolis',
+             'cacheMetadata' => true,
+             'quoteIdentifiers' => false,
+             'log' => false,
+             //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
+             'url' => env('DATABASE_TEST_URL', null),
+         ],
     ],
 
     /**
