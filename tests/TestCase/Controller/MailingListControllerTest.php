@@ -9,22 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class MailingListControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.mailing_list',
-        'app.users',
-        'app.event_series',
-        'app.events',
-        'app.categories',
-        'app.images',
-        'app.tags'
-    ];
-
     /**
      * Test index method
      *

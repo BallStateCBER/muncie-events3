@@ -9,22 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class TagsControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.tags',
-        'app.users',
-        'app.events',
-        'app.categories',
-        'app.mailing_list',
-        'app.event_series',
-        'app.images'
-    ];
-
     /**
      * Test index method
      *

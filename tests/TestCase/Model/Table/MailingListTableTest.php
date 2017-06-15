@@ -17,22 +17,7 @@ class MailingListTableTest extends TestCase
      * @var \App\Model\Table\MailingListTable
      */
     public $MailingList;
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.mailing_list',
-        'app.users',
-        'app.event_series',
-        'app.events',
-        'app.categories',
-        'app.images',
-        'app.tags'
-    ];
-
+    
     /**
      * setUp method
      *

@@ -19,21 +19,6 @@ class UsersTableTest extends TestCase
     public $Users;
 
     /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.users',
-        'app.event_series',
-        'app.events',
-        'app.categories',
-        'app.mailing_list',
-        'app.images',
-        'app.tags',
-    ];
-
-    /**
      * setUp method
      *
      * @return void

@@ -19,16 +19,6 @@ class EventSeriesTableTest extends TestCase
     public $EventSeries;
 
     /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.event_series',
-        'app.users'
-    ];
-
-    /**
      * setUp method
      *
      * @return void

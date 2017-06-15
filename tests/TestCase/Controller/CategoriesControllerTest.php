@@ -9,18 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class CategoriesControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.categories',
-        'app.events',
-        'app.mailing_list',
-    ];
-
     /**
      * Test index method
      *

@@ -9,17 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class EventSeriesControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.event_series',
-        'app.users'
-    ];
-
     /**
      * Test index method
      *

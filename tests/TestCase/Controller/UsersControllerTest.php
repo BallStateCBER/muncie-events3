@@ -9,22 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class UsersControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.users',
-        'app.event_series',
-        'app.events',
-        'app.categories',
-        'app.mailing_list',
-        'app.images',
-        'app.tags'
-    ];
-
     /**
      * Test index method
      *
