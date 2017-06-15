@@ -44,7 +44,7 @@ class AppController extends Controller
         ['distribution' => 'basic',
         'local_plugin' => [
             'emojione' => [
-                'location' => WWW_ROOT.'js',
+                'location' => WWW_ROOT . 'js',
                 'file' => 'emojione.js'
                 ]
             ],
@@ -56,6 +56,9 @@ class AppController extends Controller
         'Html'
     ];
 
+    /*
+     * initialize app, load components, set legacy hasher for new logins to Cake3
+     */
     public function initialize()
     {
         parent::initialize();
@@ -133,7 +136,10 @@ class AppController extends Controller
         ]);
     }
 
-    // to index events
+    /*
+     * to index events,
+     * function placed in AppController so as to be shared by all controllers
+     */
     public function indexEvents($events)
     {
         $this->loadModel('Events');
@@ -148,11 +154,11 @@ class AppController extends Controller
         // are there multiple events happening on a certain date?
         $multipleDates = false;
         if (isset($dates)) {
-            if (count(array_unique($dates))<count($dates)) {
+            if (count(array_unique($dates)) < count($dates)) {
                 $multipleDates = true;
                 $events = $this->multipleDateIndex($dates, $events);
             }
-            if (count(array_unique($dates))>=count($dates)) {
+            if (count(array_unique($dates)) >= count($dates)) {
                 $events = array_combine($dates, $events);
             }
             $nextStartDate = $this->Events->getNextStartDate($dates);
@@ -161,13 +167,17 @@ class AppController extends Controller
         $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate', 'prevStartDate'));
     }
 
+    /*
+     * to index events
+     * for Json array
+     */
     public function getEventsForJson($events)
     {
         $eventsForJson = [];
         foreach ($events as $date => $daysEvents) {
             if (!isset($eventsForJson[$date])) {
                 $eventsForJson[$date] = [
-                    'heading' => 'Events on '.date('F j, Y', (strtotime($date))),
+                    'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
                     'events' => []
                 ];
             }
@@ -181,6 +191,9 @@ class AppController extends Controller
         }
     }
 
+    /*
+     * to set Json array
+     */
     private function setJsonArrayPr($date, $daysEvents)
     {
         $timestamp = strtotime($daysEvents->time_start->i18nFormat('yyyyMMddHHmmss'));
@@ -190,17 +203,18 @@ class AppController extends Controller
             'id' => $daysEvents->id,
             'title' => $daysEvents->title,
             'category_name' => $daysEvents->category->name,
-            'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', $daysEvents->category->name)),
+            'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $daysEvents->category->name)),
             'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $daysEvents->id]),
             'time' => $displayedTime
         ];
         $this->set(compact('eventsForJson'));
     }
 
-    // to index dates with multiple events happening during them
+    /*
+     * to index dates with multiple events happening during them
+     */
     public function multipleDateIndex($dates, $events)
     {
-
         // assign each event a date as a key
         foreach ($dates as $i => $k) {
             $events[$k][] = $events[$i];
