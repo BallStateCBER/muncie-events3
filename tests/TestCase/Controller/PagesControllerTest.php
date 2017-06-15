@@ -61,12 +61,4 @@ class PagesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('Revisions and Errata');
         $this->assertResponseContains('</html>');
     }
-
-    /*
-     * test that contact page can send the form
-     */
-    public function testContactPageSendsForms()
-    {
-        // tbd
-    }
 }

@@ -19,21 +19,6 @@ class TagsTableTest extends TestCase
     public $Tags;
 
     /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.tags',
-        'app.users',
-        'app.events',
-        'app.categories',
-        'app.mailing_list',
-        'app.event_series',
-        'app.images'
-    ];
-
-    /**
      * setUp method
      *
      * @return void

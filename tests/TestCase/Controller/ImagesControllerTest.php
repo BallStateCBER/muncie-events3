@@ -9,22 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class ImagesControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.images',
-        'app.users',
-        'app.events',
-        'app.categories',
-        'app.mailing_list',
-        'app.event_series',
-        'app.tags'
-    ];
-
     /**
      * Test index method
      *

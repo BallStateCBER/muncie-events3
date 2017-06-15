@@ -9,69 +9,21 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class EventsControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Fixtures
-     *
-     * @var array
+    /*
+     * test event add page when logged out
      */
-    public $fixtures = [
-        'app.events',
-        'app.users',
-        'app.categories',
-        'app.mailing_list',
-        'app.event_series',
-        'app.images',
-        'app.tags',
-    ];
-
-    /**
-     * Test index method
-     *
-     * @return void
-     */
-    public function testIndex()
+    public function testLoginRedirectWhenAddingEvents()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/events/add');
+        $this->assertRedirectContains('/login');
     }
 
-    /**
-     * Test view method
-     *
-     * @return void
+    /*
+     * test that users' email addresses are hidden from non-users
      */
-    public function testView()
+    public function testUsersHaveHiddenEmailsFromNonUsers()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test add method
-     *
-     * @return void
-     */
-    public function testAdd()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/user/1');
+        $this->assertResponseContains('to view email address.');
     }
 }

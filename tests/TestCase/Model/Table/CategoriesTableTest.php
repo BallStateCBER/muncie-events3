@@ -19,17 +19,6 @@ class CategoriesTableTest extends TestCase
     public $Categories;
 
     /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'app.categories',
-        'app.events',
-        'app.mailing_list',
-    ];
-
-    /**
      * setUp method
      *
      * @return void

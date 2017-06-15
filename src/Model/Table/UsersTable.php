@@ -2,6 +2,7 @@
 namespace App\Model\Table;
 
 use Cake\Core\Configure;
+use Cake\Http\ServerRequest;
 use Cake\Mailer\Email;
 use Cake\Network\Session;
 use Cake\ORM\Query;
@@ -50,7 +51,7 @@ class UsersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $userId = $this->request->session()->read('Auth.User.id');
+        #$userId = $this->request->session()->read('Auth.User.id') ?: null;
 
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'photo' => [
@@ -60,7 +61,7 @@ class UsersTable extends Table
                     $newFilename = md5($data['name'].$salt);
                     return $newFilename.'.'.$ext;
                 },
-                'path' => 'webroot'.DS.'img'.DS.'users'.DS.$userId
+                'path' => 'webroot'.DS.'img'.DS.'users'/*.DS.$userId*/
             ]
         ]);
 
