@@ -39,7 +39,7 @@
         <?php endif; ?>
         <?php if ($user->photo): ?>
             <div class="col-lg-6 userPhoto">
-                <?= $this->Html->image('users/'.$user->id."/".$user->photo, [
+                <?= $this->Html->image('users/' . $user->photo, [
                     'alt' => $user->name
                 ]); ?>
             </div>

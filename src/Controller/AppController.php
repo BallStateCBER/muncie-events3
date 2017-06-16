@@ -59,6 +59,7 @@ class AppController extends Controller
     /*
      * initialize app, load components, set legacy hasher for new logins to Cake3
      */
+
     public function initialize()
     {
         parent::initialize();

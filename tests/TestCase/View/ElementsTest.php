@@ -64,14 +64,12 @@ class ElementsTest extends IntegrationTestCase
      */
     public function testAuthenticatedHeaderFunctions()
     {
-        // Set session data
-        $this->session(['Auth.User.id' => 1]);
-
+        $this->session(['Auth.User.Id' => 1]);
         $this->get('/');
 
         // test user links populate
-        $this->assertResponseContains('<a href="/logout"');
         $this->assertResponseContains('<a href="/account"');
+        $this->assertResponseContains('<a href="/logout"');
     }
 
     /*
