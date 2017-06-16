@@ -2,7 +2,6 @@
 namespace App\Model\Table;
 
 use Cake\Core\Configure;
-use Cake\Http\ServerRequest;
 use Cake\Mailer\Email;
 use Cake\Network\Session;
 use Cake\ORM\Query;
@@ -34,7 +33,6 @@ use Cake\Validation\Validator;
  */
 class UsersTable extends Table
 {
-
     /**
      * Initialize method
      *
@@ -51,8 +49,6 @@ class UsersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        #$userId = $this->request->session()->read('Auth.User.id') ?: null;
-
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'photo' => [
                 'nameCallback' => function (array $data, array $settings) {
@@ -61,7 +57,7 @@ class UsersTable extends Table
                     $newFilename = md5($data['name'].$salt);
                     return $newFilename.'.'.$ext;
                 },
-                'path' => 'webroot'.DS.'img'.DS.'users'/*.DS.$userId*/
+                'path' => 'webroot' . DS . 'img' . DS . 'users'
             ]
         ]);
 
@@ -99,15 +95,15 @@ class UsersTable extends Table
             ->notEmpty('name');
 
         $validator
-            ->email('email')
             ->requirePresence('email', 'create')
-            ->notEmpty('email');
+            ->add('email', 'email', [
+                'rule' => 'email',
+                'messsage' => 'Email must be a valid email address'
+            ]);
 
         $validator
             ->requirePresence('password', 'create')
-            ->notEmpty(['password', 'confirm_password']);
-
-        $validator
+            ->notEmpty(['password', 'confirm_password'])
             ->add('confirm_password', [
                 'compare' => [
                     'rule' => ['compareWith', 'password'],
@@ -133,6 +129,7 @@ class UsersTable extends Table
         $rules->add($rules->isUnique(['email'],
             ['message' => 'This email address is already in use.']
         ));
+
         #$rules->add($rules->existsIn(['mailing_list_id'], 'MailingList'));
         #$rules->add($rules->existsIn(['facebook_id'], 'Facebooks'));
 

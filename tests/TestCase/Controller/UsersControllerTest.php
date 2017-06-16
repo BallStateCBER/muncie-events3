@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
@@ -26,17 +27,73 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function testView()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/user/221');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('to view email address.');
     }
 
     /**
-     * Test add method
+     * Test view method
+     * when you're logged in
      *
      * @return void
      */
-    public function testAdd()
+    public function testViewWhenLoggedIn()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->session(['Auth.User.id' => 1]);
+        $this->get('/user/221');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('theadoptedtenenbaum@gmail.com');
+    }
+
+    /**
+     * Test registration
+     *
+     * @return void
+     */
+    public function testRegistrationFormCorrectly()
+    {
+        $this->get('/register');
+
+        $this->assertResponseOk();
+
+        $data = [
+            'name' => 'Mal Blum',
+            'password' => 'letstopcheatingoneachother',
+            'confirm_password' => 'letstopcheatingoneachother',
+            'email' => 'mal@blum.com'
+        ];
+
+        $this->post('/register', $data);
+
+        $this->assertResponseSuccess();
+    }
+
+    /**
+     * Test registration
+     * when the registration form is filled out completely wrong
+     *
+     * @return void
+     */
+    public function testRegistrationFormIncorrectly()
+    {
+        $this->get('/register');
+
+        $data = [
+            'name' => 'Mal Blum',
+            'password' => 'letstopcheatingoneachother',
+            'confirm_password' => 'imatotallydifferentpassword',
+            'email' => 'not an email'
+        ];
+
+        $this->post('/register', $data);
+
+        $this->assertResponseContains('Your passwords do not match');
+
+        // currently, only front-end validation is happening, so this will fail...
+        $this->assertResponseContains('Email must be a valid email address');
     }
 
     /**
@@ -45,16 +102,6 @@ class UsersControllerTest extends IntegrationTestCase
      * @return void
      */
     public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

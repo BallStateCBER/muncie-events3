@@ -30,17 +30,6 @@ class UsersController extends AppController
         parent::beforeFilter($event);
     }
 
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['MailingList']
-        ];
-        $users = $this->paginate($this->Users);
-
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
-    }
-
     public function view($id = null)
     {
         $user = $this->Users->get($id, [

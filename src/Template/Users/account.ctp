@@ -9,7 +9,7 @@
 
     <div class="col-lg-6 col-md-12 userPhoto">
     <?php if ($user->photo) {
-        echo $this->Html->image('users'.DS.$user->id.DS.$user->photo, [
+        echo $this->Html->image('users' . DS . $user->photo, [
             'alt' => $user->name
         ]);
     } ?>
