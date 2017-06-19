@@ -152,13 +152,10 @@ class UsersTable extends Table
 
     public function getIdFromEmail($email)
     {
-        $query = TableRegistry::get('Users')->find()->select(['id'])->where(['email' => $email]);
-        $result = $query->all();
-        $id = $result->toArray();
-        $id = implode($id);
+        $query = TableRegistry::get('Users')->find()->where(['email' => $email]);
+        $result = $query->first();
 
-        preg_match_all('!\d+!', $id, $userId);
-        return implode($userId[0]);
+        return $result->id;
     }
 
     public function getResetPasswordHash($userId, $email)
@@ -178,8 +175,9 @@ class UsersTable extends Table
             $userId,
             $resetPasswordHash
         ], true);
-        $resetEmail->to($email)
-            ->subject('Muncie Events: Reset Password')
+        $resetEmail
+            ->setTo($email)
+            ->setSubject('Muncie Events: Reset Password')
             ->template('forgot_password')
             ->emailFormat('both')
             ->helpers(['Html', 'Text'])

@@ -13,6 +13,14 @@ class TagsController extends AppController
 {
     public $adminActions = ['getName', 'getnodes', 'groupUnlisted', 'manage', 'recover', 'remove', 'reorder', 'reparent', 'trace', 'edit', 'merge'];
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow([
+            'index'
+        ]);
+    }
+
     public function isAuthorized()
     {
         // Admins can access everything

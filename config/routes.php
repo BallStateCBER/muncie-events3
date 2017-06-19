@@ -74,6 +74,9 @@ Router::scope('/', function (RouteBuilder $routes) {
     // location index
     $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
 
+    // viewing locations indexes
+    $routes->connect('/location/*', ['controller' => 'events', 'action' => 'location']);
+
     // viewing event series
     Router::connect("event-series/:id",
         ['controller' => 'eventSeries', 'action' => 'view'],
