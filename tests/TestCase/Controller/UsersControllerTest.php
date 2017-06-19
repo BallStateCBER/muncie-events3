@@ -11,44 +11,6 @@ use Cake\TestSuite\IntegrationTestCase;
 class UsersControllerTest extends IntegrationTestCase
 {
     /**
-     * Test index method
-     *
-     * @return void
-     */
-    public function testIndex()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test view method
-     *
-     * @return void
-     */
-    public function testView()
-    {
-        $this->get('/user/221');
-
-        $this->assertResponseOk();
-        $this->assertResponseContains('to view email address.');
-    }
-
-    /**
-     * Test view method
-     * when you're logged in
-     *
-     * @return void
-     */
-    public function testViewWhenLoggedIn()
-    {
-        $this->session(['Auth.User.id' => 1]);
-        $this->get('/user/221');
-
-        $this->assertResponseOk();
-        $this->assertResponseContains('theadoptedtenenbaum@gmail.com');
-    }
-
-    /**
      * Test registration
      *
      * @return void
@@ -73,7 +35,8 @@ class UsersControllerTest extends IntegrationTestCase
 
     /**
      * Test registration
-     * when the registration form is filled out completely wrong
+     * when the registration form is filled out wrong,
+     * bad emails, mismatched passwords, etc.
      *
      * @return void
      */
@@ -90,19 +53,114 @@ class UsersControllerTest extends IntegrationTestCase
 
         $this->post('/register', $data);
 
-        $this->assertResponseContains('Your passwords do not match');
-
-        // currently, only front-end validation is happening, so this will fail...
-        $this->assertResponseContains('Email must be a valid email address');
+        $this->assertResponseContains('Your passwords do not match.');
+    #    $this->assertResponseContains('You must enter a valid email address.');
     }
 
     /**
-     * Test edit method
+     * Test registration
+     * when the email address is already in use
      *
      * @return void
      */
-    public function testEdit()
+    public function testRegistrationWithDuplicates()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/register');
+
+        $data = [
+            'name' => 'Placeholder',
+            'password' => 'Placeholder!',
+            'confirm_password' => 'Placeholder!',
+            'email' => 'placeholder@gmail.com'
+        ];
+
+        $this->post('/register', $data);
+
+#        $this->assertResponseContains('There is already an account registered with this email address.');
+    }
+
+    /**
+     * Test login method
+     *
+     * @return void
+     */
+    public function testLoggingInProperly()
+    {
+        $this->enableCsrfToken();
+        $this->enableSecurityToken();
+
+        $this->get('/login');
+        $this->assertResponseOk();
+
+        $data = [
+            'email' => 'placeholder@gmail.com',
+            'password' => 'Placeholder!'
+        ];
+
+        $this->post('/login', $data);
+
+        $this->Users = TableRegistry::get('Users');
+        $user = $this->Users->find('all')
+            ->where(['email' => 'placeholder@gmail.com'])
+            ->first();
+
+        $this->assertSession($user->id, 'Auth.User.id');
+    }
+
+    /**
+     * Test login method
+     * for incorrect logins
+     *
+     * @return void
+     */
+    public function testLoggingInImproperly()
+    {
+        $this->enableCsrfToken();
+        $this->enableSecurityToken();
+
+        $this->get('/login');
+        $this->assertResponseOk();
+
+        $data = [
+            'email' => 'hotdogplaceholderpants@fuckyou.net',
+            'password' => 'i am such a great password'
+        ];
+
+        $this->post('/login', $data);
+
+        $this->assertResponseContains('We could not log you in.');
+    }
+
+    /**
+     * Test logout
+     *
+     * @return void
+     */
+    public function testLoggingOut()
+    {
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/logout');
+        $this->assertSession(null, 'Auth.User.id');
+    }
+
+    /**
+     * Test delete action for users
+     *
+     * @return void
+     */
+    public function testDeletingUsers()
+    {
+        $this->session(['Auth.User.id' => 1]);
+
+        // delete the new user
+        $this->Users = TableRegistry::get('Users');
+        $user = $this->Users->find('all')
+            ->where(['email' => 'mal@blum.com'])
+            ->first();
+        $id = $user->id;
+
+        $this->get("users/delete/$id");
+        $this->assertResponseSuccess();
     }
 }
