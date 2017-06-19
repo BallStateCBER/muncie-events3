@@ -3,7 +3,7 @@
     <div id="content" class="clearfix">
         <?= $this->Flash->render('flash'); ?>
         <?= $this->fetch('content'); ?>
-        <?php if ($this->request->action == 'index'): ?>
+        <?php if ($this->request->getParam('controller') == 'Events' && $this->request->action == 'index'): ?>
             <div id="event_accordion_loading_indicator" style="display: none;">
                 <img id="" src="/img/loading_small.gif" /> Loading...
             </div>

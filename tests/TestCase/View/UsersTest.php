@@ -56,7 +56,6 @@ class UsersViewTest extends IntegrationTestCase
      */
     public function testViewWithBioAndEvents()
     {
-        $this->session(['Auth.User.id' => 1]);
         $this->get('/user/1');
 
         $this->assertResponseOk();

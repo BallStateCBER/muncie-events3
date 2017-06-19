@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
+use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
@@ -68,13 +69,13 @@ class UsersControllerTest extends IntegrationTestCase
         $this->get('/register');
 
         $data = [
-            'name' => 'Placeholder',
-            'password' => 'Placeholder!',
-            'confirm_password' => 'Placeholder!',
-            'email' => 'placeholder@gmail.com'
+            'name' => 'Mal Blum',
+            'password' => 'letstopcheatingoneachother',
+            'confirm_password' => 'letstopcheatingoneachother',
+            'email' => 'mal@blum.com'
         ];
 
-        $this->post('/register', $data);
+#        $this->post('/register', $data);
 
 #        $this->assertResponseContains('There is already an account registered with this email address.');
     }
@@ -100,11 +101,9 @@ class UsersControllerTest extends IntegrationTestCase
         $this->post('/login', $data);
 
         $this->Users = TableRegistry::get('Users');
-        $user = $this->Users->find('all')
-            ->where(['email' => 'placeholder@gmail.com'])
-            ->first();
+        $id = $this->Users->getIdFromEmail('placeholder@gmail.com');
 
-        $this->assertSession($user->id, 'Auth.User.id');
+        $this->assertSession($id, 'Auth.User.id');
     }
 
     /**
@@ -155,12 +154,53 @@ class UsersControllerTest extends IntegrationTestCase
 
         // delete the new user
         $this->Users = TableRegistry::get('Users');
-        $user = $this->Users->find('all')
-            ->where(['email' => 'mal@blum.com'])
-            ->first();
-        $id = $user->id;
+        $id = $this->Users->getIdFromEmail('mal@blum.com');
 
         $this->get("users/delete/$id");
         $this->assertResponseSuccess();
+    }
+
+    /**
+     * Test sending password reset email
+     *
+     * @return void
+     */
+    public function testSendingPasswordReset()
+    {
+        $this->get("users/forgot-password");
+        $this->assertResponseOk();
+
+        #$this->post('users/forgot-password', 'ericadeefox@gmail.com');
+
+        #$this->assertEmailTo('ericadeefox@gmail.com');
+    }
+
+    /**
+     * Test actually resetting the password
+     */
+    public function testResettingThePassword()
+    {
+        $this->session(['Auth.User.id' => 554]);
+
+        // what if someone's trying to fabricate a password-resetting code?
+        $this->get("users/reset-password/554/abcdefg");
+        $this->assertRedirect('/');
+
+        // get password reset hash
+        $this->Users = TableRegistry::get('Users');
+        $hash = $this->Users->getResetPasswordHash(554, 'placeholder@gmail.com');
+
+        // now, this is the REAL URL for password resetting
+        $resetUrl = "users/reset-password/554/$hash";
+        $this->get($resetUrl);
+        $this->assertResponseOk();
+
+        $passwords = [
+            'new_password' => 'Placeholder!',
+            'new_confirm_password' => 'Placeholder!'
+        ];
+        $this->post($resetUrl, $passwords);
+        $this->assertResponseSuccess();
+        $this->assertRedirect('/');
     }
 }

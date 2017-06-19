@@ -36,7 +36,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'category', 'day', 'ics', 'index', 'location', 'search', 'tag', 'view'
+            'category', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -611,11 +611,7 @@ class EventsController extends AppController
             ->where(['category_id' => $category->id])
             ->toArray();
         if (empty($events)) {
-            return $this->renderMessage([
-                'title' => 'Category Not Found',
-                'message' => "Sorry, but we couldn't find the category \"$slug\".",
-                'class' => 'error'
-            ]);
+            $this->Flash->error("Sorry, but we couldn't find the category \"$slug\".");
         }
         $this->indexEvents($events);
         $this->set([
