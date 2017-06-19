@@ -96,10 +96,18 @@ class UsersTable extends Table
 
         $validator
             ->requirePresence('email', 'create')
-            ->add('email', 'email', [
-                'rule' => 'email',
-                'messsage' => 'Email must be a valid email address'
+            ->add('email', [
+                'valid' => [
+                    'rule' => 'email',
+                    'message' => 'You must enter a valid email address.'
+                ]
             ]);
+        /*    ->add('email', [
+                'unique' => [
+                    'rule' => 'validateUnique',
+                    'message' => 'There is already an account registered with this email address.'
+                ]
+            ]) */
 
         $validator
             ->requirePresence('password', 'create')
@@ -107,7 +115,7 @@ class UsersTable extends Table
             ->add('confirm_password', [
                 'compare' => [
                     'rule' => ['compareWith', 'password'],
-                    'message' => 'Your passwords do not match'
+                    'message' => 'Your passwords do not match.'
                 ]
             ]);
 
@@ -126,13 +134,6 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email'],
-            ['message' => 'This email address is already in use.']
-        ));
-
-        #$rules->add($rules->existsIn(['mailing_list_id'], 'MailingList'));
-        #$rules->add($rules->existsIn(['facebook_id'], 'Facebooks'));
-
         return $rules;
     }
 

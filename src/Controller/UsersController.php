@@ -109,7 +109,7 @@ class UsersController extends AppController
 
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
-            $user['email'] = strtolower(trim($user['email']));
+            $user['email'] = strtolower($user['email']);
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Success! You have been registered.'));
                 $this->Auth->setUser($user);
@@ -223,7 +223,7 @@ class UsersController extends AppController
 
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->autoRender = false;
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
