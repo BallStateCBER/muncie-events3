@@ -402,11 +402,10 @@ class EventsController extends AppController
 
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
         $event = $this->Events->get($id);
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
-            return $this->redirect(['action' => 'index']);
+            return $this->redirect('/');
         }
         $this->Flash->error(__('The event could not be deleted. Please, try again.'));
         return $this->redirect(['action' => 'index']);
@@ -714,7 +713,7 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
-                $this->Flash->success(__('The event has been saved.'));
+                return $this->Flash->success(__('The event has been saved.'));
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
             return $this->redirect(['action' => 'index']);
