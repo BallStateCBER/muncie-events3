@@ -160,26 +160,22 @@ class UsersController extends AppController
         $this->set([
             'titleForLayout' => 'Forgot Password'
         ]);
-        $user = $this->Users->newEntity();
 
         if ($this->request->is('post')) {
             $adminEmail = Configure::read('admin_email');
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            $email = strtolower(trim($user['email']));
-            if (!empty($email)) {
-                $userId = $this->Users->getIdFromEmail($email);
-                if ($userId) {
-                    if ($this->Users->sendPasswordResetEmail($userId, $email)) {
-                        $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
-                        return $this->redirect('/');
-                    }
-                    $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
+            $email = strtolower(trim($this->request->data['email']));
+            $userId = $this->Users->getIdFromEmail($email);
+            if ($userId) {
+                if ($this->Users->sendPasswordResetEmail($userId, $email)) {
+                    return $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
                 }
-                if (!$userId) {
-                    $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
-                }
+                $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
             }
-            if (empty($email)) {
+            if (!$userId) {
+                $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
+            }
+
+            if (!isset($email)) {
                 $this->Flash->error('Please enter the email address you registered with to have your password reset.');
             }
         }
@@ -213,8 +209,7 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
-                $this->Flash->success('Password changed. You are now logged in.');
-                return $this->redirect('/');
+                return $this->Flash->success('Password changed. You are now logged in.');
             }
             $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
             return $this->redirect('/');

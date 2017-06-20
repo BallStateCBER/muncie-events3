@@ -20,8 +20,8 @@
 </p>
 
 <p>
-	<a href="<?php echo $reset_url; ?>">
-		<?php echo $reset_url; ?>
+	<a href="<?php echo $resetUrl; ?>">
+		<?php echo $resetUrl; ?>
 	</a>
 </p>
 

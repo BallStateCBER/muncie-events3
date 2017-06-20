@@ -24,7 +24,10 @@ use Cake\Core\Configure\Engine\PhpConfig;
     <?= $this->Form->input('category', [
         'label' => 'Category',
         'class' => 'form-control',
-        'options' => $categories
+        'options' => [
+            'General' => 'General',
+            'Website errors' => 'Website errors'
+        ]
     ]); ?>
 </div>
 <div class='form-group col-lg-8 col-xs-12'>
