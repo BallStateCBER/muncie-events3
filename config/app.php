@@ -195,12 +195,23 @@ $config = [
      * 'YourTransport.php', where 'Your' is the name of the transport.
      */
      'EmailTransport' => [
-         'localhost' => [
+         'Smtp' => [
              'host' => env('EMAIL_HOST'),
              'port' => env('EMAIL_PORT'),
              'username' => env('EMAIL_USERNAME'),
              'password' => env('EMAIL_PASSWORD'),
              'className' => 'Smtp'
+         ],
+
+         'Debug' => [
+             'className' => 'Debug',
+             'host' => 'localhost',
+             'port' => 25,
+             'timeout' => 30,
+             'username' => null,
+             'password' => null,
+             'client' => null,
+             'tls' => false
          ],
      ],
 
@@ -215,40 +226,25 @@ $config = [
      */
     'Email' => [
         'default' => [
-            'transport' => 'localhost',
-            'from' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
-            'sender' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
+            'transport' => 'Debug',
+            'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
+            'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
         ],
         'contact_form' => [
-            'transport' => 'Smtp',
-            'port' => 25,
-            'host' => 'localhost', // puffer.interserver.net or 209.159.145.114 could also be used
-            'from' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
-            'sender' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
+            'transport' => 'Debug',
+            'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
+            'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
         ],
         'mailing_list' => [
-            'transport' => 'Smtp',
-            'port' => 25,
-            'host' => 'localhost', // puffer.interserver.net or 209.159.145.114 could also be used
-            'from' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
-            'sender' => array('automailer@MuncieEvents.com' => 'Muncie Events'),
+            'transport' => 'Debug',
+            'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
+            'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
-        ],
-        'smtp' => [
-            'transport' => 'Smtp',
-            'from' => array('site@localhost' => 'My Site'),
-            'host' => 'localhost',
-            'port' => 25,
-            'timeout' => 30,
-            'username' => 'user',
-            'password' => 'secret',
-            'client' => null,
-            'log' => false,
         ],
         'fast' => [
             'from' => 'you@localhost',
@@ -302,7 +298,7 @@ $config = [
             //'port' => 'non_standard_port_number',
             'username' => env('DB_USERNAME') ?: 'root',
             'password' => env('DB_PASSWORD') ?: null,
-            'database' => env('DB_DATABASE') ?: 'me_testing',
+            'database' => env('DB_DATABASE') ?: 'okbvtfr_testing',
             'encoding' => 'utf8mb4',
             'timezone' => 'America/Indiana/Indianapolis',
             'flags' => [],

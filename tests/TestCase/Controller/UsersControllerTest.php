@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
+use Cake\Core\Configure;
 use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
@@ -56,6 +57,7 @@ class UsersControllerTest extends IntegrationTestCase
 
         $this->assertResponseContains('Your passwords do not match.');
     #    $this->assertResponseContains('You must enter a valid email address.');
+        $this->markTestIncomplete('Email validation not working, work in progress.');
     }
 
     /**
@@ -78,6 +80,8 @@ class UsersControllerTest extends IntegrationTestCase
 #        $this->post('/register', $data);
 
 #        $this->assertResponseContains('There is already an account registered with this email address.');
+
+        $this->markTestIncomplete('Email validation not working, work in progress.');
     }
 
     /**
@@ -131,6 +135,69 @@ class UsersControllerTest extends IntegrationTestCase
     }
 
     /**
+     * Test editing account info
+     *
+     * @return void
+     */
+    public function testAccountInfoForUsers()
+    {
+        $this->Users = TableRegistry::get('Users');
+        $this->session(['Auth.User.id' => 554]);
+
+        $this->get('/account');
+        $userInfo = [
+            'name' => 'Placeholder Extra',
+            'email' => 'placeholder@ymail.com',
+            'bio' => "I'm the placeholder!"
+        ];
+        $user = $this->Users->get(554);
+        $user = $this->Users->patchEntity($user, $userInfo);
+        if ($this->Users->save($user)) {
+            $this->assertResponseOk();
+        }
+    }
+
+    /**
+     * Test editing account info
+     * plus file uploading
+     *
+     * @return void
+     */
+    public function testPhotoUploadingForUsers()
+    {
+        $this->Users = TableRegistry::get('Users');
+        $this->session(['Auth.User.id' => 554]);
+
+        $salt = Configure::read('profile_salt');
+        $newFilename = md5('placeholder.jpg'.$salt);
+
+        $this->get('/account');
+        $userInfo = [
+            'name' => 'Placeholder',
+            'email' => 'placeholder@gmail.com',
+            'bio' => "I'm the BEST placeholder!",
+            'photo' => [
+                'name' => 'placeholder.jpg',
+                'type' => 'image/jpeg',
+                'tmp_name' => WWW_ROOT . DS . 'img' . DS . 'users' . $newFilename,
+                'error' => 4,
+                'size' => 845941,
+            ]
+        ];
+        $user = $this->Users->get(554);
+        $user = $this->Users->patchEntity($user, $userInfo);
+        if ($this->Users->save($user)) {
+            $this->assertResponseOk();
+            if ($user->photo == $newFilename) {
+                return $this->assertResponseOk();
+            }
+            
+            // file upload unit testing not done yet!
+            $this->markTestIncomplete();
+        }
+    }
+
+    /**
      * Test logout
      *
      * @return void
@@ -170,13 +237,19 @@ class UsersControllerTest extends IntegrationTestCase
         $this->get("users/forgot-password");
         $this->assertResponseOk();
 
-        #$this->post('users/forgot-password', 'ericadeefox@gmail.com');
+        $data = [
+            'email' => 'placeholder@gmail.com'
+        ];
 
-        #$this->assertEmailTo('ericadeefox@gmail.com');
+        $this->post('users/forgot-password', $data);
+        $this->assertResponseContains('Message sent.');
+        $this->assertResponseOk();
     }
 
     /**
      * Test actually resetting the password
+     *
+     * @return void
      */
     public function testResettingThePassword()
     {
@@ -199,8 +272,9 @@ class UsersControllerTest extends IntegrationTestCase
             'new_password' => 'Placeholder!',
             'new_confirm_password' => 'Placeholder!'
         ];
+
         $this->post($resetUrl, $passwords);
-        $this->assertResponseSuccess();
-        $this->assertRedirect('/');
+        $this->assertResponseContains('Password changed.');
+        $this->assertResponseOk();
     }
 }

@@ -54,6 +54,23 @@ class PagesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('</html>');
     }
 
+    public function testContactPageSendsEmails()
+    {
+        $this->get('/contact');
+        $this->assertResponseOk();
+
+        $data = [
+            'category' => 'General',
+            'name' => 'Placeholder Man',
+            'email' => 'placeholder@gmail.com',
+            'body' => 'I am a placeholder'
+        ];
+
+        $this->post('/contact', $data);
+        $this->assertResponseContains('Thanks for contacting us.');
+        $this->assertResponseOk();
+    }
+
     public function testTermsPageLoads()
     {
         $this->get('/terms');

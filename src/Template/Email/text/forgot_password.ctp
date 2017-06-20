@@ -7,7 +7,7 @@ it's stored in a one-way encrypted format, we actually have no way to figure out
 Anyway, just click on this link and you'll be prompted to enter in a new password to overwrite
 your old one.
 
-<?php echo $reset_url; ?>
+<?php echo $resetUrl; ?>
 
 
 NOTE: That link will only work for the rest of <?php echo date('F Y'); ?>.
