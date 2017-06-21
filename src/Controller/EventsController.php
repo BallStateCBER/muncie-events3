@@ -97,7 +97,7 @@ class EventsController extends AppController
 
         if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
             $hasSeries = count($event->date) > 1;
-            $hasEndTime = isset($event['has_end_time']) ? $event['has_end_time'] : false;
+            $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
             $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
             $hasEndTime = isset($event['time_end']) && $event['time_end'];
@@ -238,7 +238,7 @@ class EventsController extends AppController
             $dateFieldValues = [];
             if (empty($event->date)) {
                 $defaultDate = 0; // Today
-                $preselectedDates = '[]';
+                $preselectedDates = [];
             }
             if (!empty($event->date)) {
                 $dates = explode(',', $event->date);
@@ -254,7 +254,9 @@ class EventsController extends AppController
                     $datesForJs[] = "'".date_format($date, 'm/d/Y')."'";
                 }
                 $datesForJs = implode(',', $datesForJs);
-                $preselectedDates = "[$datesForJs]";
+                foreach ($datesForJs as $date) {
+                    $preselectedDates += $date;
+                }
             }
             $this->set(compact('defaultDate', 'preselectedDates'));
             $event->date = $dateFieldValues;
@@ -279,7 +281,9 @@ class EventsController extends AppController
             $dates[] = $dateString;
         }
 
-        $dates = implode(',', $dates);
+        $this->prepareDatePickerPr($event);
+
+        #$dates = implode(',', $dates);
 
         // Pick the first event in the series
         $eventId = $events[0]->id;
@@ -290,7 +294,6 @@ class EventsController extends AppController
         $event->date = $dates;
 
         #$this->request->data['date'] = $dates;
-        $this->prepareDatePickerPr($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             $dates = explode(',', $this->request->data['date']);
