@@ -6,6 +6,11 @@ var ImageManager = {
 			placeholder: 'ui-state-highlight'
 		});
 
+        $('#image_select_toggler').click(function (event) {
+            event.preventDefault();
+            ImageManager.toggleUploadedImages();
+        });
+
 		ImageManager.hidePreselectedImages();
 	},
 
@@ -30,7 +35,7 @@ var ImageManager = {
 	},
 
 	getRemoveButton: function(image_id) {
-		var remove_handle = $('<label class="remove" for="delete'+image_id+'"><img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /></label>');
+		var remove_handle = $('<a href="#" class="remove"><img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /></a>');
 		remove_handle.click(function (event) {
 			event.preventDefault();
 			var container = $(this).parent('li');
@@ -211,17 +216,23 @@ var ImageManager = {
 		});
 	},
 
+    toggleUploadedImages: function () {
+        if ($('#image_select_toggler').hasClass('loading')) {
+            return;
+        }
+
+        ImageManager.showUploadedImages();
+    },
+
 	showUploadedImages: function () {
 		if ($('#image_select_toggler').hasClass('loading')) {
 			return;
 		}
 
 		var container = $('#image_select_container');
-		if (container.is(':empty')) {
+
 			this.loadUploadedImages();
-		} else {
-			container.slideDown(300);
-		}
+
 	},
 
 	loadUploadedImages: function () {
@@ -232,7 +243,6 @@ var ImageManager = {
 			beforeSend: function () {
 				link.addClass('loading');
 				container.html('<img src="/img/loading.gif" class="loading" alt="Loading..." />');
-				container.slideDown(300);
 			},
 			complete: function () {
 				link.removeClass('loading');
@@ -247,7 +257,6 @@ var ImageManager = {
 				var error = $('<div class="alert alert-danger">There was an error loading your uploaded images. Please try again or contact an administrator for assistance.</div>');
 				error.hide();
 				container.after(error);
-				error.slideDown(300);
 			},
 			success: function (data) {
 				container.find('.loading').slideUp(300, function () {
@@ -259,7 +268,6 @@ var ImageManager = {
 						var image_id = $(this).data('imageId');
 						ImageManager.selectListedImage(image_id);
 					});
-					container.slideDown(300);
 				});
 			}
 		});
