@@ -75,7 +75,7 @@ class EventsControllerTest extends IntegrationTestCase
         $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Party'])
-            ->first();
+            ->firstOrFail();
 
         $this->session(['Auth.User.id' => 1]);
 
