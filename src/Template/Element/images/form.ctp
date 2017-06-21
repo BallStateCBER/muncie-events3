@@ -39,39 +39,37 @@ $helpers = ['Html'];
           </h5>
         </div>
         <div id="image_select_container" class="collapse" role="tabpanel" aria-labelledby="image_select_heading">
-          <div class="card-block">
-                    <ul id="selected_images">
-                        <?php if (!empty($event->images)): ?>
-                            <?php foreach ($event->images as $eventImage): ?>
-                                <?php
-                                    $id = $eventImage['id'];
-                                    $filename = $eventImage['filename'];
-                                ?>
-                                <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
-                                    <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
-                                    <label class="remove" for="delete[<?= $id ?>]">
-                                        Delete?
-                                    </label>
-                                    <?= $this->Form->checkbox("delete[$id]"); ?>
-                                    <?= $this->Calendar->thumbnail('tiny', [
-                                        'filename' => $filename,
-                                        'class' => 'selected_image'
-                                    ]); ?>
-                                    <?= $this->Form->input("newImages[$id]", [
-                                        'label' => 'Caption:',
-                                        'div' => false,
-                                        'type' => 'text',
-                                        'value' => $eventImage['_joinData']['caption'],
-                                        'placeholder' => "Enter a caption for this image",
-                                        'class' => 'caption'
-                                    ]); ?>
-                                </li>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </ul>
-          </div>
         </div>
       </div>
+      <ul id="selected_images">
+          <?php if (!empty($event->images)): ?>
+              <?php foreach ($event->images as $eventImage): ?>
+                  <?php
+                      $id = $eventImage['id'];
+                      $filename = $eventImage['filename'];
+                  ?>
+                  <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
+                      <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
+                      <label class="remove" for="delete[<?= $id ?>]">
+                          Delete?
+                      </label>
+                      <?= $this->Form->checkbox("delete[$id]"); ?>
+                      <?= $this->Calendar->thumbnail('tiny', [
+                          'filename' => $filename,
+                          'class' => 'selected_image'
+                      ]); ?>
+                      <?= $this->Form->input("newImages[$id]", [
+                          'label' => 'Caption:',
+                          'div' => false,
+                          'type' => 'text',
+                          'value' => $eventImage['_joinData']['caption'],
+                          'placeholder' => "Enter a caption for this image",
+                          'class' => 'caption'
+                      ]); ?>
+                  </li>
+              <?php endforeach; ?>
+          <?php endif; ?>
+      </ul>
       <div class="card">
         <div class="card-header" role="tab" id="image_help_heading">
           <h5 class="mb-0">
