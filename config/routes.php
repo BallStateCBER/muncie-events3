@@ -82,6 +82,7 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'eventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
+    
     // eventseries actions
     foreach (['edit', 'delete'] as $action) {
         Router::connect(
@@ -90,6 +91,9 @@ Router::scope('/', function (RouteBuilder $routes) {
             ['id' => '[0-9]+', 'pass' => ['id']]
         );
     }
+
+    // moderation
+    $routes->connect('/moderate', ['controller' => 'events', 'action' => 'moderate']);
 
     // pages
     $pages = ['about', 'contact', 'terms'];

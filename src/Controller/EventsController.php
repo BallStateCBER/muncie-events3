@@ -21,7 +21,7 @@ class EventsController extends AppController
     ];
     public $uses = ['Event'];
     public $eventFilter = [];
-    public $adminActions = ['publish', 'approve', 'moderate'];
+    public $adminActions = ['publish', 'approve', 'moderate', 'delete'];
 
     public $paginate = [
         'limit' => 25,
@@ -374,44 +374,54 @@ class EventsController extends AppController
             'contain' => ['Images', 'Tags']
         ]);
 
-        // prepare form
-        $this->prepareEventFormPr($event);
-        $this->processImageDataPr($event);
-        $this->prepareDatePickerPr($event);
+        if ($this->request->session()->read('Auth.User.role') == 'admin' || $event->user_id == $this->request->session()->read('Auth.User.id')) {
+            // prepare form
+            $this->prepareEventFormPr($event);
+            $this->processImageDataPr($event);
+            $this->prepareDatePickerPr($event);
 
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            // make sure the end time stays null if it needs to
-            $this->uponFormSubmissionPr();
-            $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = strtotime($this->request->data['date']);
-            $this->processCustomTagsPr($event);
-            if ($this->Events->save($event, [
-                'associated' => ['EventSeries', 'Images', 'Tags']
-            ])) {
-                $event->date = $this->request->data['date'];
-                $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+            if ($this->request->is(['patch', 'post', 'put'])) {
+                // make sure the end time stays null if it needs to
+                $this->uponFormSubmissionPr();
+                $event = $this->Events->patchEntity($event, $this->request->getData());
+                $event->date = strtotime($this->request->data['date']);
+                $this->processCustomTagsPr($event);
+                if ($this->Events->save($event, [
+                    'associated' => ['EventSeries', 'Images', 'Tags']
+                ])) {
+                    $event->date = $this->request->data['date'];
+                    $this->Flash->success(__('The event has been saved.'));
+                } else {
+                    $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                }
             }
-        }
 
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Edit Event');
+            $users = $this->Events->Users->find('list');
+            $categories = $this->Events->Categories->find('list');
+            $eventseries = $this->Events->EventSeries->find('list');
+            $this->set(compact('event', 'users', 'categories', 'eventseries'));
+            $this->set('_serialize', ['event']);
+            $this->set('titleForLayout', 'Edit Event');
+        } else {
+            $this->Flash->error(__('You are not authorized to view this page.'));
+            return $this->redirect('/');
+        }
     }
 
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
-        if ($this->Events->delete($event)) {
-            $this->Flash->success(__('The event has been deleted.'));
-            return $this->redirect('/');
+        if ($this->request->session()->read('Auth.User.role') == 'admin' || $event->user_id == $this->request->session()->read('Auth.User.id')) {
+            if ($this->Events->delete($event)) {
+                $this->Flash->success(__('The event has been deleted.'));
+                return $this->redirect('/');
+            }
+            $this->Flash->error(__('The event could not be deleted. Please, try again.'));
+            return $this->redirect(['action' => 'index']);
+        } else {
+            $this->Flash->error(__('You cannot delete this event.'));
+            return $this->redirect(['action' => 'index']);
         }
-        $this->Flash->error(__('The event could not be deleted. Please, try again.'));
-        return $this->redirect(['action' => 'index']);
     }
 
     public function approve($id = null)
@@ -428,7 +438,8 @@ class EventsController extends AppController
             if (!$this->Events->exists($id)) {
                 $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
             }
-            if ($seriesId = $this->Events->EventSeries->id) {
+            if ($event['event_series']['id']) {
+                $seriesId = $event['event_series']['id'];
                 $seriesToApprove[$seriesId] = true;
             }
                 // approve & publish it
@@ -457,7 +468,8 @@ class EventsController extends AppController
 
     public function moderate()
     {
-        // Collect all unapproved events
+        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+            // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -470,24 +482,28 @@ class EventsController extends AppController
         // Find sets of identical events (belonging to the same series
         // and with the same modified date) and remove all but the first
         $identicalSeries = [];
-        foreach ($unapproved as $k => $event) {
-            if (empty($event['EventsSeries'])) {
-                continue;
+            foreach ($unapproved as $k => $event) {
+                if (empty($event['EventsSeries'])) {
+                    continue;
+                }
+                $eventId = $event['Events']['id'];
+                $seriesId = $event['EventSeries']['id'];
+                $modified = $event['Events']['modified'];
+                if (isset($identicalSeries[$seriesId][$modified])) {
+                    unset($unapproved[$k]);
+                }
+                $identicalSeries[$seriesId][$modified][] = $eventId;
             }
-            $eventId = $event['Events']['id'];
-            $seriesId = $event['EventSeries']['id'];
-            $modified = $event['Events']['modified'];
-            if (isset($identicalSeries[$seriesId][$modified])) {
-                unset($unapproved[$k]);
-            }
-            $identicalSeries[$seriesId][$modified][] = $eventId;
-        }
 
-        $this->set([
+            $this->set([
             'titleForLayout' => 'Review Unapproved Content',
             'unapproved' => $unapproved,
             'identicalSeries' => $identicalSeries
         ]);
+        } else {
+            $this->Flash->error("You are not authorized to view that page.");
+            $this->redirect('/');
+        }
     }
 
     // home page
