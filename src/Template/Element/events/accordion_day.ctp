@@ -102,14 +102,13 @@ $url = Router::url([
                         </td>
                     </tr>
                     <?php endif; ?>
-                    <?php if (!empty($event->series_id) && !empty($event->eventSeries->title)): ?>
+                    <?php if (!empty($event->series_id) && !empty($event->event_series->title)): ?>
                     <tr class="tags">
                         <th>Series:</th>
                         <td>
-                            <?= $this->Html->link($event->eventSeries->title, [
+                            <?= $this->Html->link($event->event_series->title, [
                                         'controller' => 'event_series',
-                                        'action' => 'view',
-                                        'id' => $event->eventSeries->id
+                                        'action' => 'view', $event->series_id
                                     ]); ?>
                         </td>
                     </tr>
