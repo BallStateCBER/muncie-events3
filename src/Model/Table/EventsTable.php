@@ -99,7 +99,6 @@ class EventsTable extends Table
             ->notEmpty('title');
 
         $validator
-            ->date('date')
             ->requirePresence('date', 'create')
             ->notEmpty('date');
 

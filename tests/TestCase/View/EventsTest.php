@@ -57,21 +57,4 @@ class EventsViewTest extends IntegrationTestCase
         $this->assertResponseOk();
         $this->assertResponseContains('Tag: Martial Arts');
     }
-
-    /**
-     * Test category indexes
-     *
-     * @return void
-     */
-    public function testAllTheCategories()
-    {
-        $this->Categories = TableRegistry::get('Categories');
-        $categories = $this->Categories->find()
-            ->select(['slug']);
-
-        foreach ($categories as $category) {
-            $this->get("/$category->slug");
-            $this->assertResponseOk();
-        }
-    }
 }
