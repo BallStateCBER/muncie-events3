@@ -1,5 +1,5 @@
 <?php
-    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'editSeries');
+    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'editseries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
@@ -77,6 +77,9 @@
                             <div class="text-muted">
                                 Select more than one date to create multiple events connected by a series.
                             </div>
+                            <?= $this->Form->input('series_id', [
+                                'type' => 'hidden'
+                            ]); ?>
                         <?php endif; ?>
                     </div>
                 </td>
@@ -94,9 +97,6 @@
                             <div class="text-muted">
                                 By default, the series and its events have the same title.
                             </div>
-                            <?= $this->Form->input('series_id', [
-                                'type' => 'hidden'
-                            ]); ?>
                         </div>
                     </td>
                 </tr>

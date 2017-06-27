@@ -88,7 +88,7 @@ class EventSeriesController extends AppController
                 }
                 $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
             }
-            $eventSeries = $this->EventSeries->patchEntity($eventSeries, $this->request->getData());
+
             if (isset($this->request->data['events'])) {
                 $x = 0;
                 foreach ($this->request->data['events'] as $event) {
@@ -103,26 +103,32 @@ class EventSeriesController extends AppController
                         $x = $x + 1;
                         continue;
                     }
+
                     $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
                     $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
                     $eventSeries->events[$x]->time_start = new Time(date('H:i',
                         strtotime($event['time_start']['hour'].':'.$event['time_start']['minute'].' '.$event['time_start']['meridian'])
                     ));
                     $eventSeries->events[$x]->title = $event['title'];
+
                     if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
                         $this->Flash->success(__('Event #'.$event['id'].' has been saved.'));
                         $x = $x + 1;
                         continue;
                     }
+
                     $this->Flash->error(__('Event #'.$event['id'].' was not saved.'));
                     $x = $x + 1;
                 }
             }
+
+            $eventSeries->title = $this->request->data['title'];
             if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
                 return $this->redirect(['action' => 'view', $id]);
             }
-            $this->Flash->error(__('The event series could not be saved. Please, try again.'));
+
+            $this->Flash->error(__('The event series has NOT been saved.'));
         }
         $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
         $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
