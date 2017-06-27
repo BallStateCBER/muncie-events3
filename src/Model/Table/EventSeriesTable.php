@@ -60,9 +60,9 @@ class EventSeriesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->requirePresence('title', 'create')
-            ->notEmpty('title');
+    #    $validator
+    #        ->requirePresence('title', 'create')
+    #        ->notEmpty('title');
 
         $validator
             ->boolean('published')

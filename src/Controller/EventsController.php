@@ -234,33 +234,33 @@ class EventsController extends AppController
     private function prepareDatePickerPr($event)
     {
         // Prepare date picker
-        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
+        if ($this->request->action == 'add') {
             $dateFieldValues = [];
-            if (empty($event->date)) {
-                $defaultDate = 0; // Today
-                $preselectedDates = [];
+            $preselectedDates = '[]';
+            $defaultDate = 0; // Today
+            #$event->date = $defaultDate;
+        }
+        if ($this->request->action == 'editSeries') {
+            $dateFieldValues = [];
+            $dates = explode(',', $event->date);
+            foreach ($dates as $date) {
+                list($year, $month, $day) = explode('-', $date);
+                if (!isset($defaultDate)) {
+                    $defaultDate = "$month/$day/$year";
+                }
+                $dateFieldValues[] = date_create("$month/$day/$year");
             }
-            if (!empty($event->date)) {
-                $dates = explode(',', $event->date);
-                foreach ($dates as $date) {
-                    list($year, $month, $day) = explode('-', $date);
-                    if (!isset($defaultDate)) {
-                        $defaultDate = "$month/$day/$year";
-                    }
-                    $dateFieldValues[] = date_create("$month/$day/$year");
-                }
-                $datesForJs = [];
-                foreach ($dateFieldValues as $date) {
-                    $datesForJs[] = "'".date_format($date, 'm/d/Y')."'";
-                }
-                $datesForJs = implode(',', $datesForJs);
-                foreach ($datesForJs as $date) {
-                    $preselectedDates += $date;
-                }
+            $datesForJs = [];
+            foreach ($dateFieldValues as $date) {
+                $datesForJs[] = "'".date_format($date, 'm/d/Y')."'";
             }
-            $this->set(compact('defaultDate', 'preselectedDates'));
+            $datesForJs = implode(',', $datesForJs);
+            foreach ($datesForJs as $date) {
+                $preselectedDates += $date;
+            }
             $event->date = $dateFieldValues;
         }
+        $this->set(compact('defaultDate', 'preselectedDates'));
     }
 
     public function editSeries($seriesId)
@@ -624,14 +624,14 @@ class EventsController extends AppController
             ->first();
         $events = $this->Events->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+            'order' => ['date' => 'ASC']
             ])
             ->where(['category_id' => $category->id])
+            ->andWhere(['date >=' => date('Y-m-d')])
             ->toArray();
-        if (empty($events)) {
-            $this->Flash->error("Sorry, but we couldn't find the category \"$slug\".");
+        if ($events) {
+            $this->indexEvents($events);
         }
-        $this->indexEvents($events);
         $this->set([
             'category' => $category,
             'titleForLayout' => $category->name
@@ -724,16 +724,41 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
-            $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = strtotime($this->request->data['date']);
             $this->processCustomTagsPr($event);
 
-            if ($this->Events->save($event, [
-                'associated' => ['EventSeries', 'Images', 'Tags']
-            ])) {
-                $event->date = $this->request->data['date'];
-                return $this->Flash->success(__('The event has been saved.'));
+            // count how many dates have been picked
+            $dateInput = strlen($this->request->data['date']);
+
+            // a single event
+            if ($dateInput == 10) {
+                $event = $this->Events->patchEntity($event, $this->request->getData());
+                $event->date = new Date($this->request->data['date']);
+                if ($this->Events->save($event, [
+                    'associated' => ['EventSeries', 'Images', 'Tags']
+                ])) {
+                    $this->Flash->success(__('The event has been saved.'));
+                    return $this->redirect(['action' => 'index']);
+                }
             }
+
+            // a series of multiple events
+            if ($dateInput > 10) {
+                $dates = explode(',', $this->request->data['date']);
+                foreach ($dates as $date) {
+                    $newDate = new Date($date);
+                    $event = $this->Events->newEntity();
+                    $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $event->date = $newDate;
+                    if ($this->Events->save($event, [
+                        'associated' => ['EventSeries', 'Images', 'Tags']
+                    ])) {
+                        $this->Flash->success(__('The event series has been saved.'));
+                    };
+                }
+                return $this->redirect(['action' => 'index']);
+            }
+
+            // if neither a single event nor multiple-event series can be saved
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
             return $this->redirect(['action' => 'index']);
         }

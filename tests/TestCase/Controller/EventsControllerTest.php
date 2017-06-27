@@ -49,7 +49,7 @@ class EventsControllerTest extends IntegrationTestCase
         $event = [
             'title' => 'Placeholder Party',
             'category_id' => 13,
-            'date' => date('Y-m-d'),
+            'date' => date('m/d/Y'),
             'time_start' => date('Y-m-d'),
             'time_end' => strtotime('+1 hour'),
             'location' => 'Mr. Placeholder\'s Place',
@@ -62,8 +62,53 @@ class EventsControllerTest extends IntegrationTestCase
         ];
 
         $this->post('/events/add', $event);
+        $this->assertResponseSuccess();
+
+        $this->Events = TableRegistry::get('Events');
+        $event = $this->Events->find()
+            ->where(['title' => $event['title']])
+            ->first();
+
+        if ($event->id) {
+            $this->assertResponseSuccess();
+            return;
+        }
+        if (!$event->id) {
+            $this->assertResponseError();
+        }
+    }
+
+    /**
+     * test event add page when logged IN and adding a series
+     *
+     * @return void
+     */
+    public function testAddingEventSeries()
+    {
+        $this->session(['Auth.User.id' => 74]);
+        $this->get('/events/add');
         $this->assertResponseOk();
-        $this->assertResponseContains('The event has been saved.');
+
+        $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
+        $dates = implode(',', $dates);
+
+        $event = [
+            'title' => 'Placeholder Event Series',
+            'category_id' => 13,
+            'date' => $dates,
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'Mr. Placeholder\'s Place',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly'
+        ];
+
+        $this->post('/events/add', $event);
+        $this->assertResponseSuccess();
 
         $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()

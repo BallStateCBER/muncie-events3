@@ -81,8 +81,8 @@
                     </div>
                 </td>
             </tr>
-            <?php if ($multipleDatesAllowed): ?>
-                <tr id="series_row" <?php if (!$has['series']): ?>style="display: none;"<?php endif; ?>>
+            <?php if ($has['series']): ?>
+                <tr id="series_row">
                     <th>Series Name</th>
                     <td>
                         <div class="form-group col-lg-8 col-xs-12">
