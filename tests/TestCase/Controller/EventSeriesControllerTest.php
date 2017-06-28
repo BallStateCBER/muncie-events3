@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\EventSeriesController;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
@@ -10,52 +11,155 @@ use Cake\TestSuite\IntegrationTestCase;
 class EventSeriesControllerTest extends IntegrationTestCase
 {
     /**
-     * Test index method
+     * test event add page when logged in and adding a series
      *
      * @return void
      */
-    public function testIndex()
+    public function testAddingEventSeries()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->session(['Auth.User.id' => 74]);
+        $this->get('/events/add');
+        $this->assertResponseOk();
+
+        $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
+        $dates = implode(',', $dates);
+
+        $series = [
+            'title' => 'Placeholder Event Series',
+            'category_id' => 13,
+            'date' => $dates,
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'Mr. Placeholder\'s Place',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly'
+        ];
+
+        $this->post('/events/add', $series);
+        $this->assertResponseSuccess();
+
+        $this->EventSeries = TableRegistry::get('EventSeries');
+        $series = $this->EventSeries->find()
+            ->where(['title' => $series['title']])
+            ->first();
+
+        if ($series->id) {
+            $this->assertResponseSuccess();
+            return;
+        }
+        if (!$series->id) {
+            $this->assertResponseError();
+        }
     }
 
     /**
-     * Test view method
+     * test editing an event series
      *
      * @return void
      */
-    public function testView()
+    public function testEditingEventSeries()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->EventSeries = TableRegistry::get('EventSeries');
+        $series = $this->EventSeries->find()
+            ->where(['title' => 'Placeholder Event Series'])
+            ->first();
+
+        $this->Events = TableRegistry::get('Events');
+        $events = $this->Events->find()
+            ->where(['series_id' => $series->id]);
+
+        $id = [];
+        foreach ($events as $event) {
+            $id[] = $event->id;
+        }
+
+        $this->session(['Auth.User.id' => 74]);
+
+        $this->get("/event-series/edit/$series->id");
+
+        $today = [
+            'year' => date('Y'),
+            'month' => date('m'),
+            'day' => date('d')
+        ];
+        $rightNow = [
+            'hour' => date('h'),
+            'minute' => date('i'),
+            'meridian' => date('a')
+        ];
+
+        $edits = [
+            'events' => [
+                0 => [
+                    'date' => $today,
+                    'delete' => 1,
+                    'edited' => 1,
+                    'id' => $id[0],
+                    'time_start' => $rightNow
+                ],
+                1 => [
+                    'date' => $today,
+                    'delete' => 0,
+                    'edited' => 1,
+                    'id' => $id[1],
+                    'time_start' => $rightNow,
+                    'title' => 'Placeholder Party Series'
+                ]
+            ],
+            'title' => 'Placeholder Event Series',
+            'delete' => 0
+        ];
+
+        $this->post("/event-series/edit/$series->id", $edits);
+
+        $newEvent = $this->Events->find()
+            ->where(['title' => 'Placeholder Party Series'])
+            ->firstOrFail();
+
+        if ($newEvent->id) {
+            $this->assertResponseSuccess();
+        }
     }
 
     /**
-     * Test add method
+     * test deleting an event series
      *
      * @return void
      */
-    public function testAdd()
+    public function testDeletingSeriesWhenLoggedIn()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->EventSeries = TableRegistry::get('EventSeries');
+        $series = $this->EventSeries->find()
+            ->where(['title' => 'Placeholder Event Series'])
+            ->first();
 
-    /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->session(['Auth.User.id' => 74]);
 
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get("/event-series/edit/$series->id");
+
+        $delete = [
+            'title' => 'Placeholder Event Series',
+            'delete' => 1
+        ];
+
+        $this->post("/event-series/edit/$series->id", $delete);
+
+        $this->Events = TableRegistry::get('Events');
+        $oldEvent = $this->Events->find()
+            ->where(['title' => 'Placeholder Event Series'])
+            ->first();
+        $oldSeries = $this->EventSeries->find()
+            ->where(['title' => 'Placeholder Event Series'])
+            ->first();
+
+        if (!$oldEvent & !$oldSeries) {
+            $this->assertResponseSuccess();
+        } else {
+            $this->assertResponseError();
+        }
     }
 }

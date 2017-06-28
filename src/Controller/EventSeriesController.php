@@ -13,45 +13,14 @@ class EventSeriesController extends AppController
 {
     public $helpers = ['Html'];
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Network\Response|null
-     */
-    public function index()
+    public function initialize()
     {
-        $this->paginate = [
-            'contain' => ['Users']
-        ];
-        $eventSeries = $this->paginate($this->EventSeries);
-
-        $this->set(compact('eventSeries'));
-        $this->set('_serialize', ['eventSeries']);
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Event Series id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $eventSeries = $this->EventSeries->find('all', [
-            'conditions' => ['id' => $id]
-        ])->first();
-        if ($eventSeries == null) {
-            $this->Flash->error(__('Sorry, we can\'t find that event series.'));
-            return $this->redirect(['controller' => 'events', 'action' => 'index']);
-        }
-        $eventSeries = $this->EventSeries->get($id, [
-            'contain' => ['Events', 'Users']
+        parent::initialize();
+        // you don't need to log in to view events,
+        // just to add & edit them
+        $this->Auth->allow([
+            'view'
         ]);
-
-        $this->set('eventSeries', $eventSeries);
-        $this->set('_serialize', ['eventSeries']);
-        $this->set(['titleForLayout' => 'Event Series: '.$eventSeries->title]);
     }
 
     /**
@@ -81,9 +50,14 @@ class EventSeriesController extends AppController
             ->select('id')
             ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            if ($this->request->data['delete']) {
+            if ($this->request->data['delete'] == 1) {
                 if ($this->EventSeries->delete($eventSeries)) {
                     $this->Flash->success(__('The event series has been deleted.'));
+                    $events = $this->EventSeries->Events->find()
+                        ->where(['series_id' => $id]);
+                    foreach ($events as $event) {
+                        $this->EventSeries->Events->delete($event);
+                    }
                     return $this->redirect(['controller' => 'events', 'action' => 'index']);
                 }
                 $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
@@ -125,7 +99,7 @@ class EventSeriesController extends AppController
             $eventSeries->title = $this->request->data['title'];
             if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
-                return $this->redirect(['action' => 'view', $id]);
+                #return $this->redirect(['action' => 'view', $id]);
             }
 
             $this->Flash->error(__('The event series has NOT been saved.'));
@@ -137,23 +111,27 @@ class EventSeriesController extends AppController
     }
 
     /**
-     * Delete method
+     * View method
      *
      * @param string|null $id Event Series id.
-     * @return \Cake\Network\Response|null Redirects to index.
+     * @return \Cake\Network\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function view($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $eventSeries = $this->EventSeries->get($id);
-        if ($this->EventSeries->delete($eventSeries)) {
-            $this->Flash->success(__('The event series has been deleted.'));
+        $eventSeries = $this->EventSeries->find('all', [
+            'conditions' => ['id' => $id]
+        ])->first();
+        if ($eventSeries == null) {
+            $this->Flash->error(__('Sorry, we can\'t find that event series.'));
             return $this->redirect(['controller' => 'events', 'action' => 'index']);
-        } else {
-            $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
         }
+        $eventSeries = $this->EventSeries->get($id, [
+            'contain' => ['Events', 'Users']
+        ]);
 
-        return $this->redirect(['action' => 'index']);
+        $this->set('eventSeries', $eventSeries);
+        $this->set('_serialize', ['eventSeries']);
+        $this->set(['titleForLayout' => 'Event Series: '.$eventSeries->title]);
     }
 }

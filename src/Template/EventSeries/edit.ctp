@@ -160,12 +160,14 @@
             </td>
         </tr>
         <tr>
-            <th>Delete</th>
+            <th>Delete series</th>
             <td>
-                <?= $this->Form->checkbox('delete', [
-                    'id' => 'event_series_delete_confirm',
-                    'after' => '<div class="footnote">Click to delete all events.</div>',
-                ]); ?>
+                <div class="alert alert-danger">
+                    <?= $this->Form->checkbox('delete', [
+                        'id' => 'event_series_delete_confirm'
+                    ]); ?>
+                    This will <strong>delete literally all of the events</strong> in the series!
+                </div>
             </td>
         </tr>
         <tr>
