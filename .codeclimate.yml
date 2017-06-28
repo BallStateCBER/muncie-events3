@@ -17,3 +17,4 @@ exclude_paths:
  - "!**/*.php"
  - "!**/*.ctp"
  - "/code/src/Template/Element/website"
+ - "/webroot/emojione/*"
