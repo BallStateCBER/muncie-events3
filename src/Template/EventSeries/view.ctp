@@ -16,13 +16,6 @@
                 ['controller' => 'eventSeries', 'action' => 'edit', $eventSeries->id],
                 ['escape' => false]
             ); ?>
-            &nbsp;
-            <?= $this->Form->postLink(
-                $this->Html->image('/img/icons/cross.png').'Delete',
-                ['controller' => 'eventSeries', 'action' => 'delete', $eventSeries->id],
-                ['escape' => false],
-                'Are you sure that you want to delete this event series? All events will be permanently deleted.'
-            ); ?>
         </div>
     <?php endif; ?>
 

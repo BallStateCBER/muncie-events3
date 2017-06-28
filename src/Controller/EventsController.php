@@ -238,7 +238,6 @@ class EventsController extends AppController
             $dateFieldValues = [];
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
-            return;
         }
         if ($this->request->action == 'editseries') {
             $dateFieldValues = [];
