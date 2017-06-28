@@ -312,12 +312,18 @@ function setupEventAccordion() {
                 var event_id = toggler.data('eventId');
                 var collapse = toggler.next('.collapse');
                 var thumbnail = toggler.siblings('.tiny_thumbnails').children('a.thumbnail:first-child');
-                if (thumbnail.length > 0) {
-                    if (collapse.is(':visible') && collapse.css('height') != '0px') {
+                if (collapse.is(':visible') && collapse.css('height') != '0px') {
+                    if (thumbnail.length > 0) {
                         thumbnail.fadeIn(150);
-                    } else {
+                    }
+                    toggler.find('.address').slideUp(150);
+                    toggler.find('.location_details').slideUp(150);
+                } else {
+                    if (thumbnail.length > 0) {
                         thumbnail.fadeOut(500);
                     }
+                    toggler.find('.address').css('display', 'block');
+                    toggler.find('.location_details').css('display', 'block');
                 }
 
                 var more_info_id = 'more_info_'+event_id;

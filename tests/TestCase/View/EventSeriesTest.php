@@ -17,7 +17,7 @@ class EventsSeriesViewTest extends IntegrationTestCase
      */
     public function testSeriesView()
     {
-        $this->get("/event-series/view/8");
+        $this->get("/event-series/8");
         $this->assertResponseOk();
         $this->assertResponseContains('First Thursday Gallery Walk');
     }

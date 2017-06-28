@@ -299,7 +299,8 @@ class EventsController extends AppController
                     ->first();
                 if (isset($oldEvent->id)) {
                     $event = $this->Events->get($oldEvent->id);
-                } else {
+                }
+                if (!isset($oldEvent->id)) {
                     $event = $this->Events->newEntity();
                 }
                 $event = $this->Events->patchEntity($event, $this->request->getData());
@@ -309,10 +310,10 @@ class EventsController extends AppController
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']
                 ])) {
-                    $this->Flash->success(__('The event has been saved.'));
-                } else {
-                    $this->Flash->error(__('The event has not been saved.'));
-                };
+                    $this->Flash->success(__("Event $oldEvent->id has been saved."));
+                    continue;
+                }
+                $this->Flash->error(__("Event $oldEvent->id could not be saved."));
             }
         }
         $this->Flash->error('Warning: all events in this series will be overwritten.');
@@ -360,9 +361,9 @@ class EventsController extends AppController
                 ])) {
                     $event->date = $this->request->data['date'];
                     $this->Flash->success(__('The event has been saved.'));
-                } else {
-                    $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                    return $this->redirect('/');
                 }
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
 
             $users = $this->Events->Users->find('list');
