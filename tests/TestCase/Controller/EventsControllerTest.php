@@ -153,8 +153,7 @@ class EventsControllerTest extends IntegrationTestCase
         ];
 
         $this->post("/event/edit/$event->id", $edits);
-        $this->assertResponseOk();
-        $this->assertResponseContains('The event has been saved.');
+        $this->assertResponseSuccess();
 
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Gala'])

@@ -62,9 +62,7 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
     // events actions
-    foreach (['approve', 'delete', 'edit',
-        'editseries' /*in progress*/,
-        'location', 'publish'] as $action) {
+    foreach (['approve', 'delete', 'edit', 'editseries', 'location', 'publish'] as $action) {
         Router::connect(
             "/event/$action/:id",
             ['controller' => 'events', 'action' => $action],
@@ -82,15 +80,13 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'eventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
-    
+
     // eventseries actions
-    foreach (['edit', 'delete'] as $action) {
-        Router::connect(
-            "/event-series/$action/:id",
-            ['controller' => 'eventSeries', 'action' => $action],
-            ['id' => '[0-9]+', 'pass' => ['id']]
-        );
-    }
+    Router::connect(
+        "/event-series/edit/:id",
+        ['controller' => 'eventSeries', 'action' => 'edit'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
 
     // moderation
     $routes->connect('/moderate', ['controller' => 'events', 'action' => 'moderate']);
