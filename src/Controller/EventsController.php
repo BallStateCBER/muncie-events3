@@ -290,8 +290,9 @@ class EventsController extends AppController
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
-            $dates = explode(',', $this->request->data['date']);
-            foreach ($dates as $date) {
+            $newDates = explode(',', $this->request->data['date']);
+            foreach ($newDates as $date) {
+                $date = date('Y-m-d', strtotime($date));
                 $oldEvent = $this->Events->find()
                     ->select(['id'])
                     ->where(['date' => $date])
@@ -303,17 +304,47 @@ class EventsController extends AppController
                 if (!isset($oldEvent->id)) {
                     $event = $this->Events->newEntity();
                 }
-                $event = $this->Events->patchEntity($event, $this->request->getData());
+
+                $event->category_id = $this->request->data['category_id'];
                 $newDate = new Date($date);
                 $event->date = $newDate;
+                $event->description = $this->request->data['description'];
+                $event->location = $this->request->data['location'];
+                $optional = ['time_end', 'age_restriction', 'cost', 'source', 'address', 'location_details'];
+                foreach ($optional as $option) {
+                    if (isset($this->request->data[$option])) {
+                        if ($option = 'time_end') {
+                            $time = $this->request->data['time_end'];
+                            $time = date('H:i:s', strtotime($time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian']));
+                            $event->time_end = new Time($time);
+                            continue;
+                        }
+                        $event->$option = $this->request->data[$option];
+                    }
+                }
+                $event->series_id = $seriesId;
+                $time = $this->request->data['time_start'];
+                $time = date('H:i:s', strtotime($time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian']));
+                $event->time_start = new Time($time);
+                $event->title = $this->request->data['title'];
+
                 $this->processCustomTagsPr($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']
                 ])) {
-                    $this->Flash->success(__("Event $oldEvent->id has been saved."));
+                    $this->Flash->success(__("Event '$event->title' has been saved."));
                     continue;
+                } else {
+                    $this->Flash->error(__("The event '$event->title' (#$event->id) could not be saved."));
                 }
-                $this->Flash->error(__("Event $oldEvent->id could not be saved."));
+            }
+            $series = $this->Events->EventSeries->get($seriesId);
+            $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
+            $series->title = $this->request->data['event_series']['title'];
+            if ($this->Events->EventSeries->save($series)) {
+                $this->Flash->success(__("The event series '$series->title' was saved."));
+            } else {
+                $this->Flash->error(__("The event series '$series->title' was not saved."));
             }
         }
         $this->Flash->error('Warning: all events in this series will be overwritten.');

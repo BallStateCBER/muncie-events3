@@ -126,11 +126,12 @@ class EventSeriesControllerTest extends IntegrationTestCase
     }
 
     /**
-     * test deleting an event series
+     * test editing an event series
+     * using the edit series form from events controller
      *
      * @return void
      */
-    public function testDeletingSeriesWhenLoggedIn()
+    public function testEditingEventSeriesFromEventsController()
     {
         $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
@@ -139,10 +140,53 @@ class EventSeriesControllerTest extends IntegrationTestCase
 
         $this->session(['Auth.User.id' => 74]);
 
+        $this->get("/event/editseries/$series->id");
+
+        $this->assertResponseOk();
+
+        $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
+        $dates = implode(',', $dates);
+
+        $series = [
+            'title' => 'Placeholder Event Series',
+            'category_id' => 13,
+            'date' => $dates,
+            'event_series' => [
+                'title' => 'Placeholder Series'
+            ],
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'House of Placeholder',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly'
+        ];
+
+        $this->post("/event/editseries/$series->id", $series);
+        $this->assertResponseSuccess();
+    }
+
+    /**
+     * test deleting an event series
+     *
+     * @return void
+     */
+    public function testDeletingSeriesWhenLoggedIn()
+    {
+        $this->EventSeries = TableRegistry::get('EventSeries');
+        $series = $this->EventSeries->find()
+            ->where(['title' => 'Placeholder Series'])
+            ->first();
+
+        $this->session(['Auth.User.id' => 74]);
+
         $this->get("/event-series/edit/$series->id");
 
         $delete = [
-            'title' => 'Placeholder Event Series',
+            'title' => 'Placeholder Series',
             'delete' => 1
         ];
 
@@ -150,10 +194,10 @@ class EventSeriesControllerTest extends IntegrationTestCase
 
         $this->Events = TableRegistry::get('Events');
         $oldEvent = $this->Events->find()
-            ->where(['title' => 'Placeholder Event Series'])
+            ->where(['title' => 'Placeholder Series'])
             ->first();
         $oldSeries = $this->EventSeries->find()
-            ->where(['title' => 'Placeholder Event Series'])
+            ->where(['title' => 'Placeholder Series'])
             ->first();
 
         if (!$oldEvent & !$oldSeries) {
