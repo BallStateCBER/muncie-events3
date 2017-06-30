@@ -61,8 +61,9 @@
             '<a href="http://www.digitalmagicpro.com/jPicker/">jPicker</a>' => 'Color picker',
             '<a href="http://recaptcha.net/">reCAPTCHA</a>' => 'Spam defense',
             '<a href="http://google.com/analytics">Google Analytics</a>' => 'Traffic analysis',
-            '<a href="http://www.eclipse.org/">Eclipse</a>' => 'IDE of choice',
-            '<a href="http://getfirebug.com/">Firebug</a>' => 'Testing'
+            '<a href="http://www.jetbrains.com/phpstorm/">PhpStorm</a>' => 'IDE of choice',
+            '<a href="http://www.atom.io">Atom</a>' => 'Other IDE of choice',
+            '<a href="http://travis-ci.org">Travis CI</a>' => 'Testing'
         ]
     ];
 ?>
