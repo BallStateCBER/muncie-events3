@@ -24,11 +24,17 @@ class EventSeriesControllerTest extends IntegrationTestCase
         $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
         $dates = implode(',', $dates);
 
+        $rightNow = [
+            'hour' => date('h'),
+            'minute' => date('i'),
+            'meridian' => date('a')
+        ];
+
         $series = [
             'title' => 'Placeholder Event Series',
             'category_id' => 13,
             'date' => $dates,
-            'time_start' => date('Y-m-d'),
+            'time_start' => $rightNow,
             'time_end' => strtotime('+1 hour'),
             'location' => 'Mr. Placeholder\'s Place',
             'location_details' => 'Room 6',
@@ -147,14 +153,20 @@ class EventSeriesControllerTest extends IntegrationTestCase
         $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
         $dates = implode(',', $dates);
 
-        $series = [
+        $rightNow = [
+            'hour' => date('h'),
+            'minute' => date('i'),
+            'meridian' => date('a')
+        ];
+
+        $newSeries = [
             'title' => 'Placeholder Event Series',
             'category_id' => 13,
             'date' => $dates,
             'event_series' => [
                 'title' => 'Placeholder Series'
             ],
-            'time_start' => date('Y-m-d'),
+            'time_start' => $rightNow,
             'time_end' => strtotime('+1 hour'),
             'location' => 'House of Placeholder',
             'location_details' => 'Room 6',
@@ -165,7 +177,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
             'source' => 'Placeholder Digest Tri-Weekly'
         ];
 
-        $this->post("/event/editseries/$series->id", $series);
+        $this->post("/event/editseries/$series->id", $newSeries);
         $this->assertResponseSuccess();
     }
 
