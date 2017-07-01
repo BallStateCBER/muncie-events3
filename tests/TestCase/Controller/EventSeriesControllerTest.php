@@ -132,6 +132,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
     public function testEditingEventSeriesFromEventsController()
     {
         $this->EventSeries = TableRegistry::get('EventSeries');
+        $this->Events = TableRegistry::get('Events');
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Event Series'])
             ->first();
@@ -142,7 +143,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
 
         $this->assertResponseOk();
 
-        $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
+        $dates = [date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
         $dates = implode(',', $dates);
 
         $rightNow = [
@@ -171,6 +172,14 @@ class EventSeriesControllerTest extends IntegrationTestCase
 
         $this->post("/event/editseries/$series->id", $newSeries);
         $this->assertResponseSuccess();
+
+        $count = $this->Events->find()
+            ->where(['series_id' => $series->id])
+            ->count();
+
+        if ($count == 2) {
+            $this->assertResponseSuccess();
+        }
     }
 
     /**
