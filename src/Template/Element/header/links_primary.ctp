@@ -14,6 +14,21 @@
                 <?php
                 $dayLinks = [];
                     foreach ($headerVars['populatedDates'] as $date) {
+                        $calendarDate = $date[2] . '-' . $date[3] . '-' . $date[4];
+                        if ($date[4] . '-' . $date[2] . '-' . $date[3] == date('Y-m-d')) {
+                            $dayLinks[] = $this->Html->link('Today', [
+                                'controller' => 'events',
+                                'action' => 'today'
+                            ]);
+                            continue;
+                        }
+                        if ($date[4] . '-' . $date[2] . '-' . $date[3] == date('Y-m-d', strtotime('Tomorrow'))) {
+                            $dayLinks[] = $this->Html->link('Tomorrow', [
+                                'controller' => 'events',
+                                'action' => 'tomorrow'
+                            ]);
+                            continue;
+                        }
                         $dayLinks[] = $this->Html->link($date[0].', '.$date[1].' '.$date[3], [
                             'controller' => 'events',
                             'action' => 'day',
@@ -47,14 +62,5 @@
     </li>
 </ul>
 <?php
-    if (isset($header_vars['populatedDates'])) {
-        foreach ($header_vars['populatedDates'] as $month => $days) {
-            $quoted_days = [];
-            foreach ($days as $day) {
-                $quoted_days[] = "'$day'";
-            }
-            $this->Js->buffer("muncieEvents.populatedDates['$month'] = [" . implode(',', $quoted_days) . "];");
-        }
-    }
     $this->Js->buffer("setupHeaderNav();");
 ?>
