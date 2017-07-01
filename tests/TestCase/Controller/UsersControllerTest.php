@@ -77,7 +77,7 @@ class UsersControllerTest extends IntegrationTestCase
             'email' => 'mal@blum.com'
         ];
 
-        $this->post('/register', $data);
+#        $this->post('/register', $data);
 
 #        $this->assertResponseContains('There is already an account registered with this email address.');
 
