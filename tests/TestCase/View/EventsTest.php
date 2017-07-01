@@ -19,7 +19,17 @@ class EventsViewTest extends IntegrationTestCase
     {
         $this->get("/events/day/" . date('m') . "/" . date("d") . "/" . date("Y"));
         $this->assertResponseOk();
-        $this->assertResponseContains('Events on ' . date("F d, Y"));
+
+        $tenDays = range(1, 9);
+        if (!in_array(date('d'), $tenDays)) {
+            $this->assertResponseContains('Events on ' . date("F d, Y"));
+            return;
+        }
+
+        $day = date("d");
+        $day = str_replace('0', '', $day);
+
+        $this->assertResponseContains('Events on ' . date("F") . ' ' . $day . ', ' . date("Y"));
     }
 
     /**
