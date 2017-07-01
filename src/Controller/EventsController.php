@@ -36,7 +36,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'category', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'view'
+            'category', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'today', 'tomorrow', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -696,6 +696,18 @@ class EventsController extends AppController
             'titleForLayout' => 'Events in '.$dateString,
             'displayedDate' => date('F, Y', $timestamp)
         ]);
+    }
+
+    public function today()
+    {
+        $this->redirect('/events/day/' . date('m') . '/' . date('d') . '/' . date('Y'));
+    }
+
+    public function tomorrow()
+    {
+        $tomorrow = date('m-d-Y', strtotime('+1 day'));
+        $tomorrow = explode('-', $tomorrow);
+        $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
 
     private function uponFormSubmissionPr()

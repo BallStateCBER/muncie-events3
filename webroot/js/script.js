@@ -46,23 +46,14 @@ function setupHeaderNav() {
                 month = '0'+month;
             }
             var year = date.getFullYear().toString();
-            var month_year = month+'-'+year;
 
-            if (muncieEvents.populatedDates.hasOwnProperty(month_year)) {
-                var selectable = muncieEvents.populatedDates[month_year].indexOf(day) != -1;
-                var class_name = selectable ? 'has_events' : 'no_events';
-                var tooltip = selectable ? null : 'No events';
-            } else {
-                var selectable = true;
-                var class_name = 'has_events';
-                var tooltip = month+'-'+day+'-'+year;
-            }
+            var full_date = month+'-'+day+'-'+year;
+            var selectable = true;
+            var class_name = selectable ? 'has_events' : 'no_events';
+            var tooltip = selectable ? full_date : 'No events.';
 
             return [selectable, class_name, tooltip];
         },
-        onChangeMonthYear: function(year, month) {
-
-        }
     }).change(function(event) {
         var date = $(this).val();
         window.location.href = '/events/day/'+date;
