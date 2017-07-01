@@ -51,15 +51,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
         $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
             ->where(['title' => $series['title']])
-            ->first();
-
-        if ($series->id) {
-            $this->assertResponseSuccess();
-            return;
-        }
-        if (!$series->id) {
-            $this->assertResponseError();
-        }
+            ->firstOrFail();
     }
 
     /**
@@ -72,7 +64,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
         $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Event Series'])
-            ->first();
+            ->firstOrFail();
 
         $this->Events = TableRegistry::get('Events');
         $events = $this->Events->find()
