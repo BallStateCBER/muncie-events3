@@ -77,7 +77,7 @@ class UsersControllerTest extends IntegrationTestCase
             'email' => 'mal@blum.com'
         ];
 
-#        $this->post('/register', $data);
+        $this->post('/register', $data);
 
 #        $this->assertResponseContains('There is already an account registered with this email address.');
 
@@ -89,34 +89,7 @@ class UsersControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testLoggingInProperly()
-    {
-        $this->enableCsrfToken();
-        $this->enableSecurityToken();
-
-        $this->get('/login');
-        $this->assertResponseOk();
-
-        $data = [
-            'email' => 'placeholder@gmail.com',
-            'password' => 'Placeholder!'
-        ];
-
-        $this->post('/login', $data);
-
-        $this->Users = TableRegistry::get('Users');
-        $id = $this->Users->getIdFromEmail('placeholder@gmail.com');
-
-        $this->assertSession($id, 'Auth.User.id');
-    }
-
-    /**
-     * Test login method
-     * for incorrect logins
-     *
-     * @return void
-     */
-    public function testLoggingInImproperly()
+    public function testLoggingIn()
     {
         $this->enableCsrfToken();
         $this->enableSecurityToken();
@@ -132,6 +105,21 @@ class UsersControllerTest extends IntegrationTestCase
         $this->post('/login', $data);
 
         $this->assertResponseContains('We could not log you in.');
+
+        $this->get('/login');
+        $this->assertResponseOk();
+
+        $data = [
+            'email' => 'placeholder@gmail.com',
+            'password' => 'Placeholder!'
+        ];
+
+        $this->post('/login', $data);
+
+        $this->Users = TableRegistry::get('Users');
+        $id = $this->Users->getIdFromEmail('placeholder@gmail.com');
+
+        $this->assertSession($id, 'Auth.User.id');
     }
 
     /**
@@ -191,7 +179,7 @@ class UsersControllerTest extends IntegrationTestCase
             if ($user->photo == $newFilename) {
                 return $this->assertResponseOk();
             }
-            
+
             // file upload unit testing not done yet!
             $this->markTestIncomplete();
         }
