@@ -464,10 +464,10 @@ class EventsController extends AppController
             ])
             ->toArray();
 
-        $dates = [];
+        $oldDates = [];
         foreach ($events as $event) {
             $dateString = date_format($event->date, 'Y-m-d');
-            $dates[] = $dateString;
+            $oldDates[] = $dateString;
         }
 
         // Pick the first event in the series
@@ -476,13 +476,25 @@ class EventsController extends AppController
             'contain' => ['EventSeries']
         ]);
 
-        $event->date = $dates;
+        $event->date = $oldDates;
         $this->prepareEventFormPr($event);
         $this->prepareDatePickerPr($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
             $newDates = explode(',', $this->request->data['date']);
+            foreach ($oldDates as $date) {
+                $oldDate = date('m/d/Y', strtotime($date));
+                if (!in_array($oldDate, $newDates)) {
+                    $deleteEvent = $this->Events->find()
+                        ->where(['date' => $date])
+                        ->andWhere(['series_id' => $seriesId])
+                        ->first();
+                    if ($this->Events->delete($deleteEvent)) {
+                        $this->Flash->success(__("Event '$deleteEvent->title' has been deleted."));
+                    }
+                }
+            }
             foreach ($newDates as $date) {
                 $date = date('Y-m-d', strtotime($date));
                 $oldEvent = $this->Events->find()
