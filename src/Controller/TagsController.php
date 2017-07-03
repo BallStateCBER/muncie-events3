@@ -521,6 +521,7 @@ class TagsController extends AppController
      */
     public function merge($removedTagName = '', $retainedTagName = '')
     {
+        $this->loadModel('EventsTags');
         $this->viewBuilder()->setLayout('ajax');
         $removedTagName = trim($removedTagName);
         $retainedTagName = trim($retainedTagName);
@@ -532,8 +533,8 @@ class TagsController extends AppController
                 'class' => 'error'
             ]);
         } else {
-            $removed_tag_id = $this->Tags->getIdFromName($removedTagName);
-            if (!$removed_tag_id) {
+            $removedTagId = $this->Tags->getIdFromName($removedTagName);
+            if (!$removedTagId) {
                 return $this->renderMessage([
                     'message' => "The tag \"$removedTagName\" could not be found.",
                     'class' => 'error'
@@ -547,15 +548,15 @@ class TagsController extends AppController
             ]);
         }
         if ($retainedTagName != '') {
-            $retained_tag_id = $this->Tags->getIdFromName($retainedTagName);
-            if (!$retained_tag_id) {
+            $retainedTagId = $this->Tags->getIdFromName($retainedTagName);
+            if (!$retainedTagId) {
                 return $this->renderMessage([
                     'message' => "The tag \"$retainedTagName\" could not be found.",
                     'class' => 'error'
                 ]);
             }
         }
-        if ($removed_tag_id == $retained_tag_id) {
+        if ($removedTagId == $retainedTagId) {
             return $this->renderMessage([
                 'message' => "Cannot merge \"$retainedTagName\" into itself.",
                 'class' => 'error'
@@ -566,43 +567,49 @@ class TagsController extends AppController
         $class = 'success';
 
         // Switch event associations
-        $associated_count = $this->Tags->EventsTag->find('all', [
-            'conditions' => ['tag_id' => $removed_tag_id]
-        ])->count();
-        if ($associated_count) {
-            $result = $this->Tags->query("
-                UPDATE events_tags
-                SET tag_id = $retained_tag_id
-                WHERE tag_id = $removed_tag_id
-            ");
-            $message .= "Changed association with \"$removedTagName\" into \"$retainedTagName\" in $associated_count event".($associated_count == 1 ? '' : 's').'.<br />';
+        $associatedCount = $this->EventsTags->find()
+            ->where(['tag_id' => $removedTagId])
+            ->count();
+        if ($associatedCount) {
+            $results = $this->EventsTags->find()
+                ->where(['tag_id'=> $removedTagId])
+                ->toArray();
+
+            foreach ($results as $result) {
+                $result->tag_id = $retainedTagId;
+                $this->EventsTags->save($result);
+            }
+
+            $message .= "Changed association with \"$removedTagName\" into \"$retainedTagName\" in $associatedCount event".($associatedCount == 1 ? '' : 's').'.<br />';
         } else {
             $message .= 'No associated events to edit.<br />';
         }
 
         // Move child tags
         $children = $this->Tags->find('list', [
-            'conditions' => ['parent_id' => $removed_tag_id]
+            'conditions' => ['parent_id' => $removedTagId]
         ]);
         if (empty($children)) {
             $message .= 'No child-tags to move.<br />';
         }
         if (!empty($children)) {
-            foreach ($children as $child_id => $child_name) {
-                $this->Tags->id = $child_id;
-                if ($this->Tags->saveField('parent_id', $retained_tag_id)) {
-                    $message .= "Moved \"$child_name\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
+            foreach ($children as $childId => $childName) {
+                $childTag = $this->Tags->get($childId);
+                $childTag->parent_id = $retainedTagId;
+                if ($this->Tags->save($childTag)) {
+                    $message .= "Moved \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
                 } else {
                     $class = 'error';
-                    $message .= "Error moving \"$child_name\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
+                    $message .= "Error moving \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
                 }
             }
             // $message .= "Moved ".count($children)." child tag".(count($children) == 1 ? '' : 's')." of \"$removedTagName\" under tag \"$retainedTagName\".<br />";
         }
 
+        $removedTag = $this->Tags->get($removedTagId);
         // Delete tag
         if ($class == 'success') {
-            if ($this->Tags->delete($removed_tag_id)) {
+            if ($this->Tags->delete($removedTag)) {
                 $message .= "Removed \"$removedTagName\".";
             } else {
                 $message .= "Error trying to delete \"$removedTagName\" from the database.";
@@ -613,10 +620,8 @@ class TagsController extends AppController
             $message .= "\"$removedTagName\" not removed.";
         }
 
-        return $this->renderMessage([
-            'message' => $message,
-            'class' => $class
-        ]);
+        $this->Flash->$class($message);
+        return $this->redirect('/tags/manage');
     }
 
     /**
