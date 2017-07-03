@@ -117,6 +117,43 @@ class TagsControllerTest extends IntegrationTestCase
     }
 
     /**
+     * Test merging tags
+     *
+     * @return void
+     */
+    public function testMergingTags()
+    {
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->Tags = TableRegistry::get('Tags');
+        $this->EventsTags = TableRegistry::get('EventsTags');
+
+        $oldTag = $this->Tags->find()
+            ->where(['name' => 'soothsayer lies'])
+            ->first();
+        $newTag = $this->Tags->find()
+            ->where(['name' => 'we the heathens'])
+            ->first();
+
+        $decoyJoin = $this->EventsTags->newEntity();
+        $decoyJoin->event_id = 6;
+        $decoyJoin->tag_id = $oldTag->id;
+        if ($this->EventsTags->save($decoyJoin)) {
+            $this->post("/tags/merge/$oldTag->name/$newTag->name");
+        };
+
+        $newJoin = $this->EventsTags->find()
+            ->where(['event_id' => 6])
+            ->andWhere(['tag_id' => $newTag->id])
+            ->firstOrFail();
+
+        if (isset($newJoin)) {
+            $this->assertResponseSuccess();
+            $this->EventsTags->delete($newJoin);
+        }
+    }
+
+    /**
      * Test deleting tags
      *
      * @return void
