@@ -49,10 +49,6 @@ class TagsController extends AppController
         ]);
     }
 
-    public function view()
-    {
-    }
-
     public function index($direction = 'future', $category = 'all')
     {
         if ($direction != 'future' && $direction != 'past') {
@@ -91,7 +87,7 @@ class TagsController extends AppController
         ]);
     }
 
-    public function auto_complete($onlyListed, $onlySelectable)
+    public function autoComplete($onlyListed, $onlySelectable)
     {
         $stringToComplete = htmlspecialchars_decode(filter_input(INPUT_GET, 'term'));
         $limit = 10;
@@ -112,18 +108,18 @@ class TagsController extends AppController
             if (count($tags) == $limit) {
                 break;
             }
-            $conditions = ['Tag.name LIKE' => $like];
+            $conditions = ['name LIKE' => $like];
             if ($onlyListed) {
-                $conditions['Tag.listed'] = 1;
+                $conditions['listed'] = 1;
             }
             if ($onlySelectable) {
-                $conditions['Tag.selectable'] = 1;
+                $conditions['selectable'] = 1;
             }
             if (!empty($tags)) {
-                $conditions['Tag.id NOT'] = array_keys($tags);
+                $conditions['id NOT'] = array_keys($tags);
             }
             $results = $this->Tags->find('all', [
-                'fields' => ['Tag.id', 'Tag.name'],
+                'fields' => ['id', 'name'],
                 'conditions' => $conditions,
                 'contain' => false,
                 'limit' => $limit - count($tags)
@@ -230,10 +226,17 @@ class TagsController extends AppController
         $parent = isset($node) ? intval($node) : 0;
 
         // find all the nodes underneath the parent node defined above
-        $nodes = $this->Tags
-            ->find('children', ['for' => $parent])
-            ->find('threaded')
-            ->toArray();
+        if ($parent != 0) {
+            $nodes = $this->Tags
+                ->find('children', ['for' => $parent])
+                ->find('threaded')
+                ->toArray();
+        }
+        if ($parent == 0) {
+            $nodes = $this->Tags
+                ->find('threaded')
+                ->toArray();
+        }
 
         $rearrangedNodes = ['branches' => [], 'leaves' => []];
         foreach ($nodes as $key => &$node) {
@@ -275,23 +278,22 @@ class TagsController extends AppController
 
         // send the nodes to our view
         $this->set(compact('nodes', 'showNoEvents'));
-
-        $this->viewBuilder()->setLayout('blank');
     }
 
     public function reorder()
     {
-
         // retrieve the node instructions from javascript
         // delta is the difference in position (1 = next node, -1 = previous node)
 
         $node = intval(filter_input(INPUT_POST, 'node'));
         $delta = intval(filter_input(INPUT_POST, 'delta'));
 
+        $tag = $this->Tags->get($node);
+
         if ($delta > 0) {
-            $this->Tags->moveDown($node, abs($delta));
+            $this->Tags->moveDown($tag, abs($delta));
         } elseif ($delta < 0) {
-            $this->Tags->moveUp($node, abs($delta));
+            $this->Tags->moveUp($tag, abs($delta));
         }
 
         // send success response
@@ -302,24 +304,27 @@ class TagsController extends AppController
     {
         $node = intval(filter_input(INPUT_POST, 'node'));
         $parent = (filter_input(INPUT_POST, 'parent') == 'root') ? 0 : intval(filter_input(INPUT_POST, 'parent'));
-        $in_unlisted_before = $this->Tags->isUnderUnlistedGroup($node);
-        $in_unlisted_after = (filter_input(INPUT_POST, 'parent') == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent);
+        $inUnlistedBefore = $this->Tags->isUnderUnlistedGroup($node);
+        $inUnlistedAfter = (filter_input(INPUT_POST, 'parent') == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent);
         $this->Tags->id = $node;
 
         // Moving out of the 'Unlisted' group
-        if ($in_unlisted_before && !$in_unlisted_after) {
+        if ($inUnlistedBefore && !$inUnlistedAfter) {
             //echo 'Making listed.';
-            $this->Tags->saveField('listed', 1);
+            $this->Tags->listed = 1;
         }
 
         // Moving into the 'Unlisted' group
-        if (!$in_unlisted_before && $in_unlisted_after) {
+        if (!$inUnlistedBefore && $inUnlistedAfter) {
             //echo 'Making unlisted.';
-            $this->Tags->saveField('listed', 0);
+            $this->Tags->listed = 0;
         }
 
         // Move tag
-        $this->Tags->saveField('parent_id', $parent);
+        $this->Tags->parent_id = $parent;
+
+        $parentTag = $this->Tags->get($parent);
+        $childTag = $this->Tags->get($node);
 
         // If position == 0, then we move it straight to the top
         // otherwise we calculate the distance to move ($delta).
@@ -327,13 +332,13 @@ class TagsController extends AppController
         // in the tree behaviour (https://trac.cakephp.org/ticket/4037)
         $position = intval(filter_input(INPUT_POST, 'position'));
         if ($position == 0) {
-            $this->Tags->moveUp($node, true);
+            $this->Tags->moveUp($childTag, true);
         }
         if ($position != 0) {
-            $count = $this->Tags->childCount($parent, true);
+            $count = $this->Tags->childCount($parentTag, true);
             $delta = $count-$position-1;
             if ($delta > 0) {
-                $this->Tags->moveUp($node, $delta);
+                $this->Tags->moveUp($childTag, $delta);
             }
         }
 
@@ -772,18 +777,9 @@ class TagsController extends AppController
         }
 
         // Determine parent_id
-        $parentName = $this->request->data['parent_name'];
-        if ($parentName == '') {
-            $rootParentId = null;
-        } else {
-            $rootParentId = $this->Tags->getIdFromName($parentName);
-            if (!$rootParentId) {
-                return $this->renderMessage([
-                    'title' => 'Error',
-                    'message' => "Parent tag \"$parentName\" not found",
-                    'class' => 'error'
-                ]);
-            }
+        $rootParentId = $this->request->data['parent_name'] == '' ? 1012 : $this->Tags->getIdFromName($this->request->data['parent_name']);
+        if (!$rootParentId) {
+            return $this->Flash->error("Parent tag \"" . $this->request->data['parent_name'] . "\" not found");
         }
 
         $class = 'success';
@@ -826,20 +822,17 @@ class TagsController extends AppController
 
             // Add tag to database
             $newTag = $this->Tags->newEntity();
-        /*    $saveResult = $this->Tags->save(['Tag' => [
-                'name' => $name,
-                'parent_id' => $parentId,
-                'listed' => 1,
-                'selectable' => 1
-            ]]); */
             $newTag->name = $name;
             $newTag->user_id = $this->request->session()->read('Auth.User.id');
+            $newTag->parent_id = $parentId;
+            $newTag->listed = 0;
+            $newTag->selectable = 1;
             if ($this->Tags->save($newTag)) {
-                $message .= "Created tag #{$newTag->id}: $name";
+                $this->Flash->success("Created tag #{$newTag->id}: $name");
                 $parents[$level + 1] = $newTag->id;
             } else {
                 $class = 'error';
-                $message .= "Error creating the tag \"$name\"";
+                $this->Flash->error("Error creating the tag \"$name\"");
             }
         }
 

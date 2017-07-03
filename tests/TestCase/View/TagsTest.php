@@ -30,4 +30,21 @@ class TagsViewTest extends IntegrationTestCase
             $this->assertResponseContains($htmlTag);
         }
     }
+
+    /**
+     * Test tag admin page
+     *
+     * @return void
+     */
+    public function testTagAdminPrivileges()
+    {
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/tags/getnodes');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Delete (1011)');
+        $this->assertResponseContains('Unlisted (1012)');
+    }
 }

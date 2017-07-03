@@ -266,4 +266,53 @@ class TagsTable extends Table
         }
         return $result;
     }
+
+    /**
+     * Returns the ID of the 'unlisted' tag group that new custom tags automatically go into.
+     * @return int
+     */
+    public function getUnlistedGroupId()
+    {
+        return 1012;
+    }
+
+    /**
+     * Returns the ID of the 'delete' tag group for tags to be deleted.
+     * @return int
+     */
+    public function getDeleteGroupId()
+    {
+        return 1011;
+    }
+
+    public function isUnderUnlistedGroup($id = null)
+    {
+        if (!$id) {
+            if (!$this->id) {
+                throw new InternalErrorException('Required tag ID not supplied to Tag::isUnderUnlistedGroup().');
+            }
+            $id = $this->id;
+        }
+        $unlistedGroupId = $this->getUnlistedGroupId();
+
+        // Assume that after 100 levels, a circular path must have been found and exit
+        for ($n = 0; $n <= 100; $n++) {
+            $tag = $this->get($id);
+
+            // Child of root
+            if (empty($tag->parent_id)) {
+                return false;
+            }
+
+            // Child of 'unlisted'
+            if ($tag->parent_id == $unlistedGroupId) {
+                return true;
+            }
+
+            // Go up a level
+            $id = $tag->parent_id;
+        }
+
+        return false;
+    }
 }
