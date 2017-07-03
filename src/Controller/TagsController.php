@@ -118,12 +118,10 @@ class TagsController extends AppController
             if (!empty($tags)) {
                 $conditions['id NOT'] = array_keys($tags);
             }
-            $results = $this->Tags->find('all', [
-                'fields' => ['id', 'name'],
-                'conditions' => $conditions,
-                'contain' => false,
-                'limit' => $limit - count($tags)
-            ]);
+            $results = $this->Tags->find()
+                ->select(['id', 'name'])
+                ->where($conditions)
+                ->limit($limit-count($tags));
             foreach ($results as $result) {
                 if (!array_key_exists($result->id, $tags)) {
                     $tags[$result->id] = [
@@ -162,22 +160,20 @@ class TagsController extends AppController
         // Take all unlisted tags without parents and place them under the 'unlisted' group
         $unlistedGroupId = $this->Tags->getUnlistedGroupId();
         $deleteGroupId = $this->Tags->getDeleteGroupId();
-        $results = $this->Tags->find('all', [
-            'conditions' => [
+        $results = $this->Tags->find()
+            ->select('id')
+            ->where([
                 'OR' => [
-                    'Tag.parent_id' => 0,
-                    'Tag.parent_id' => null
+                    'parent_id' => 0,
+                    'parent_id' => null
                 ],
-                'Tag.id NOT' => [
+                'id IS NOT' => [
                     $unlistedGroupId,
                     $deleteGroupId
                 ],
-                'Tag.listed' => 0
-            ],
-            'fields' => ['Tag.id'],
-            'contain' => false,
-            'limit' => 20
-        ]);
+                'listed' => 0
+            ])
+            ->limit(20);
         foreach ($results as $result) {
             $this->Tags->id = $result->id;
             $this->Tags->saveField('parent_id', $unlistedGroupId);
@@ -191,8 +187,8 @@ class TagsController extends AppController
         $minutes = round($loadingTime / 60, 2);
 
         $message = 'Regrouped '.count($results)." unlisted tags (took $minutes minutes).";
-        $more = $this->Tags->find('all', [
-            'conditions' => [
+        $more = $this->Tags->find()
+            ->where([
                 'OR' => [
                     'Tag.parent_id' => 0,
                     'Tag.parent_id' => null
@@ -202,8 +198,7 @@ class TagsController extends AppController
                     $deleteGroupId
                 ],
                 'Tag.listed' => 0
-            ]
-        ]);
+            ]);
         if ($more) {
             $message .= '<br />There\'s '.$more.' more unlisted tag'.($more == 1 ? '' : 's').' left to move. Please run this function again.';
         }
@@ -749,7 +744,6 @@ class TagsController extends AppController
             } else {
                 $class = 'error';
                 $message .= "Error with nested tag structure. Looks like there's an extra indent in line $lineNum: \"$name\".<br />";
-                ;
             }
 
             // Strip leading/trailing whitespace and hyphens used for indenting
@@ -759,9 +753,9 @@ class TagsController extends AppController
             if (!$name) {
                 continue;
             }
-            $exists = $this->Tags->find('all', [
-                'conditions' => ['Tags.name' => $name]
-            ])->count();
+            $exists = $this->Tags->find()
+                ->where(['name' => $name])
+                ->count();
             if ($exists) {
                 $class = 'error';
                 $message .= "Cannot create the tag \"$name\" because a tag with that name already exists.<br />";
