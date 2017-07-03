@@ -631,7 +631,7 @@ class TagsController extends AppController
     /**
      * Removes all tags in the 'delete' group
      */
-    public function empty_delete_group()
+    public function emptyDeleteGroup()
     {
         $deleteGroupId = $this->Tags->getDeleteGroupId();
         $children = $this->Tags->children($deleteGroupId, true, ['id']);

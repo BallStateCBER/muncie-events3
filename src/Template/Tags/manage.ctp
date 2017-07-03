@@ -65,7 +65,7 @@ Vegetables
             Warning: If a tag is removed, all child-tags will also be removed. This cannot be undone.
         </p>
         <?= $this->Html->link('Remove all tags in the "Delete" group', [
-            'controller' => 'tags', 'action' => 'empty_delete_group'
+            'controller' => 'tags', 'action' => 'emptyDeleteGroup'
         ]); ?>
         <p>
             Or start typing a tag name:
@@ -130,7 +130,7 @@ Vegetables
         </p>
         <ul>
             <li>
-                <?= $this->Html->link('Regroup unlisted tags', ['controller' => 'tags', 'action' => 'group_unlisted']); ?>
+                <?= $this->Html->link('Regroup unlisted tags', ['controller' => 'tags', 'action' => 'groupUnlisted']); ?>
                 <br />Moves unlisted root-level tags into the 'Unlisted' group
             </li>
             <li>
@@ -146,7 +146,7 @@ Vegetables
                 <br />And merge associations into the retained tags
             </li>
             <li>
-                <?= $this->Html->link('Remove broken associations', ['controller' => 'tags', 'action' => 'remove_broken_associations']); ?>
+                <?= $this->Html->link('Remove broken associations', ['controller' => 'tags', 'action' => 'removeBrokenAssociations']); ?>
                 <br />Associations in the events_tags table involving either nonexistent tags or events.
             </li>
         </ul>
