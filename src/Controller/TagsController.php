@@ -297,7 +297,9 @@ class TagsController extends AppController
         }
 
         // send success response
-        return 1;
+        $this->response->statusCode(200);
+        $this->viewBuilder()->setLayout('ajax');
+        $this->autorender = false;
     }
 
     public function reparent()
@@ -343,7 +345,9 @@ class TagsController extends AppController
         }
 
         // send success response
-        return 1;
+        $this->response->statusCode(200);
+        $this->viewBuilder()->setLayout('ajax');
+        $this->autorender = false;
     }
 
     /**
@@ -682,47 +686,46 @@ class TagsController extends AppController
             $this->viewBuilder()->setLayout('ajax');
         }
         if ($this->request->is('put') || $this->request->is('post')) {
-            $this->request->data['Tag']['name'] = strtolower(trim($this->request->data['Tag']['name']));
-            $this->request->data['Tag']['parent_id'] = trim($this->request->data['Tag']['parent_id']);
-            if (empty($this->request->data['Tag']['parent_id'])) {
-                $this->request->data['Tag']['parent_id'] = null;
+            $this->request->data['name'] = strtolower(trim($this->request->data['name']));
+            $this->request->data['parent_id'] = trim($this->request->data['parent_id']);
+            if (empty($this->request->data['parent_id'])) {
+                $this->request->data['parent_id'] = null;
             }
-            $duplicates = $this->Tags->find('list', [
-                'conditions' => [
-                    'Tag.name' => $this->request->data['Tag']['name'],
-                    'Tag.id NOT' => $this->request->data['Tag']['id']
-                ]
-            ]);
+            $duplicates = $this->Tags->find()
+                ->where(['name' => $this->request->data['name']])
+                ->toArray();
+            $oldTags = [];
+            foreach ($duplicates as $duplicate) {
+                $oldTags[] = $duplicate;
+            }
             if (!empty($duplicates)) {
                 $message = 'That tag\'s name cannot be changed to "';
-                $message .= $this->request->data['Tag']['name'];
+                $message .= $this->request->data['name'];
                 $message .= '" because another tag (';
-                $message .= implode(', ', array_keys($duplicates));
+                $message .= $oldTags;
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
-                return $this->renderMessage([
-                    'message' => $message,
-                    'class' => 'error'
-                ]);
+                return $this->Flash->error($message);
             }
 
             // Set flag to recover tag tree if necessary
-            $this->Tags->id = $this->request->data['Tag']['id'];
-            $previousParentId = $this->Tags->field('parent_id');
-            $newParentId = $this->request->data['Tag']['parent_id'];
+            $tag = $this->Tags->find()
+                ->where(['id' => $this->request->data['id']])
+                ->first();
+            $previousParentId = $tag->parent_id;
+            $newParentId = $this->request->data['parent_id'];
             $recoverTagTree = ($previousParentId != $newParentId);
 
-            if ($this->Tags->save($this->request->data)) {
+            $tag = $this->Tags->patchEntity($tag, $this->request->getData());
+
+            if ($this->Tags->save($tag)) {
                 if ($recoverTagTree) {
                     $this->Tags->recover();
                 }
                 $message = 'Tag successfully edited.';
-                if ($this->request->data['Tag']['listed'] && $this->Tags->isUnderUnlistedGroup()) {
+                if ($this->request->data['listed'] && $tag->parent_id == 1012) {
                     $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
                 }
-                return $this->renderMessage([
-                    'message' => $message,
-                    'class' => 'success'
-                ]);
+                return $this->Flash->success($message);
             }
             return $this->renderMessage([
                 'message' => 'There was an error editing that tag.',
@@ -736,10 +739,9 @@ class TagsController extends AppController
                     'class' => 'error'
                 ]);
             }
-            $result = $this->Tags->find('all', [
-                'conditions' => ['Tag.name' => $tagName],
-                'contain' => false
-            ]);
+            $result = $this->Tags->find()
+                ->where(['name' => $tagName])
+                ->first();
             if (empty($result)) {
                 return $this->renderMessage([
                     'title' => 'Tag Not Found',
@@ -758,7 +760,7 @@ class TagsController extends AppController
                     'class' => 'error'
                 ]);
             }
-            $this->request->data = $result[0];
+            $this->request->data = $result;
         }
     }
 
