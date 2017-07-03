@@ -94,7 +94,7 @@ class TagsController extends AppController
 
         // Tag.name will be compared via LIKE to each of these,
         // in order, until $limit tags are found.
-        $like_conditions = [
+        $likeConditions = [
             $stringToComplete,
             $stringToComplete.' %',
             $stringToComplete.'%',
@@ -104,7 +104,7 @@ class TagsController extends AppController
 
         // Collect tags up to $limit
         $tags = [];
-        foreach ($like_conditions as $like) {
+        foreach ($likeConditions as $like) {
             if (count($tags) == $limit) {
                 break;
             }
@@ -140,19 +140,15 @@ class TagsController extends AppController
 
     public function recover()
     {
-        list($start_usec, $start_sec) = explode(" ", microtime());
+        list($startUsec, $startSec) = explode(" ", microtime());
         set_time_limit(3600);
         $this->Tags->recover();
-        list($end_usec, $end_sec) = explode(" ", microtime());
-        $start_time = $start_usec + $start_sec;
-        $end_time = $end_usec + $end_sec;
-        $loadingTime = $end_time - $start_time;
+        list($endUsec, $endSec) = explode(" ", microtime());
+        $startTime = $startUsec + $startSec;
+        $endTime = $endUsec + $endSec;
+        $loadingTime = $endTime - $startTime;
         $minutes = round($loadingTime / 60, 2);
-        return $this->renderMessage([
-            'message' => "Done recovering tag tree (took $minutes minutes).",
-            'class' => 'success',
-            'layout' => 'ajax'
-        ]);
+        return $this->Flash->success("Done recovering tag tree (took $minutes minutes).");
     }
 
     /**
@@ -160,11 +156,11 @@ class TagsController extends AppController
      */
     public function groupUnlisted()
     {
-        list($start_usec, $start_sec) = explode(" ", microtime());
+        list($startUsec, $startSec) = explode(" ", microtime());
         set_time_limit(3600);
 
         // Take all unlisted tags without parents and place them under the 'unlisted' group
-        $unlisted_group_id = $this->Tags->getUnlistedGroupId();
+        $unlistedGroupId = $this->Tags->getUnlistedGroupId();
         $deleteGroupId = $this->Tags->getDeleteGroupId();
         $results = $this->Tags->find('all', [
             'conditions' => [
@@ -173,7 +169,7 @@ class TagsController extends AppController
                     'Tag.parent_id' => null
                 ],
                 'Tag.id NOT' => [
-                    $unlisted_group_id,
+                    $unlistedGroupId,
                     $deleteGroupId
                 ],
                 'Tag.listed' => 0
@@ -184,14 +180,14 @@ class TagsController extends AppController
         ]);
         foreach ($results as $result) {
             $this->Tags->id = $result->id;
-            $this->Tags->saveField('parent_id', $unlisted_group_id);
+            $this->Tags->saveField('parent_id', $unlistedGroupId);
             $this->Tags->moveUp($result->id, true);
         }
 
-        list($end_usec, $end_sec) = explode(" ", microtime());
-        $start_time = $start_usec + $start_sec;
-        $end_time = $end_usec + $end_sec;
-        $loadingTime = $end_time - $start_time;
+        list($endUsec, $endSec) = explode(" ", microtime());
+        $startTime = $startUsec + $startSec;
+        $endTime = $endUsec + $endSec;
+        $loadingTime = $endTime - $startTime;
         $minutes = round($loadingTime / 60, 2);
 
         $message = 'Regrouped '.count($results)." unlisted tags (took $minutes minutes).";
@@ -202,7 +198,7 @@ class TagsController extends AppController
                     'Tag.parent_id' => null
                 ],
                 'Tag.id NOT' => [
-                    $unlisted_group_id,
+                    $unlistedGroupId,
                     $deleteGroupId
                 ],
                 'Tag.listed' => 0
@@ -211,11 +207,7 @@ class TagsController extends AppController
         if ($more) {
             $message .= '<br />There\'s '.$more.' more unlisted tag'.($more == 1 ? '' : 's').' left to move. Please run this function again.';
         }
-        return $this->renderMessage([
-            'message' => $message,
-            'class' => 'success',
-            'layout' => 'ajax'
-        ]);
+        return $this->Flash->success($message);
     }
 
     public function getnodes()
@@ -410,7 +402,6 @@ class TagsController extends AppController
         if (!$tagId) {
             $message = "The tag \"$name\" does not exist (you may have already deleted it).";
             $class = 'error';
-            return;
         }
         $tag = $this->Tags->get($tagId);
         if ($tag) {
@@ -421,9 +412,7 @@ class TagsController extends AppController
                 $class = 'success';
             }
         }
-        $this->Flash->set($message, [
-            'element' => $class
-        ]);
+        return $this->Flash->$class($message);
     }
 
     /**
@@ -447,16 +436,17 @@ class TagsController extends AppController
         $skippedTags = $deletedTags = [];
         foreach ($tags as $tagId => $tagName) {
             $this->Tags->id = $tagId;
-            if ($this->Tags->childCount()) {
+            if ($this->Tags->childCount($tagId)) {
                 $skippedTags[] = $tagName;
-            } else {
-                $this->Tags->delete();
-                $deletedTags[] = $tagName;
+                continue;
             }
+            $this->Tags->delete();
+            $deletedTags[] = $tagName;
         }
         if (empty($deletedTags)) {
             $message = 'No tags found that were both unlisted and unused.';
-        } else {
+        }
+        if (!empty($deletedTags)) {
             $message = 'Deleted the following tags: <br />- ';
             $message .= implode('<br />- ', $deletedTags);
         }
@@ -464,10 +454,7 @@ class TagsController extends AppController
             $message .= '<br />&nbsp;<br />Did not delete the following tags, since they have child-tags: <br />- ';
             $message .= implode('<br />- ', $skippedTags);
         }
-
-        $this->Flash->set($message, [
-            'element' => 'success'
-        ]);
+        $this->Flash->success($message);
     }
 
     /**
@@ -481,9 +468,9 @@ class TagsController extends AppController
         foreach ($tags as $tagId => $tagName) {
             if (isset($tagsArranged[$tagName])) {
                 $tagsArranged[$tagName][] = $tagId;
-            } else {
-                $tagsArranged[$tagName] = [$tagId];
+                continue;
             }
+            $tagsArranged[$tagName] = [$tagId];
         }
 
         // Find duplicate tags
@@ -508,9 +495,7 @@ class TagsController extends AppController
             $this->Tags->recover();
         }
 
-        $this->Flash->set($message, [
-            'element' => 'success'
-        ]);
+        $this->Flash->success($message);
     }
 
     /**
@@ -523,44 +508,29 @@ class TagsController extends AppController
     {
         $this->loadModel('EventsTags');
         $this->viewBuilder()->setLayout('ajax');
+        $this->autorender = false;
         $removedTagName = trim($removedTagName);
         $retainedTagName = trim($retainedTagName);
 
         // Verify input
         if ($removedTagName == '') {
-            return $this->renderMessage([
-                'message' => 'No name provided for the tag to be removed.',
-                'class' => 'error'
-            ]);
-        } else {
-            $removedTagId = $this->Tags->getIdFromName($removedTagName);
-            if (!$removedTagId) {
-                return $this->renderMessage([
-                    'message' => "The tag \"$removedTagName\" could not be found.",
-                    'class' => 'error'
-                ]);
-            }
+            return $this->Flash->error('No name provided for the tag to be removed.');
+        }
+        $removedTagId = $this->Tags->getIdFromName($removedTagName);
+        if (!$removedTagId) {
+            return $this->Flash->error("The tag \"$removedTagName\" could not be found.");
         }
         if ($retainedTagName == '') {
-            return $this->renderMessage([
-                'message' => 'No name provided for the tag to be retained.',
-                'class' => 'error'
-            ]);
+            return $this->Flash->error('No name provided for the tag to be retained.');
         }
         if ($retainedTagName != '') {
             $retainedTagId = $this->Tags->getIdFromName($retainedTagName);
             if (!$retainedTagId) {
-                return $this->renderMessage([
-                    'message' => "The tag \"$retainedTagName\" could not be found.",
-                    'class' => 'error'
-                ]);
+                return $this->Flash->error("The tag \"$retainedTagName\" could not be found.");
             }
         }
         if ($removedTagId == $retainedTagId) {
-            return $this->renderMessage([
-                'message' => "Cannot merge \"$retainedTagName\" into itself.",
-                'class' => 'error'
-            ]);
+            return $this->Flash->error("Cannot merge \"$retainedTagName\" into itself.");
         }
 
         $message = '';
@@ -581,7 +551,8 @@ class TagsController extends AppController
             }
 
             $message .= "Changed association with \"$removedTagName\" into \"$retainedTagName\" in $associatedCount event".($associatedCount == 1 ? '' : 's').'.<br />';
-        } else {
+        }
+        if (!$associatedCount) {
             $message .= 'No associated events to edit.<br />';
         }
 
@@ -598,12 +569,11 @@ class TagsController extends AppController
                 $childTag->parent_id = $retainedTagId;
                 if ($this->Tags->save($childTag)) {
                     $message .= "Moved \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
-                } else {
-                    $class = 'error';
-                    $message .= "Error moving \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
+                    continue;
                 }
+                $class = 'error';
+                $message .= "Error moving \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\".<br />";
             }
-            // $message .= "Moved ".count($children)." child tag".(count($children) == 1 ? '' : 's')." of \"$removedTagName\" under tag \"$retainedTagName\".<br />";
         }
 
         $removedTag = $this->Tags->get($removedTagId);
@@ -611,10 +581,9 @@ class TagsController extends AppController
         if ($class == 'success') {
             if ($this->Tags->delete($removedTag)) {
                 $message .= "Removed \"$removedTagName\".";
-            } else {
-                $message .= "Error trying to delete \"$removedTagName\" from the database.";
-                $class = 'error';
             }
+            $message .= "Error trying to delete \"$removedTagName\" from the database.";
+            $class = 'error';
         }
         if ($class != 'success') {
             $message .= "\"$removedTagName\" not removed.";
@@ -639,11 +608,11 @@ class TagsController extends AppController
             // Note missing tags/events for output message
             $t = $a['EventsTag']['tag_id'];
             if (!isset($tags[$t])) {
-                $missing_tags[$t] = true;
+                $missingTags[$t] = true;
             }
             $e = $a['EventsTag']['event_id'];
             if (!isset($events[$e])) {
-                $missing_events[$e] = true;
+                $missingEvents[$e] = true;
             }
 
             // Remove broken association
@@ -652,20 +621,16 @@ class TagsController extends AppController
             }
         }
         $message = '';
-        if (!empty($missing_tags)) {
-            $message .= 'Removed associations with nonexistent tags: '.implode(', ', array_keys($missing_tags)).'<br />';
+        if (!empty($missingTags)) {
+            $message .= 'Removed associations with nonexistent tags: '.implode(', ', array_keys($missingTags)).'<br />';
         }
-        if (!empty($missing_events)) {
-            $message .= 'Removed associations with nonexistent events: '.implode(', ', array_keys($missing_events)).'<br />';
+        if (!empty($missingEvents)) {
+            $message .= 'Removed associations with nonexistent events: '.implode(', ', array_keys($missingEvents)).'<br />';
         }
         if ($message == '') {
             $message = 'No broken associations to remove.';
         }
-        return $this->renderMessage([
-            'message' => $message,
-            'class' => 'success',
-            'layout' => 'ajax'
-        ]);
+        return $this->Flash->success($message);
     }
 
     /**
@@ -678,11 +643,7 @@ class TagsController extends AppController
         foreach ($children as $child) {
             $this->Tags->delete($child->id);
         }
-        return $this->renderMessage([
-            'message' => 'Delete Group Emptied',
-            'class' => 'success',
-            'layout' => 'ajax'
-        ]);
+        return $this->Flash->success('Delete group emptied.');
     }
 
     public function edit($tagName = null)
@@ -707,7 +668,7 @@ class TagsController extends AppController
                 $message = 'That tag\'s name cannot be changed to "';
                 $message .= $this->request->data['name'];
                 $message .= '" because another tag (';
-                $message .= $oldTags;
+                $message .= print_r($oldTags);
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
                 return $this->Flash->error($message);
             }
@@ -732,41 +693,25 @@ class TagsController extends AppController
                 }
                 return $this->Flash->success($message);
             }
-            return $this->renderMessage([
-                'message' => 'There was an error editing that tag.',
-                'class' => 'error'
-            ]);
-        } else {
-            if (!$tagName) {
-                return $this->renderMessage([
-                    'title' => 'Tag Name Not Provided',
-                    'message' => 'Please try again. But with a tag name provided this time.',
-                    'class' => 'error'
-                ]);
-            }
-            $result = $this->Tags->find()
-                ->where(['name' => $tagName])
-                ->first();
-            if (empty($result)) {
-                return $this->renderMessage([
-                    'title' => 'Tag Not Found',
-                    'message' => "Could not find a tag with the exact tag name \"$tagName\".",
-                    'class' => 'error'
-                ]);
-            }
-            if (count($result) > 1) {
-                $tagIds = [];
-                foreach ($result as $tag) {
-                    $tagIds[] = $tag->id;
-                }
-                return $this->renderMessage([
-                    'title' => 'Duplicate Tags Found',
-                    'message' => "Tags with the following IDs are named \"$tagName\": ".implode(', ', $tagIds).'<br />You will need to merge them before editing.',
-                    'class' => 'error'
-                ]);
-            }
-            $this->request->data = $result;
+            return $this->Flash->error('There was an error editing that tag.');
         }
+        if (!$tagName) {
+            return $this->Flash->error('Please try again, but with a tag name provided this time.');
+        }
+        $result = $this->Tags->find()
+            ->where(['name' => $tagName])
+            ->first();
+        if (empty($result)) {
+            return $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
+        }
+        if (count($result) > 1) {
+            $tagIds = [];
+            foreach ($result as $tag) {
+                $tagIds[] = $tag->id;
+            }
+            return $this->Flash->error("Tags with the following IDs are named \"$tagName\": ".implode(', ', $tagIds).'<br />You will need to merge them before editing.');
+        }
+        $this->request->data = $result;
     }
 
     public function add()
@@ -776,11 +721,7 @@ class TagsController extends AppController
             return;
         }
         if (trim($this->request->data['name']) == '') {
-            return $this->renderMessage([
-                'title' => 'Error',
-                'message' => "Tag name is blank",
-                'class' => 'error'
-            ]);
+            return $this->Flash->error('Tag name is blank.');
         }
 
         // Determine parent_id
@@ -808,7 +749,7 @@ class TagsController extends AppController
             } else {
                 $class = 'error';
                 $message .= "Error with nested tag structure. Looks like there's an extra indent in line $lineNum: \"$name\".<br />";
-                continue;
+                ;
             }
 
             // Strip leading/trailing whitespace and hyphens used for indenting
@@ -837,15 +778,13 @@ class TagsController extends AppController
             if ($this->Tags->save($newTag)) {
                 $this->Flash->success("Created tag #{$newTag->id}: $name");
                 $parents[$level + 1] = $newTag->id;
-            } else {
-                $class = 'error';
-                $this->Flash->error("Error creating the tag \"$name\"");
+                continue;
             }
+            $class = 'error';
+            $this->Flash->error("Error creating the tag \"$name\"");
         }
 
-        $this->Flash->set($message, [
-            'element' => $class
-        ]);
+        $this->Flash->$class($message);
         $this->autoRender = false;
     }
 }

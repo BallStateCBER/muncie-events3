@@ -149,6 +149,8 @@ class TagsControllerTest extends IntegrationTestCase
 
         if (isset($newJoin)) {
             $this->assertResponseSuccess();
+            // because right now it's redirecting to /tags/manage which it's not the best
+            $this->markTestIncomplete();
             $this->EventsTags->delete($newJoin);
         }
     }
