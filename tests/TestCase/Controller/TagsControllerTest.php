@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\TagsController;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
@@ -10,52 +11,105 @@ use Cake\TestSuite\IntegrationTestCase;
 class TagsControllerTest extends IntegrationTestCase
 {
     /**
-     * Test index method
+     * Test adding tags
      *
      * @return void
      */
-    public function testIndex()
+    public function testAddingTags()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/tags/manage');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Manage Tags');
+
+        $newTag = [
+            'name' => "Lourdes\n-Soothsayer Lies",
+            'parent_name' => 'intelligent dance music'
+        ];
+
+        $this->post('/tags/add', $newTag);
+
+        $this->assertResponseSuccess();
+
+        $newTag = $this->Tags->find()
+            ->where(['name' => 'lourdes'])
+            ->andWhere(['parent_id' => 697])
+            ->firstOrFail();
+
+        $newChild = $this->Tags->find()
+            ->where(['name' => 'soothsayer lies'])
+            ->andWhere(['parent_id' => $newTag->id])
+            ->firstOrFail();
+
+        if ($newTag->name == 'lourdes' && $newChild->name == 'soothsayer lies') {
+            return;
+        }
+
+        $this->assertResponseError();
     }
 
     /**
-     * Test view method
+     * Test adding a tag that already exists
      *
      * @return void
      */
-    public function testView()
+    public function testAddingExistingTag()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/tags/manage');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Manage Tags');
+
+        $newTag = [
+            'name' => "Lourdes\n-Soothsayer Lies",
+            'parent_name' => 'intelligent dance music'
+        ];
+
+        $this->post('/tags/add', $newTag);
+
+        $tags = $this->Tags->find()
+            ->where(['name' => 'lourdes'])
+            ->orWhere(['name' => 'soothsayer lies'])
+            ->count();
+
+        if ($tags == 2) {
+            $this->assertResponseSuccess();
+            return;
+        }
+
+        $this->assertResponseError();
     }
 
     /**
-     * Test add method
+     * Test deleting tags
      *
      * @return void
      */
-    public function testAdd()
+    public function testDeletingTags()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->Tags = TableRegistry::get('Tags');
 
-    /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->session(['Auth.User.id' => 1]);
 
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get("/tags/remove/lourdes");
+        $this->assertResponseSuccess();
+
+        $newTag = $this->Tags->find()
+            ->where(['name' => 'lourdes'])
+            ->orWhere(['name' => 'soothsayer lies'])
+            ->first();
+
+        if (!isset($newTag->name)) {
+            $this->assertResponseSuccess();
+            return;
+        }
+
+        $this->assertResponseError();
     }
 }
