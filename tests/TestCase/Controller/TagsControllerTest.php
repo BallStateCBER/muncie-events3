@@ -87,6 +87,36 @@ class TagsControllerTest extends IntegrationTestCase
     }
 
     /**
+     * Test editing tags
+     *
+     * @return void
+     */
+    public function testEditingTags()
+    {
+        $this->Tags = TableRegistry::get('Tags');
+        $oldTag = $this->Tags->find()
+            ->where(['name' => 'lourdes'])
+            ->first();
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get("/tags/edit/lourdes");
+        $this->assertResponseSuccess();
+
+        $edits = [
+            'name' => 'We the Heathens',
+            'listed' => 1,
+            'selectable' => 1,
+            'parent_id' => 697,
+            'id' => $oldTag->id
+        ];
+
+        $this->post('/tags/edit/lourdes', $edits);
+
+        $this->assertResponseSuccess();
+    }
+
+    /**
      * Test deleting tags
      *
      * @return void
@@ -97,11 +127,11 @@ class TagsControllerTest extends IntegrationTestCase
 
         $this->session(['Auth.User.id' => 1]);
 
-        $this->get("/tags/remove/lourdes");
+        $this->get("/tags/remove/we%20the%20heathens");
         $this->assertResponseSuccess();
 
         $newTag = $this->Tags->find()
-            ->where(['name' => 'lourdes'])
+            ->where(['name' => 'we the heathens'])
             ->orWhere(['name' => 'soothsayer lies'])
             ->first();
 
