@@ -10,27 +10,17 @@ $model_lower_plural = strtolower($model_plural);
 <?php else: ?>
 	<?php if ($model == 'Flyer'): ?>
 		<div class="flyers">
-			<?php foreach($tagged_items as $id => $flyer): ?>
+			<?php foreach ($tagged_items as $id => $flyer): ?>
 				<div class="flyer_thumbnail">
 					<a href="/img/flyers/<?php echo $flyer['full_filename']; ?>" rel="shadowbox" class="flyer_thumbnail">
-						<img 
-							src="/img/flyers/<?php echo $flyer['thumbnail_filename']; ?>" 
+						<img
+							src="/img/flyers/<?php echo $flyer['thumbnail_filename']; ?>"
 							class="flyer_thumbnail"
-							title="Click to view full-sized" 
+							title="Click to view full-sized"
 						/>
 					</a>
 				</div>
-			<?php endforeach; /* ?>
-		
-			<?php foreach ($tagged_items as $id => $flyer): ?>
-				<a href="/img/flyers/<?php echo $flyer['full_filename']; ?>" rel="shadowbox">
-					<img 
-						src="/img/flyers/<?php echo $flyer['thumbnail_filename']; ?>" 
-						class="flyer_thumbnail"
-						title="Click to view full-sized" 
-					/ >
-				</a>
-			<?php endforeach; */ ?>
+			<?php endforeach; ?>
 			<br class="clear" />
 		</div>
 	<?php else: ?>
@@ -38,8 +28,8 @@ $model_lower_plural = strtolower($model_plural);
 			<?php foreach ($tagged_items as $id => $title): ?>
 				<li>
 					<?php echo $this->Html->link(
-						$title, 
-						array('controller' => $model_lower_plural, 'action' => 'view', 'id' => $id)); ?>
+                        $title,
+                        array('controller' => $model_lower_plural, 'action' => 'view', 'id' => $id)); ?>
 				</li>
 			<?php endforeach; ?>
 		</ul>

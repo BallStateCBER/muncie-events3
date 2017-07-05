@@ -156,6 +156,146 @@ class TagsControllerTest extends IntegrationTestCase
     }
 
     /**
+     * Test regrouping rogue/unlisted tags
+     *
+     * @return void
+     */
+    public function testRegroupingOrphanTags()
+    {
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        for ($x = 0; $x <= 10; $x++) {
+            $orphanTag = $this->Tags->newEntity([
+                'name' => 'nobody loves me',
+                'listed' => 0,
+                'selectable' => 0,
+                'user_id' => 1
+            ]);
+            $this->Tags->save($orphanTag);
+        }
+
+        $this->get('/tags/group-unlisted');
+        $this->assertResponseOk();
+
+        $adoptedTag = $this->Tags->find()
+            ->where(['name' => 'nobody loves me'])
+            ->andWhere(['parent_id' => 1012])
+            ->toArray();
+
+        if ($adoptedTag) {
+            $this->assertResponseSuccess();
+            foreach ($adoptedTag as $tag) {
+                $tag->parent_id = null;
+                $this->Tags->save($tag);
+            }
+            return;
+        }
+
+        $this->assertResponseError();
+    }
+
+    /**
+     * Test recovering tag tree structure
+     *
+     * @return void
+     */
+    public function testTagTreeRecovery()
+    {
+        $this->session(['Auth.User.id' => 1]);
+        $this->get('/tags/recover');
+        $this->assertResponseOk();
+    }
+
+    /**
+     * Test the removeUnlistedUnused() action
+     *
+     * @return void
+     */
+    public function testRemovingUnusedTags()
+    {
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/tags/remove-unlisted-unused');
+        $this->assertResponseOk();
+
+        $deadTag = $this->Tags->find()
+            ->where(['name' => 'Nobody loves me'])
+            ->first();
+
+        $this->assertResponseOk();
+
+        if (isset($deadTag)) {
+            $this->assertResponseError();
+        }
+    }
+
+    /**
+     * Test merging duplicates
+     *
+     * @return void
+     */
+    public function testDealingWithDuplicates()
+    {
+        $this->Tags = TableRegistry::get('Tags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        for ($x = 0; $x <= 10; $x++) {
+            $duplicate = $this->Tags->newEntity([
+                'name' => 'nobody loves me',
+                'listed' => 0,
+                'selectable' => 0,
+                'user_id' => 1
+            ]);
+            $this->Tags->save($duplicate);
+        }
+
+        $this->get('/tags/duplicates');
+        $this->assertResponseOk();
+
+        $duplicates = $this->Tags->find()
+            ->where(['name' => 'nobody loves me'])
+            ->count();
+
+        if ($duplicates != 1) {
+            $this->assertResponseError();
+        }
+    }
+
+    /**
+     * Test removing broken associations
+     *
+     * @return void
+     */
+    public function testRemovingBrokenAssociations()
+    {
+        $this->EventsTags = TableRegistry::get('EventsTags');
+
+        $this->session(['Auth.User.id' => 1]);
+
+        $broken = $this->EventsTags->newEntity();
+        $broken->event_id = 99999;
+        $broken->tag_id = 99999;
+        $this->EventsTags->save($broken);
+
+        $this->get('/tags/remove-broken-associations');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Removed associations');
+
+        $broken = $this->EventsTags->find()
+            ->where(['event_id' => 99999])
+            ->count();
+
+        if ($broken > 0) {
+            $this->assertResponseError();
+        }
+    }
+
+    /**
      * Test deleting tags
      *
      * @return void
@@ -175,6 +315,8 @@ class TagsControllerTest extends IntegrationTestCase
             ->first();
 
         if (!isset($newTag->name)) {
+            $this->assertResponseSuccess();
+            $this->get("/tags/remove/nobody%20loves%20me");
             $this->assertResponseSuccess();
             return;
         }
