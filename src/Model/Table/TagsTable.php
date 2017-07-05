@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
@@ -195,6 +196,23 @@ class TagsTable extends Table
     {
         $filter['direction'] = 'future';
         return $this->getWithCounts($filter);
+    }
+
+    public function getUsedTagIds($direction = null)
+    {
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $findOptions = [];
+
+        $results = $this->EventsTags->find('all', $findOptions)
+                    ->select(['tag_id'])
+                    ->distinct(['tag_id'])
+                    ->order(['tag_id' => 'ASC'])
+                    ->toArray();
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = $result->tag_id;
+        }
+        return $retval;
     }
 
     public function getCategoriesWithTags($direction = 'future')
