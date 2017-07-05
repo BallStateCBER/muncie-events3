@@ -77,11 +77,7 @@ class TagsTable extends Table
                 'wildcardOne' => '?',
                 'field' => ['name']
             ])
-            ->add('foo', 'Search.Callback', [
-                'callback' => function ($query, $args, $filter) {
-                    // Modify $query as required
-                }
-            ]);
+            ->add('foo', 'Search.Callback');
     }
 
     /**
@@ -141,78 +137,18 @@ class TagsTable extends Table
             foreach ($result['tags'] as $tag) {
                 if (isset($tags[$tag['name']])) {
                     $tags[$tag['name']]['count']++;
-                } else {
-                    $tags[$tag['name']] = [
-                        'id' => $tag['id'],
-                        'name' => $tag['name'],
-                        'count' => 1
-                    ];
+                    continue;
                 }
+                $tags[$tag['name']] = [
+                    'id' => $tag['id'],
+                    'name' => $tag['name'],
+                    'count' => 1
+                ];
             }
         }
         ksort($tags);
 
         return $tags;
-    }
-
-    public function getWithCounts($filter = [], $sort = 'alpha')
-    {
-        // Apply filters and find tags
-        $conditions = ['Events.published' => 1];
-        if ($filter['direction'] == 'future') {
-            $conditions['Events.date >='] = date('Y-m-d');
-        } elseif ($filter['direction'] == 'past') {
-            $conditions['Events.date <'] = date('Y-m-d');
-        }
-        if (isset($filter['categories'])) {
-            $conditions['Events.category_id'] = $filter['categories'];
-        }
-
-        $tags = $this->getAllWithCounts($conditions);
-        if (empty($tags)) {
-            return [];
-        }
-
-        if ($sort == 'alpha') {
-            return $tags;
-        }
-
-        // Sort by count if $sort is not 'alpha'
-        $sortedTags = [];
-        foreach ($tags as $tagName => $tag) {
-            $sortedTags[$tag['count']][$tag['name']] = $tag;
-        }
-        krsort($sortedTags);
-        $finalTags = [];
-        foreach ($sortedTags as $count => $tags) {
-            foreach ($tags as $name => $tag) {
-                $finalTags[$tag['name']] = $tag;
-            }
-        }
-        return $finalTags;
-    }
-
-    public function getUpcoming($filter = [])
-    {
-        $filter['direction'] = 'future';
-        return $this->getWithCounts($filter);
-    }
-
-    public function getUsedTagIds($direction = null)
-    {
-        $this->EventsTags = TableRegistry::get('EventsTags');
-        $findOptions = [];
-
-        $results = $this->EventsTags->find('all', $findOptions)
-                    ->select(['tag_id'])
-                    ->distinct(['tag_id'])
-                    ->order(['tag_id' => 'ASC'])
-                    ->toArray();
-        $retval = [];
-        foreach ($results as $result) {
-            $retval[] = $result->tag_id;
-        }
-        return $retval;
     }
 
     public function getCategoriesWithTags($direction = 'future')
@@ -242,23 +178,13 @@ class TagsTable extends Table
         return $retval;
     }
 
-    public function getIdFromSlug($slug)
+    /**
+     * Returns the ID of the 'delete' tag group for tags to be deleted.
+     * @return int
+     */
+    public function getDeleteGroupId()
     {
-        $splitSlug = explode('_', $slug);
-        return (int) $splitSlug[0];
-    }
-
-    public function getIndentLevel($name)
-    {
-        $level = 0;
-        for ($i = 0; $i < strlen($name); $i++) {
-            if ($name[$i] == "\t" || $name[$i] == '-') {
-                $level++;
-            } else {
-                break;
-            }
-        }
-        return $level;
+        return 1011;
     }
 
     public function getIdFromName($name)
@@ -271,6 +197,25 @@ class TagsTable extends Table
             return false;
         }
         return $result->id;
+    }
+
+    public function getIdFromSlug($slug)
+    {
+        $splitSlug = explode('_', $slug);
+        return (int) $splitSlug[0];
+    }
+
+    public function getIndentLevel($name)
+    {
+        $level = 0;
+        for ($i = 0; $i < strlen($name); $i++) {
+            if ($name[$i] == "\t" || $name[$i] == '-') {
+                $level++;
+                continue;
+            }
+            break;
+        }
+        return $level;
     }
 
     public function getTagFromId($tagId)
@@ -294,13 +239,64 @@ class TagsTable extends Table
         return 1012;
     }
 
-    /**
-     * Returns the ID of the 'delete' tag group for tags to be deleted.
-     * @return int
-     */
-    public function getDeleteGroupId()
+    public function getUpcoming($filter = [])
     {
-        return 1011;
+        $filter['direction'] = 'future';
+        return $this->getWithCounts($filter);
+    }
+
+    public function getUsedTagIds()
+    {
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $findOptions = [];
+
+        $results = $this->EventsTags->find('all', $findOptions)
+                    ->select(['tag_id'])
+                    ->distinct(['tag_id'])
+                    ->order(['tag_id' => 'ASC'])
+                    ->toArray();
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = $result->tag_id;
+        }
+        return $retval;
+    }
+
+    public function getWithCounts($filter = [], $sort = 'alpha')
+    {
+        // Apply filters and find tags
+        $conditions = ['Events.published' => 1];
+        if ($filter['direction'] == 'future') {
+            $conditions['Events.date >='] = date('Y-m-d');
+        } elseif ($filter['direction'] == 'past') {
+            $conditions['Events.date <'] = date('Y-m-d');
+        }
+        if (isset($filter['categories'])) {
+            $conditions['Events.category_id'] = $filter['categories'];
+        }
+
+        $tags = $this->getAllWithCounts($conditions);
+        if (empty($tags)) {
+            return [];
+        }
+
+        if ($sort == 'alpha') {
+            return $tags;
+        }
+
+        // Sort by count if $sort is not 'alpha'
+        $sortedTags = [];
+        foreach ($tags as $tag) {
+            $sortedTags[$tag['count']][$tag['name']] = $tag;
+        }
+        krsort($sortedTags);
+        $finalTags = [];
+        foreach ($sortedTags as $tags) {
+            foreach ($tags as $tag) {
+                $finalTags[$tag['name']] = $tag;
+            }
+        }
+        return $finalTags;
     }
 
     public function isUnderUnlistedGroup($id = null)
