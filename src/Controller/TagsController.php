@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -259,72 +260,69 @@ class TagsController extends AppController
 
     public function reorder()
     {
+
         // retrieve the node instructions from javascript
         // delta is the difference in position (1 = next node, -1 = previous node)
 
-        $node = intval(filter_input(INPUT_POST, 'node'));
-        $delta = intval(filter_input(INPUT_POST, 'delta'));
+        $node = intval($_POST['node']);
+        $delta = intval($_POST['delta']);
 
-        $tag = $this->Tags->get($node);
+        $node = $this->Tags->get($node);
 
         if ($delta > 0) {
-            $this->Tags->moveDown($tag, abs($delta));
+            $this->Tags->moveDown($node, abs($delta));
         } elseif ($delta < 0) {
-            $this->Tags->moveUp($tag, abs($delta));
+            $this->Tags->moveUp($node, abs($delta));
         }
 
         // send success response
-        $this->response->statusCode(200);
-        $this->viewBuilder()->setLayout('ajax');
-        $this->autorender = false;
+        exit('1');
     }
 
     public function reparent()
     {
-        $node = intval(filter_input(INPUT_POST, 'node'));
-        $parent = (filter_input(INPUT_POST, 'parent') == 'root') ? 0 : intval(filter_input(INPUT_POST, 'parent'));
+        $node = intval($_POST['node']);
+        $parent = ($_POST['parent'] == 'root') ? 0 : intval($_POST['parent']);
+        $parent = $this->Tags->get($parent);
         $inUnlistedBefore = $this->Tags->isUnderUnlistedGroup($node);
-        $inUnlistedAfter = (filter_input(INPUT_POST, 'parent') == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent);
-        $this->Tags->id = $node;
+        $inUnlistedAfter = ($_POST['parent'] == 'root') ? false : $this->Tags->isUnderUnlistedGroup($parent->id);
+        $tag = $this->Tags->get($node);
 
         // Moving out of the 'Unlisted' group
-        if ($inUnlistedBefore && !$inUnlistedAfter) {
+        if ($inUnlistedBefore && ! $inUnlistedAfter) {
             //echo 'Making listed.';
-            $this->Tags->listed = 1;
+            $tag->listed = 1;
+            $this->Tags->save($tag);
         }
 
         // Moving into the 'Unlisted' group
-        if (!$inUnlistedBefore && $inUnlistedAfter) {
+        if (! $inUnlistedBefore && $inUnlistedAfter) {
             //echo 'Making unlisted.';
-            $this->Tags->listed = 0;
+            $tag->listed = 0;
+            $this->Tags->save($tag);
         }
 
         // Move tag
-        $this->Tags->parent_id = $parent;
-
-        $parentTag = $this->Tags->get($parent);
-        $childTag = $this->Tags->get($node);
+        $tag->parent_id = $parent->id;
+        $this->Tags->save($tag);
 
         // If position == 0, then we move it straight to the top
         // otherwise we calculate the distance to move ($delta).
         // We have to check if $delta > 0 before moving due to a bug
         // in the tree behaviour (https://trac.cakephp.org/ticket/4037)
-        $position = intval(filter_input(INPUT_POST, 'position'));
+        $position = intval($_POST['position']);
         if ($position == 0) {
-            $this->Tags->moveUp($childTag, true);
-        }
-        if ($position != 0) {
-            $count = $this->Tags->childCount($parentTag, true);
+            $this->Tags->moveUp($tag, true);
+        } else {
+            $count = $this->Tags->childCount($parent, true);
             $delta = $count-$position-1;
             if ($delta > 0) {
-                $this->Tags->moveUp($childTag, $delta);
+                $this->Tags->moveUp($tag, $delta);
             }
         }
 
         // send success response
-        $this->response->statusCode(200);
-        $this->viewBuilder()->setLayout('ajax');
-        $this->autorender = false;
+        exit('1');
     }
 
     /**
