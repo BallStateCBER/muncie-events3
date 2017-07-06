@@ -90,7 +90,7 @@ class TagsController extends AppController
 
     public function autoComplete($onlyListed, $onlySelectable)
     {
-        $stringToComplete = htmlspecialchars_decode(filter_input(INPUT_GET, 'term'));
+        $stringToComplete = htmlspecialchars_decode($_GET['term']);
         $limit = 10;
 
         // Tag.name will be compared via LIKE to each of these,
@@ -116,20 +116,28 @@ class TagsController extends AppController
             if ($onlySelectable) {
                 $conditions['selectable'] = 1;
             }
-            if (!empty($tags)) {
-                $conditions['id NOT'] = array_keys($tags);
-            }
             $results = $this->Tags->find()
-                ->select(['id', 'name'])
                 ->where($conditions)
                 ->limit($limit-count($tags));
-            foreach ($results as $result) {
-                if (!array_key_exists($result->id, $tags)) {
-                    $tags[$result->id] = [
-                        'label' => $result->name,
-                        'value' => $result->id
-                    ];
+            if (!empty($tags)) {
+                foreach (array_keys($tags) as $tag) {
+                    $results = $results->andWhere(['id !=' => $tag]);
                 }
+            }
+            $x = 0;
+            foreach ($results as $result) {
+                $tags[$result->id] = [
+                    'label' => $result->name,
+                    'value' => $result->id
+                ];
+
+                $tag = $result->id;
+                $tag = [
+                    'label' => $result->name,
+                    'value' => $result->id
+                ];
+                $this->set([$x => $tag]);
+                $x = $x + 1;
             }
         }
 
