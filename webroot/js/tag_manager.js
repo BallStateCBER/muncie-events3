@@ -45,7 +45,6 @@ var TagManager = {
                         event.preventDefault();
                         var icon = $(this);
                         var icon_container = icon.parent('div');
-                        // var children = data[i].children;
                         var children_container = icon_container.next('.children');
                         var row = icon_container.parent('li');
 

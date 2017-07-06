@@ -10,14 +10,30 @@ class TagHelper extends Helper
 
     private function availableTagsForJsPr($availableTags)
     {
+        $this->Tags = TableRegistry::get('Tags');
         $arrayForJson = [];
         if (is_array($availableTags)) {
             foreach ($availableTags as $tag) {
+                if ($tag->id == 1012 || $tag->id == 1011) {
+                    continue;
+                }
+
+                $childCount = $this->Tags->find()
+                            ->where(['parent_id' => $tag->id])
+                            ->count();
+
+                if ($childCount == 0) {
+                }
+
+                $children = $this->Tags->find()
+                            ->where(['parent_id' => $tag->id])
+                            ->order(['name' => 'ASC'])
+                            ->toArray();
                 $arrayForJson[] = [
                     'id' => $tag->id,
                     'name' => $tag->name,
                     'selectable' => (boolean) $tag->selectable,
-                    'children' => $this->availableTagsForJsPr($tag->children)
+                    'children' => $this->availableTagsForJsPr($children)
                 ];
             }
         }
@@ -108,6 +124,6 @@ class TagHelper extends Helper
                 event.preventDefault();
                 $('#new_tag_rules').slideToggle(200);
             });
-            ");
+        ");
     }
 }

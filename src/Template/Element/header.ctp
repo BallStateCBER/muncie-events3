@@ -7,25 +7,21 @@
             <i id="logo-icon" class="icon-me-logo"></i><span>Muncie</span><span>Events</span>
         </a>
     </h1>
-    <ul class="navbar-nav" id='med-nav'>
+    <ul class="navbar-nav" id="med-nav">
         <li class="navbar-item">
-        <div id="mobile-search">
-            <?php echo $this->element('header/search'); ?>
-        </div>
             <ul id="mid-nav" class="navbar-nav">
-                <?php echo $this->element('header/links_secondary'); ?>
+                <?= $this->element('header/links_secondary'); ?>
             </ul>
         </li>
     </ul>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div>
-
             <div class="header-nav primary-nav">
-                    <?php echo $this->element('header/links_primary'); ?>
+                <?= $this->element('header/links_primary'); ?>
             </div>
             <div class="header-nav">
                 <ul id="res-nav" class="navbar-nav">
-                    <?php echo $this->element('header/links_secondary'); ?>
+                    <?= $this->element('header/links_secondary'); ?>
                 </ul>
             </div>
         </div>
@@ -33,9 +29,10 @@
     <ul class="navbar-nav" id="tagline-lg">
         <li class="navbar-item">
             <a class="navbar-brand logo">
-                <?php echo $this->element('header/tagline'); ?>
+                <?= $this->element('header/tagline'); ?>
             </a>
-            <?php echo $this->element('header/search'); ?>
+            <br />
         </li>
     </ul>
+    <?= $this->element('header/search'); ?>
 </nav>

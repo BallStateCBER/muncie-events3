@@ -53,7 +53,7 @@ class EventsController extends AppController
 
         // prepare the tag helper
         $availableTags = $this->Events->Tags->find('all', [
-            'order' => ['parent_id' => 'ASC']
+            'order' => ['name' => 'ASC']
             ])
             ->toArray();
         $this->set(compact('availableTags'));
