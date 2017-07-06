@@ -296,6 +296,19 @@ class TagsControllerTest extends IntegrationTestCase
     }
 
     /**
+     * Test tag autocomplete ajax function
+     *
+     * @return void
+     */
+    public function testAutoComplete()
+    {
+        $this->session(['Auth.User.id' => 1]);
+
+        $this->get('/tags/auto_complete/0/0?term=munc');
+        $this->assertResponseOk();
+    }
+
+    /**
      * Test deleting tags
      *
      * @return void

@@ -109,13 +109,6 @@ function setupTagManager() {
             });
         });
 
-        // Autocomplete fields
-        /* Previous code
-        $('.search_field').autocomplete({
-            // '/0/0' includes unlisted and unselectable tags
-            source: '/tags/auto_complete/0/0'
-        });
-        */
         $('.search_field').bind('keydown', function (event) {
             // don't navigate away from the field on tab when selecting an item
             if (event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
