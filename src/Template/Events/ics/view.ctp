@@ -8,14 +8,14 @@ if ($event->time_end) {
     $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
 }
 
-$start = date('Ymd', $date).'T'.date('His', $startTime).'Z';
+$start = gmdate('Ymd', $date).'T'.gmdate('His', $startTime).'Z';
 
 $endStamp = $startTime;
 if ($event->time_end) {
     $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
     $endStamp = $endTime;
 }
-$end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
+$end = gmdate('Ymd', $date).'T'.gmdate('His', $endStamp).'Z';
 
 $vCalendar = new \Eluceo\iCal\Component\Calendar('www.muncieevents.com');
 
