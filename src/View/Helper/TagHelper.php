@@ -51,20 +51,20 @@ class TagHelper extends Helper
      */
     private function formatSelectedTagsPr($newTags, $event)
     {
-        $tag = TableRegistry::get('Tags');
-        $eventsTable = TableRegistry::get('Events');
+        $this->Tags = TableRegistry::get('Tags');
+        $this->Events = TableRegistry::get('Events');
         $retval = [];
 
         // clear it out first to prevent duplicates
-        $oldTags = $eventsTable
+        $oldTags = $this->Events
             ->EventsTags
             ->find()
             ->where(['event_id' => $event->id])
             ->toArray();
 
         foreach ($oldTags as $oldTag) {
-            $result = $tag->getTagFromId($oldTag->tag_id);
-            $eventsTable->Tags->unlink($event, [$result]);
+            $result = $this->Tags->getTagFromId($oldTag->tag_id);
+            $this->Events->Tags->unlink($event, [$result]);
         };
 
         // $_POST but no data? all tags have been deleted.
@@ -80,7 +80,7 @@ class TagHelper extends Helper
         // finally, are there new or remaining tags? link them.
         foreach ($newTags as $tagId) {
             // check for duplicates
-            $prevTag = $eventsTable
+            $prevTag = $this->Events
                 ->EventsTags
                 ->find()
                 ->where(['tag_id' => $tagId])
@@ -89,8 +89,8 @@ class TagHelper extends Helper
 
             // proceed if there are no duplicates
             if ($prevTag < 1) {
-                $result = $tag->getTagFromId($tagId);
-                $eventsTable->Tags->link($event, [$result]);
+                $result = $this->Tags->getTagFromId($tagId);
+                $this->Events->Tags->link($event, [$result]);
                 $retval[] = $result;
             }
         }

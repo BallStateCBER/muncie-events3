@@ -438,7 +438,7 @@ class EventsController extends AppController
             ])) {
                 $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
-                return $this->redirect('/');
+                #return $this->redirect('/');
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
