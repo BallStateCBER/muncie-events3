@@ -281,7 +281,6 @@ class EventsController extends AppController
                     'associated' => ['EventSeries', 'Images', 'Tags']
                 ])) {
                     $this->Flash->success(__('The event has been saved.'));
-                    return $this->redirect(['action' => 'index']);
                 }
             }
 
@@ -311,12 +310,13 @@ class EventsController extends AppController
                 }
 
                 $this->Flash->success(__('The event series has been saved.'));
-                return $this->redirect(['action' => 'index']);
             }
 
             // if neither a single event nor multiple-event series can be saved
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
-            return $this->redirect(['action' => 'index']);
+            if (!$this->Events->save($event)) {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                return $this->redirect(['action' => 'index']);
+            }
         }
 
         $users = $this->Events->Users->find('list');
@@ -438,9 +438,9 @@ class EventsController extends AppController
             ])) {
                 $event->date = $this->request->data['date'];
                 $this->Flash->success(__('The event has been saved.'));
-                #return $this->redirect('/');
+            } else {
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
 
         $users = $this->Events->Users->find('list');
@@ -588,8 +588,8 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        // the app breaks if there is a 1-month gap in between events
-        $endDate = strtotime($nextStartDate.' + 1 month');
+        // the app breaks if there is a 2-week gap in between events
+        $endDate = strtotime($nextStartDate.' + 2 weeks');
         $events = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],

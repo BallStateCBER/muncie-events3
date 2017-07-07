@@ -333,14 +333,14 @@ function setupEventAccordion() {
  * Prepares the 'event actions' block (like on Facebook, export, edit, etc.)
  * @param container_selector
  */
-function setupEventActions(container_selector) {
+/* function setupEventActions(container_selector) {
     $(container_selector).find('.export_options_toggler').click(function(event) {
         event.preventDefault();
         var link = $(this);
         link.parent('div').toggleClass('open');
         link.next('.export_options').slideToggle(300);
     });
-}
+} */
 
 /**
  * Loads another chunk of events at the bottom of the event accordion

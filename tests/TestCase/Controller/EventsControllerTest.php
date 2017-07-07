@@ -58,20 +58,33 @@ class EventsControllerTest extends IntegrationTestCase
             'description' => 'Come out with my support!',
             'cost' => '$6',
             'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly'
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    752
+                ]
+            ]
         ];
 
         $this->post('/events/add', $event);
         $this->assertResponseSuccess();
 
         $this->Events = TableRegistry::get('Events');
+        $this->EventsTags = TableRegistry::get('EventsTags');
         $event = $this->Events->find()
             ->where(['title' => $event['title']])
             ->first();
 
         if ($event->id) {
-            $this->assertResponseSuccess();
-            return;
+            $tags = $this->EventsTags->find()
+                ->where(['tag_id' => 752])
+                ->andWhere(['event_id' => $event->id])
+                ->first();
+
+            if ($tags) {
+                $this->assertResponseSuccess();
+                return;
+            }
         }
         if (!$event->id) {
             $this->assertResponseError();
@@ -127,6 +140,8 @@ class EventsControllerTest extends IntegrationTestCase
     public function testEditingAnEventAsEventOwner()
     {
         $this->Events = TableRegistry::get('Events');
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->Tags = TableRegistry::get('Tags');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Party'])
             ->firstOrFail();
@@ -136,6 +151,8 @@ class EventsControllerTest extends IntegrationTestCase
         $this->get("/event/edit/$event->id");
 
         $this->assertResponseContains($event->title);
+
+        $randomNumber = rand();
 
         $edits = [
             'title' => 'Placeholder Gala',
@@ -149,7 +166,13 @@ class EventsControllerTest extends IntegrationTestCase
             'description' => 'Come out with my support!',
             'cost' => '$6',
             'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly'
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    665
+                ]
+            ],
+            'customTags' => $randomNumber
         ];
 
         $this->post("/event/edit/$event->id", $edits);
@@ -157,6 +180,16 @@ class EventsControllerTest extends IntegrationTestCase
 
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Gala'])
+            ->firstOrFail();
+
+        $customTag = $this->Tags->find()
+            ->where(['name' => $randomNumber])
+            ->firstOrFail();
+
+        $tags = $this->EventsTags->find()
+            ->where(['tag_id' => 665])
+            ->andWhere(['event_id' => $event->id])
+            ->orWhere(['tag_id' => $customTag->id])
             ->firstOrFail();
     }
 
@@ -218,8 +251,8 @@ class EventsControllerTest extends IntegrationTestCase
             'filter' => 'Placeholder Gala',
             'direction' => 'future'
         ];
-        $this->post('/events/search', $query);
-        $this->assertRedirect('/events/search?filter=Placeholder+Gala&direction=future');
+        $this->post('/search', $query);
+        $this->assertRedirect('/search?filter=Placeholder+Gala&direction=future');
     }
 
     /**

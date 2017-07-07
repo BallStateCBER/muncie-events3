@@ -97,6 +97,9 @@ Router::scope('/', function (RouteBuilder $routes) {
         $routes->connect('/'.$page, ['controller' => 'pages', 'action' => $page]);
     }
 
+    // search
+    $routes->connect('/search', ['controller' => 'events', 'action' => 'search']);
+
     // Tag
     Router::connect(
         "/tag/:slug/*",

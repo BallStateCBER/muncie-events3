@@ -23,15 +23,19 @@ if (!isset($canEdit)) {
     <div class="export_options_container">
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',
-            '#',
+            "#" . $event['id'] . "_options",
             [
                 'escape' => false,
                 'title' => 'Export to another calendar application',
                 'id' => 'export_event_'.$event['id'],
-                'class' => 'export_options_toggler'
+                'class' => 'export_options_toggler',
+                'aria-expanded' => 'false',
+                'aria-controls' => $event['id'].'_options',
+                'data-toggle' => 'collapse',
+                'data-target' => '#'.$event['id'].'_options'
             ]
         ); ?>
-        <div class="export_options" style="display: none;">
+        <div class="export_options collapse" id="<?= $event['id'] ?>_options">
             <?php echo $this->Html->link(
                 'iCal',
                 [
