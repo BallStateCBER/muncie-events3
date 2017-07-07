@@ -14,21 +14,11 @@ class TagHelper extends Helper
         $arrayForJson = [];
         if (is_array($availableTags)) {
             foreach ($availableTags as $tag) {
-                if ($tag->id == 1012 || $tag->id == 1011) {
-                    continue;
-                }
-
-                $childCount = $this->Tags->find()
-                            ->where(['parent_id' => $tag->id])
-                            ->count();
-
-                if ($childCount == 0) {
-                }
-
                 $children = $this->Tags->find()
-                            ->where(['parent_id' => $tag->id])
-                            ->order(['name' => 'ASC'])
-                            ->toArray();
+                    ->where(['parent_id' => $tag->id])
+                    ->order(['name' => 'ASC'])
+                    ->toArray();
+
                 $arrayForJson[] = [
                     'id' => $tag->id,
                     'name' => $tag->name,
@@ -117,8 +107,15 @@ class TagHelper extends Helper
             TagManager.preselectTags(TagManager.selectedTags);
         ");
 
+        $parentTags = [];
+        foreach ($availableTags as $tag) {
+            if ($tag->parent_id == null || $tag->parent_id == 0) {
+                $parentTags[] = $tag;
+            }
+        }
+
         $this->Js->buffer("
-            TagManager.tags = ".$this->Js->object($this->availableTagsForJsPr($availableTags)).";
+            TagManager.tags = ".$this->Js->object($this->availableTagsForJsPr($parentTags)).";
             TagManager.createTagList(TagManager.tags, $('#$containerId'));
             $('#new_tag_rules_toggler').click(function(event) {
                 event.preventDefault();
