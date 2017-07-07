@@ -30,20 +30,27 @@
         <?= $user->name ?> has been a member of Muncie Events since <?= $this->Calendar->date($user->created); ?>.
     </p>
     <div class="row">
-        <?php if ($user->bio): ?>
+        <?php if ($user->bio && $user->photo): ?>
             <div class="col-lg-6">
                 <h3>Bio</h3>
                 <?= $user->bio ?>
             </div>
-        <?php else: ?>
-        <?php endif; ?>
-        <?php if ($user->photo): ?>
             <div class="col-lg-6 userPhoto">
                 <?= $this->Html->image('users/' . $user->photo, [
                     'alt' => $user->name
                 ]); ?>
             </div>
-        <?php else: ?>
+        <?php elseif (!$user->bio && $user->photo): ?>
+            <div class="col-lg-12 userPhoto">
+                <?= $this->Html->image('users/' . $user->photo, [
+                    'alt' => $user->name
+                ]); ?>
+            </div>
+        <?php elseif ($user->bio && !$user->photo): ?>
+            <div class="col-lg-12">
+                <h3>Bio</h3>
+                <?= $user->bio ?>
+            </div>
         <?php endif; ?>
     </div>
     <h2>

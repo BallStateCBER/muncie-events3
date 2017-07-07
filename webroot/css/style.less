@@ -124,11 +124,14 @@ body {
     @media @x-large {
         bottom: -50px;
         position: relative;
+        right: 47%;
+        width: 152%;
     }
     @media @large {
-        left: 30%;
+        bottom: -30px;
         position: relative;
-        top: 30px;
+        right: 47%;
+        width: 152%;
     }
     @media @medium {
         position: relative;
@@ -136,6 +139,7 @@ body {
     }
     @media @small {
         margin: 0 auto;
+        width: 60%;
     }
     @media @x-small {
         margin: 0 auto;
@@ -880,11 +884,6 @@ div.checkbox label {
             min-width: @loginColWidth;
         }
     }
-    div.password a,
-    div.checkbox,
-    .error-message {
-        .LoginIndented;
-    }
 }
 #register {
     width: 590px;
@@ -1251,7 +1250,6 @@ a.thumbnail {
 .export_options {
     background-color: #FFFFFF;
     box-shadow: -4px 4px 5px rgba(50, 50, 50, 0.5);
-    display: block;
     left: 0;
     padding: 0 5px;
     position: absolute;
