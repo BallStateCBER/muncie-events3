@@ -20,7 +20,7 @@ class WidgetsController extends AppController
         parent::initialize();
         // anyone can access widgets
         $this->Auth->allow([
-            'day', 'event', 'feed', 'index', 'month'
+            'customizeFeed', 'customizeMonth', 'day', 'demoFeed', 'demoMonth', 'event', 'feed', 'index', 'month'
         ]);
         $this->loadModel('Events');
     }
