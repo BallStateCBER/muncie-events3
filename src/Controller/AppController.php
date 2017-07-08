@@ -67,6 +67,7 @@ class AppController extends Controller
         $this->loadComponent('Captcha.Captcha');
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Cookie');
         $this->loadComponent('Auth', [
             'loginAction' => [
                 'prefix' => false,
