@@ -59,4 +59,4 @@
 <?= $this->Html->css('/jPicker/css/jPicker-1.1.6.min.css'); ?>
 <?= $this->Html->css('/jPicker/jPicker.css'); ?>
 <?= $this->Html->script('widgets/customize.js'); ?>
-<?= $this->Html->scriptBlock("widgetCustomizer.setupWidgetDemo('feed');", ['defer' => true]); ?>
+<?= $this->Html->scriptBlock("widgetCustomizer.setupWidgetDemo('$type');", ['defer' => true]); ?>

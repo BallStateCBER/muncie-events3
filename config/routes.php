@@ -127,8 +127,8 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // widgets
     Router::scope('/widgets/customize', ['controller' => 'widgets'], function (RouteBuilder $routes) {
-        $routes->connect('/feed', ['action' => 'customize_feed']);
-        $routes->connect('/month', ['action' => 'customize_month']);
+        $routes->connect('/feed', ['action' => 'customizeFeed']);
+        $routes->connect('/month', ['action' => 'customizeMonth']);
     });
 
     // downloadable content
