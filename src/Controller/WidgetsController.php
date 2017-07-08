@@ -707,16 +707,22 @@ class WidgetsController extends AppController
     public function customizeFeed()
     {
         $this->setDemoDataPr('feed');
-        $this->set('titleForLayout', 'Customize Feed Widget');
+        $this->set([
+            'titleForLayout' => 'Customize Feed Widget',
+            'type' => 'feed'
+        ]);
         $this->viewBuilder()->layout('no_sidebar');
-        $this->render('customize/feed');
+        $this->render('customize');
     }
 
     public function customizeMonth()
     {
         $this->setDemoDataPr('month');
-        $this->set('titleForLayout', 'Customize Month Widget');
+        $this->set([
+            'titleForLayout' => 'Customize Feed Widget',
+            'type' => 'month'
+        ]);
         $this->viewBuilder()->layout('no_sidebar');
-        $this->render('customize/month');
+        $this->render('customize');
     }
 }

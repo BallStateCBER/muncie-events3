@@ -1,6 +1,3 @@
-<h3>
-	<a href="#">Size</a>
-</h3>
 <div>
 	<label for="WidgetHeight">
 		Height:
