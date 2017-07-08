@@ -302,6 +302,14 @@
                     </div>
                 </td>
             </tr>
+            <?php if ($this->request->params['action'] == 'LOLIMAPLACEHOLDER' && ! $this->request->session()->read('Auth.User.id')): ?>
+                <tr>
+                    <th>Spam Protection</th>
+                    <td>
+                        <?php echo $this->element('recaptcha', array('label' => false)); ?>
+                    </td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 <?= $this->Form->button(__('Submit')) ?>

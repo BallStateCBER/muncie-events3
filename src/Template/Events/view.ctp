@@ -81,7 +81,7 @@ use Cake\Utility\Inflector;
                     <td><?= $event->age_restrictions; ?></td>
                 </tr>
             <?php endif; ?>
-            <?php if ($event->series_id && $event->event_series->title): ?>
+            <?php if (isset($event->series_id) && isset($event->event_series->title)): ?>
                 <tr>
                     <th>Series</th>
                     <td>

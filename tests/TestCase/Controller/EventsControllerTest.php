@@ -15,10 +15,42 @@ class EventsControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testLoginRedirectWhenAddingEvents()
+    public function testAddingEventAnonymously()
     {
         $this->get('/events/add');
-        $this->assertRedirectContains('/login');
+        $this->assertResponseOk();
+
+        $event = [
+            'title' => 'Placeholder Party',
+            'category_id' => 13,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'Mr. Placeholder\'s Place',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly'
+        ];
+
+        $this->post('/events/add', $event);
+        $this->assertResponseSuccess();
+
+        $this->Events = TableRegistry::get('Events');
+        $event = $this->Events->find()
+            ->where(['title' => $event['title']])
+            ->first();
+
+        if ($event->id) {
+            $this->assertResponseSuccess();
+            $this->Events->delete($event);
+            return;
+        }
+        if (!$event->id) {
+            $this->assertResponseError();
+        }
     }
 
     /**
