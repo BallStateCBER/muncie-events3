@@ -2,11 +2,10 @@
 
 use Cake\Routing\Router;
 
-if (!isset($canEdit)) {
-    $userId = $this->request->session()->read('Auth.User.id');
-    $user_role = $this->request->session()->read('Auth.User.role');
-    $canEdit = $userId && ($user_role == 'admin' || $userId == $event['user_id']);
-}
+$userId = $this->request->session()->read('Auth.User.id');
+    $userRole = $this->request->session()->read('Auth.User.role') ?: null;
+    $canEdit = $userId && ($userRole == 'admin' || $userId == $event['user_id']);
+
     $eventUrl = Router::url([
         'controller' => 'events',
         'action' => 'view',
@@ -14,12 +13,12 @@ if (!isset($canEdit)) {
     ], true);
 ?>
 <div class="actions">
-    <?php /* echo $this->Facebook->like([
+    <?= $this->Facebook->likeButton([
         'href' => $eventUrl,
         'show_faces' => false,
         'layout' => 'button_count',
         'app_id' => '496726620385625'
-    ]); */ ?>
+    ]); ?>
     <div class="export_options_container">
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',
@@ -121,7 +120,7 @@ if (!isset($canEdit)) {
             ); ?>
         </div>
     </div>
-    <?php if ($user_role == 'admin' && !$event['approved_by']): ?>
+    <?php if ($userRole == 'admin' && !$event['approved_by']): ?>
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/tick.png').'Approve',
             [

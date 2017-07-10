@@ -62,7 +62,7 @@ class PagesControllerTest extends IntegrationTestCase
         $data = [
             'category' => 'General',
             'name' => 'Placeholder Man',
-            'email' => 'placeholder@gmail.com',
+            'email' => 'ericadeefox@gmail.com',
             'body' => 'I am a placeholder'
         ];
 

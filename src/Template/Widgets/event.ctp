@@ -7,10 +7,6 @@ use Cake\Routing\Router;
     <h1 class="title">
         <?= $event->title; ?>
     </h1>
-    <?php
-        echo $this->element('events/actions', ['event' => $event, 'can_edit' => false]);
-        $this->Js->buffer("setupEventActions('.event');");
-    ?>
     <div class="header_details">
         <table class="details">
             <tr>
@@ -44,14 +40,10 @@ use Cake\Routing\Router;
                             echo ': <span class="tags">';
                             $linked_tags = [];
                             foreach ($event->tags as $tag) {
-                                $linked_tags[] = $tag['name'];
-                                /*
                                 $linked_tags[] = $this->Html->link($tag['name'], [
                                     'controller' => 'events',
-                                    'action' => 'index',
-                                    'tag' => $tag['id'].'_'.Inflector::slug($tag['name'])
-                                ));
-                                */
+                                    'action' => 'tag', $tag['id'].'_'.$tag['name']
+                                ]);
                             }
                             echo implode(', ', $linked_tags);
                             echo '</div>';
