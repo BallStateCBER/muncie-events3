@@ -302,11 +302,11 @@
                     </div>
                 </td>
             </tr>
-            <?php if ($this->request->params['action'] == 'LOLIMAPLACEHOLDER' && ! $this->request->session()->read('Auth.User.id')): ?>
+            <?php if ($this->request->params['action'] == 'add' && !$this->request->session()->read('Auth.User.id')): ?>
                 <tr>
                     <th>Spam Protection</th>
                     <td>
-                        <?php echo $this->element('recaptcha', array('label' => false)); ?>
+                        <div class="g-recaptcha" data-sitekey="6Lcg6tkSAAAAALkenFi1dIQ5B-4BVLJur5hYl-2J"></div>
                     </td>
                 </tr>
             <?php endif; ?>
