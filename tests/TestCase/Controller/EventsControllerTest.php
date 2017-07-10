@@ -124,6 +124,55 @@ class EventsControllerTest extends IntegrationTestCase
     }
 
     /**
+     * test event add when an admin
+     * to make sure the event is automatically published
+     * or, at the very least, not automatically approved and then not published
+     *
+     * @return void
+     */
+    public function testAddingEventsWhenAnAdmin()
+    {
+        $this->session(['Auth.User.id' => 1]);
+        $this->session(['Auth.User.role' => 'admin']);
+        $this->get('/events/add');
+        $this->assertResponseOk();
+
+        $event = [
+            'title' => 'Get better soon Jessica!',
+            'category_id' => 13,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'Nashville',
+            'location_details' => 'Tennessee',
+            'address' => '666 Placeholder Place',
+            'description' => 'Hope JLM feels better from her surgery!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Insta'
+        ];
+
+        $this->post('/events/add', $event);
+        $this->assertResponseSuccess();
+
+        $this->Events = TableRegistry::get('Events');
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $event = $this->Events->find()
+            ->where(['title' => $event['title']])
+            ->andWhere(['published' => 1])
+            ->firstOrFail();
+
+        if ($event->id) {
+            $this->assertResponseSuccess();
+            $this->get("/events/delete/$event->id");
+            return;
+        }
+        if (!$event->id) {
+            $this->assertResponseError();
+        }
+    }
+
+    /**
      * test approving/publishing events
      * from an admin account
      *
