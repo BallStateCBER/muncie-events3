@@ -833,7 +833,7 @@ class EventsController extends AppController
         $userId = $this->request->session()->read('Auth.User.id') ?: null;
         $this->request->data['user_id'] = $userId;
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
-            $this->request->data['approved_by'] = $this->request->session()->read('Auth.User.id');
+            $this->request->data['approved_by'] = $userId;
             $this->request->data['published'] = true;
         }
     }
