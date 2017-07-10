@@ -12,14 +12,14 @@
         "cakephp/plugin-installer": "*",
         "josegonzalez/dotenv": "dev-master",
         "oldskool/cakephp-js": "dev-master",
-        "facebook/graph-sdk": "^5.4",
         "ivanamat/cakephp3-captcha": "^1.0",
         "akkaweb/cakephp-ckeditor": "dev-master",
         "josegonzalez/cakephp-upload": "^3.6",
         "friendsofcake/search": "^2.4",
         "dereuromark/cakephp-tools": "^1.4",
         "eluceo/ical": "^0.11.3",
-        "dereuromark/cakephp-setup": "dev-master"
+        "dereuromark/cakephp-setup": "dev-master",
+        "akkaweb/cakephp-facebook": "dev-master"
     },
     "require-dev": {
         "psy/psysh": "@stable",

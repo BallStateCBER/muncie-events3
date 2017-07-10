@@ -20,13 +20,13 @@
     </div>
     <?= $this->Form->button(__('Login'), ['class' => 'btn btn-secondary btn-sm']); ?>
     <?= $this->Form->end() ?>
-    Or log in with Facebook: <?php /*echo $this->Facebook->login(array(
+    Or log in with Facebook: <?= $this->Facebook->loginLink([
         'label' => 'Log in with Facebook',
         'img' => 'fb_login.png',
         'show-faces' => false,
         'perms' => 'email,user_events,create_event,rsvp_event',
-        'redirect' => "/users/confirm_facebook_login?redirect=$redirect"
-    )); */ ?>
+        'redirect' => "/users/confirm_facebook_login"
+    ]); ?>
 </div>
 
 Don't have an account yet?

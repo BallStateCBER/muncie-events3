@@ -46,7 +46,7 @@ use Cake\Routing\Router;
                         ?>
                     <?php endif; ?>
                     <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]); ?>
-                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $event->id; ?>">
+                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $event->id; ?>" target="_blank">
                         <?= $this->Icon->category($event->category->name); ?>
                         <div class="title">
                             <?= $event->title; ?>
@@ -91,7 +91,7 @@ use Cake\Routing\Router;
                         ?>
                     <?php endif; ?>
                     <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $daysEvents->id]); ?>
-                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $daysEvents->id; ?>">
+                    <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $daysEvents->id; ?>" target="_blank">
                         <?= $this->Icon->category($daysEvents->category->name); ?>
                         <div class="title">
                             <?= $daysEvents->title; ?>
