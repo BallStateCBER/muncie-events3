@@ -35,22 +35,22 @@ use Cake\Routing\Router;
                         <?php echo $day; ?>
                     </span>
                     <span class="time">
-                        <?php echo date('g:ia', strtotime($event->time_start)); ?>
-                        <?php if ($event->time_end): ?>
-                            - <?php echo date('g:ia', strtotime($event->time_end)); ?>
+                        <?php echo date('g:ia', strtotime($event['Event']['time_start'])); ?>
+                        <?php if ($event['Event']['time_end']): ?>
+                            - <?php echo date('g:ia', strtotime($event['Event']['time_end'])); ?>
                         <?php endif; ?>
                     </span>
                 </td>
                 <td class="event_title">
                     <h3 class="title">
-                        <?php echo $event->title; ?>
+                        <?php echo $event['Event']['title']; ?>
                     </h3>
                     <div class="description">
-                        <?php echo $event->description; ?>
+                        <?php echo $event['Event']['description']; ?>
                     </div>
                 </td>
                 <td class="cost">
-                    <?php echo $event->cost; ?>
+                    <?php echo $event['Event']['cost']; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -20,7 +20,7 @@ class WidgetsController extends AppController
         parent::initialize();
         // anyone can access widgets
         $this->Auth->allow([
-            'customizeFeed', 'customizeMonth', 'day', 'demoFeed', 'demoMonth', 'event', 'feed', 'index', 'month'
+            'customizeFeed', 'customizeMonth', 'day', 'demoFeed', 'demoMonth', 'event', 'feed', 'index', 'month', 'venue'
         ]);
         $this->loadModel('Events');
     }
@@ -489,12 +489,12 @@ class WidgetsController extends AppController
 
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
-    #    if (!empty($options)) {
-    #        $events = $this->Events->getUpcomingFilteredEvents($options);
-    #    }
-    #    if (empty($options)) {
+        if (!empty($options)) {
+            $events = $this->Events->getUpcomingFilteredEvents($options);
+        }
+        if (empty($options)) {
             $events = $this->Events->getUpcomingEvents();
-    #    }
+        }
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
@@ -502,8 +502,10 @@ class WidgetsController extends AppController
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
+        $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         $this->set([
+            'all_events_url' => $this->getAllEventsUrlPr('feed', $queryString),
             'titleForLayout' => 'Upcoming Events',
             'isAjax' => $this->request->is('ajax'),
             'filters' => $filters,
@@ -521,6 +523,12 @@ class WidgetsController extends AppController
 
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
+        if (!empty($options)) {
+            $events = $this->Events->getUpcomingFilteredEvents($options);
+        }
+        if (empty($options)) {
+            $events = $this->Events->getUpcomingEvents();
+        }
         // Process various date information
         if (!$yearMonth) {
             $yearMonth = date('Y-m');
@@ -538,7 +546,6 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y').date('m').date('j');
 
-        $events = $this->Events->getUpcomingEvents();
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
@@ -565,14 +572,14 @@ class WidgetsController extends AppController
         $this->set([
             'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 1,
-            'allEventsUrl' => $this->getAllEventsUrlPr('month', $queryString),
+            'all_events_url' => $this->getAllEventsUrlPr('month', $queryString),
             'categories' => $this->Events->Categories->getAll(),
             'customStyles' => $this->customStyles
         ]);
         $this->set(compact(
             'month', 'year', 'timestamp', 'preSpacer', 'lastDay',
             'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today',
-            'monthName', 'eventsForJson', 'filters'
+            'monthName', 'eventsForJson', 'filters', 'options'
         ));
     }
 
@@ -659,30 +666,25 @@ class WidgetsController extends AppController
             $startingDate = date('Y-m-d');
         }
 
-        $eventResults = $this->Events->find('all', [
-            'conditions' => [
+        // $eventResults initially had a limit 1 so deal w that when you need to?
+        $eventResults = $this->Events->find()
+            ->where([
                 'published' => 1,
                 'date >=' => $startingDate,
                 'location LIKE' => $venueName
-            ],
-            'fields' => ['id', 'title', 'date', 'time_start', 'time_end', 'cost', 'description'],
-            'contain' => false,
-            'order' => ['date', 'time_start'],
-            'limit' => 1
-        ]);
+            ])
+            ->order(['date' => 'ASC']);
         $events = [];
         foreach ($eventResults as $result) {
-            $date = $result['Event']['date'];
+            $date = date_format($result->date, 'Y-m-d');
             $events[$date][] = $result;
         }
         if ($this->request->is('ajax')) {
             $this->viewBuilder()->layout('widgets/ajax');
         }
-        if (!$this->request->is('ajax')) {
-            $this->viewBuilder()->layout('widgets/venue');
-        }
         $this->set([
             'events' => $events,
+            'eventResults' => $eventResults,
             'titleForLayout' => 'Upcoming Events',
             'is_ajax' => $this->request->is('ajax'),
             'startingDate' => $startingDate,
@@ -719,7 +721,7 @@ class WidgetsController extends AppController
     {
         $this->setDemoDataPr('month');
         $this->set([
-            'titleForLayout' => 'Customize Feed Widget',
+            'titleForLayout' => 'Customize Month Widget',
             'type' => 'month'
         ]);
         $this->viewBuilder()->layout('no_sidebar');
