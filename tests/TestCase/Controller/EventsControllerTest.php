@@ -1,6 +1,8 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+#session_start();
+
 use App\Controller\EventsController;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
@@ -17,11 +19,13 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testAddingEventAnonymously()
     {
+        $this->session(['Facebook.state']);
+
         $this->get('/events/add');
         $this->assertResponseOk();
 
         $event = [
-            'title' => 'Placeholder Party',
+            'title' => 'Anonymous event!',
             'category_id' => 13,
             'date' => date('m/d/Y'),
             'time_start' => date('Y-m-d'),

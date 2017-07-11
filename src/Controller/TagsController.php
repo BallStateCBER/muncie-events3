@@ -657,11 +657,12 @@ class TagsController extends AppController
     public function emptyDeleteGroup()
     {
         $deleteGroupId = $this->Tags->getDeleteGroupId();
-        $children = $this->Tags->children($deleteGroupId, true, ['id']);
+        $children = $this->Tags->find('children', ['for' => $deleteGroupId]);
         foreach ($children as $child) {
-            $this->Tags->delete($child->id);
+            $this->Tags->delete($child);
         }
-        return $this->Flash->success('Delete group emptied.');
+        $this->Flash->success('Delete group emptied.');
+        $this->render('/Tags/flash');
     }
 
     public function edit($tagName = null)
