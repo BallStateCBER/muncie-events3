@@ -139,18 +139,11 @@ class EventsTable extends Table
 
     public function getUpcomingFilteredEvents($options)
     {
-        $events = $this
-            ->find('all', [
+        $events = $this->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-        ]);
-        foreach ($options as $key => $val) {
-            if (!is_int($val)) {
-                $val= intval($val);
-            }
-            $events->where([$key => $val]);
-        };
-        $events->toArray();
+            'conditions' => $options])
+            ->order(['date' => 'ASC'])
+            ->toArray();
         return $events;
     }
 

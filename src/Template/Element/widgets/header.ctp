@@ -22,15 +22,15 @@
         <div>
             Currently showing only the following kinds of events:
             <ul>
-                <?php if (isset($filters['category'])): ?>
+                <?php if (isset($filters['category_id'])): ?>
                     <li>
                         <strong>
-                            <?= count($filters['category']) == 1 ? 'Category' : 'Categories'; ?>:
+                            <?= count($filters['category_id']) == 1 ? 'Category' : 'Categories'; ?>:
                         </strong>
                         <?php
                             $category_names = [];
-                            foreach ($filters['category'] as $cat_id) {
-                                $category_names[] = $categories[$cat_id];
+                            foreach ($filters['category_id'] as $cat_id) {
+                                $category_names[] = $cat_id;
                             }
                             echo $this->Text->toList($category_names);
                         ?>

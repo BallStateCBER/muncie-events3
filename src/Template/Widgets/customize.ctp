@@ -1,4 +1,4 @@
-<h1 class="page_title">Event Feed</h1>
+<h1 class="page_title"><?= $titleForLayout ?></h1>
 
 <?= $this->Html->link(
     '&larr; Back to Widgets Overview',
@@ -15,6 +15,27 @@
             </h3>
             <div id="WidgetFilterOptions">
                 <?= $this->element('widgets/customize/events'); ?>
+
+                <?php if ($this->request->action == 'customizeMonth'): ?>
+                    <div class="checkbox">
+                        <input type="hidden" name="showIcons" value="0" />
+                        <input type="checkbox" name="showIcons" checked="checked" value="1" class="option" id="WidgetShowIcons" />
+                        <label for="WidgetShowIcons">
+                            Show category icons
+                        </label>
+                    </div>
+                    <div class="checkbox" id="WidgetHideGEIcon_wrapper">
+                        <input type="hidden" name="hideGeneralEventsIcon" value="0" />
+                        <input type="checkbox" name="hideGeneralEventsIcon" value="1" class="option" id="WidgetHideGEIcon" />
+                        <label for="WidgetHideGEIcon">
+                            But not the 'General Events' icon
+                        </label>
+                    </div>
+                    <p class="text-muted">
+                        Additional events will be hidden under a "X more events" link.
+                    </p>
+                <?php endif; ?>
+
             </div>
 
             <h3>
