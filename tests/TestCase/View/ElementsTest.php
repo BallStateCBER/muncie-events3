@@ -19,14 +19,19 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Network\Request;
 use Cake\Network\Response;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\AppControllerTest;
 use Cake\View\Exception\MissingTemplateException;
 
 /**
  * ElementsTest class
  */
-class ElementsTest extends IntegrationTestCase
+class ElementsTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /*
      * test that sidebars are populating
      */
