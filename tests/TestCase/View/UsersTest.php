@@ -3,18 +3,13 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class UsersViewTest extends AppControllerTest
+class UsersViewTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * Test index method
      *
