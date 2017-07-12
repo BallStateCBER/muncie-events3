@@ -3,13 +3,18 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\WidgetsController;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\AppControllerTest;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class WidgetsViewTest extends IntegrationTestCase
+class WidgetsViewTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * Test widgets index
      *

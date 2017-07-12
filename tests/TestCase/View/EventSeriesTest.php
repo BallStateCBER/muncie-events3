@@ -3,13 +3,18 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\CategoriesController;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\AppControllerTest;
 
 /**
  * App\Controller\CategoriesController Test Case
  */
-class EventsSeriesViewTest extends IntegrationTestCase
+class EventsSeriesViewTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * Test that events series are viewable
      *
