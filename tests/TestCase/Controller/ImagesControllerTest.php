@@ -2,13 +2,18 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\ImagesController;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\AppControllerTest;
 
 /**
  * App\Controller\ImagesController Test Case
  */
-class ImagesControllerTest extends IntegrationTestCase
+class ImagesControllerTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * Test index method
      *

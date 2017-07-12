@@ -3,14 +3,18 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\WidgetsController;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookRedirectLoginHelper;
+use App\Test\TestCase\AppControllerTest;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class WidgetsViewTest extends IntegrationTestCase
+class WidgetsViewTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * Test widgets index
      *
@@ -18,13 +22,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testWidgetsIndex()
     {
-        $helper = new FacebookRedirectLoginHelper(
-            'PLACEHOLDER',
-            'PLACEHOLDER',
-            'PLACEHOLDER'
-        );
-        $helper->disableSessionStatusCheck();
-
         $this->get('/widgets');
         $this->assertResponseOk();
         $this->assertResponseContains('Website Widgets</h1>');
@@ -38,13 +35,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testCustomizer()
     {
-        $helper = new FacebookRedirectLoginHelper(
-            'PLACEHOLDER',
-            'PLACEHOLDER',
-            'PLACEHOLDER'
-        );
-        $helper->disableSessionStatusCheck();
-
         $customizer = '<div class="widget_demo col-lg-7" id="widget_demo"></div>';
 
         $this->get('/widgets/customize/feed');
@@ -63,13 +53,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testFeedWidget()
     {
-        $helper = new FacebookRedirectLoginHelper(
-            'PLACEHOLDER',
-            'PLACEHOLDER',
-            'PLACEHOLDER'
-        );
-        $helper->disableSessionStatusCheck();
-
         $this->Events = TableRegistry::get('Events');
 
         $this->get('/widgets/feed');
@@ -89,13 +72,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testMonthWidget()
     {
-        $helper = new FacebookRedirectLoginHelper(
-            'PLACEHOLDER',
-            'PLACEHOLDER',
-            'PLACEHOLDER'
-        );
-        $helper->disableSessionStatusCheck();
-
         $this->Events = TableRegistry::get('Events');
 
         $this->get('/widgets/month');
