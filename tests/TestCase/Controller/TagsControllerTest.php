@@ -3,13 +3,18 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\TagsController;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\AppControllerTest;
 
 /**
  * App\Controller\TagsController Test Case
  */
-class TagsControllerTest extends IntegrationTestCase
+class TagsControllerTest extends AppControllerTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
     /**
      * Test adding tags
      *
