@@ -2,18 +2,13 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\MailingListController;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\MailingListController Test Case
  */
-class MailingListControllerTest extends AppControllerTest
+class MailingListControllerTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * Test index method
      *

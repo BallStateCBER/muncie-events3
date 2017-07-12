@@ -26,6 +26,7 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class ApplicationTest extends IntegrationTestCase
 {
+
     /**
      * testMiddleware
      *
