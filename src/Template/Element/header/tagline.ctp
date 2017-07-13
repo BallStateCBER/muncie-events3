@@ -1,13 +1,14 @@
 <?php
     $phrases = [
-        'we\'ll MEet you there',
-        'pencil ME in',
-        'party tiME',
-        'coME out and play',
-        'let\'s MEet up',
-        'show tiME',
         'make MEmories',
-        'coME as you are'
+        'coME as you are',
+        'community engageMEnt',
+        'city empowerMEnt',
+        'MEet your neighbors',
+        'the tiME is now',
+        'welcoME hoME',
+        'have unforgettable moMEnts',
+        'a time to reMEmber'
     ];
     $phrase = $phrases[array_rand($phrases)];
     if (in_array(substr($phrase, -1), ['.', '?', '!'])) {

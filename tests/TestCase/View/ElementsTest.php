@@ -19,19 +19,16 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Network\Request;
 use Cake\Network\Response;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
 use Cake\View\Exception\MissingTemplateException;
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * ElementsTest class
  */
-class ElementsTest extends AppControllerTest
+class ElementsTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /*
      * test that sidebars are populating
      */

@@ -5,18 +5,16 @@ use App\Controller\UsersController;
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\Routing\Router;
+use Cake\TestSuite\IntegrationTestCase;
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class UsersControllerTest extends AppControllerTest
+class UsersControllerTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * Test registration
      *

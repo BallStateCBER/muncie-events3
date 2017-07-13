@@ -3,28 +3,15 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class UsersViewTest extends AppControllerTest
+class UsersViewTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
-    /**
-     * Test index method
-     *
-     * @return void
-     */
-    public function testIndex()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
     /**
      * Test view method
      *

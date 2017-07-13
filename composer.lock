@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e968fec7e66cfdda63fb2a229f1085e8",
-    "content-hash": "64d24b4c2ed0d27dd71a60e726e29dc7",
+    "hash": "0a5595a0c8473a77c009f0e64083bf28",
+    "content-hash": "210badbbcefee2a688d5b2a721fad8dc",
     "packages": [
         {
             "name": "akkaweb/cakephp-ckeditor",

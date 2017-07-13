@@ -3,18 +3,13 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\EventSeriesController;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\EventSeriesController Test Case
  */
-class EventSeriesControllerTest extends AppControllerTest
+class EventSeriesControllerTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * test event add page when logged in and adding a series
      *
@@ -24,6 +19,7 @@ class EventSeriesControllerTest extends AppControllerTest
     {
         $this->session(['Auth.User.id' => 74]);
         $this->get('/events/add');
+
         $this->assertResponseOk();
 
         $dates = [date('m/d/Y'), date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
