@@ -3,18 +3,15 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\WidgetsController;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class WidgetsViewTest extends AppControllerTest
+class WidgetsViewTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * Test widgets index
      *

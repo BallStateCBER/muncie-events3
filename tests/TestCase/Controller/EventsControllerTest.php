@@ -1,20 +1,15 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\AppControllerTest;
 use App\Controller\EventsController;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\EventsController Test Case
  */
-class EventsControllerTest extends AppControllerTest
+class EventsControllerTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * test event add page when logged out
      *
@@ -69,7 +64,7 @@ class EventsControllerTest extends AppControllerTest
 
         $this->get('/moderate');
 
-        $this->assertRedirect('/');
+        $this->assertRedirect('/login?redirect=%2Fmoderate');
     }
 
     /**

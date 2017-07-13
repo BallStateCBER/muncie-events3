@@ -3,18 +3,15 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\CategoriesController;
 use Cake\ORM\TableRegistry;
-use App\Test\TestCase\AppControllerTest;
+use Cake\TestSuite\IntegrationTestCase;
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\CategoriesController Test Case
  */
-class EventsSeriesViewTest extends AppControllerTest
+class EventsSeriesViewTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     /**
      * Test that events series are viewable
      *
