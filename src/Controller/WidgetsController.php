@@ -46,7 +46,7 @@ class WidgetsController extends AppController
                 'outerBorder' => 1
             ],
             'eventOptions' => [
-                'category_id' => '',
+                'category' => '',
                 'location' => '',
                 'tags_included' => '',
                 'tags_excluded' => ''
@@ -140,7 +140,7 @@ class WidgetsController extends AppController
                 }
             }
         }
-        return http_build_query($iframeParams, '', '&amp;');
+        return http_build_query($iframeParams, '', '&');
     }
 
     /**
@@ -458,20 +458,14 @@ class WidgetsController extends AppController
         $iframeQueryString = str_replace(['%3D', '%25'], ['=', '%'], $this->getIframeQueryString());
         $options = $this->getOptions();
         $iframeStyles = $this->getIframeStyles($options);
-        $iframeUrl = Router::url([
+        $codeUrl = Router::url([
             'controller' => 'widgets',
             'action' => $widgetType,
             '?' => $iframeQueryString
         ], true);
-        $codeUrl = Router::url([
-            'controller' => 'widgets',
-            'action' => $widgetType,
-            '?' => str_replace('&', '&amp;', $iframeQueryString)
-        ], true);
         $this->set([
             'defaults' => $this->getDefaults(),
             'iframeStyles' => $iframeStyles,
-            'iframeUrl' => str_replace('0=', '', urldecode($iframeUrl)),
             'codeUrl' => str_replace('0=', '', urldecode($codeUrl)),
             'categories' => $this->Events->Categories->getAll(),
             'options' => $options,
@@ -623,7 +617,7 @@ class WidgetsController extends AppController
                     $filteredParams[$var] = $val;
                 }
             }
-            $newQueryString = http_build_query($filteredParams, '', '&amp;');
+            $newQueryString = http_build_query($filteredParams, '', '&');
         }
         return Router::url([
             'controller' => 'widgets',

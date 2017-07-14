@@ -1,4 +1,4 @@
-<iframe style="<?= $iframeStyles; ?>" src="<?= $iframeUrl; ?>"></iframe>
+<iframe style="<?= $iframeStyles; ?>" src="<?= $codeUrl; ?>"></iframe>
 <p>
 	To include this widget in your webpage, insert the following code where you would like it to appear:
 	<code>
