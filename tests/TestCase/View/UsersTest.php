@@ -2,9 +2,10 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
+use Cake\Http\ServerRequest;
+use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookSession;
 use Facebook\FacebookRedirectLoginHelper;
 
 /**
@@ -48,6 +49,14 @@ class UsersViewTest extends IntegrationTestCase
      */
     public function testViewWithBioAndEvents()
     {
+        // Setup our component and fake test controller
+        $request = new ServerRequest();
+        $response = new Response();
+        $this->Fbrlh = $this->getMockBuilder('Facebook\FacebookRedirectLoginHelper')
+            ->setConstructorArgs([$request, $response])
+            ->setMethods(null)
+            ->getMock();
+
         $this->get('/user/1');
 
         $this->assertResponseOk();

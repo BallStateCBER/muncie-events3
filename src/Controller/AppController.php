@@ -14,6 +14,7 @@
  */
 namespace App\Controller;
 
+use AkkaFacebook\Controller\Component\GraphComponent;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\I18n\Time;

@@ -64,7 +64,7 @@ class EventsControllerTest extends IntegrationTestCase
 
         $this->get('/moderate');
 
-        $this->assertRedirect('/login?redirect=%2Fmoderate');
+        $this->assertRedirect('/');
     }
 
     /**
