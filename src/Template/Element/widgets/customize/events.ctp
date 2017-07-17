@@ -12,7 +12,7 @@
         </label>
         <br />
         <?php foreach ($headerVars['categories'] as $category): ?>
-            <input type="checkbox" value="<?= $category->name; ?>" id="WidgetCat<?= $category->id; ?>" class="category" checked="checked" />
+            <input type="checkbox" value="<?= $category->id; ?>" id="WidgetCat<?= $category->id; ?>" class="category" checked="checked" />
             <label for="WidgetCat<?= $category->id; ?>">
                 <?= $this->Icon->category($category->name); ?>
                 <?= $category->name; ?>
