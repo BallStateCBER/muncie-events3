@@ -8,7 +8,8 @@
         'the tiME is now',
         'welcoME hoME',
         'have unforgettable moMEnts',
-        'a time to reMEmber'
+        'a time to reMEmber',
+        'seize the moMEnt'
     ];
     $phrase = $phrases[array_rand($phrases)];
     if (in_array(substr($phrase, -1), ['.', '?', '!'])) {
