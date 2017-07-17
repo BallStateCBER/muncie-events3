@@ -139,11 +139,73 @@ class EventsTable extends Table
 
     public function getUpcomingFilteredEvents($options)
     {
+        $params = [];
+        $params[] = ['date >=' => date('Y-m-d')];
+        foreach ($options as $param => $value) {
+            $categories = '';
+            if ($param == 'category') {
+                $cats = explode(',', $value);
+                foreach ($cats as $cat) {
+                    $categories  .= "category_id = $cat OR ";
+                }
+                $categories = substr($categories, 0, -4);
+                $categories = '(' . $categories;
+                $categories .= ')';
+                $params[] = $categories;
+            }
+
+            if ($param == 'location') {
+                $params[] = ['location' => $value];
+            }
+
+            if ($param == 'tags_included') {
+                $tagsIncluded = '';
+                $tags = explode(',', $value);
+                foreach ($tags as $tagName) {
+                    $tag = $this->Tags->find()
+                        ->where(['name' => $tagName])
+                        ->first();
+
+                    $eventTags = $this->EventsTags->find()
+                        ->where(['tag_id' => $tag['id']]);
+
+                    foreach ($eventTags as $eventTag) {
+                        $tagsIncluded .= "Events.id = $eventTag->event_id OR ";
+                    }
+                }
+                $tagsIncluded = substr($tagsIncluded, 0, -4);
+                $tagsIncluded = '(' . $tagsIncluded;
+                $tagsIncluded .= ')';
+
+                $params[] = $tagsIncluded;
+            }
+
+            if ($param == 'tags_excluded') {
+                $tagsExcluded = '';
+                $tags = explode(',', $value);
+                foreach ($tags as $tagName) {
+                    $tag = $this->Tags->find()
+                        ->where(['name' => $tagName])
+                        ->first();
+
+                    $eventTags = $this->EventsTags->find()
+                        ->where(['tag_id' => $tag['id']]);
+
+                    foreach ($eventTags as $eventTag) {
+                        $tagsExcluded .= "Events.id != $eventTag->event_id OR ";
+                    }
+                }
+                $tagsExcluded = substr($tagsExcluded, 0, -4);
+                $tagsExcluded = '(' . $tagsExcluded;
+                $tagsExcluded .= ')';
+
+                $params[] = $tagsExcluded;
+            }
+        }
         $events = $this->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'conditions' => $options])
-            ->order(['date' => 'ASC'])
-            ->toArray();
+            'conditions' => $params
+        ])->toArray();
         return $events;
     }
 
