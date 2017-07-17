@@ -3,6 +3,7 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\WidgetsController;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
 use Facebook\FacebookSession;
 use Facebook\FacebookRedirectLoginHelper;
@@ -19,31 +20,111 @@ class WidgetsControllerTest extends IntegrationTestCase
      */
     public function testFeedCustomizer()
     {
+        $this->Events = TableRegistry::get('Events');
         $this->get('/widgets/customize/feed');
         $this->assertResponseOk();
 
-        $feed = [
-            'use_custom_categories' => 0,
-            'use_custom_locations' => 0,
-            'use_custom_tag_include' => 0,
-            'use_custom_tag_exclude' => 0,
-            'textColorDefault' => '#9966cc',
-            'testColorLight' => '#9966cc',
-            'textColorLink' => '#9966cc',
-            'borderColorLight' => '#9966cc',
-            'borderColorDark' => '#9966cc',
-            'outerBorder' => 1,
-            'backgroundColorDefault' => '#9966cc',
-            'backgroundColorAlt' => '#9966cc',
-            'height' => '#666px',
-            'width' => '#100%'
+        $dummyEvent = [
+            'title' => 'Widget!',
+            'category_id' => 13,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'PlaceholderTown',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    527
+                ]
+            ]
         ];
 
-        $this->post('/widgets/customize/feed', $feed);
-        $this->assertResponseOk();
+        $this->post('/events/add', $dummyEvent);
+        $this->assertResponseSuccess();
 
-        #$this->assertResponseContains('feed?textColorLight=%239966cc&amp;textColorLink=%239966cc&amp;borderColorLight=%239966cc&amp;borderColorDark=%239966cc&amp;backgroundColorDefault=%239966cc&amp;backgroundColorAlt=%239966cc');
-        #$this->assertResponseContains('<iframe style="height:666px;width:666px;border:1px solid #9966cc;"');
+        $dummyEvent = [
+            'title' => 'Twidget!',
+            'category_id' => 9,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'PlaceholderTown',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    527
+                ]
+            ]
+        ];
+
+        $this->post('/events/add', $dummyEvent);
+        $this->assertResponseSuccess();
+
+        $dummyEvent = [
+            'title' => 'Twidget!',
+            'category_id' => 13,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'PlaceholderTown',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    527, 528
+                ]
+            ]
+        ];
+
+        $this->post('/events/add', $dummyEvent);
+        $this->assertResponseSuccess();
+
+        $dummyEvent = [
+            'title' => 'Twidget!',
+            'category_id' => 13,
+            'date' => date('m/d/Y'),
+            'time_start' => date('Y-m-d'),
+            'time_end' => strtotime('+1 hour'),
+            'location' => 'Mr. Placeholder\'s Casa',
+            'location_details' => 'Room 6',
+            'address' => '666 Placeholder Place',
+            'description' => 'Come out with my support!',
+            'cost' => '$6',
+            'age_restriction' => '66 or younger',
+            'source' => 'Placeholder Digest Tri-Weekly',
+            'data' => [
+                'Tags' => [
+                    527
+                ]
+            ]
+        ];
+
+        $this->post('/events/add', $dummyEvent);
+        $this->assertResponseSuccess();
+
+        $this->get(Router::url([
+            'controller' => 'widgets',
+            'action' => 'feed',
+            '?' => 'hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food'
+        ]));
+        $this->assertResponseOk();
+        $this->assertResponseContains('Widget!');
+        $this->assertResponseNotContains('Twidget!');
+        $this->assertResponseNotContains('<i class="icon icon-general-events" title="General Events"></i>');
     }
 
     /**
@@ -55,5 +136,23 @@ class WidgetsControllerTest extends IntegrationTestCase
     {
         $this->get('/widgets/customize/month');
         $this->assertResponseOk();
+
+        $this->get(Router::url([
+            'controller' => 'widgets',
+            'action' => 'month',
+            '?' => 'hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food'
+        ]));
+        $this->assertResponseOk();
+        $this->assertResponseContains('Widget!');
+        $this->assertResponseNotContains('Twidget!');
+        $this->assertResponseNotContains('<i class="icon icon-general-events" title="General Events"></i>');
+
+        $dummies = $this->Events->find()
+            ->where(['title' => 'Widget!'])
+            ->orWhere(['title' => 'Twidget!']);
+
+        foreach ($dummies as $dummy) {
+            $this->Events->delete($dummy);
+        }
     }
 }

@@ -170,12 +170,18 @@ class EventsTable extends Table
                         ->where(['tag_id' => $tag['id']]);
 
                     foreach ($eventTags as $eventTag) {
+                        if (!$eventTag) {
+                            continue;
+                        }
                         $tagsIncluded .= "Events.id = $eventTag->event_id OR ";
                     }
                 }
                 $tagsIncluded = substr($tagsIncluded, 0, -4);
                 $tagsIncluded = '(' . $tagsIncluded;
                 $tagsIncluded .= ')';
+                if ($tagsIncluded == '()') {
+                    continue;
+                }
 
                 $params[] = $tagsIncluded;
             }
@@ -192,12 +198,15 @@ class EventsTable extends Table
                         ->where(['tag_id' => $tag['id']]);
 
                     foreach ($eventTags as $eventTag) {
-                        $tagsExcluded .= "Events.id != $eventTag->event_id OR ";
+                        $tagsExcluded .= "Events.id != $eventTag->event_id AND ";
                     }
                 }
                 $tagsExcluded = substr($tagsExcluded, 0, -4);
                 $tagsExcluded = '(' . $tagsExcluded;
                 $tagsExcluded .= ')';
+                if ($tagsExcluded == '()') {
+                    continue;
+                }
 
                 $params[] = $tagsExcluded;
             }
@@ -205,7 +214,7 @@ class EventsTable extends Table
         $events = $this->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'conditions' => $params
-        ])->toArray();
+        ])->order(['date' => 'ASC'])->toArray();
         return $events;
     }
 

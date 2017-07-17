@@ -78,6 +78,7 @@ class CategoriesTable extends Table
     public function getAll()
     {
         $result = $this->find('all')
+            ->order(['weight'])
             ->toArray();
         if (empty($result)) {
             return "No categories found";
