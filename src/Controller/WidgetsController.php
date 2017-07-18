@@ -114,6 +114,7 @@ class WidgetsController extends AppController
         if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING'))) {
             return '';
         }
+
         $defaults = $this->getDefaults();
         $iframeParams = [];
         $parameters = explode('&', urldecode(filter_input(INPUT_SERVER, 'QUERY_STRING')));
@@ -452,7 +453,7 @@ class WidgetsController extends AppController
         }
     }
 
-    private function setDemoDataPr($widgetType)
+    public function setDemoDataPr($widgetType)
     {
         $this->setType($widgetType);
         $iframeQueryString = str_replace(['%3D', '%25'], ['=', '%'], $this->getIframeQueryString());
