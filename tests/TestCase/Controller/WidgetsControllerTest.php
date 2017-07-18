@@ -21,8 +21,6 @@ class WidgetsControllerTest extends IntegrationTestCase
     public function testFeedCustomizer()
     {
         $this->Events = TableRegistry::get('Events');
-        $this->get('/widgets/customize/feed');
-        $this->assertResponseOk();
 
         $dummyEvent = [
             'title' => 'Widget!',
@@ -116,15 +114,11 @@ class WidgetsControllerTest extends IntegrationTestCase
         $this->post('/events/add', $dummyEvent);
         $this->assertResponseSuccess();
 
-        $this->get(Router::url([
-            'controller' => 'widgets',
-            'action' => 'feed',
-            '?' => 'hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food'
-        ]));
+        $this->get('/widgets/feed' . '?category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food');
         $this->assertResponseOk();
-        $this->assertResponseContains('Widget!');
-        $this->assertResponseNotContains('Twidget!');
-        $this->assertResponseNotContains('<i class="icon icon-general-events" title="General Events"></i>');
+
+        $iframeQueryString =  $this->viewVariable('iframeQueryString');
+        $this->assertEquals('category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString);
     }
 
     /**
@@ -134,18 +128,11 @@ class WidgetsControllerTest extends IntegrationTestCase
      */
     public function testMonthCustomizer()
     {
-        $this->get('/widgets/customize/month');
+        $this->get('/widgets/month' . '?hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food');
         $this->assertResponseOk();
 
-        $this->get(Router::url([
-            'controller' => 'widgets',
-            'action' => 'month',
-            '?' => 'hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food'
-        ]));
-        $this->assertResponseOk();
-        $this->assertResponseContains('Widget!');
-        $this->assertResponseNotContains('Twidget!');
-        $this->assertResponseNotContains('<i class="icon icon-general-events" title="General Events"></i>');
+        $iframeQueryString =  $this->viewVariable('iframeQueryString');
+        $this->assertEquals('hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString);
 
         $dummies = $this->Events->find()
             ->where(['title' => 'Widget!'])
