@@ -44,8 +44,6 @@ class WidgetsControllerTest extends IntegrationTestCase
      */
     public function testFeedCustomizer()
     {
-        $this->Events = TableRegistry::get('Events');
-
         $dummyEvent = [
             'title' => 'Widget!',
             'category_id' => 13,
@@ -155,7 +153,6 @@ class WidgetsControllerTest extends IntegrationTestCase
     {
         $this->get('/widgets/month' . '?hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food');
         $this->assertResponseOk();
-        $this->markTestIncomplete();
 
     /*    $iframeQueryString =  $this->viewVariable('iframeQueryString');
         $this->assertEquals('hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString); */
@@ -167,5 +164,7 @@ class WidgetsControllerTest extends IntegrationTestCase
         foreach ($dummies as $dummy) {
             $this->Events->delete($dummy);
         }
+
+        $this->markTestIncomplete();
     }
 }

@@ -154,9 +154,9 @@ class TagsTable extends Table
     public function getCategoriesWithTags($direction = 'future')
     {
         if ($direction == 'future') {
-            $eventIds = $this->Events->getFutureEventIDs();
+            $eventIds = $this->Events->getFutureEventIds();
         } elseif ($direction == 'past') {
-            $eventIds = $this->Events->getPastEventIDs();
+            $eventIds = $this->Events->getPastEventIds();
         }
         $taggedEventIds = $this->EventsTags->find();
         $taggedEventIds

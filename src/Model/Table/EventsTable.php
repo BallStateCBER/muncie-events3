@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -84,6 +85,8 @@ class EventsTable extends Table
                 'field' => ['title', 'description', 'location']
             ])
             ->add('foo', 'Search.Callback');
+
+        $this->EventsTags = TableRegistry::get('EventsTags');
     }
 
     /**
@@ -124,6 +127,15 @@ class EventsTable extends Table
         'upcomingWithTag' => true,
         'pastWithTag' => true
     ];
+
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['category_id'], 'Categories'));
+        $rules->add($rules->existsIn(['series_id'], 'EventSeries'));
+
+        return $rules;
+    }
 
     public function getUpcomingEvents()
     {
@@ -249,26 +261,6 @@ class EventsTable extends Table
         return $firstDate;
     }
 
-    public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['category_id'], 'Categories'));
-        $rules->add($rules->existsIn(['series_id'], 'EventSeries'));
-
-        return $rules;
-    }
-
-    public function arrangeByDate($events)
-    {
-        $arrangedEvents = [];
-        foreach ($events as $event) {
-            $date = $event->date;
-            $arrangedEvents[$date][] = $event;
-        }
-        ksort($arrangedEvents);
-        return $arrangedEvents;
-    }
-
     public function getLocations()
     {
         $locations = $this->find();
@@ -297,34 +289,6 @@ class EventsTable extends Table
         }
 
         return $retval;
-    }
-
-    public function getPopulatedDates($month = null, $year = null)
-    {
-        $findParams = [
-            'conditions' => ['Events.published' => 1],
-            'fields' => ['DISTINCT Events.date'],
-            'contain' => [],
-            'order' => ['Events.date ASC']
-        ];
-
-        // Apply optional month/year limits
-        if ($month && $year) {
-            $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-            $findParams['conditions']['Events.date LIKE'] = "$year-$month-%";
-            $findParams['limit'] = 31;
-        } elseif ($year) {
-            $findParams['conditions']['Events.date LIKE'] = "$year-%";
-        }
-
-        $dateResults = $this->find('all', $findParams);
-        $dates = [];
-        foreach ($dateResults as $result) {
-            if (isset($result['Events']['date'])) {
-                $dates[] = $result['Events']['date'];
-            }
-        }
-        return $dates;
     }
 
     public function getAllUpcomingEventCounts()
@@ -369,7 +333,7 @@ class EventsTable extends Table
         return $this->getCountInDirectionWithTag('future', $tagId);
     }
 
-    public function getPastEventIDs()
+    public function getPastEventIds()
     {
         $results = $this->find()
             ->select('id')
@@ -386,7 +350,7 @@ class EventsTable extends Table
      * Returns the IDs of all events taking place today and in the future
      * @return array
      */
-    public function getFutureEventIDs()
+    public function getFutureEventIds()
     {
         $results = $this->find()
             ->select('id')

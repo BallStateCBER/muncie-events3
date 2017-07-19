@@ -352,18 +352,6 @@ class EventsController extends AppController
         ]);
     }
 
-    public function datepickerPopulatedDates()
-    {
-        $results = $this->Events->getPopulatedDates();
-        $dates = [];
-        foreach ($results as $result) {
-            list($year, $month, $day) = explode('-', $result->date);
-            $dates["$month-$year"][] = $day;
-        }
-        $this->set(compact('dates'));
-        $this->layout = 'blank';
-    }
-
     public function day($month = null, $day = null, $year = null)
     {
         if (! $year || ! $month || ! $day) {
