@@ -190,9 +190,9 @@ class UsersTable extends Table
 
     public function getImagesList($id)
     {
-        return $this->Images->find('all', [
-            'conditions' => ['user_id' => $id],
-            'order' => 'created DESC'
-        ]);
+        return $this->Images->find()
+            ->where(['user_id' => $id])
+            ->order(['created' => 'DESC'])
+            ->toArray();
     }
 }

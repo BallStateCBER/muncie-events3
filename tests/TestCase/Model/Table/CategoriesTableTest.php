@@ -43,22 +43,24 @@ class CategoriesTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
+     * Test getAll() method
      *
      * @return void
      */
-    public function testInitialize()
+    public function testGetAll()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $result = $this->Categories->getAll();
+        $this->assertEquals('General Events', $result[0]->name);
     }
 
     /**
-     * Test validationDefault method
+     * Test getName method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testGetName()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $result = $this->Categories->getName(13);
+        $this->assertEquals('General Events', $result);
     }
 }

@@ -2,7 +2,10 @@
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\UsersTable;
+use Cake\Core\Configure;
+use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -43,32 +46,99 @@ class UsersTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
+     * Test getEmailFromId method
      *
      * @return void
      */
-    public function testInitialize()
+    public function testGetEmailFromId()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = $this->Users->find()
+            ->where(['name' => 'Placeholder'])
+            ->first();
+
+        $email = $this->Users->getEmailFromId($user->id);
+
+        $this->assertEquals($user->email, $email);
     }
 
     /**
-     * Test validationDefault method
+     * Test getIdFromEmail method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testGetIdFromEmail()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = $this->Users->find()
+            ->where(['name' => 'Placeholder'])
+            ->first();
+
+        $id = $this->Users->getIdFromEmail($user->email);
+
+        $this->assertEquals($user->id, $id);
     }
 
     /**
-     * Test buildRules method
+     * Test getResetPasswordHash method
      *
      * @return void
      */
-    public function testBuildRules()
+    public function testGetResetPasswordHash()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = $this->Users->find()
+            ->where(['name' => 'Placeholder'])
+            ->first();
+
+        $hash = $this->Users->getResetPasswordHash($user->id, $user->email);
+
+        $this->assertEquals(md5($user->id.$user->email.Configure::read('password_reset_salt').date('my')), $hash);
+    }
+
+    /**
+     * Test sendPasswordResetEmail
+     *
+     * @return void
+     */
+    public function testSendPasswordResetEmail()
+    {
+        $user = $this->Users->find()
+            ->where(['name' => 'Placeholder'])
+            ->first();
+
+        $email = $this->Users->sendPasswordResetEmail($user->id, $user->email);
+
+        $resetPasswordHash = $this->Users->getResetPasswordHash($user->id, $user->email);
+        $resetEmail = new Email('default');
+        $resetUrl = Router::url([
+            'controller' => 'users',
+            'action' => 'resetPassword',
+            $user->id,
+            $resetPasswordHash
+        ], true);
+        $resetEmail
+            ->setTo($user->email)
+            ->setSubject('Muncie Events: Reset Password')
+            ->template('forgot_password')
+            ->emailFormat('both')
+            ->helpers(['Html', 'Text'])
+            ->viewVars(compact(
+                'email',
+                'resetUrl'
+            ))
+            ->send();
+
+        #$this->assertEquals($resetEmail, $email);
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * Test getImagesList
+     *
+     * @return void
+     */
+    public function testGetImagesList()
+    {
+        $images = $this->Users->getImagesList(552);
+
+        $this->assertEquals($images[0]->user_id, 552);
     }
 }

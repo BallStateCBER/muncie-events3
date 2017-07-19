@@ -45,7 +45,9 @@ class TagsViewTest extends IntegrationTestCase
         $this->get("tags/past");
         $this->assertResponseOk();
 
-        $tags = $this->Tags->getAllWithCounts(['date <' => date('Y-m-d')]);
+        $tags = $this->Tags->getAllWithCounts([
+            'date <' => date('Y-m-d')
+        ]);
 
         foreach ($tags as $tag) {
             // irritatingly, we're replacing characters with their ascii codes
