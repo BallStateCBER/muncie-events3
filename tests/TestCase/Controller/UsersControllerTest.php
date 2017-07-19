@@ -16,6 +16,30 @@ use Facebook\FacebookRedirectLoginHelper;
 class UsersControllerTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Users') ? [] : ['className' => 'App\Model\Table\UsersTable'];
+        $this->Users = TableRegistry::get('Users', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Users);
+
+        parent::tearDown();
+    }
+
+    /**
      * Test registration
      *
      * @return void
@@ -119,7 +143,6 @@ class UsersControllerTest extends IntegrationTestCase
 
         $this->post('/login', $data);
 
-        $this->Users = TableRegistry::get('Users');
         $id = $this->Users->getIdFromEmail('placeholder@gmail.com');
 
         $this->assertSession($id, 'Auth.User.id');
@@ -132,7 +155,6 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function testAccountInfoForUsers()
     {
-        $this->Users = TableRegistry::get('Users');
         $this->session(['Auth.User.id' => 554]);
 
         $this->get('/account');
@@ -156,7 +178,6 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function testPhotoUploadingForUsers()
     {
-        $this->Users = TableRegistry::get('Users');
         $this->session(['Auth.User.id' => 554]);
 
         $salt = Configure::read('profile_salt');
@@ -211,7 +232,6 @@ class UsersControllerTest extends IntegrationTestCase
         $this->session(['Auth.User.id' => 1]);
 
         // delete the new user
-        $this->Users = TableRegistry::get('Users');
         $id = $this->Users->getIdFromEmail('mal@blum.com');
 
         $this->get("users/delete/$id");
@@ -251,7 +271,6 @@ class UsersControllerTest extends IntegrationTestCase
         $this->assertRedirect('/');
 
         // get password reset hash
-        $this->Users = TableRegistry::get('Users');
         $hash = $this->Users->getResetPasswordHash(554, 'placeholder@gmail.com');
 
         // now, this is the REAL URL for password resetting

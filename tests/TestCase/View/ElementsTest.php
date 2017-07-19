@@ -29,6 +29,26 @@ use Facebook\FacebookRedirectLoginHelper;
  */
 class ElementsTest extends IntegrationTestCase
 {
+    /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    }
+
     /*
      * test that sidebars are populating
      */

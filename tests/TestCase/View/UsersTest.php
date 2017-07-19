@@ -14,6 +14,26 @@ use Facebook\FacebookRedirectLoginHelper;
 class UsersViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    }
+
+    /**
      * Test view method
      *
      * @return void
@@ -49,14 +69,6 @@ class UsersViewTest extends IntegrationTestCase
      */
     public function testViewWithBioAndEvents()
     {
-        // Setup our component and fake test controller
-        $request = new ServerRequest();
-        $response = new Response();
-        $this->Fbrlh = $this->getMockBuilder('Facebook\FacebookRedirectLoginHelper')
-            ->setConstructorArgs([$request, $response])
-            ->setMethods(null)
-            ->getMock();
-
         $this->get('/user/1');
 
         $this->assertResponseOk();

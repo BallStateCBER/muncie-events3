@@ -3,27 +3,12 @@ namespace App\Test\TestCase\Controller;
 
 use App\Controller\MailingListController;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\MailingListController Test Case
  */
 class MailingListControllerTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-
-        $id = '496726620385625';
-        $secret = '8c2bca1961dbf8c8bb92484d9d2dd318';
-        FacebookSession::setDefaultApplication($id, $secret);
-
-        $redirectUrl = '/users/login';
-        $helper = new FacebookRedirectLoginHelper($redirectUrl);
-        $helper->disableSessionStatusCheck();
-    }
-
     /**
      * Test index method
      *

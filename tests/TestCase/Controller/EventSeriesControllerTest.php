@@ -11,6 +11,32 @@ use Cake\TestSuite\IntegrationTestCase;
 class EventSeriesControllerTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Events') ? [] : ['className' => 'App\Model\Table\EventsTable'];
+        $this->Events = TableRegistry::get('Events', $config);
+        $this->EventSeries = TableRegistry::get('EventSeries');
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Events);
+        unset($this->EventSeries);
+
+        parent::tearDown();
+    }
+
+    /**
      * test event add page when logged in and adding a series
      *
      * @return void
@@ -49,7 +75,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
         $this->post('/events/add', $series);
         $this->assertResponseSuccess();
 
-        $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
             ->where(['title' => $series['title']])
             ->firstOrFail();
@@ -62,12 +87,10 @@ class EventSeriesControllerTest extends IntegrationTestCase
      */
     public function testEditingEventSeries()
     {
-        $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Event Series'])
             ->firstOrFail();
 
-        $this->Events = TableRegistry::get('Events');
         $events = $this->Events->find()
             ->where(['series_id' => $series->id]);
 
@@ -132,8 +155,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
      */
     public function testEditingEventSeriesFromEventsController()
     {
-        $this->EventSeries = TableRegistry::get('EventSeries');
-        $this->Events = TableRegistry::get('Events');
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Event Series'])
             ->first();
@@ -190,7 +211,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
      */
     public function testDeletingSeriesWhenLoggedIn()
     {
-        $this->EventSeries = TableRegistry::get('EventSeries');
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Series'])
             ->first();
@@ -206,7 +226,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
 
         $this->post("/event-series/edit/$series->id", $delete);
 
-        $this->Events = TableRegistry::get('Events');
         $oldEvent = $this->Events->find()
             ->where(['title' => 'Placeholder Series'])
             ->first();

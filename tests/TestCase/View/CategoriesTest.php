@@ -13,13 +13,35 @@ use Facebook\FacebookRedirectLoginHelper;
 class CategoriesViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Categories') ? [] : ['className' => 'App\Model\Table\CategoriesTable'];
+        $this->Categories = TableRegistry::get('Categories', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Categories);
+        parent::tearDown();
+    }
+
+    /**
      * Test category indexes
      *
      * @return void
      */
     public function testCategoryViews()
     {
-        $this->Categories = TableRegistry::get('Categories');
         $categories = $this->Categories->getAll();
 
         foreach ($categories as $category) {
