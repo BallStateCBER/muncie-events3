@@ -13,6 +13,26 @@ use Facebook\FacebookRedirectLoginHelper;
 class EventsSeriesViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    }
+
+    /**
      * Test that events series are viewable
      *
      * @return void

@@ -13,14 +13,38 @@ use Facebook\FacebookRedirectLoginHelper;
 class TagsControllerTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Tags') ? [] : ['className' => 'App\Model\Table\TagsTable'];
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->Tags = TableRegistry::get('Tags', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->EventsTags);
+        unset($this->Tags);
+
+        parent::tearDown();
+    }
+
+    /**
      * Test adding tags
      *
      * @return void
      */
     public function testAddingTags()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $this->get('/tags/manage');
@@ -60,8 +84,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testAddingExistingTag()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $this->get('/tags/manage');
@@ -95,7 +117,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testEditingTags()
     {
-        $this->Tags = TableRegistry::get('Tags');
         $oldTag = $this->Tags->find()
             ->where(['name' => 'lourdes'])
             ->first();
@@ -126,9 +147,6 @@ class TagsControllerTest extends IntegrationTestCase
     public function testMergingTags()
     {
         $this->session(['Auth.User.id' => 1]);
-
-        $this->Tags = TableRegistry::get('Tags');
-        $this->EventsTags = TableRegistry::get('EventsTags');
 
         $oldTag = $this->Tags->find()
             ->where(['name' => 'soothsayer lies'])
@@ -164,8 +182,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRegroupingOrphanTags()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         for ($x = 0; $x <= 10; $x++) {
@@ -217,8 +233,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRemovingUnusedTags()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $this->get('/tags/remove-unlisted-unused');
@@ -242,8 +256,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testDealingWithDuplicates()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         for ($x = 0; $x <= 10; $x++) {
@@ -275,8 +287,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRemovingBrokenAssociations()
     {
-        $this->EventsTags = TableRegistry::get('EventsTags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $broken = $this->EventsTags->newEntity();
@@ -304,8 +314,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testDeletingTags()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $this->get("/tags/remove/we%20the%20heathens");

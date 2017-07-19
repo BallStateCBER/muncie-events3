@@ -13,6 +13,29 @@ use Facebook\FacebookRedirectLoginHelper;
 class TagsViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Tags') ? [] : ['className' => 'App\Model\Table\TagsTable'];
+        $this->Tags = TableRegistry::get('Tags', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Tags);
+        parent::tearDown();
+    }
+
+    /**
      * Test that ALL previously used tags are accessible
      *
      * @return void
@@ -22,7 +45,6 @@ class TagsViewTest extends IntegrationTestCase
         $this->get("tags/past");
         $this->assertResponseOk();
 
-        $this->Tags = TableRegistry::get('Tags');
         $tags = $this->Tags->getAllWithCounts(['date <' => date('Y-m-d')]);
 
         foreach ($tags as $tag) {
@@ -40,8 +62,6 @@ class TagsViewTest extends IntegrationTestCase
      */
     public function testTagAdminPrivileges()
     {
-        $this->Tags = TableRegistry::get('Tags');
-
         $this->session(['Auth.User.id' => 1]);
 
         $this->get('/tags/getnodes');

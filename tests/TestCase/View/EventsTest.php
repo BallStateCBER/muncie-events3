@@ -13,6 +13,26 @@ use Facebook\FacebookRedirectLoginHelper;
 class EventsViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
+    }
+
+    /**
      * Test that events on days are viewable
      *
      * @return void

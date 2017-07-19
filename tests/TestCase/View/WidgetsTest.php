@@ -13,6 +13,29 @@ use Facebook\FacebookRedirectLoginHelper;
 class WidgetsViewTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Events') ? [] : ['className' => 'App\Model\Table\EventsTable'];
+        $this->Events = TableRegistry::get('Events', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Events);
+        parent::tearDown();
+    }
+
+    /**
      * Test widgets index
      *
      * @return void
@@ -50,8 +73,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testFeedWidget()
     {
-        $this->Events = TableRegistry::get('Events');
-
         $this->get('/widgets/feed');
         $this->assertResponseOk();
 
@@ -69,8 +90,6 @@ class WidgetsViewTest extends IntegrationTestCase
      */
     public function testMonthWidget()
     {
-        $this->Events = TableRegistry::get('Events');
-
         $this->get('/widgets/month');
         $this->assertResponseOk();
 

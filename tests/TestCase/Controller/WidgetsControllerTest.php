@@ -14,6 +14,30 @@ use Facebook\FacebookRedirectLoginHelper;
 class WidgetsControllerTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Events') ? [] : ['className' => 'App\Model\Table\EventsTable'];
+        $this->Events = TableRegistry::get('Events');
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Events);
+
+        parent::tearDown();
+    }
+
+    /**
      * Test feed customizer method
      *
      * @return void

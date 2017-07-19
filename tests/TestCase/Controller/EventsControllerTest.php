@@ -11,6 +11,34 @@ use Cake\TestSuite\IntegrationTestCase;
 class EventsControllerTest extends IntegrationTestCase
 {
     /**
+     * setUp method
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('Events') ? [] : ['className' => 'App\Model\Table\EventsTable'];
+        $this->Events = TableRegistry::get('Events', $config);
+        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->Tags = TableRegistry::get('Tags');
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Events);
+        unset($this->EventsTags);
+        unset($this->Tags);
+
+        parent::tearDown();
+    }
+
+    /**
      * test event add page when logged out
      *
      * @return void
@@ -38,7 +66,6 @@ class EventsControllerTest extends IntegrationTestCase
         $this->post('/events/add', $event);
         $this->assertResponseSuccess();
 
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => $event['title']])
             ->first();
@@ -101,8 +128,6 @@ class EventsControllerTest extends IntegrationTestCase
         $this->post('/events/add', $event);
         $this->assertResponseSuccess();
 
-        $this->Events = TableRegistry::get('Events');
-        $this->EventsTags = TableRegistry::get('EventsTags');
         $event = $this->Events->find()
             ->where(['title' => $event['title']])
             ->first();
@@ -155,8 +180,6 @@ class EventsControllerTest extends IntegrationTestCase
         $this->post('/events/add', $event);
         $this->assertResponseSuccess();
 
-        $this->Events = TableRegistry::get('Events');
-        $this->EventsTags = TableRegistry::get('EventsTags');
         $event = $this->Events->find()
             ->where(['title' => $event['title']])
             ->andWhere(['published' => 1])
@@ -180,7 +203,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testApprovingAndPublishingEvents()
     {
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Party'])
             ->firstOrFail();
@@ -200,7 +222,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testEventViewAfterApproval()
     {
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Party'])
             ->firstOrFail();
@@ -220,9 +241,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testEditingAnEventAsEventOwner()
     {
-        $this->Events = TableRegistry::get('Events');
-        $this->EventsTags = TableRegistry::get('EventsTags');
-        $this->Tags = TableRegistry::get('Tags');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Party'])
             ->firstOrFail();
@@ -281,7 +299,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testEditingAnEventAsNonOwner()
     {
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Gala'])
             ->firstOrFail();
@@ -300,7 +317,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testDeletingEventsWhenUserIsNotAuthorized()
     {
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Gala'])
             ->firstOrFail();
@@ -343,7 +359,6 @@ class EventsControllerTest extends IntegrationTestCase
      */
     public function testDeletingEvents()
     {
-        $this->Events = TableRegistry::get('Events');
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Gala'])
             ->firstOrFail();
