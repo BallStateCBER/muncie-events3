@@ -12,6 +12,10 @@ use Cake\ORM\TableRegistry;
  */
 class MailingListController extends AppController
 {
+    public function initialize()
+    {
+        $this->Events = TableRegistry::get('Events');
+    }
     private function sendDailyEmailPr($events, $recipient, $testing = false)
     {
         list($result, $message) = $this->MailingList->sendDaily($recipient, $events, $testing);
@@ -48,7 +52,7 @@ class MailingListController extends AppController
 
         // Make sure there are events to report
         list($year, $mon, $day) = $this->MailingList->getTodayYMD();
-        $events = $this->Event->getEventsOnDay($year, $mon, $day, true);
+        $events = $this->Events->getEventsOnDay($year, $mon, $day);
         if (empty($events)) {
             $this->MailingList->setAllDailyAsProcessed($recipients, 'd');
             return $this->renderMessage([

@@ -17,7 +17,7 @@ class ImagesTableTest extends TestCase
      * @var \App\Model\Table\ImagesTable
      */
     public $Images;
-    
+
     /**
      * setUp method
      *
@@ -43,32 +43,18 @@ class ImagesTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
+     * Test getNextId method
      *
      * @return void
      */
-    public function testInitialize()
+    public function testGetNextId()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test validationDefault method
-     *
-     * @return void
-     */
-    public function testValidationDefault()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
-    public function testBuildRules()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $nextId = $this->Images->getNextId();
+        $image = $this->Images->find('list');
+        foreach ($image as $id => $filename) {
+            $id = intval($id);
+            $last = $id + 1;
+        }
+        $this->assertEquals($nextId, $last);
     }
 }
