@@ -127,8 +127,7 @@ class TagsTable extends Table
 
     public function getAllWithCounts($conditions)
     {
-        $results = $this->Events->find();
-        $results
+        $results = $this->Events->find()
             ->select('id')
             ->where($conditions)
             ->contain('Tags')
