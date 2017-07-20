@@ -68,7 +68,6 @@ class TagsViewTest extends IntegrationTestCase
 
         $this->get('/tags/getnodes');
         $this->assertResponseOk();
-        $this->assertResponseContains('Delete (1011)');
         $this->assertResponseContains('Unlisted (1012)');
     }
 }

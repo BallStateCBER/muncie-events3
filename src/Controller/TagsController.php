@@ -412,11 +412,13 @@ class TagsController extends AppController
      */
     public function removeUnlistedUnused()
     {
+        $deleteGroupId = $this->Tags->getDeleteGroupId();
+        $unlistedGroupId = $this->Tags->getUnlistedGroupId();
         $tags = $this->Tags->find()
             ->where([
                 'listed' => 0,
                 'OR' => [['parent_id' => 0], ['parent_id IS' => null]],
-                'AND' => [['id IS NOT' => $this->Tags->getUnlistedGroupId()], ['id IS NOT' => $this->Tags->getDeleteGroupId()], ['id NOT IN' => $this->Tags->getUsedTagIds()]]
+                'AND' => [['id IS NOT' => $unlistedGroupId], ['id IS NOT' => $deleteGroupId], ['id NOT IN' => $this->Tags->getUsedTagIds()]]
             ])
             ->toArray();
         $skippedTags = $deletedTags = [];
@@ -707,7 +709,7 @@ class TagsController extends AppController
                     $this->Tags->recover();
                 }
                 $message = 'Tag successfully edited.';
-                if ($this->request->data['listed'] && $tag->parent_id == 1012) {
+                if ($this->request->data['listed'] && $tag->parent_id == $this->Tags->getUnlistedGroupId()) {
                     $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
                 }
                 return $this->Flash->success($message);
@@ -745,7 +747,7 @@ class TagsController extends AppController
         }
 
         // Determine parent_id
-        $rootParentId = $this->request->data['parent_name'] == '' ? 1012 : $this->Tags->getIdFromName($this->request->data['parent_name']);
+        $rootParentId = $this->request->data['parent_name'] == '' ? $this->Tags->getUnlistedGroupId() : $this->Tags->getIdFromName($this->request->data['parent_name']);
         if (!$rootParentId) {
             return $this->Flash->error("Parent tag \"" . $this->request->data['parent_name'] . "\" not found");
         }
