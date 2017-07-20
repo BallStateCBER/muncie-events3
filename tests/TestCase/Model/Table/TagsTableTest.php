@@ -28,6 +28,7 @@ class TagsTableTest extends TestCase
         parent::setUp();
         $config = TableRegistry::exists('Tags') ? [] : ['className' => 'App\Model\Table\TagsTable'];
         $this->Tags = TableRegistry::get('Tags', $config);
+    #    $this->Events = TableRegistry::get('Events');
     }
 
     /**
@@ -38,37 +39,39 @@ class TagsTableTest extends TestCase
     public function tearDown()
     {
         unset($this->Tags);
+    #    unset($this->Events);
 
         parent::tearDown();
     }
 
     /**
-     * Test initialize method
+     * Test getAllWithCounts method
      *
      * @return void
      */
-    public function testInitialize()
+    public function testGetAllWithCounts()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // looking for the tags associated with religion
+        $conditions = [
+            'category_id' => 27
+        ];
+        $counts = $this->Tags->getAllWithCounts($conditions);
+        $counts = array_keys($counts);
+        $counts = implode($counts);
+        $this->assertContains('alcohol free', $counts);
+        $this->assertContains('christianity', $counts);
     }
 
     /**
-     * Test validationDefault method
+     * Test getCategoriesWithTags method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testGetCategoriesWithTags()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
-    public function testBuildRules()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $categories = $this->Tags->getCategoriesWithTags('future');
+        debug($categories);
+        $categories = $this->Tags->getCategoriesWithTags('past');
+        debug($categories);
     }
 }

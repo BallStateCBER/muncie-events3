@@ -47,26 +47,26 @@ use Cake\Utility\Inflector;
                         ); ?>
                          </li>
                          <?php foreach ($categories as $cat): ?>
-                              <?php if (in_array($cat['Category']['id'], $categoriesWithTags)): ?>
+                              <?php if (in_array($cat['id'], $categoriesWithTags)): ?>
                                    <li>
                                         <?php echo $this->Html->link(
-                                    $this->Icon->category($cat['Category']['name']),
+                                    $this->Icon->category($cat['name']),
                                     [
                                         'controller' => 'tags',
                                         'action' => 'index',
                                         $direction,
-                                        $cat['Category']['id']
+                                        $cat['id']
                                     ],
                                     [
-                                        'title' => $cat['Category']['name'],
-                                        'class' => ($category == $cat['Category']['id'] ? 'selected' : ''),
+                                        'title' => $cat['name'],
+                                        'class' => ($category == $cat['id'] ? 'selected' : ''),
                                         'escape' => false
                                     ]
                                 ); ?>
                                    </li>
                               <?php else: ?>
                                    <li class="no_tags">
-                                        <?php echo $this->Icon->category($cat['Category']['name']); ?>
+                                        <?php echo $this->Icon->category($cat['name']); ?>
                                    </li>
                               <?php endif; ?>
                          <?php endforeach; ?>

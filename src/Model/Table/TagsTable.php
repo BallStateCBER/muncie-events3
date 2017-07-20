@@ -78,6 +78,8 @@ class TagsTable extends Table
                 'field' => ['name']
             ])
             ->add('foo', 'Search.Callback');
+
+        $this->EventsTags = TableRegistry::get('EventsTags');
     }
 
     /**

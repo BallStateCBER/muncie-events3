@@ -3,7 +3,6 @@ namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\UsersTable;
 use Cake\Core\Configure;
-use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
@@ -105,29 +104,11 @@ class UsersTableTest extends TestCase
             ->first();
 
         $email = $this->Users->sendPasswordResetEmail($user->id, $user->email);
+        $email = implode($email);
 
         $resetPasswordHash = $this->Users->getResetPasswordHash($user->id, $user->email);
-        $resetEmail = new Email('default');
-        $resetUrl = Router::url([
-            'controller' => 'users',
-            'action' => 'resetPassword',
-            $user->id,
-            $resetPasswordHash
-        ], true);
-        $resetEmail
-            ->setTo($user->email)
-            ->setSubject('Muncie Events: Reset Password')
-            ->template('forgot_password')
-            ->emailFormat('both')
-            ->helpers(['Html', 'Text'])
-            ->viewVars(compact(
-                'email',
-                'resetUrl'
-            ))
-            ->send();
 
-        #$this->assertEquals($resetEmail, $email);
-        $this->markTestIncomplete();
+        $this->assertTextContains($resetPasswordHash, $email);
     }
 
     /**
@@ -137,8 +118,8 @@ class UsersTableTest extends TestCase
      */
     public function testGetImagesList()
     {
-        $images = $this->Users->getImagesList(552);
+        $images = $this->Users->getImagesList(1);
 
-        $this->assertEquals($images[0]->user_id, 552);
+        $this->assertEquals($images[0]->user_id, 1);
     }
 }
