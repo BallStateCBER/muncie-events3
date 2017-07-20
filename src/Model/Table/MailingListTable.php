@@ -5,6 +5,7 @@ use Cake\Mailer\Email;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -51,6 +52,8 @@ class MailingListTable extends Table
             'joinTable' => 'categories_mailing_list',
             'propertyName' => 'categories'
         ]);
+
+        $this->MailingListLogTable = TableRegistry::get('MailingListLog');
     }
 
     /**
@@ -163,9 +166,6 @@ class MailingListTable extends Table
             'MailingList.processed_daily <' => "$year-$mon-$day 00:00:00"
             ]
         ];
-        if (php_sapi_name() == 'cli') {
-            $conditions['MailingList.id'] = 1;
-        }
         return $this->find('all', [
         'conditions' => $conditions,
         'contain' => 'Categories',
@@ -186,11 +186,8 @@ class MailingListTable extends Table
         'OR' => [
             'MailingList.processed_weekly' => null,
             'MailingList.processed_weekly <' => "$year-$mon-$day 00:00:00"
-        ]
-    ];
-        if (php_sapi_name() == 'cli') {
-            $conditions['MailingList.id'] = 1;
-        }
+            ]
+        ];
         return $this->find('all', [
         'conditions' => $conditions,
         'contain' => 'Categories',
@@ -213,7 +210,8 @@ class MailingListTable extends Table
 
     public function isNewSubscriber($id)
     {
-        return (boolean) $this->field('new_subscriber', ['MailingList.id' => $id]);
+        $subscriber = $this->get($id);
+        return (boolean) $subscriber->new_subscriber;
     }
 
     public function getHash($recipientId)
@@ -223,43 +221,63 @@ class MailingListTable extends Table
 
     public function setDailyAsProcessed($recipientId, $result)
     {
-        $this->MailingListLogTable->save([
-            'recipient_id' => $recipientId,
-            'result' => $result,
-            'is_daily' => 1
-        ]);
-        $this->id = $recipientId;
+        $processed = $this->MailingListLogTable->newEntity();
+        $processed->recipient_id = $recipientId;
+        $processed->result = $result;
+        $processed->is_daily = 1;
+        $processed->created = date('Y-m-d H:i:s');
+        if (php_sapi_name() == 'cli') {
+            $processed->testing = 1;
+        }
+        $this->MailingListLogTable->save($processed);
+
+        $recipient = $this->get($recipientId);
+        $recipient->processed_daily = date('Y-m-d H:i:s');
+        $recipient->new_subscriber = 0;
+
         return (
-            $this->saveField('processed_daily', date('Y-m-d H:i:s')) &&
-            $this->saveField('new_subscriber', 0)
+            $this->save($recipient)
         );
     }
 
     public function setWeeklyAsProcessed($recipientId, $result)
     {
-        $this->MailingListLogTable->save([
-            'recipient_id' => $recipientId,
-            'result' => $result,
-            'is_weekly' => 1
-        ]);
-        $this->id = $recipientId;
+        $processed = $this->MailingListLogTable->newEntity();
+        $processed->recipient_id = $recipientId;
+        $processed->result = $result;
+        $processed->is_weekly = 1;
+        $processed->created = date('Y-m-d H:i:s');
+        if (php_sapi_name() == 'cli') {
+            $processed->testing = 1;
+        }
+        $this->MailingListLogTable->save($processed);
+
+        $recipient = $this->get($recipientId);
+        $recipient->processed_weekly = date('Y-m-d H:i:s');
+        $recipient->new_subscriber = 0;
+
         return (
-            $this->saveField('processed_weekly', date('Y-m-d H:i:s')) &&
-            $this->saveField('new_subscriber', 0)
+            $this->save($recipient)
         );
     }
 
     public function setAllDailyAsProcessed($recipients, $result)
     {
         foreach ($recipients as $r) {
-            $this->setDailyAsProcessed($r['MailingList']['id'], $result);
+            $this->setDailyAsProcessed($r->id, $result);
+        }
+        if (php_sapi_name() == 'cli') {
+            return true;
         }
     }
 
     public function setAllWeeklyAsProcessed($recipients, $result)
     {
         foreach ($recipients as $r) {
-            $this->setWeeklyAsProcessed($r['MailingList']['id'], $result);
+            $this->setWeeklyAsProcessed($r->id, $result);
+        }
+        if (php_sapi_name() == 'cli') {
+            return true;
         }
     }
 
