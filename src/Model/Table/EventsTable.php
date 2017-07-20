@@ -137,6 +137,20 @@ class EventsTable extends Table
         return $rules;
     }
 
+    public function getEventsOnDay($year, $month, $day)
+    {
+        $date = "$year-$month-$day";
+        $events = $this
+            ->find('all', [
+            'conditions' => ['date' => $date],
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'DESC']
+            ])
+            ->toArray();
+
+        return $events;
+    }
+
     public function getUpcomingEvents()
     {
         $events = $this

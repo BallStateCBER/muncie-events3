@@ -45,6 +45,15 @@ class EventsTableTest extends TestCase
         parent::tearDown();
     }
 
+    public function testGetEventsOnDay()
+    {
+        $date = new Date(date('Y-m-d'));
+        $events = $this->Events->getEventsOnDay(date('Y'), date('m'), date('d'));
+        foreach ($events as $event) {
+            $this->assertEquals($event->date, $date);
+        }
+    }
+
     /**
      * Test getUpcomingEvents method
      *

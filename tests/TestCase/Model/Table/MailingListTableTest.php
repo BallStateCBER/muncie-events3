@@ -17,7 +17,7 @@ class MailingListTableTest extends TestCase
      * @var \App\Model\Table\MailingListTable
      */
     public $MailingList;
-    
+
     /**
      * setUp method
      *
@@ -26,8 +26,7 @@ class MailingListTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('MailingList') ? [] : ['className' => 'App\Model\Table\MailingListTable'];
-        $this->MailingList = TableRegistry::get('MailingList', $config);
+        $this->MailingList = TableRegistry::get('MailingList');
     }
 
     /**
@@ -43,32 +42,25 @@ class MailingListTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
+     * Test getTodayYMD method
      *
      * @return void
      */
-    public function testInitialize()
+    public function testGetTodayYMD()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $date = $this->MailingList->getTodayYMD();
+        $today = [date('Y'), date('m'), date('d')];
+        $this->assertEquals($date, $today);
     }
 
     /**
-     * Test validationDefault method
+     * Test getDailyRecipients method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testGetDailyRecipients()
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
-    public function testBuildRules()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $daily = $this->MailingList->getDailyRecipients();
+        debug($daily);
     }
 }

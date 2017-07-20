@@ -161,16 +161,16 @@ class MailingListTable extends Table
         'OR' => [
             'MailingList.processed_daily' => null,
             'MailingList.processed_daily <' => "$year-$mon-$day 00:00:00"
-        ]
-    ];
-        if ($this->testing_mode) {
+            ]
+        ];
+        if (php_sapi_name() == 'cli') {
             $conditions['MailingList.id'] = 1;
         }
         return $this->find('all', [
         'conditions' => $conditions,
         'contain' => 'Categories',
         'limit' => 10
-    ]);
+        ])->toArray();
     }
 
     public function getWeeklyDeliveryDay()
@@ -188,7 +188,7 @@ class MailingListTable extends Table
             'MailingList.processed_weekly <' => "$year-$mon-$day 00:00:00"
         ]
     ];
-        if ($this->testing_mode) {
+        if (php_sapi_name() == 'cli') {
             $conditions['MailingList.id'] = 1;
         }
         return $this->find('all', [
@@ -288,7 +288,7 @@ class MailingListTable extends Table
         if (!$recipient['MailingList']['all_categories']) {
             $selectedCategories = explode(',', $recipient['MailingList']['categories']);
             foreach ($events as $k => $event) {
-                if (! in_array($event->Categories->id, $selectedCategories)) {
+                if (! in_array($event['categories']['id'], $selectedCategories)) {
                     unset($events[$k]);
                 }
             }
@@ -390,7 +390,7 @@ class MailingListTable extends Table
     {
         $recipientId = $recipient['MailingList']['id'];
 
-        if ($this->testing_mode && $recipientId != 1) {
+        if (php_sapi_name() == 'cli' && $recipientId != 1) {
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because the mailing list is in testing mode.'];
         }
 
@@ -466,7 +466,7 @@ class MailingListTable extends Table
     {
         $recipientId = $recipient['MailingList']['id'];
 
-        if ($this->testing_mode && $recipientId != 1) {
+        if (php_sapi_name() == 'cli' && $recipientId != 1) {
             return [false, 'Email not sent to '.$recipient['MailingList']['email'].' because the mailing list is in testing mode.'];
         }
 

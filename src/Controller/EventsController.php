@@ -361,14 +361,7 @@ class EventsController extends AppController
         // Zero-pad day and month numbers
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $day = str_pad($day, 2, '0', STR_PAD_LEFT);
-        $date = "$year-$month-$day";
-        $events = $this->Events
-            ->find('all', [
-            'conditions' => ['date' => $date],
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
-            ])
-            ->toArray();
+        $events = $this->Events->getEventsOnDay($year, $month, $day);
         if ($events) {
             $this->indexEvents($events);
         }
