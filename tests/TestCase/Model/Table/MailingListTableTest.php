@@ -26,6 +26,8 @@ class MailingListTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+        $this->Categories = TableRegistry::get('Categories');
+        $this->Events = TableRegistry::get('Events');
         $this->MailingList = TableRegistry::get('MailingList');
     }
 
@@ -36,6 +38,8 @@ class MailingListTableTest extends TestCase
      */
     public function tearDown()
     {
+        unset($this->Categories);
+        unset($this->Events);
         unset($this->MailingList);
 
         parent::tearDown();
@@ -65,7 +69,9 @@ class MailingListTableTest extends TestCase
         foreach ($dailies as $daily) {
             $this->assertEquals($daily->$day, 1);
         }
-        // create an assertion for when there are no dailies
+        if (empty($dailies)) {
+            $this->assertEquals([], $dailies);
+        }
     }
 
     /**
@@ -191,8 +197,6 @@ class MailingListTableTest extends TestCase
 
         $processed = $this->MailingList->setWeeklyAsProcessed($mailingListWeekly->id, 0);
         $this->assertEquals($processed->new_subscriber, 0);
-
-        $this->MailingList->delete($mailingListWeekly);
     }
 
     /**
@@ -203,7 +207,7 @@ class MailingListTableTest extends TestCase
     public function testSetAllDailyAsProcessed()
     {
         $processed = $this->MailingList->setAllDailyAsProcessed($this->MailingList->getDailyRecipients(), 0);
-        debug($processed);
+        $this->assertEquals(true, $processed);
     }
 
     /**
@@ -214,6 +218,39 @@ class MailingListTableTest extends TestCase
     public function testSetAllWeeklyAsProcessed()
     {
         $processed = $this->MailingList->setAllWeeklyAsProcessed($this->MailingList->getWeeklyRecipients(), 0);
-        debug($processed);
+        $this->assertEquals(true, $processed);
+    }
+
+    /**
+     * Test filterWeeksEvents method
+     *
+     * @return void
+     */
+    public function testFilterWeeksEvents()
+    {
+        /*    $mailingListWeekly = $this->MailingList->find()
+            ->where(['email' => 'placeholder@gmail.com'])
+            ->first();
+        $mailingListWeekly->all_categories = 0;
+        $this->MailingList->save($mailingListWeekly);
+
+        $general = $this->Categories->get(13);
+        $this->MailingList->Categories->link($mailingListWeekly, [$general]);
+
+        debug($mailingListWeekly->Categories);
+
+        $events = $this->Events->find()
+            ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
+            ->where(['date >=' => date('Y-m-d')])
+            ->andWhere(['date <=' => date('Y-m-d', strtotime('+1 week'))])
+            ->toArray();
+
+        $events = $this->MailingList->filterWeeksEvents($mailingListWeekly, $events);
+        debug($events);
+        foreach ($events as $event) {
+            $this->assertEquals(13, $event->category_id);
+        }
+
+        $this->MailingList->delete($mailingListWeekly); */
     }
 }

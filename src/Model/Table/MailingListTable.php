@@ -283,22 +283,20 @@ class MailingListTable extends Table
 
     public function filterWeeksEvents($recipient, $events)
     {
-        if (!$recipient['MailingList']['all_categories']) {
-            $selectedCategories = explode(',', $recipient['MailingList']['categories']);
-            foreach ($events as $timestamp => $daysEvents) {
-                foreach ($daysEvents as $k => $event) {
-                    if (! in_array($event->Categories->id, $selectedCategories)) {
-                        unset($events[$timestamp][$k]);
-                    }
-                }
+        if (!$recipient->all_categories) {
+            $selectedCategories = [];
+            $categories = $this->Categories->find()
+                ->where(['mailing_list_id' => $recipient->id]);
+            foreach ($categories as $category) {
+                $selectedCategories[] = $category->category_id;
             }
-            foreach ($events as $timestamp => $daysEvents) {
-                if (empty($daysEvents)) {
-                    unset($events[$timestamp]);
+            foreach ($events as $event) {
+                if (! in_array($event->category_id, $selectedCategories)) {
+                    unset($event);
                 }
             }
         }
-        return $events;
+        return $selectedCategories;
     }
 
     public function filterDaysEvents($recipient, $events)

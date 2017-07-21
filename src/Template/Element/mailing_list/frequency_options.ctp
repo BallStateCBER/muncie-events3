@@ -12,34 +12,6 @@
             [
                 'type' => 'radio',
                 'options' => [
-                    'weekly' => 'Weekly (Thursday, next week\'s events)'
-                ],
-                'class' => 'frequency_options',
-                'legend' => false,
-                'label' => false
-            ]
-        ); ?>
-    </div>
-    <div class="form-control mailing-options">
-        <?= $this->Form->input(
-            'frequency',
-            [
-                'type' => 'radio',
-                'options' => [
-                    'daily' => 'Daily (Every morning, today\'s events)'
-                ],
-                'class' => 'frequency_options',
-                'legend' => false,
-                'label' => false
-            ]
-        ); ?>
-    </div>
-    <div class="form-control mailing-options">
-        <?= $this->Form->input(
-            'frequency',
-            [
-                'type' => 'radio',
-                'options' => [
                     'custom' => 'Custom'
                 ],
                 'class' => 'frequency_options',
