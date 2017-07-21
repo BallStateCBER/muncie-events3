@@ -1,3 +1,7 @@
+<?php
+use Cake\Routing\Router;
+
+?>
 <style>
     <?php include(WWW_ROOT.'css'.DS.'email.css'); ?>
 </style>
@@ -20,15 +24,11 @@
     </h3>
     <?php foreach ($events as $event): ?>
         <p class="event">
-            <?= $this->Icon->category($event->Categories->name, 'email'); ?>
+            <?= $this->Icon->category($event->Categories['name'], 'email'); ?>
 
             <?= $this->Html->link(
                 $event->title,
-                Router::url([
-                    'controller' => 'events',
-                    'action' => 'view',
-                    'id' => $event->id
-                ], true)
+                "https://www.muncieevents.com/$event->id"
             ); ?>
             <br />
             <?= date('g:ia', strtotime($event->time_start)); ?>
@@ -44,7 +44,7 @@
 <p class="footnote">
     <strong>Your settings...</strong><br />
     Frequency: <?= $settings_display['frequency']; ?><br />
-    Events: <?= $settings_display['event_types']; ?>
+    Events: <?= $settings_display['eventTypes']; ?>
 </p>
 
 <p class="footnote">
@@ -53,13 +53,10 @@
     <br />
     <?= $this->Html->link(
         'Add Event',
-        Router::url([
-            'controller' => 'events',
-            'action' => 'add'
-        ], true)
+        "https://www.muncieevents.com/events/add"
     ); ?>
     &nbsp; | &nbsp;
-    <?= $this->Html->link(
+    <!?=/* $this->Html->link(
         'Change Settings',
         Router::url([
             'controller' => 'mailing_list',
@@ -67,9 +64,9 @@
             $recipient_id,
             $hash
         ], true)
-    ); ?>
+    ); */?>
     &nbsp; | &nbsp;
-    <?= $this->Html->link(
+    <!?=/* $this->Html->link(
         'Unsubscribe',
         Router::url([
             'controller' => 'mailing_list',
@@ -78,5 +75,5 @@
             $hash,
             '?' => 'unsubscribe'
         ], true)
-    ); ?>
+    ); */?>
 </p>
