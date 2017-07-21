@@ -14,7 +14,11 @@ class MailingListController extends AppController
 {
     public function initialize()
     {
+        parent::initialize();
+
         $this->Events = TableRegistry::get('Events');
+
+        $this->Auth->allow(['join']);
     }
     private function sendDailyEmailPr($events, $recipient, $testing = false)
     {
@@ -161,21 +165,10 @@ class MailingListController extends AppController
             $mailingList->all_categories = 0;
         }
 
-        // Weekly frequency
-        $weekly = $mailingList->weekly || $mailingList['frequency'] == 'weekly';
-        $mailingList->weekly = $weekly;
-
         // Daily frequency
         $days = $this->MailingList->getDays();
-        $daily = $mailingList['frequency'] == 'daily';
-        foreach ($days as $code => $day) {
-            $dailyCode = 'daily_'.$code;
-            $value = $daily || $mailingList->$dailyCode;
-            $mailingList->$dailyCode = $value;
-        }
-
         // custom day frequency
-        if ($mailingList['frequency'] == 'custom') {
+        if ($mailingList->frequency == 'custom') {
             foreach ($days as $code => $day) {
                 $dailyCode = 'daily_'.$code;
                 $value = $mailingList->$dailyCode;
