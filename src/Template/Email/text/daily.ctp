@@ -9,16 +9,12 @@ brought to you by http://MuncieEvents.com
 <?php
     foreach ($events as $event) {
         echo
-            strtoupper($event->Categories->name).
+            strtoupper($event->Categories['name']).
             ': '.
             $event->title.
             "\n".
             '['.
-            Router::url([
-                'controller' => 'events',
-                'action' => 'view',
-                'id' => $event->id
-            ], true).
+            "https://www.muncieevents.com/$event->id".
             ']'.
             "\n".
             date('g:ia', strtotime($event->time_start));
@@ -40,22 +36,4 @@ Events: <?= $settings_display['event_types']; ?>
 
 This email was sent to <?= $recipient_email; ?> on behalf of http://MuncieEvents.com
 
-Add Event: <?= Router::url([
-    'controller' => 'events',
-    'action' => 'add'
-], true); ?>
-
-Change Settings: <?= Router::url([
-    'controller' => 'mailing_list',
-    'action' => 'settings',
-    $recipient_id,
-    $hash
-], true); ?>
-
-Unsubscribe: <?= Router::url([
-    'controller' => 'mailing_list',
-    'action' => 'settings',
-    $recipient_id,
-    $hash,
-    '?' => 'unsubscribe'
-], true); ?>
+Add Event: http://www.muncieevents.com/events/add
