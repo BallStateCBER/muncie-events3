@@ -16,6 +16,7 @@ class MailingListController extends AppController
     {
         parent::initialize();
 
+        $this->Categories = TableRegistry::get('Categories');
         $this->Events = TableRegistry::get('Events');
 
         $this->Auth->allow(['join']);
@@ -219,5 +220,111 @@ class MailingListController extends AppController
 
         $days = $this->MailingList->getDays();
         $this->set('days', $days);
+    }
+
+    public function resetProcessedTime()
+    {
+        $recipients = $this->MailingList->find('list');
+        foreach ($recipients as $id => $email) {
+            $recipient = $this->MailingList->get($id);
+            $recipient->processed_daily = null;
+            $recipient->processed_weekly = null;
+            $this->MailingList->save($recipient);
+        }
+        $this->Flash->success(count($recipients).' mailing list members\' "last processed" times reset.');
+    }
+
+    public function bulkAdd()
+    {
+        if (!empty($this->request->data)) {
+            $addresses = explode("\n", $this->request->data['email_addresses']);
+            $retainedAddresses = [];
+            foreach ($addresses as $address) {
+                $address = trim(strtolower($address));
+                if (!$address) {
+                    continue;
+                }
+
+                // Set
+                $mailingList = $this->MailingList->newEntity();
+                $mailingList->email = $address;
+                $mailingList->weekly = 1;
+                $mailingList->all_categories = 1;
+
+                if ($this->MailingList->save($mailingList)) {
+                    $this->Flash->success("$address added.");
+                } else {
+                    $retainedAddresses[] = $address;
+                    $this->Flash->error("Error adding $address.");
+                }
+            }
+            $this->request->data['email_addresses'] = implode("\n", $retainedAddresses);
+        }
+
+        $this->set([
+            'titleForLayout' => 'Bulk Add - Mailing List'
+        ]);
+    }
+
+    private function setDefaultValuesPr($recipient = null)
+    {
+        $this->request->data = $this->MailingList->getDefaultFormValues($recipient);
+    }
+
+    public function settings($recipientId = null, $hash = null)
+    {
+        $this->set([
+            'titleForLayout' => 'Update Mailing List Settings',
+            'days' => $this->MailingList->getDays(),
+            'categories' => $this->Categories->getAll()
+        ]);
+
+        if ($this->request->is('ajax')) {
+            $this->layout = 'ajax';
+        }
+
+        // Make sure link is valid
+        if (!$recipientId || $hash != $this->MailingList->getHash($recipientId)) {
+            return $this->Flash->error('It appears that you clicked on a broken link. If you copied and
+                    pasted a URL to get here, you may not have copied the whole address.
+                    Please <a href="/contact">contact support</a> if you need assistance.');
+        }
+
+        // Make sure subscriber exists
+        $recipient = $this->MailingList->get($recipientId);
+        if (!$recipient) {
+            return $this->Flash->error('It looks like you\'re trying to change settings for a user who is no longer
+                    on our mailing list. Please <a href="/contact">contact support</a> if you need assistance.');
+        }
+
+        if ($this->request->is('post')) {
+            // Unsubscribe
+            if ($this->request->data['unsubscribe']) {
+                return $this->__unsubscribe($recipientId);
+            }
+
+            $this->__readFormData();
+
+            /*
+            // If there's an associated user, update its email too
+            $user_id = $this->MailingList->getAssociatedUserId();
+            if ($user_id) {
+                $this->User->id = $user_id;
+                $this->User->saveField('email', $this->request->data['MailingList']['email']);
+            }
+            */
+
+            // Update settings
+            if ($this->__validateForm($recipientId)) {
+                if ($this->MailingList->save()) {
+                    return $this->Flash->success('Your mailing list settings have been updated.');
+                }
+                return $this->Flash->error('Please try again, or <a href="/contact">contact support</a> for assistance.');
+            }
+        } else {
+            $this->setDefaultValuesPr($recipient);
+        }
+
+        $this->set(compact('recipient', 'recipientId', 'hash'));
     }
 }
