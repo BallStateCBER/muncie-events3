@@ -218,53 +218,53 @@ class MailingListTable extends Table
      */
     public function getDefaultFormValues($recipient = null)
     {
-        $data = array();
+        $data = [];
         $days = $this->getDays();
 
         // Settings page: Recipient data provided
         if ($recipient) {
-            $days_selected = 0;
-            foreach ($days as $day_abbrev => $day_name) {
-                $days_selected += $recipient->daily_.$day_abbrev;
+            $daysSelected = 0;
+            foreach ($days as $dayAbbrev => $day_name) {
+                $daysSelected += $recipient->daily_.$dayAbbrev;
             }
-            if ($recipient->weekly && $days_selected == 0) {
-                $data['MailingList']['frequency'] = 'weekly';
-            } elseif (! $recipient->weekly && $days_selected == 7) {
-                $data['MailingList']['frequency'] = 'daily';
+            if ($recipient->weekly && $daysSelected == 0) {
+                $data->frequency = 'weekly';
+            } elseif (! $recipient->weekly && $daysSelected == 7) {
+                $data->frequency = 'daily';
             } else {
-                $data['MailingList']['frequency'] = 'custom';
+                $data->frequency = 'custom';
             }
             if ($recipient->all_categories) {
-                $data['MailingList']['event_categories'] = 'all';
+                $data->event_categories = 'all';
             } else {
-                $data['MailingList']['event_categories'] = 'custom';
+                $data->event_categories = 'custom';
             }
             $categories = $this->CategoriesMailingList->find()
                 ->where(['mailing_list_id' => $recipient->id]);
             if ($categories) {
                 foreach ($categories as $category) {
-                    $data['MailingList']['selected_categories'][$category['id']] = true;
+                    $data->selected_categories[$category['id']] = true;
                 }
             }
             foreach ($days as $code => $day) {
-                $data['MailingList']["daily_$code"] = $recipient['MailingList']["daily_$code"];
+                $data->daily_.$code = $recipient->daily_.$code;
             }
-            $data['MailingList']['weekly'] = $recipient->weekly;
-            $data['MailingList']['email'] = $recipient->email;
+            $data->weekly = $recipient->weekly;
+            $data->email = $recipient->email;
             if (isset($_GET['unsubscribe'])) {
                 $data['unsubscribe'] = 1;
             }
 
         // Join page: No recipient data
         } else {
-            $data['MailingList']['frequency'] = 'weekly';
-            $data['MailingList']['event_categories'] = 'all';
+            $data->frequency = 'weekly';
+            $data->event_categories = 'all';
             foreach ($days as $code => $day) {
-                $data['MailingList']['daily'][$code] = true;
+                $data->daily[$code] = true;
             }
             $categories = $this->Categories->getList();
             foreach ($categories as $category_id => $category_name) {
-                $data['MailingList']['selected_categories'][$category_id] = true;
+                $data->selected_categories[$category_id] = true;
             }
         }
 
