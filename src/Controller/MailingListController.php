@@ -271,6 +271,74 @@ class MailingListController extends AppController
         $this->request->data = $this->MailingList->getDefaultFormValues($recipient);
     }
 
+    private function unsubscribePr($recipientId)
+    {
+        if ($this->MailingList->delete($recipientId)) {
+
+            // Un-associate associated User
+            // $userId = $this->User->field('id', array('mailing_list_id' => $recipientId));
+            // if ($userId) {
+            //    $this->User->id = $userId;
+            //    $this->User->saveField('mailing_list_id', null);
+            // }
+
+            return $this->Flash->success('You have been removed from the mailing list.');
+        }
+
+        return $this->Flash->error('There was an error removing you from the mailing list. Please <a href="/contact">contact support</a> for assistance.');
+    }
+
+    /**
+     * Run special validation in addition to MailingList->validates(), returns TRUE if data is valid
+     * @return boolean
+     */
+    private function validateFormPr($recipientId = null)
+    {
+        $errorFound = false;
+
+        // If updating an existing subscription
+        if ($recipientId) {
+            $emailInUse = $this->MailingList->find()
+                ->where(['email' => $this->request->data['email']])
+                ->andWhere(['id NOT' => $recipientId])
+                ->count();
+            if ($emailInUse) {
+                $errorFound = true;
+                $this->MailingList->validationErrors['email'] = 'Cannot change to that email address because another subscriber is currently signed up with it.';
+            }
+
+        // If creating a new subscription
+        } else {
+            $emailInUse = $this->MailingList->find()
+                ->where(['email' => $this->request->data['email']])
+                ->count();
+            if ($emailInUse) {
+                $errorFound = true;
+                $this->MailingList->validationErrors['email'] = 'That address is already subscribed to the mailing list.';
+            }
+        }
+        $allCategoriesSelected = ($this->request->data['event_categories'] == 'all');
+        $noCategoriesSelected = empty($this->request->data['selected_categories']);
+        if (! $allCategoriesSelected && $noCategoriesSelected) {
+            $errorFound = true;
+            $this->set('categories_error', 'At least one category must be selected.');
+        }
+        $frequency = $this->request->data['frequency'];
+        $weekly = $this->request->data['weekly'];
+        if ($frequency == 'custom' && ! $weekly) {
+            $selectedDaysCount = 0;
+            $days = $this->MailingList->getDays();
+            foreach ($days as $code => $day) {
+                $selectedDaysCount += $this->request->data["daily_$code"];
+            }
+            if (! $selectedDaysCount) {
+                $errorFound = true;
+                $this->set('frequency_error', 'You\'ll need to pick either the weekly email or at least one daily email to receive.');
+            }
+        }
+        return ($this->MailingList->validates() && !$errorFound);
+    }
+
     public function settings($recipientId = null, $hash = null)
     {
         $this->set([
@@ -300,22 +368,20 @@ class MailingListController extends AppController
         if ($this->request->is('post')) {
             // Unsubscribe
             if ($this->request->data['unsubscribe']) {
-                return $this->__unsubscribe($recipientId);
+                return $this->unsubscribePr($recipientId);
             }
 
-            $this->__readFormData();
+            $this->readFormDataPr();
 
-            /*
             // If there's an associated user, update its email too
-            $user_id = $this->MailingList->getAssociatedUserId();
-            if ($user_id) {
-                $this->User->id = $user_id;
-                $this->User->saveField('email', $this->request->data['MailingList']['email']);
-            }
-            */
+            // $userId = $this->MailingList->getAssociatedUserId();
+            // if ($userId) {
+            //    $this->User->id = $userId;
+            //    $this->User->saveField('email', $this->request->data['MailingList']['email']);
+            // }
 
             // Update settings
-            if ($this->__validateForm($recipientId)) {
+            if ($this->validateFormPr($recipientId)) {
                 if ($this->MailingList->save()) {
                     return $this->Flash->success('Your mailing list settings have been updated.');
                 }

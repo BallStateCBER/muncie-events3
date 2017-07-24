@@ -341,7 +341,13 @@ class MailingListTableTest extends TestCase
             ->toArray();
 
         $sendDaily = $this->MailingList->sendDaily($mailingListDaily, $events);
-        $this->assertEquals($sendDaily[0], true);
+        if (!$events) {
+            $this->assertEquals($sendDaily[0], false);
+        }
+        if ($events) {
+            $this->assertEquals($sendDaily[0], true);
+        }
+
 
         $this->MailingList->delete($mailingListDaily);
     }

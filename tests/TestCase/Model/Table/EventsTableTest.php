@@ -49,6 +49,10 @@ class EventsTableTest extends TestCase
     {
         $date = new Date(date('Y-m-d'));
         $events = $this->Events->getEventsOnDay(date('Y'), date('m'), date('d'));
+        if (!$events) {
+            print_r('No events today!');
+            return;
+        }
         foreach ($events as $event) {
             $this->assertEquals($event->date, $date);
         }
