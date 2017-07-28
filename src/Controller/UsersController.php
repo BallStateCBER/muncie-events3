@@ -205,8 +205,8 @@ class UsersController extends AppController
 
     public function resetPassword($userId, $resetPasswordHash)
     {
-        $email = $this->Users->getEmailFromId($userId);
         $user = $this->Users->get($userId);
+        $email = $user->email;
 
         $this->set([
             'titleForLayout' => 'Reset Password',
