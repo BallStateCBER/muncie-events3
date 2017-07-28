@@ -125,7 +125,7 @@ class UsersControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
 
         $data = [
-            'email' => 'hotdogplaceholderpants@fuckyou.net',
+            'email' => 'hotdogplaceholderpants@fightyou.net',
             'password' => 'i am such a great password'
         ];
 
