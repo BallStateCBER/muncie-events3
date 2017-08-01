@@ -500,7 +500,7 @@ class WidgetsController extends AppController
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         $this->set([
-            'all_events_url' => $this->getAllEventsUrlPr('feed', $queryString),
+            'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('feed', $queryString)),
             'titleForLayout' => 'Upcoming Events',
             'isAjax' => $this->request->is('ajax'),
             'filters' => $filters,
@@ -567,7 +567,7 @@ class WidgetsController extends AppController
         $this->set([
             'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 1,
-            'all_events_url' => $this->getAllEventsUrlPr('month', $queryString),
+            'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('month', $queryString)),
             'categories' => $this->Events->Categories->getAll(),
             'customStyles' => $this->customStyles
         ]);
