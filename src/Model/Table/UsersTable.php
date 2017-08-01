@@ -152,10 +152,14 @@ class UsersTable extends Table
 
     public function getIdFromEmail($email)
     {
-        $query = TableRegistry::get('Users')->find()->where(['email' => $email]);
-        $result = $query->first();
-
-        return $result->id;
+        $result = $this->find()
+            ->select(['id'])
+            ->where(['email' => $email])
+            ->first();
+        if ($result) {
+            return $result->id;
+        }
+        return false;
     }
 
     public function getResetPasswordHash($userId, $email)
