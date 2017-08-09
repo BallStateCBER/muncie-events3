@@ -409,5 +409,6 @@ $config = [
      */
     'Session' => [
         'defaults' => 'php',
+        'timeout' => 1430 // 1 day
     ],
 ];
