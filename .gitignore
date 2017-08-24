@@ -1,6 +1,5 @@
 /vendor/*
 /config/.env
-/config/.env.default
 /tmp/*
 /logs/*
 /webroot/img/*
