@@ -7,3 +7,6 @@
 /config/.env
 /config/.env.production
 /config/.env.dev
+
+# PhpStorm
+/.idea/*
