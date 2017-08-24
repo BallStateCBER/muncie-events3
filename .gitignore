@@ -1,5 +1,9 @@
 /vendor/*
-/config/.env
 /tmp/*
 /logs/*
 /webroot/img/*
+
+# Environment variable definitions
+/config/.env
+/config/.env.production
+/config/.env.dev
