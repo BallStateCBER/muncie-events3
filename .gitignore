@@ -1,6 +1,20 @@
 /vendor/*
+<<<<<<< HEAD
 /config/.env
 /config/.env.default
 /tmp/*
 /logs/*
 /webroot/img/*
+=======
+/tmp/*
+/logs/*
+/webroot/img/*
+
+# Environment variable definitions
+/config/.env
+/config/.env.production
+/config/.env.dev
+
+# PhpStorm
+/.idea/*
+>>>>>>> 9c724c5a96b2752367e91b3c7e0ed7aa4a47a62e
