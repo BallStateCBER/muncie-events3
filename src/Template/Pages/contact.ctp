@@ -54,6 +54,6 @@ use Cake\Core\Configure\Engine\PhpConfig;
 <?php endif; ?>
 <div class='form-group col-lg-8 col-xs-12'>
 <?= $this->Form->submit('Send', [
-    'class'=>'btn btn-secondary btn-sm'
+    'class'=>'btn btn-secondary'
 ]); ?>
 </div>

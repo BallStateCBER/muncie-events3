@@ -18,7 +18,7 @@
             ]);
         ?>
     </div>
-    <?= $this->Form->button(__('Login'), ['class' => 'btn btn-secondary btn-sm']); ?>
+    <?= $this->Form->button(__('Login'), ['class' => 'btn btn-secondary']); ?>
     <?= $this->Form->end() ?>
     <br />
 </div>

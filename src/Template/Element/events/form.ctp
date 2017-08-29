@@ -312,7 +312,7 @@
             <?php endif; ?>
         </tbody>
     </table>
-<?= $this->Form->button(__('Submit')) ?>
+<?= $this->Form->button(__('Submit', ['class'=>'btn btn-secondary'])) ?>
 <?= $this->Form->end() ?>
 <?php
     $previous_locations_for_autocomplete = [];

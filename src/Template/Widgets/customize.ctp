@@ -70,7 +70,7 @@
             </div>
 
             <br />
-            <input class="btn btn-small" type="submit" value="Apply changes" />
+            <input class="btn" type="submit" value="Apply changes" />
         </form>
     </div>
     <div class="widget_demo col-lg-7" id="widget_demo"></div>

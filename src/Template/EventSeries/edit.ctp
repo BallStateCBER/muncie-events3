@@ -174,7 +174,7 @@
             <th></th>
             <td>
                 <?= $this->Form->submit('Update Series', [
-                    'class' => 'btn btn-sm'
+                    'class' => 'btn'
                 ]); ?>
                 <?= $this->Form->end(); ?>
             </td>
