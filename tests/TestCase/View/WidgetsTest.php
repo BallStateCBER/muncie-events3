@@ -94,9 +94,9 @@ class WidgetsViewTest extends IntegrationTestCase
         $this->assertResponseOk();
 
         $testEvent = $this->Events->find()
-            ->where(['date >' => date("Y-m-d")])
+            ->where(['date >=' => date("Y-m-d")])
+            ->order(['date' => 'ASC'])
             ->first();
-
         $this->assertResponseContains("$testEvent->title");
     }
 }
