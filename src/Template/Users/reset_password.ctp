@@ -21,6 +21,6 @@
             'autocomplete' => 'off'
         ]);
     ?>
-    <?= $this->Form->submit('Reset Password'); ?>
+    <?= $this->Form->submit('Reset Password', ['class' => 'btn']); ?>
     <?= $this->Form->end(); ?>
 </div>

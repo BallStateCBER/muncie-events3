@@ -145,7 +145,7 @@ use Cake\Utility\Inflector;
         ?>
           <?php foreach ($tags as $tag_name => $tag): ?>
                <?php
-                $font_size = log($tag['count']) / log($max_count) * $font_size_range + $min_font_size;
+                $font_size = log($max_count) == 0 ? log($tag['count']) / 1 * $font_size_range + $min_font_size : log($tag['count']) / log($max_count) * $font_size_range + $min_font_size;
                 $font_size = round($font_size, 1);
             ?>
                <?php echo $this->Html->link(
