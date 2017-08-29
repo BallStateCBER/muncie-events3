@@ -5,7 +5,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
     $userRole = $this->request->session()->read('Auth.User.role');
     $this->Js->buffer("setupSidebar();");
 ?>
-<div id="sidebar" class="col-md-3">
+<div id="sidebar" class="col-lg-3 col-md-4">
 
     <?php if ($loggedIn && $userRole == 'admin'): ?>
         <div>
