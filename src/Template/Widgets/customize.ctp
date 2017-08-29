@@ -70,11 +70,7 @@
             </div>
 
             <br />
-<<<<<<< HEAD
             <input class="btn" type="submit" value="Apply changes" />
-=======
-            <input class="btn btn-small" type="submit" value="Apply changes" />
->>>>>>> 9c724c5a96b2752367e91b3c7e0ed7aa4a47a62e
         </form>
     </div>
     <div class="widget_demo col-lg-7" id="widget_demo"></div>

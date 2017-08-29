@@ -174,11 +174,7 @@
             <th></th>
             <td>
                 <?= $this->Form->submit('Update Series', [
-<<<<<<< HEAD
                     'class' => 'btn'
-=======
-                    'class' => 'btn btn-sm'
->>>>>>> 9c724c5a96b2752367e91b3c7e0ed7aa4a47a62e
                 ]); ?>
                 <?= $this->Form->end(); ?>
             </td>

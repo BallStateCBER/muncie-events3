@@ -47,11 +47,7 @@
         </div>
     </fieldset>
     <?= $this->Form->button(__('Join Event Mailing List'), [
-<<<<<<< HEAD
         'class' => 'btn btn-secondary']) ?>
-=======
-        'class' => 'btn btn-secondary btn-sm']) ?>
->>>>>>> 9c724c5a96b2752367e91b3c7e0ed7aa4a47a62e
     <?= $this->Form->end() ?>
 </div>
 <?php $this->Js->buffer("setupMailingListForm();"); ?>

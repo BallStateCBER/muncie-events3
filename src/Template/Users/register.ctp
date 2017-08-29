@@ -20,6 +20,6 @@
     <div class="col-lg-6">
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
-    <?= $this->Form->button(__('Submit', ['class' => 'btn'])) ?>
+    <?= $this->Form->button(__('Submit'), ['class' => 'btn']) ?>
     <?= $this->Form->end() ?>
 </div>
