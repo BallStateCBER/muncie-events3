@@ -136,12 +136,17 @@ class WidgetsControllerTest extends IntegrationTestCase
         $this->post('/events/add', $dummyEvent);
         $this->assertResponseSuccess();
 
-        $this->get('/widgets/feed' . '?category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food');
+        $this->get('/widgets/feed?', [
+            'category' => 13,
+            'location' => 'placeholdertown',
+            'tags_included' => 'potluck',
+            'tags_excluded' => 'slow+food'
+        ]);
         $this->assertResponseOk();
-        $this->markTestIncomplete();
 
-/*        $iframeQueryString =  $this->viewVariable('iframeQueryString');
-        $this->assertEquals('category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString); */
+        $iframeQueryString =  $this->viewVariable('iframeQueryString');
+        $this->markTestIncomplete();
+        #$this->assertEquals('category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString);
     }
 
     /**

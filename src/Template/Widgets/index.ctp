@@ -25,12 +25,12 @@ use Cake\Routing\Router;
     to see customization options and get the code to embed into your website.
 </p>
 
-<p class="footnote">
+<small>
     Note: If you are using a content management system, it must allow you to use
     <a href="http://en.wikipedia.org/wiki/Iframe#Frames">iframes</a>. Have a CMS
     that is incompatible with iframes? <a href="/contact">Let us know</a> and we'll develop a plugin for
     you.
-</p>
+</small>
 
 <div id="widgets_overview row">
     <div class="col-xs-12 col-lg-4 float-left">
