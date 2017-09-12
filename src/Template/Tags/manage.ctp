@@ -50,11 +50,11 @@
 Vegetables
 -Taters</pre>
         <?= $this->Form->input('name', ['type' => 'textarea', 'label' => false, 'style' => 'width: 100%;']); ?>
-        <?= $this->Form->input('parent_name', ['label' => 'Parent Tag (optional)', 'type' => 'text', 'class' => 'search_field']); ?>
+        <?= $this->Form->input('parent_name', ['label' => 'Parent Tag (optional)', 'type' => 'text', 'class' => 'search_field form-control']); ?>
         <p>
             All tags will be created as both listed and selectable.
         </p>
-        <?= $this->Form->submit('Add') ?>
+        <?= $this->Form->submit('Add', ['class' => 'btn']) ?>
         <?= $this->Form->end(); ?>
 
         <div id="add_results"></div>
@@ -71,8 +71,8 @@ Vegetables
             Or start typing a tag name:
         </p>
         <form id="tag_remove_form">
-            <input type="text" id="tag_remove_field" class="search_field" />
-            <input type="submit" value="Remove" />
+            <input type="text" id="tag_remove_field" class="search_field form-control" />
+            <input type="submit" value="Remove" class="btn" />
         </form>
         <div class="results"></div>
     </div>
@@ -83,9 +83,9 @@ Vegetables
         </p>
         <div>
             <form id="tag_edit_search_form">
-                <input type="text" class="search_field" />
+                <input type="text" class="search_field form-control" />
                 <br />
-                <input type="submit" value="Edit this tag" />
+                <input type="submit" value="Edit this tag" class="btn" />
             </form>
         </div>
         <div class="results" id="edit_results"></div>
@@ -97,13 +97,13 @@ Vegetables
         </p>
         <form id="tag_merge_form">
             Merge
-            <input type="text" id="tag_merge_from_field" class="search_field"/>
+            <input type="text" id="tag_merge_from_field" class="search_field form-control"/>
             into
-            <input type="text" id="tag_merge_into_field" class="search_field"/>
+            <input type="text" id="tag_merge_into_field" class="search_field form-control"/>
 
             <span class="footnote">(The first tag will be <strong>removed</strong>.)</span>
             <br />
-            <input type="submit" value="Merge" />
+            <input type="submit" value="Merge" class="btn" />
         </form>
         <div class="results" id="merge_results"></div>
     </div>
@@ -114,9 +114,9 @@ Vegetables
         </p>
         <div>
             <form id="tag_search_form">
-                <input type="text" class="search_field" />
+                <input type="text" class="search_field form-control" />
                 <br />
-                <input type="submit" value="Trace path to this tag" />
+                <input type="submit" value="Trace path to this tag" class="btn" />
             </form>
         </div>
         <div class="results" id="trace_results"></div>
