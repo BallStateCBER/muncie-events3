@@ -25,7 +25,7 @@
             <label for="Widget<?= $field_name; ?>">
                 <?= $label; ?>:
             </label>
-            <input id="Widget<?= $field_name; ?>" value="<?= $defaults['styles'][$field_name]; ?>" name="<?= $field_name; ?>" type="text" class="color_input style" />
+            <input id="Widget<?= $field_name; ?>" value="<?= $defaults['styles'][$field_name]; ?>" name="<?= $field_name; ?>" type="text" class="color_input style form-control" />
             <br />
         <?php endforeach; ?>
     </div>
