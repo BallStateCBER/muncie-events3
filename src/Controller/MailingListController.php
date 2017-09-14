@@ -168,13 +168,10 @@ class MailingListController extends AppController
 
         // Daily frequency
         $days = $this->MailingList->getDays();
-        // custom day frequency
-        if ($mailingList->frequency == 'custom') {
-            foreach ($days as $code => $day) {
-                $dailyCode = 'daily_'.$code;
-                $value = $mailingList->$dailyCode;
-                $mailingList->$dailyCode = $value;
-            }
+        foreach ($days as $code => $day) {
+            $dailyCode = 'daily_'.$code;
+            $value = $mailingList->$dailyCode;
+            $mailingList->$dailyCode = $value;
         }
 
         $mailingList->new_subscriber = 1;
