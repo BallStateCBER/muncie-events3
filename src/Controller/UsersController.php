@@ -120,6 +120,7 @@ class UsersController extends AppController
 
     public function logout()
     {
+        $this->Flash->success('Thanks for stopping by!');
         return $this->redirect($this->Auth->logout());
     }
 
@@ -147,7 +148,7 @@ class UsersController extends AppController
 
     public function account()
     {
-        $this->set('titleForLayout', 'Your Account');
+        $this->set('titleForLayout', 'My Account');
 
         $id = $this->Auth->user('id');
         $email = $this->Auth->user('email');

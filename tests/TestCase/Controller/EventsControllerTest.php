@@ -187,6 +187,7 @@ class EventsControllerTest extends IntegrationTestCase
 
         if ($event->id) {
             $this->assertResponseSuccess();
+            dd($event->date);
             $this->get("/events/delete/$event->id");
             return;
         }

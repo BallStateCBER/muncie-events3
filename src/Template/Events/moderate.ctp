@@ -18,10 +18,10 @@ use Cake\Utility\Inflector;
                     $created = $event->created;
                     $modified = $event->modified;
                     $published = $event->published;
-                    $isSeries = isset($event['EventSeries']['id']);
+                    $isSeries = isset($event->series_id);
 
                     if ($isSeries) {
-                        $series_id = $event['EventSeries']['id'];
+                        $series_id = $event->series_id;
                         $count = count($identicalSeriesMembers[$series_id][$modified]);
 
                         // If events in a series have been modified, they are separated out
@@ -102,7 +102,7 @@ use Cake\Utility\Inflector;
                                     Series
                                 </th>
                                 <td>
-                                    <?= $event->EventSeries['title']; ?>
+                                    <?= $event->event_series['title']; ?>
                                     (<?= $count.__n(' event', ' events', $count); ?>)
                                     <?php if ($countSeriesParts > 1 && $created != $modified): ?>
                                         <br />
@@ -120,10 +120,10 @@ use Cake\Utility\Inflector;
                             </th>
                             <td>
                                 <?= date('M j, Y g:ia', strtotime($created)); ?>
-                                <?php if ($event->User['id']): ?>
+                                <?php if ($event->user['id']): ?>
                                     by <?= $this->Html->link(
-                                        $event->User['name'],
-                                        ['controller' => 'users', 'action' => 'view', 'id' => $event['User']['id']]
+                                        $event->user['name'],
+                                        ['controller' => 'users', 'action' => 'view', 'id' => $event->user['id']]
                                     ); ?>
                                 <?php else: ?>
                                     anonymously
@@ -145,7 +145,7 @@ use Cake\Utility\Inflector;
                                 Date
                             </th>
                             <td>
-                                <?= date('M j, Y', strtotime($event['Event']['date'])); ?>
+                                <?= date('M j, Y', strtotime($event->date)); ?>
                                 <?= $this->Calendar->eventTime($event); ?>
                             </td>
                         </tr>
@@ -154,11 +154,11 @@ use Cake\Utility\Inflector;
                                 Category
                             </th>
                             <td>
-                                <?= $event->Category['name']; ?>
+                                <?= $event->category['name']; ?>
                             </td>
                         </tr>
-                        <?php $vars_to_display = ['title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source']; ?>
-                        <?php foreach ($vars_to_display as $var): ?>
+                        <?php $varsToDisplay = ['title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source']; ?>
+                        <?php foreach ($varsToDisplay as $var): ?>
                             <?php if (!empty($event->$var)): ?>
                                 <tr>
                                     <th>
@@ -170,29 +170,29 @@ use Cake\Utility\Inflector;
                                 </tr>
                             <?php endif; ?>
                         <?php endforeach; ?>
-                        <?php if (!empty($event['Tags'])): ?>
+                        <?php if (!empty($event->tags)): ?>
                             <tr>
                                 <th>Tags</th>
                                 <td>
                                     <?php
-                                        $tags_list = [];
-                                        foreach ($event['Tags'] as $tag) {
-                                            $tags_list[] = $tag['name'];
+                                        $tagsList = [];
+                                        foreach ($event->tags as $tag) {
+                                            $tagsList[] = $tag->name;
                                         }
-                                        echo implode(', ', $tags_list);
+                                        echo implode(', ', $tagsList);
                                     ?>
                                 </td>
                             </tr>
                         <?php endif; ?>
-                        <?php if (!empty($event['EventsImages'])): ?>
+                        <?php if (!empty($event->images)): ?>
                             <tr>
                                 <th>Images</th>
                                 <td>
-                                    <?php foreach ($event['EventsImages'] as $image): ?>
+                                    <?php foreach ($event->images as $image): ?>
                                         <?= $this->Calendar->thumbnail('tiny', [
                                             'filename' => $image->filename,
                                             'caption' => $image->caption,
-                                            'group' => 'unapproved_event_'.$event['Event']['id']
+                                            'group' => 'unapproved_event_'.$event->id
                                         ]); ?>
                                     <?php endforeach; ?>
                                 </td>

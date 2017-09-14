@@ -58,6 +58,10 @@ class AppController extends Controller
         'Html'
     ];
 
+    public $components = [
+        'Auth'
+    ];
+
     /*
      * initialize app, load components, set legacy hasher for new logins to Cake3
      */
