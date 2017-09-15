@@ -143,7 +143,6 @@ class MailingListController extends AppController
             if ($mailingList['settings'] == 'default') {
                 $mailingList->weekly = 1;
                 $mailingList->all_categories = 1;
-                $mailingList->Categories = $allCategories;
             }
         }
 
@@ -187,7 +186,7 @@ class MailingListController extends AppController
      */
     public function join()
     {
-        $titleForLayout = 'Join our Mailing List';
+        $titleForLayout = 'Join Muncie Events Mailing List';
         $this->set('titleForLayout', $titleForLayout);
         $mailingList = $this->MailingList->newEntity();
         if ($this->request->is('post')) {
