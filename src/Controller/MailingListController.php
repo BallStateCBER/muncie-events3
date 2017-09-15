@@ -143,6 +143,7 @@ class MailingListController extends AppController
             if ($mailingList['settings'] == 'default') {
                 $mailingList->weekly = 1;
                 $mailingList->all_categories = 1;
+                return;
             }
         }
 
