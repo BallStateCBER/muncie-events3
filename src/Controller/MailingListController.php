@@ -156,14 +156,10 @@ class MailingListController extends AppController
             if ($selectedCatCount == $allCatCount) {
                 $allCatSelected = true;
                 $mailingList->all_categories = 1;
-                $mailingList->Categories = $allCategories;
             }
-        }
-
-        // Custom event types
-        if (isset($mailingList->selected_categories)) {
-            $mailingList->Categories = array_keys($mailingList->selected_categories);
-            $mailingList->all_categories = 0;
+            if ($selectedCatCount != $allCatCount) {
+                $mailingList->all_categories = 0;
+            }
         }
 
         // Daily frequency
@@ -177,6 +173,50 @@ class MailingListController extends AppController
         $mailingList->new_subscriber = 1;
 
         return $mailingList;
+    }
+
+    private function addCategoryJoins($mailingList)
+    {
+        $this->loadModel('Categories');
+        $this->loadModel('CategoriesMailingList');
+        $allCategories = $this->MailingList->Categories->getAll();
+
+        // If joining for the first time with default settings
+        if (isset($mailingList['settings'])) {
+            if ($mailingList['settings'] == 'default') {
+                foreach ($allCategories as $key => $cat) {
+                    $newJoin = $this->CategoriesMailingList->newEntity();
+                    $newJoin->mailing_list_id = $mailingList->id;
+                    $newJoin->category_id = $key;
+                    $this->CategoriesMailingList->save($newJoin);
+                }
+                return;
+            }
+        }
+
+        // All event types
+        // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
+        $allCatSelected = ($mailingList['event_categories'] == 'all');
+        if (!$allCatSelected) {
+            $selectedCatCount = count($mailingList->selected_categories);
+            $allCatCount = count($allCategories);
+            if ($selectedCatCount == $allCatCount) {
+                foreach ($allCategories as $key => $cat) {
+                    $newJoin = $this->CategoriesMailingList->newEntity();
+                    $newJoin->mailing_list_id = $mailingList->id;
+                    $newJoin->category_id = $key;
+                    $this->CategoriesMailingList->save($newJoin);
+                }
+            }
+            if ($selectedCatCount != $allCatCount) {
+                foreach ($mailingList['selected_categories'] as $key => $scat) {
+                    $newJoin = $this->CategoriesMailingList->newEntity();
+                    $newJoin->mailing_list_id = $mailingList->id;
+                    $newJoin->category_id = $key;
+                    $this->CategoriesMailingList->save($newJoin);
+                }
+            }
+        }
     }
 
     /**
@@ -194,19 +234,8 @@ class MailingListController extends AppController
             $mailingList = $this->MailingList->patchEntity($mailingList, $this->request->getData());
             $mailingList = $this->readFormDataPr($mailingList);
             if ($this->MailingList->save($mailingList)) {
+                $this->addCategoryJoins($mailingList);
                 $this->Flash->success(__('The mailing list has been saved.'));
-
-                // create linked rows between subscribers & their categories
-                foreach ($mailingList->Categories as $category) {
-                    $newCategory = $this->CategoriesMailingList->newEntity();
-                    $newCategory->mailing_list_id = $mailingList->id;
-                    if (isset($category->id)) {
-                        $newCategory->category_id = $category->id;
-                    } elseif (is_int($category)) {
-                        $newCategory->category_id = $category;
-                    }
-                    $this->CategoriesMailingList->save($newCategory);
-                }
             } else {
                 $this->Flash->error(__('The mailing list could not be saved. Please, try again.'));
             }
