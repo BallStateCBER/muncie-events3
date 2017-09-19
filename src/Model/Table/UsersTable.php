@@ -96,18 +96,7 @@ class UsersTable extends Table
 
         $validator
             ->requirePresence('email', 'create')
-            ->add('email', [
-                'valid' => [
-                    'rule' => 'email',
-                    'message' => 'You must enter a valid email address.'
-                ]
-            ]);
-        /*    ->add('email', [
-                'unique' => [
-                    'rule' => 'validateUnique',
-                    'message' => 'There is already an account registered with this email address.'
-                ]
-            ]) */
+            ->notEmpty('email');
 
         $validator
             ->requirePresence('password', 'create')

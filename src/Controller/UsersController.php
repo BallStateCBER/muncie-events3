@@ -130,9 +130,26 @@ class UsersController extends AppController
 
         $user = $this->Users->newEntity();
 
+        $this->set(compact('user'));
+        $this->set('_serialize', ['user']);
+
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower($user['email']);
+
+            // validation things:
+            // is this email a valid email?
+            $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+            $validEmail = preg_match($regex, $user['email']);
+            if (!$validEmail) {
+                return $this->Flash->error("That's not a valid email address. Please enter a valid email address.");
+            }
+            // is there a previous user associated?
+            $prevUser = $this->Users->getIdFromEmail($user['email']);
+            if (isset($prevUser)) {
+                return $this->Flash->error('There is already a user with this email address.');
+            }
+
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Success! You have been registered.'));
                 $this->Auth->setUser($user);
@@ -140,10 +157,6 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('Sorry, we could not register you. Please try again.'));
         }
-
-        #$mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
     }
 
     public function account()
