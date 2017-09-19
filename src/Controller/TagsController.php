@@ -70,7 +70,7 @@ class TagsController extends AppController
      *
      * @param string $direction of the tags
      * @param string $category of the tags
-     * @return null
+     * @return void
      */
     public function index($direction = 'future', $category = 'all')
     {
@@ -385,7 +385,7 @@ class TagsController extends AppController
     /**
      * Returns a path from the root of the Tag tree to the tag with the provided name
      *
-     * @param string $tagName
+     * @param string $tagName of the tag you need traced
      * @return void
      */
     public function trace($tagName = '')
@@ -586,7 +586,7 @@ class TagsController extends AppController
      * and deletes Tag $tagId, and moves any child tags under Tag $merge_into_id.
      *
      * @param string $removedTagName tag lost in merge
-     * @param string $retainedTagNAme tag kept in merge
+     * @param string $retainedTagName tag kept in merge
      * @return void
      */
     public function merge($removedTagName = '', $retainedTagName = '')
@@ -723,7 +723,7 @@ class TagsController extends AppController
     /**
      * Removes all tags in the 'delete' group
      *
-     * @return null
+     * @return void
      */
     public function emptyDeleteGroup()
     {

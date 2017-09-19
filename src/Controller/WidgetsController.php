@@ -15,6 +15,11 @@ class WidgetsController extends AppController
 
     public $widgetType = null;
 
+    /**
+     * Initialize hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -25,6 +30,11 @@ class WidgetsController extends AppController
         $this->loadModel('Events');
     }
 
+    /**
+     * getting default styles
+     *
+     * @return array
+     */
     public function getDefaults()
     {
         if (!$this->widgetType) {
@@ -65,9 +75,16 @@ class WidgetsController extends AppController
                 $defaults['eventOptions']['eventsDisplayedPerDay'] = 2;
                 break;
         }
+
         return $defaults;
     }
 
+    /**
+     * is it a feed or a month widget?
+     *
+     * @param string $widgetType feed or month
+     * @return void
+     */
     public function setType($widgetType)
     {
         switch ($widgetType) {
@@ -80,6 +97,11 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * get custom options for widgets
+     *
+     * @return array
+     */
     public function getOptions()
     {
         if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING'))) {
@@ -106,9 +128,15 @@ class WidgetsController extends AppController
                 $options[$key] = $val;
             }
         }
+
         return $options;
     }
 
+    /**
+     * generates the iframe query string
+     *
+     * @return string
+     */
     public function getIframeQueryString()
     {
         if (empty(filter_input(INPUT_SERVER, 'QUERY_STRING'))) {
@@ -141,14 +169,16 @@ class WidgetsController extends AppController
                 }
             }
         }
+
         return http_build_query($iframeParams, '', '&');
     }
 
     /**
      * Returns TRUE if $key is found in default_styles, default_iframeOptions, or default_eventOptions and $val is not the default value
-     * @param string $key
-     * @param string $val
-     * @return boolean
+     *
+     * @param string $key of style
+     * @param string $val of style
+     * @return bool
      */
     public function isValidNondefaultOption($key, $val)
     {
@@ -166,9 +196,16 @@ class WidgetsController extends AppController
                 return true;
             }
         }
+
         return false;
     }
 
+    /**
+     * adding iframe styles
+     *
+     * @param array $options for iframe styles
+     * @return void
+     */
     public function getIframeStyles($options)
     {
         $iframeStyles = '';
@@ -216,6 +253,13 @@ class WidgetsController extends AppController
         return $iframeStyles;
     }
 
+    /**
+     * adding custom styles
+     *
+     * @param mixed $elements for custom styles
+     * @param mixed $rules for custom styles
+     * @return void
+     */
     public function addCustomStyle($elements, $rules)
     {
         if (!is_array($elements)) {
@@ -231,6 +275,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the options
+     *
+     * @param array $options which styles are we processing
+     * @return void
+     */
     public function processCustomStyles($options)
     {
         if (empty($options)) {
@@ -259,6 +309,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the default text color color
+     *
+     * @param string $val is the text color
+     * @return void
+     */
     private function textColorDefaultStyle($val)
     {
         $this->addCustomStyle(
@@ -278,6 +334,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the light text color color
+     *
+     * @param string $val is the text color
+     * @return void
+     */
     private function textColorLightStyle($val)
     {
         $this->addCustomStyle(
@@ -307,6 +369,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the link colors
+     *
+     * @param string $val is the link color
+     * @return void
+     */
     private function textColorLinkStyle($val)
     {
         $this->addCustomStyle(
@@ -321,6 +389,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the light border color color
+     *
+     * @param string $val is the border color
+     * @return void
+     */
     private function borderColorLightStyle($val)
     {
         $this->addCustomStyle(
@@ -356,6 +430,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the dark border color color
+     *
+     * @param string $val is the border color
+     * @return void
+     */
     private function borderColorDarkStyle($val)
     {
         if ($this->widgetType == 'feed') {
@@ -374,6 +454,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the default background color
+     *
+     * @param string $val is the background color
+     * @return void
+     */
     private function backgroundColorDefaultStyle($val)
     {
         $this->addCustomStyle(
@@ -391,6 +477,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the background color
+     *
+     * @param string $val is the background color
+     * @return void
+     */
     private function backgroundColorAltStyle($val)
     {
         $this->addCustomStyle(
@@ -414,6 +506,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * how big should the fonts be?
+     *
+     * @param int $val size of the fonts
+     * @return void
+     */
     private function fontSizeStyle($val)
     {
         if ($this->widgetType == 'month') {
@@ -427,6 +525,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * sow all icons
+     *
+     * @param bool $val whether or not to use this
+     * @return void
+     */
     private function showIconsStyle($val)
     {
         if ($val) {
@@ -440,6 +544,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * hide the general events icon
+     *
+     * @param bool $val whether or not to use this
+     * @return void
+     */
     private function hideGeneralEventsIconStyle($val)
     {
         if (!$val) {
@@ -453,6 +563,12 @@ class WidgetsController extends AppController
         }
     }
 
+    /**
+     * setting the data for the demo
+     *
+     * @param string $widgetType month or feed
+     * @return void
+     */
     public function setDemoDataPr($widgetType)
     {
         $this->setType($widgetType);
@@ -476,7 +592,8 @@ class WidgetsController extends AppController
 
     /**
      * Produces a view that lists seven event-populated days, starting with $startDate
-     * @param string $startDate 'yyyy-mm-dd', today by default
+     *
+     * @return void
      */
     public function feed()
     {
@@ -492,7 +609,7 @@ class WidgetsController extends AppController
         }
         $this->indexEvents($events);
 
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'feed');
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'feed');
         $this->processCustomStyles($options);
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
@@ -510,7 +627,9 @@ class WidgetsController extends AppController
 
     /**
      * Produces a grid-calendar view for the provided month
-     * @param string $month 'yyyy-mm', current month by default
+     *
+     * @param string|null $yearMonth 'yyyy-mm', current month by default
+     * @return void
      */
     public function month($yearMonth = null)
     {
@@ -539,11 +658,11 @@ class WidgetsController extends AppController
         $prevMonth = ($month == 1) ? 12 : $month - 1;
         $nextYear = ($month == 12) ? $year + 1 : $year;
         $nextMonth = ($month == 12) ? 1 : $month + 1;
-        $today = date('Y').date('m').date('j');
+        $today = date('Y') . date('m') . date('j');
 
         $this->indexEvents($events);
 
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets'.DS.'ajax' : 'Widgets'.DS.'month');
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
         $this->processCustomStyles($options);
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
@@ -552,14 +671,14 @@ class WidgetsController extends AppController
 
         // manually set $eventsForJson just for debugging purposes...
         $eventsForJson['2017-06-03'] = [
-            'heading' => 'Events on '.date('F j, Y', (strtotime('2017-06-03'))),
+            'heading' => 'Events on ' . date('F j, Y', (strtotime('2017-06-03'))),
             'events' => []
         ];
         $eventsForJson['2017-06-03']['events'][] = [
             'id' => '4459',
             'title' => 'The Steampunk Kids go to the park and wear corsets',
             'category_name' => 'General Events',
-            'category_icon_class' => 'icon-'.strtolower(str_replace(' ', '-', 'General Events')),
+            'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', 'General Events')),
             'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => 4459]),
             'time' => '2 PM'
         ];
@@ -571,18 +690,17 @@ class WidgetsController extends AppController
             'categories' => $this->Events->Categories->getAll(),
             'customStyles' => $this->customStyles
         ]);
-        $this->set(compact(
-            'month', 'year', 'timestamp', 'preSpacer', 'lastDay',
-            'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today',
-            'monthName', 'eventsForJson', 'filters', 'options'
-        ));
+        $this->set(compact('month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'monthName', 'eventsForJson', 'filters', 'options'));
     }
 
     /**
      * Loads a list of all events on a given day, used by the month widget
+     *
      * @param int $year Format: yyyy
      * @param int $month Format: mm
      * @param int $day Format: dd
+     *
+     * @return void
      */
     public function day($year, $month, $day)
     {
@@ -592,14 +710,16 @@ class WidgetsController extends AppController
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
         $this->set([
-            'titleForLayout' => 'Events on '.date('F jS, Y', mktime(0, 0, 0, $month, $day, $year)),
+            'titleForLayout' => 'Events on ' . date('F jS, Y', mktime(0, 0, 0, $month, $day, $year)),
             'events' => $events
         ]);
     }
 
     /**
      * Accepts a query string and returns the URL to view this calendar with no filters (but custom styles retained)
-     * @param string $queryString
+     *
+     * @param string $action month or feed
+     * @param string $queryString for all events
      * @return string
      */
     private function getAllEventsUrlPr($action, $queryString)
@@ -620,6 +740,7 @@ class WidgetsController extends AppController
             }
             $newQueryString = http_build_query($filteredParams, '', '&');
         }
+
         return Router::url([
             'controller' => 'widgets',
             'action' => $action,
@@ -627,25 +748,33 @@ class WidgetsController extends AppController
         ]);
     }
 
+    /**
+     * event page for the widget
+     *
+     * @param int $id of the event
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function event($id)
     {
         $event = $this->Events->get($id, [
-          'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
-      ]);
+            'contain' => [
+                'Users', 'Categories', 'EventSeries', 'Images', 'Tags'
+            ]
+        ]);
         if (empty($event)) {
-            return $this->renderMessage([
-              'title' => 'Event Not Found',
-              'message' => "Sorry, but we couldn't find the event (#$id) you were looking for.",
-              'class' => 'error'
-          ]);
+            return $this->Flash->error("Sorry, but we couldn't find the event (#$id) you were looking for.");
         }
         $this->viewBuilder()->layout('Widgets'.DS.'feed');
         $this->set([
-          'event' => $event
-          ]
-      );
+            'event' => $event
+        ]);
     }
 
+    /**
+     * widgets index
+     *
+     * @return void
+     */
     public function index()
     {
         $this->set([
@@ -654,7 +783,13 @@ class WidgetsController extends AppController
         $this->viewBuilder()->layout('no_sidebar');
     }
 
-    // Produces a view listing the upcoming events for a given location
+    /**
+     * Produces a view listing the upcoming events for a given location
+     *
+     * @param string $venueName of the venue
+     * @param string|null $startingDate of the event
+     * @return void
+     */
     public function venue($venueName = '', $startingDate = null)
     {
         if (!$startingDate) {
@@ -687,6 +822,11 @@ class WidgetsController extends AppController
         ]);
     }
 
+    /**
+     * demoFeed method
+     *
+     * @return void
+     */
     public function demoFeed()
     {
         $this->setDemoDataPr('feed');
@@ -694,6 +834,11 @@ class WidgetsController extends AppController
         $this->render('customize/demo');
     }
 
+    /**
+     * demoMonth method
+     *
+     * @return void
+     */
     public function demoMonth()
     {
         $this->setDemoDataPr('month');
@@ -701,6 +846,11 @@ class WidgetsController extends AppController
         $this->render('customize/demo');
     }
 
+    /**
+     * customizeFeed method
+     *
+     * @return void
+     */
     public function customizeFeed()
     {
         $this->setDemoDataPr('feed');
@@ -712,6 +862,11 @@ class WidgetsController extends AppController
         $this->render('customize');
     }
 
+    /**
+     * customizeMonth method
+     *
+     * @return void
+     */
     public function customizeMonth()
     {
         $this->setDemoDataPr('month');
