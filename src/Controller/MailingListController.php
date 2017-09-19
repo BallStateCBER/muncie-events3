@@ -43,6 +43,7 @@ class MailingListController extends AppController
         } else {
             $this->Flash->error($message);
         }
+
         return $result;
     }
 
@@ -144,7 +145,7 @@ class MailingListController extends AppController
      * readFormDataPr method
      *
      * @param ResultSet $mailingList mailingList entity
-     * @return ResultSet $mailingList mailingList entity
+     * @return void
      */
     private function readFormDataPr($mailingList)
     {
@@ -158,6 +159,7 @@ class MailingListController extends AppController
             if ($mailingList['settings'] == 'default') {
                 $mailingList->weekly = 1;
                 $mailingList->all_categories = 1;
+
                 return;
             }
         }
@@ -194,7 +196,7 @@ class MailingListController extends AppController
      * addCategoryJoins method
      *
      * @param ResultSet $mailingList mailingList entity
-     * @return null
+     * @return void
      */
     private function addCategoryJoins($mailingList)
     {

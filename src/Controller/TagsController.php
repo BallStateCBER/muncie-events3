@@ -14,6 +14,11 @@ class TagsController extends AppController
 {
     public $adminActions = ['getName', 'getnodes', 'groupUnlisted', 'manage', 'recover', 'remove', 'reorder', 'reparent', 'trace', 'edit', 'merge'];
 
+    /**
+     * Initialize hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -22,6 +27,11 @@ class TagsController extends AppController
         ]);
     }
 
+    /**
+     * Auth settings for the tag manager
+     *
+     * @return bool
+     */
     public function isAuthorized()
     {
         // Admins can access everything
@@ -43,6 +53,11 @@ class TagsController extends AppController
         return true;
     }
 
+    /**
+     * tagmanager view
+     *
+     * @return void
+     */
     public function manage()
     {
         $this->set([
@@ -50,6 +65,13 @@ class TagsController extends AppController
         ]);
     }
 
+    /**
+     * tags index
+     *
+     * @param string $direction of the tags
+     * @param string $category of the tags
+     * @return null
+     */
     public function index($direction = 'future', $category = 'all')
     {
         if ($direction != 'future' && $direction != 'past') {
@@ -70,7 +92,7 @@ class TagsController extends AppController
         $titleForLayout .= ucfirst($directionAdjective);
         $this->loadModel('Categories');
         if ($category != 'all' && $categoryName = $this->Categories->getName($category)) {
-            $titleForLayout .= ' '.str_replace(' Events', '', ucwords($categoryName));
+            $titleForLayout .= ' ' . str_replace(' Events', '', ucwords($categoryName));
         }
         $titleForLayout .= ' Events)';
         $this->set(compact(
@@ -88,6 +110,13 @@ class TagsController extends AppController
         ]);
     }
 
+    /**
+     * autoComplete method
+     *
+     * @param bool $onlyListed only one listed
+     * @param bool $onlySelectable only one selectable
+     * @return void
+     */
     public function autoComplete($onlyListed, $onlySelectable)
     {
         $stringToComplete = htmlspecialchars_decode($_GET['term']);
@@ -97,10 +126,10 @@ class TagsController extends AppController
         // in order, until $limit tags are found.
         $likeConditions = [
             $stringToComplete,
-            $stringToComplete.' %',
-            $stringToComplete.'%',
-            '% '.$stringToComplete.'%',
-            '%'.$stringToComplete.'%'
+            $stringToComplete . ' %',
+            $stringToComplete . '%',
+            '% ' . $stringToComplete . '%',
+            '%' . $stringToComplete . '%'
         ];
 
         // Collect tags up to $limit
@@ -118,7 +147,7 @@ class TagsController extends AppController
             }
             $results = $this->Tags->find()
                 ->where($conditions)
-                ->limit($limit-count($tags));
+                ->limit($limit - count($tags));
             if (!empty($tags)) {
                 foreach (array_keys($tags) as $tag) {
                     $results = $results->andWhere(['id !=' => $tag]);
@@ -145,6 +174,11 @@ class TagsController extends AppController
         $this->viewBuilder()->setLayout('blank');
     }
 
+    /**
+     * recover the tag tree
+     *
+     * @return void
+     */
     public function recover()
     {
         list($startUsec, $startSec) = explode(" ", microtime());
@@ -161,6 +195,8 @@ class TagsController extends AppController
 
     /**
      * Places any root-level unlisted tags in the 'unlisted' tag group
+     *
+     * @return void
      */
     public function groupUnlisted()
     {
@@ -189,7 +225,7 @@ class TagsController extends AppController
         $loadingTime = $endTime - $startTime;
         $minutes = round($loadingTime / 60, 2);
 
-        $message = 'Regrouped '.count($results)." unlisted tags (took $minutes minutes).";
+        $message = 'Regrouped ' . count($results) . " unlisted tags (took $minutes minutes).";
         $more = $this->Tags->find()
             ->where([
                 'listed' => 0,
@@ -198,12 +234,17 @@ class TagsController extends AppController
             ])
             ->count();
         if ($more) {
-            $message .= ' There\'s '.$more.' more unlisted tag'.($more == 1 ? '' : 's').' left to move. Please run this function again.';
+            $message .= ' There\'s ' . $more . ' more unlisted tag' . ($more == 1 ? '' : 's') . ' left to move. Please run this function again.';
         }
         $this->Flash->success($message);
         $this->render('/Tags/flash');
     }
 
+    /**
+     * get nodes of tags in order to order or reorder them
+     *
+     * @return void
+     */
     public function getnodes()
     {
         $this->loadModel('EventsTags');
@@ -266,12 +307,15 @@ class TagsController extends AppController
         $this->set(compact('nodes', 'showNoEvents'));
     }
 
+    /**
+     * reorder tags
+     *
+     * @return void
+     */
     public function reorder()
     {
-
         // retrieve the node instructions from javascript
         // delta is the difference in position (1 = next node, -1 = previous node)
-
         $node = intval($_POST['node']);
         $delta = intval($_POST['delta']);
 
@@ -287,6 +331,11 @@ class TagsController extends AppController
         exit('1');
     }
 
+    /**
+     * give orphan tags new parents
+     *
+     * @return void
+     */
     public function reparent()
     {
         $node = intval($_POST['node']);
@@ -323,7 +372,7 @@ class TagsController extends AppController
             $this->Tags->moveUp($tag, true);
         } else {
             $count = $this->Tags->childCount($parent, true);
-            $delta = $count-$position-1;
+            $delta = $count - $position - 1;
             if ($delta > 0) {
                 $this->Tags->moveUp($tag, $delta);
             }
@@ -335,7 +384,9 @@ class TagsController extends AppController
 
     /**
      * Returns a path from the root of the Tag tree to the tag with the provided name
+     *
      * @param string $tagName
+     * @return void
      */
     public function trace($tagName = '')
     {
@@ -373,7 +424,9 @@ class TagsController extends AppController
 
     /**
      * Returns the name of the Tag with id $id, used by the tag manager
-     * @param int $id
+     *
+     * @param int $id of tag name you want
+     * @return void
      */
     public function getName($id)
     {
@@ -383,6 +436,12 @@ class TagsController extends AppController
         $this->viewBuilder()->setLayout('ajax');
     }
 
+    /**
+     * remove individual tags
+     *
+     * @param string $name of the tag you want gone
+     * @return void
+     */
     public function remove($name)
     {
         if (!$name) {
@@ -409,6 +468,8 @@ class TagsController extends AppController
 
     /**
      * Removes all unlisted, unused, root-level tags with no children
+     *
+     * @return void
      */
     public function removeUnlistedUnused()
     {
@@ -447,6 +508,8 @@ class TagsController extends AppController
 
     /**
      * Finds duplicate tags and merges the tags with higher IDs into those with the lowest ID
+     *
+     * @return void
      */
     public function duplicates()
     {
@@ -472,7 +535,7 @@ class TagsController extends AppController
             }
 
             // Aha! Duplicates!
-            $message .= "Tag \"$tagName\" has IDs: ".implode(', ', $tagIds).'. ';
+            $message .= "Tag \"$tagName\" has IDs: " . implode(', ', $tagIds) . '. ';
             $firstTag = array_shift($tagIds);
             foreach ($tagIds as $tag => $tagId) {
                 // find & remove the old tag
@@ -521,8 +584,10 @@ class TagsController extends AppController
     /**
      * Turns all associations with Tag $tagId into associations with Tag $merge_into_id
      * and deletes Tag $tagId, and moves any child tags under Tag $merge_into_id.
-     * @param int $tagId
-     * @param int $merge_into_id
+     *
+     * @param string $removedTagName tag lost in merge
+     * @param string $retainedTagNAme tag kept in merge
+     * @return void
      */
     public function merge($removedTagName = '', $retainedTagName = '')
     {
@@ -560,7 +625,7 @@ class TagsController extends AppController
             ->count();
         if ($associatedCount) {
             $results = $this->EventsTags->find()
-                ->where(['tag_id'=> $removedTagId])
+                ->where(['tag_id' => $removedTagId])
                 ->toArray();
 
             foreach ($results as $result) {
@@ -568,7 +633,7 @@ class TagsController extends AppController
                 $this->EventsTags->save($result);
             }
 
-            $message .= "Changed association with \"$removedTagName\" into \"$retainedTagName\" in $associatedCount event".($associatedCount == 1 ? '' : 's').'. ';
+            $message .= "Changed association with \"$removedTagName\" into \"$retainedTagName\" in $associatedCount event" . ($associatedCount == 1 ? '' : 's') . '. ';
         }
         if (!$associatedCount) {
             $message .= 'No associated events to edit. ';
@@ -614,6 +679,8 @@ class TagsController extends AppController
 
     /**
      * Removes entries from the events_tags join table where either the tag or event no longer exists
+     *
+     * @return void
      */
     public function removeBrokenAssociations()
     {
@@ -641,10 +708,10 @@ class TagsController extends AppController
         }
         $message = '';
         if (!empty($missingTags)) {
-            $message .= 'Removed associations with nonexistent tags: '.implode(', ', array_keys($missingTags)).' ';
+            $message .= 'Removed associations with nonexistent tags: ' . implode(', ', array_keys($missingTags)) . ' ';
         }
         if (!empty($missingEvents)) {
-            $message .= 'Removed associations with nonexistent events: '.implode(', ', array_keys($missingEvents)).' ';
+            $message .= 'Removed associations with nonexistent events: ' . implode(', ', array_keys($missingEvents)) . ' ';
         }
         if ($message == '') {
             $message = 'No broken associations to remove.';
@@ -655,6 +722,8 @@ class TagsController extends AppController
 
     /**
      * Removes all tags in the 'delete' group
+     *
+     * @return null
      */
     public function emptyDeleteGroup()
     {
@@ -667,6 +736,12 @@ class TagsController extends AppController
         $this->render('/Tags/flash');
     }
 
+    /**
+     * tag editor
+     *
+     * @param string|null $tagName name of the tag you wish to edit
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function edit($tagName = null)
     {
         if ($this->request->is('ajax')) {
@@ -691,6 +766,7 @@ class TagsController extends AppController
                 $message .= '" because another tag (';
                 $message .= print_r($oldTags);
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
+
                 return $this->Flash->error($message);
             }
 
@@ -712,8 +788,10 @@ class TagsController extends AppController
                 if ($this->request->data['listed'] && $tag->parent_id == $this->Tags->getUnlistedGroupId()) {
                     $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
                 }
+
                 return $this->Flash->success($message);
             }
+
             return $this->Flash->error('There was an error editing that tag.');
         }
         if (!$tagName) {
@@ -730,12 +808,18 @@ class TagsController extends AppController
             foreach ($result as $tag) {
                 $tagIds[] = $tag->id;
             }
-            return $this->Flash->error("Tags with the following IDs are named \"$tagName\": ".implode(', ', $tagIds).'<br />You will need to merge them before editing.');
+
+            return $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . '<br />You will need to merge them before editing.');
         }
 
         $this->request->data = $result;
     }
 
+    /**
+     * adding tags
+     *
+     * @return void
+     */
     public function add()
     {
         $this->viewBuilder()->setLayout('ajax');
