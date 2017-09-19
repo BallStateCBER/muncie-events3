@@ -12,9 +12,14 @@ use Cake\ORM\TableRegistry;
  */
 class ImagesController extends AppController
 {
+    /**
+     * upload method.
+     *
+     * @return void
+     */
     public function upload()
     {
-        $uploadDir = WWW_ROOT.'img'.DS.'events'.DS.'full'.DS;
+        $uploadDir = WWW_ROOT . 'img' . DS . 'events' . DS . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
         $verifyToken = md5(Configure::read('upload_verify_token') . $_POST['timestamp']);
         if (! empty($_FILES) && $_POST['token'] == $verifyToken) {
@@ -22,8 +27,8 @@ class ImagesController extends AppController
             $imageId = $this->Images->getNextId();
             $userId = $this->request->session()->read('Auth.User.id');
             $fileParts = pathinfo($_FILES['Filedata']['name']);
-            $filename = $imageId.'.'.strtolower($fileParts['extension']);
-            $targetFile = $uploadDir.$filename;
+            $filename = $imageId . '.' . strtolower($fileParts['extension']);
+            $targetFile = $uploadDir . $filename;
             if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
                 if ($this->Images->autoResize($tempFile)) {
                     if (move_uploaded_file($tempFile, $targetFile)) {
@@ -45,7 +50,7 @@ class ImagesController extends AppController
                             $this->response->statusCode(500);
                             echo 'Error creating thumbnail';
                             if (! empty($this->Images->errors)) {
-                                echo ': '.implode('; ', $this->Images->errors);
+                                echo ': ' . implode('; ', $this->Images->errors);
                             }
                         }
                     } else {
@@ -56,7 +61,7 @@ class ImagesController extends AppController
                     $this->response->statusCode(500);
                     echo 'Error resizing image';
                     if (! empty($this->Images->errors)) {
-                        echo ': '.implode('; ', $this->Images->errors);
+                        echo ': ' . implode('; ', $this->Images->errors);
                     }
                 }
             } else {
@@ -69,14 +74,24 @@ class ImagesController extends AppController
         $this->viewbuilder()->setLayout('blank');
         $this->render('/Pages/blank');
     }
+
     /**
      * Effectively bypasses Uploadify's check for an existing file
      * (because the filename is changed as it's being saved).
+     *
+     * @return void
      */
     public function fileExists()
     {
         exit(0);
     }
+
+    /**
+     * newest method.
+     *
+     * @param int $userId of the user whose images we need
+     * @return void
+     */
     public function newest($userId)
     {
         $result = $this->Images->find('first', [
@@ -92,6 +107,13 @@ class ImagesController extends AppController
         $this->viewbuilder()->setLayout('blank');
         $this->render('/Pages/blank');
     }
+
+    /**
+     * filename method.
+     *
+     * @param int $imageId of the image we're setting the filename for
+     * @return void
+     */
     public function filename($imageId)
     {
         $image = $this->Images->get($imageId);
@@ -101,6 +123,13 @@ class ImagesController extends AppController
         $this->viewbuilder()->setLayout('blank');
         $this->render('/Pages/blank');
     }
+
+    /**
+     * userImages method.
+     *
+     * @param int $userId of the user whose images we need
+     * @return void
+     */
     public function userImages($userId)
     {
         $this->viewbuilder()->setLayout('ajax');

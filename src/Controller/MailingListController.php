@@ -2,8 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\Routing\Router;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 
 /**
  * MailingList Controller
@@ -12,6 +12,11 @@ use Cake\ORM\TableRegistry;
  */
 class MailingListController extends AppController
 {
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -21,6 +26,15 @@ class MailingListController extends AppController
 
         $this->Auth->allow(['join']);
     }
+
+    /**
+     * sendDailyEmailPr method
+     *
+     * @param ResultSet $events Event entities
+     * @param string $recipient mailing list recipient
+     * @param bool|false $testing whether or not this is testing mode
+     * @return $result
+     */
     private function sendDailyEmailPr($events, $recipient, $testing = false)
     {
         list($result, $message) = $this->MailingList->sendDaily($recipient, $events, $testing);
@@ -32,6 +46,14 @@ class MailingListController extends AppController
         return $result;
     }
 
+    /**
+     * sendWeeklyEmailPr method
+     *
+     * @param ResultSet $events Event entities
+     * @param string $recipient mailing list recipient
+     * @param bool|false $testing whether or not this is testing mode
+     * @return $result
+     */
     private function sendWeeklyEmailPr($events, $recipient, $testing = false)
     {
         list($result, $message) = $this->MailingList->sendWeekly($recipient, $events, $testing);
@@ -40,19 +62,21 @@ class MailingListController extends AppController
         } else {
             $this->Flash->error($message);
         }
+
         return $result;
     }
 
+    /**
+     * sendWeekly method
+     *
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function sendDaily()
     {
         // Make sure there are recipients
         $recipients = $this->MailingList->getDailyRecipients();
         if (empty($recipients)) {
-            return $this->renderMessage([
-                'title' => 'Daily Emails Not Sent',
-                'message' => 'No recipients found for today',
-                'class' => 'notification'
-            ]);
+            return $this->Flash->success('No recipients found for today.');
         }
 
         // Make sure there are events to report
@@ -60,11 +84,8 @@ class MailingListController extends AppController
         $events = $this->Events->getEventsOnDay($year, $mon, $day);
         if (empty($events)) {
             $this->MailingList->setAllDailyAsProcessed($recipients, 'd');
-            return $this->renderMessage([
-                'title' => 'Daily Emails Not Sent',
-                'message' => 'No events to inform anyone about today',
-                'class' => 'notification'
-            ]);
+
+            return $this->Flash->success('No events to inform anyone about today.');
         }
 
         // Send emails
@@ -73,32 +94,26 @@ class MailingListController extends AppController
             $this->sendDailyEmailPr($events, $recipient);
             $emailAddresses[] = $recipient['MailingList']['email'];
         }
-        return $this->renderMessage([
-            'title' => 'Daily Emails Sent',
-            'message' => count($events).' total events, sent to '.count($recipients).' recipients: '.implode(', ', $emailAddresses),
-            'class' => 'success'
-        ]);
+
+        return $this->Flash->success(count($events) . ' total events, sent to ' . count($recipients) . ' recipients: ' . implode(', ', $emailAddresses));
     }
 
+    /**
+     * sendWeekly method
+     *
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function sendWeekly()
     {
         // Make sure that today is the correct day
         if (! $this->MailingList->testing_mode && ! $this->MailingList->getWeeklyDeliveryDay()) {
-            return $this->renderMessage([
-                'title' => 'Weekly Emails Not Sent',
-                'message' => 'Today is not the day of the week designated for delivering weekly emails.',
-                'class' => 'notification'
-            ]);
+            return $this->Flash->success('Today is not the day of the week designated for delivering weekly emails.');
         }
 
         // Make sure there are recipients
         $recipients = $this->MailingList->getWeeklyRecipients();
         if (empty($recipients)) {
-            return $this->renderMessage([
-                'title' => 'Weekly Emails Not Sent',
-                'message' => 'No recipients found for this week',
-                'class' => 'notification'
-            ]);
+            return $this->Flash->success('No recipients found for this week.');
         }
 
         // Make sure there are events to report
@@ -106,11 +121,8 @@ class MailingListController extends AppController
         $events = $this->Event->getEventsUpcomingWeek($year, $mon, $day, true);
         if (empty($events)) {
             $this->MailingList->setAllWeeklyAsProcessed($recipients);
-            return $this->renderMessage([
-                'title' => 'Weekly Emails Not Sent',
-                'message' => 'No events to inform anyone about this week',
-                'class' => 'notification'
-            ]);
+
+            return $this->Flash->success('No events to informa anyone about this week.');
         }
 
         // Send emails
@@ -124,13 +136,16 @@ class MailingListController extends AppController
         foreach ($events as $day => $dEvents) {
             $eventsCount += count($dEvents);
         }
-        return $this->renderMessage([
-            'title' => 'Weekly Emails Sent',
-            'message' => $eventsCount.' total events, sent to '.$successCount.' recipients.',
-            'class' => 'success'
-        ]);
+
+        return $this->Flash->success("$eventsCount total events sent to $successCount recipients!");
     }
 
+    /**
+     * readFormDataPr method
+     *
+     * @param ResultSet $mailingList mailingList entity
+     * @return ResultSet $mailingList mailingList entity
+     */
     private function readFormDataPr($mailingList)
     {
         $this->loadModel('Categories');
@@ -165,7 +180,7 @@ class MailingListController extends AppController
         // Daily frequency
         $days = $this->MailingList->getDays();
         foreach ($days as $code => $day) {
-            $dailyCode = 'daily_'.$code;
+            $dailyCode = 'daily_' . $code;
             $value = $mailingList->$dailyCode;
             $mailingList->$dailyCode = $value;
         }
@@ -175,6 +190,12 @@ class MailingListController extends AppController
         return $mailingList;
     }
 
+    /**
+     * addCategoryJoins method
+     *
+     * @param ResultSet $mailingList mailingList entity
+     * @return null
+     */
     private function addCategoryJoins($mailingList)
     {
         $this->loadModel('Categories');
@@ -190,6 +211,7 @@ class MailingListController extends AppController
                     $newJoin->category_id = $key;
                     $this->CategoriesMailingList->save($newJoin);
                 }
+
                 return;
             }
         }
@@ -223,7 +245,7 @@ class MailingListController extends AppController
      * Add method
      * as turned into a "join" method, heh
      *
-     * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
+     * @return void
      */
     public function join()
     {
@@ -248,6 +270,11 @@ class MailingListController extends AppController
         $this->set('days', $days);
     }
 
+    /**
+     * reset mailing list members processed time
+     *
+     * @return void
+     */
     public function resetProcessedTime()
     {
         $recipients = $this->MailingList->find('list');
@@ -257,9 +284,14 @@ class MailingListController extends AppController
             $recipient->processed_weekly = null;
             $this->MailingList->save($recipient);
         }
-        $this->Flash->success(count($recipients).' mailing list members\' "last processed" times reset.');
+        $this->Flash->success(count($recipients) . ' mailing list members\' "last processed" times reset.');
     }
 
+    /**
+     * bulk add users to the mailing list
+     *
+     * @return void
+     */
     public function bulkAdd()
     {
         if (!empty($this->request->data)) {
@@ -292,22 +324,32 @@ class MailingListController extends AppController
         ]);
     }
 
+    /**
+     * set default mailing list values
+     *
+     * @param str|null $recipient for values
+     * @return void
+     */
     private function setDefaultValuesPr($recipient = null)
     {
         $this->request->data = $this->MailingList->getDefaultFormValues($recipient);
     }
 
+    /**
+     * delete & unassociate users from the mailing list
+     *
+     * @param int|null $recipientId for unsubscribing
+     * @return Cake\View\Helper\FlashHelper
+     */
     private function unsubscribePr($recipientId)
     {
         if ($this->MailingList->delete($recipientId)) {
-
             // Un-associate associated User
             // $userId = $this->User->field('id', array('mailing_list_id' => $recipientId));
             // if ($userId) {
             //    $this->User->id = $userId;
             //    $this->User->saveField('mailing_list_id', null);
             // }
-
             return $this->Flash->success('You have been removed from the mailing list.');
         }
 
@@ -316,7 +358,9 @@ class MailingListController extends AppController
 
     /**
      * Run special validation in addition to MailingList->validates(), returns TRUE if data is valid
-     * @return boolean
+     *
+     * @param int|null $recipientId for validating the form
+     * @return bool
      */
     private function validateFormPr($recipientId = null)
     {
@@ -362,9 +406,17 @@ class MailingListController extends AppController
                 $this->set('frequency_error', 'You\'ll need to pick either the weekly email or at least one daily email to receive.');
             }
         }
+
         return ($this->MailingList->validates() && !$errorFound);
     }
 
+    /**
+     * settings method.
+     *
+     * @param int|null $recipientId of the mailing list recipient
+     * @param string|null $hash to update mailing list settings
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function settings($recipientId = null, $hash = null)
     {
         $this->set([
@@ -411,6 +463,7 @@ class MailingListController extends AppController
                 if ($this->MailingList->save()) {
                     return $this->Flash->success('Your mailing list settings have been updated.');
                 }
+
                 return $this->Flash->error('Please try again, or <a href="/contact">contact support</a> for assistance.');
             }
         } else {
