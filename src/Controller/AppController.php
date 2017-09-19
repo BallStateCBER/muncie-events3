@@ -54,10 +54,6 @@ class AppController extends Controller
     /**
      * Initialization hook method.
      *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('Security');`
-     *
      * @return void
      */
     public function initialize()
@@ -253,9 +249,11 @@ class AppController extends Controller
         );
 
         // remove any null or empty events from the array
-        $events = array_filter($events, function ($value) {
-            return $value !== null;
-        });
+        $events = array_filter(
+            $events, function ($value) {
+                return $value !== null;
+            }
+        );
 
         return $events;
     }

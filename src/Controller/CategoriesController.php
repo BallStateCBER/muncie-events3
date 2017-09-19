@@ -10,6 +10,11 @@ use App\Controller\AppController;
  */
 class CategoriesController extends AppController
 {
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -18,7 +23,11 @@ class CategoriesController extends AppController
             'index', 'view'
         ]);
     }
-
+    /**
+     * categories indexing method
+     *
+     * @return void
+     */
     public function index()
     {
         $categories = $this->paginate($this->Categories);
@@ -31,7 +40,7 @@ class CategoriesController extends AppController
      * View method
      *
      * @param string|null $id Category id.
-     * @return \Cake\Network\Response|null
+     * @return void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
