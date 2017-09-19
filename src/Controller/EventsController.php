@@ -73,7 +73,7 @@ class EventsController extends AppController
             $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
-            $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
+            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
             $hasEndTime = isset($event['time_end']) && $event['time_end'];
         }
 
@@ -294,7 +294,7 @@ class EventsController extends AppController
     /**
      * add method
      *
-     * @return void
+     * @return redirect
      */
     public function add()
     {
@@ -434,7 +434,7 @@ class EventsController extends AppController
      * delete method
      *
      * @param int|null $id id for series
-     * @return void
+     * @return redirect
      */
     public function delete($id = null)
     {
@@ -460,7 +460,7 @@ class EventsController extends AppController
      * edit method
      *
      * @param int $id id for series
-     * @return void
+     * @return redirect
      */
     public function edit($id = null)
     {
@@ -508,7 +508,7 @@ class EventsController extends AppController
      * editSeries method
      *
      * @param int $seriesId id for series
-     * @return void
+     * @return Cake\View\Helper\FlashHelper
      */
     public function editSeries($seriesId)
     {
@@ -684,6 +684,7 @@ class EventsController extends AppController
     /**
      * location method
      *
+     * @param string|null $location location of Event entity
      * @return void
      */
     public function location($location = null)
@@ -703,7 +704,7 @@ class EventsController extends AppController
     /**
      * moderate method
      *
-     * @return void
+     * @return redirect
      */
     public function moderate()
     {
@@ -882,7 +883,7 @@ class EventsController extends AppController
      *
      * @param string|null $slug tag slug
      * @param string|null $nextStartDate next start date for the tags
-     * @return void
+     * @return Cake\View\Helper\FlashHelper
      */
     public function tag($slug = '', $nextStartDate = null)
     {
@@ -897,11 +898,7 @@ class EventsController extends AppController
             'contain' => false
         ])->first();
         if (empty($tag)) {
-            return $this->renderMessage([
-                'title' => 'Tag Not Found',
-                'message' => "Sorry, but we couldn't find that tag ($slug)",
-                'class' => 'error'
-            ]);
+            return $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
         }
 
         $eventId = $this->Events->getIdsFromTag($tagId);
@@ -969,7 +966,7 @@ class EventsController extends AppController
      * View method
      *
      * @param string|null $id Event id.
-     * @return \Cake\Network\Response|null
+     * @return void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)

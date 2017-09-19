@@ -243,14 +243,17 @@ class AppController extends Controller
 
         // if a date has more than one event, add the event to its end, as a new array
         array_walk(
-            $events, create_function(
-                '&$v', '$v = (count($v) == 1)? array_pop($v): $v;'
+            $events,
+            create_function(
+                '&$v',
+                '$v = (count($v) == 1)? array_pop($v): $v;'
             )
         );
 
         // remove any null or empty events from the array
         $events = array_filter(
-            $events, function ($value) {
+            $events,
+            function ($value) {
                 return $value !== null;
             }
         );

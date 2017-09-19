@@ -89,7 +89,8 @@ class EventSeriesController extends AppController
                     $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
                     $eventSeries->events[$x]->time_start = new Time(
                         date(
-                            'H:i', strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
+                            'H:i',
+                            strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
                         )
                     );
                     $eventSeries->events[$x]->title = $event['title'];
