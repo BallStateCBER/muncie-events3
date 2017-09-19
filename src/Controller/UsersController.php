@@ -4,9 +4,9 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Routing\Router;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
+use Cake\Routing\Router;
 
 /**
  * Users Controller
@@ -121,6 +121,8 @@ class UsersController extends AppController
 
     /**
      * Intercepts failed Facebook logins
+     *
+     * @return void
      */
     public function confirmFacebookLogin()
     {

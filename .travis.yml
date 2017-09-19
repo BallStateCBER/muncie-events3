@@ -11,7 +11,6 @@ php:
 matrix:
   fast_finish: true
 
-# removing PHPCS from travis while testing is still in its beginning...
   include:
     - php: 7.0
       env: PHPCS=1

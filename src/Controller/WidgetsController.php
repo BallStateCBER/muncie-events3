@@ -93,7 +93,7 @@ class WidgetsController extends AppController
                 $this->widgetType = $widgetType;
                 break;
             default:
-                throw new InternalErrorException('Unknown widget type: '.$widgetType);
+                throw new InternalErrorException('Unknown widget type: ' . $widgetType);
         }
     }
 
@@ -204,7 +204,7 @@ class WidgetsController extends AppController
      * adding iframe styles
      *
      * @param array $options for iframe styles
-     * @return void
+     * @return string
      */
     public function getIframeStyles($options)
     {
@@ -302,8 +302,8 @@ class WidgetsController extends AppController
             } else {
                 continue;
             }
-            if (method_exists($this, $var."Style")) {
-                $method = $var."Style";
+            if (method_exists($this, $var . "Style")) {
+                $method = $var . "Style";
                 $this->$method($val);
             }
         }
@@ -764,7 +764,7 @@ class WidgetsController extends AppController
         if (empty($event)) {
             return $this->Flash->error("Sorry, but we couldn't find the event (#$id) you were looking for.");
         }
-        $this->viewBuilder()->layout('Widgets'.DS.'feed');
+        $this->viewBuilder()->layout('Widgets' . DS . 'feed');
         $this->set([
             'event' => $event
         ]);

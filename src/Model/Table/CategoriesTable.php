@@ -75,6 +75,11 @@ class CategoriesTable extends Table
         return $validator;
     }
 
+    /**
+     * getAll
+     *
+     * @return string
+     */
     public function getAll()
     {
         $result = $this->find('all')
@@ -87,6 +92,12 @@ class CategoriesTable extends Table
         }
     }
 
+    /**
+     * getName
+     *
+     * @param int $id of user whose name we want
+     * @return string
+     */
     public function getName($id)
     {
         $result = $this->find()
@@ -96,6 +107,7 @@ class CategoriesTable extends Table
         if (empty($result)) {
             return false;
         }
+
         return $result->name;
     }
 }
