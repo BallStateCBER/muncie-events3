@@ -148,7 +148,7 @@ class EventsTable extends Table
      *
      * @param string $year of Events
      * @param string $month of Events
-     * @param string @day of Events
+     * @param string $day of Events
      * @return ResultSet $events
      */
     public function getEventsOnDay($year, $month, $day)
@@ -297,7 +297,7 @@ class EventsTable extends Table
     public function getNextStartDate($dates)
     {
         $lastDate = end($dates);
-        $lastDate = strtotime($lastDate.' +1 day');
+        $lastDate = strtotime($lastDate . ' +1 day');
         $lastDate = date('Y-m-d', $lastDate);
         list($year, $month, $day) = explode('-', $lastDate);
         $lastDate = $year . $month . $day;
@@ -314,7 +314,7 @@ class EventsTable extends Table
     public function getPrevStartDate($dates)
     {
         $firstDate = current($dates);
-        $firstDate = strtotime($firstDate.' -1 day');
+        $firstDate = strtotime($firstDate . ' -1 day');
         $firstDate = date('Y-m-d', $firstDate);
         list($year, $month, $day) = explode('-', $firstDate);
         $firstDate = $year . $month . $day;
