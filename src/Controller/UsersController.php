@@ -181,7 +181,7 @@ class UsersController extends AppController
             }
             // is there a previous user associated?
             $prevUser = $this->Users->getIdFromEmail($user['email']);
-            if (isset($prevUser)) {
+            if ($prevUser) {
                 return $this->Flash->error('There is already a user with this email address.');
             }
 
