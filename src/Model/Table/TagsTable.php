@@ -125,6 +125,12 @@ class TagsTable extends Table
         return $rules;
     }
 
+    /**
+     * get all tags with event counts
+     *
+     * @param array $conditions for which tags
+     * @return ResultSet $tags
+     */
     public function getAllWithCounts($conditions)
     {
         $results = $this->Events->find()
@@ -152,6 +158,12 @@ class TagsTable extends Table
         return $tags;
     }
 
+    /**
+     * get categories and their associated tags
+     *
+     * @param string $direction of events
+     * @return array $retval
+     */
     public function getCategoriesWithTags($direction = 'future')
     {
         if ($direction == 'future') {
@@ -176,11 +188,13 @@ class TagsTable extends Table
         foreach ($results as $result) {
             $retval[] = $result['category_id'];
         }
+
         return $retval;
     }
 
     /**
      * Returns the ID of the 'delete' tag group for tags to be deleted.
+     *
      * @return int
      */
     public function getDeleteGroupId()
@@ -188,6 +202,12 @@ class TagsTable extends Table
         return 1011;
     }
 
+    /**
+     * get tag id from name
+     *
+     * @param string $name of tag we want
+     * @return int
+     */
     public function getIdFromName($name)
     {
         $result = $this->find()
@@ -205,7 +225,7 @@ class TagsTable extends Table
      * get tag id from slug
      *
      * @param string $slug of tag we want
-     * @return void
+     * @return int
      */
     public function getIdFromSlug($slug)
     {
@@ -223,7 +243,8 @@ class TagsTable extends Table
     public function getIndentLevel($name)
     {
         $level = 0;
-        for ($i = 0; $i < strlen($name); $i++) {
+        $len = strlen($name);
+        for ($i = 0; $i < $len ; $i++) {
             if ($name[$i] == "\t" || $name[$i] == '-') {
                 $level++;
                 continue;
@@ -302,8 +323,8 @@ class TagsTable extends Table
     /**
      * getWithCounts method for getting tags with how many events they have
      *
-     * @param array $filter
-     * @param string $sort
+     * @param array $filter future or past
+     * @param string $sort by
      * @return array
      */
     public function getWithCounts($filter = [], $sort = 'alpha')

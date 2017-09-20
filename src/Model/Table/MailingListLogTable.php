@@ -11,6 +11,7 @@ class MailingListLogTable extends Table
     /**
      * Initialize hook method.
      *
+     * @param array $config settings for table
      * @return void
      */
     public function initialize(array $config)
