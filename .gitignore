@@ -1,10 +1,8 @@
 /vendor/*
-/config/.env
-/config/.env.default
 /tmp/*
 /logs/*
 /webroot/img/*
-/webroot/emojione/*
+/webroot/emojione/
 
 # Environment variable definitions
 /config/.env
