@@ -6,7 +6,6 @@ use Cake\Http\ServerRequest;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\UsersController Test Case

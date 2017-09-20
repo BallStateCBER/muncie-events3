@@ -51,6 +51,7 @@ class EventsTableTest extends TestCase
         $events = $this->Events->getEventsOnDay(date('Y'), date('m'), date('d'));
         if (!$events) {
             print_r('No events today!');
+
             return;
         }
         foreach ($events as $event) {

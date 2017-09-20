@@ -7,8 +7,6 @@ use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\UsersController Test Case
@@ -182,7 +180,7 @@ class UsersControllerTest extends IntegrationTestCase
         $this->session(['Auth.User.id' => 554]);
 
         $salt = Configure::read('profile_salt');
-        $newFilename = md5('placeholder.jpg'.$salt);
+        $newFilename = md5('placeholder.jpg' . $salt);
 
         $this->get('/account');
         $userInfo = [

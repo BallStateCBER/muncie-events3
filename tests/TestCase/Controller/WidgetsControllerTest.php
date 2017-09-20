@@ -5,8 +5,6 @@ use App\Controller\WidgetsController;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\WidgetsController Test Case
@@ -144,7 +142,7 @@ class WidgetsControllerTest extends IntegrationTestCase
         ]);
         $this->assertResponseOk();
 
-        $iframeQueryString =  $this->viewVariable('iframeQueryString');
+        $iframeQueryString = $this->viewVariable('iframeQueryString');
         $this->markTestIncomplete();
         #$this->assertEquals('category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString);
     }

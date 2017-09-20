@@ -4,8 +4,6 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\TagsController;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * App\Controller\TagsController Test Case
@@ -104,6 +102,7 @@ class TagsControllerTest extends IntegrationTestCase
 
         if ($tags == 2) {
             $this->assertResponseSuccess();
+
             return;
         }
 
@@ -206,6 +205,7 @@ class TagsControllerTest extends IntegrationTestCase
                 $tag->parent_id = null;
                 $this->Tags->save($tag);
             }
+
             return;
         }
 
@@ -326,6 +326,7 @@ class TagsControllerTest extends IntegrationTestCase
             $this->assertResponseSuccess();
             $this->get("/tags/remove/nobody%20loves%20me");
             $this->assertResponseSuccess();
+
             return;
         }
 

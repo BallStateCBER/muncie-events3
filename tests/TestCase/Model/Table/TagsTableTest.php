@@ -73,7 +73,6 @@ class TagsTableTest extends TestCase
         $categories = implode(',', $categories);
         $this->assertContains('13', $categories);
 
-
         $categories = $this->Tags->getCategoriesWithTags('future');
         $categories = implode(',', $categories);
         $this->assertContains('13', $categories);
@@ -181,6 +180,7 @@ class TagsTableTest extends TestCase
                     $upcoming = $tag->name;
                     $this->assertContains($upcoming, $counts);
                 }
+
                 return;
             }
             $this->assertEquals($counts, null);
@@ -223,6 +223,7 @@ class TagsTableTest extends TestCase
                     $upcoming = $tag->name;
                     $this->assertContains($upcoming, $counts);
                 }
+
                 return;
             }
             $this->assertEquals($counts, null);
