@@ -2,7 +2,10 @@
 /tmp/*
 /logs/*
 /webroot/img/*
-/webroot/emojione/
+/webroot/emojione/*
+/webroot/jquery_ui/*
+/webroot/test.php
+/webroot/uploadifive/*
 
 # Environment variable definitions
 /config/.env
