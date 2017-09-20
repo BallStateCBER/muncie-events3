@@ -27,13 +27,20 @@ class User extends Entity
     /**
      * Fields that are excluded from JSON versions of the entity.
      *
-     * @var array
+     * @param string $password to reset password
+     * @return string
      */
     protected function _setPassword($password)
     {
         return (new DefaultPasswordHasher)->hash($password);
     }
 
+    /**
+     * getIdFromEmail
+     *
+     * @param string $email of user
+     * @return int
+     */
     public function getIdFromEmail($email)
     {
         $email = strtolower(trim($email));
@@ -50,13 +57,28 @@ class User extends Entity
         }
     }
 
+    /**
+     * getResetPasswordHash
+     *
+     * @param int $userId of user who needs password reset
+     * @param string|null $email of user
+     * @return string
+     */
     public function getResetPasswordHash($userId, $email = null)
     {
         $salt = Configure::read('password_reset_salt');
         $month = date('my');
-        return md5($userId.$email.$salt.$month);
+
+        return md5($userId . $email . $salt . $month);
     }
 
+    /**
+     * sending password reset emails
+     *
+     * @param int $userId of user who needs their password reset
+     * @param string $emailAddress of user who needs their password reset
+     * @return Email object
+     */
     public function sendPasswordResetEmail($userId, $emailAddress)
     {
         $resetPasswordHash = $this->getResetPasswordHash($userId, $emailAddress);
@@ -78,6 +100,7 @@ class User extends Entity
                 'emailAddress',
                 'resetUrl'
             ));
+
         return $email->send();
     }
 }

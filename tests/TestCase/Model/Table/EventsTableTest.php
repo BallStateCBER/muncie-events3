@@ -187,7 +187,7 @@ class EventsTableTest extends TestCase
     {
         $count = $this->Events->getUnapproved();
 
-        $this->assertEquals(5, $count);
+        $this->assertEquals(7, $count);
     }
 
     public function testGetNextStartDate()

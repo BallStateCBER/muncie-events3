@@ -159,12 +159,10 @@ class CalendarHelper extends Helper
         if ($date == date('Y-m-d')) {
             $day = 'Today';
             $thisWeek = true;
-        }
-        if ($date == date('Y-m-d', strtotime('tomorrow'))) {
+        } elseif ($date == date('Y-m-d', strtotime('+1 day'))) {
             $day = 'Tomorrow';
             $thisWeek = true;
-        }
-        if ($date != date('Y-m-d')) {
+        } elseif ($date != date('Y-m-d')) {
             $day = date('l', strtotime($date));
             $thisWeek = ($date > date('Y-m-d') && $date < date('Y-m-d', strtotime('today + 6 days')));
             if ($thisWeek) {

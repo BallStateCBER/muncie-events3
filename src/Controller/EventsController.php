@@ -30,6 +30,11 @@ class EventsController extends AppController
         ]
     ];
 
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -43,6 +48,12 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * prepareEventFormPr method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
     private function prepareEventFormPr($event)
     {
         $userId = $this->request->session()->read('Auth.User.id');
@@ -62,7 +73,7 @@ class EventsController extends AppController
             $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
-            $hasSeries = isset($event['series_id']) ? (bool) $event['series_id'] : false;
+            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
             $hasEndTime = isset($event['time_end']) && $event['time_end'];
         }
 
@@ -91,6 +102,12 @@ class EventsController extends AppController
         }
     }
 
+    /**
+     * processCustomTagsPr method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
     private function processCustomTagsPr($event)
     {
         if (!isset($event->customTags)) {
@@ -151,6 +168,12 @@ class EventsController extends AppController
         $event->customTags = '';
     }
 
+    /**
+     * processImageDataPr method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
     private function processImageDataPr($event)
     {
         $weight = 1;
@@ -194,6 +217,12 @@ class EventsController extends AppController
         $event->dirty('images', true);
     }
 
+    /**
+     * prepareDatePickerPr method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
     private function prepareDatePickerPr($event)
     {
         // Prepare date picker
@@ -213,7 +242,7 @@ class EventsController extends AppController
             }
             $preselectedDates = [];
             foreach ($dateFieldValues as $date) {
-                $preselectedDates[] = "'".date_format($date, 'm/d/Y')."'";
+                $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
             }
             $preselectedDates = implode(',', $preselectedDates);
             $preselectedDates = '[' . $preselectedDates . ']';
@@ -222,6 +251,12 @@ class EventsController extends AppController
         $this->set(compact('defaultDate', 'preselectedDates'));
     }
 
+    /**
+     * approve method
+     *
+     * @param int|null $id Event entity id
+     * @return void
+     */
     public function approve($id = null)
     {
         $ids = $this->request->pass;
@@ -234,7 +269,7 @@ class EventsController extends AppController
             $this->Events->id = $id;
             $event = $this->Events->get($id);
             if (!$this->Events->exists($id)) {
-                $this->Flash->error('Cannot approve. Event with ID# '.$id.' not found.');
+                $this->Flash->error('Cannot approve. Event with ID# ' . $id . ' not found.');
             }
             if ($event['event_series']['id']) {
                 $seriesId = $event['event_series']['id'];
@@ -256,6 +291,11 @@ class EventsController extends AppController
         $this->redirect($this->referer());
     }
 
+    /**
+     * add method
+     *
+     * @return redirect
+     */
     public function add()
     {
         $event = $this->Events->newEntity();
@@ -315,6 +355,7 @@ class EventsController extends AppController
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
                 return $this->redirect(['action' => 'index']);
             }
         }
@@ -327,6 +368,13 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Submit an Event');
     }
 
+    /**
+     * category method
+     *
+     * @param string $slug Category entity slug
+     * @param string|null $nextStartDate param for Events
+     * @return void
+     */
     public function category($slug, $nextStartDate = null)
     {
         if ($nextStartDate == null) {
@@ -352,6 +400,14 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * day method
+     *
+     * @param string|null $month param for Events
+     * @param string|null $day param for Events
+     * @param string|null $year param for Events
+     * @return void
+     */
     public function day($month = null, $day = null, $year = null)
     {
         if (! $year || ! $month || ! $day) {
@@ -369,28 +425,43 @@ class EventsController extends AppController
         $dateString = date('F j, Y', $timestamp);
         $this->set(compact('month', 'year', 'day'));
         $this->set([
-            'titleForLayout' => 'Events on '.$dateString,
+            'titleForLayout' => 'Events on ' . $dateString,
             'displayedDate' => date('l F j, Y', $timestamp)
         ]);
     }
 
+    /**
+     * delete method
+     *
+     * @param int|null $id id for series
+     * @return redirect
+     */
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
         if ($this->request->session()->read('Auth.User.role') != 'admin') {
             if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
                 $this->Flash->error(__('You cannot delete this event.'));
+
                 return $this->redirect(['action' => 'index']);
             }
         }
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
+
             return $this->redirect('/');
         }
         $this->Flash->error(__('The event could not be deleted. Please, try again.'));
+
         return $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * edit method
+     *
+     * @param int $id id for series
+     * @return redirect
+     */
     public function edit($id = null)
     {
         $event = $this->Events->get($id, [
@@ -400,6 +471,7 @@ class EventsController extends AppController
         if ($this->request->session()->read('Auth.User.role') != 'admin') {
             if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
                 $this->Flash->error(__('You are not authorized to view this page.'));
+
                 return $this->redirect('/');
             }
         }
@@ -432,6 +504,12 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Edit Event');
     }
 
+    /**
+     * editSeries method
+     *
+     * @param int $seriesId id for series
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function editSeries($seriesId)
     {
         // Get information about series
@@ -538,12 +616,18 @@ class EventsController extends AppController
 
         $categories = $this->Events->Categories->find('list');
         $this->set([
-            'titleForLayout' => 'Edit Event Series: '.$eventSeries['title']
+            'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
         ]);
         $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
         $this->render('/Element/events/form');
     }
 
+    /**
+     * getFilteredEventsOnDates method
+     *
+     * @param string $date date object
+     * @return void
+     */
     public function getFilteredEventsOnDates($date)
     {
         $events = $this->Events
@@ -556,21 +640,33 @@ class EventsController extends AppController
         $this->indexEvents($events);
     }
 
+    /**
+     * ics method
+     *
+     * @return \Cake\Controller\Controller::render('/Events/ics/view')
+     */
     public function ics()
     {
         $this->response->type('text/calendar');
         $this->response->download('foo.bar');
         $this->viewBuilder()->setLayout('ics/default');
+
         return $this->render('/Events/ics/view');
     }
 
+    /**
+     * index method
+     *
+     * @param string|null $nextStartDate next start date for Event entity
+     * @return void
+     */
     public function index($nextStartDate = null)
     {
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
         // the app breaks if there is a 2-week gap in between events
-        $endDate = strtotime($nextStartDate.' + 2 weeks');
+        $endDate = strtotime($nextStartDate . ' + 2 weeks');
         $events = $this->Events
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -585,6 +681,12 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * location method
+     *
+     * @param string|null $location location of Event entity
+     * @return void
+     */
     public function location($location = null)
     {
         $events = $this->Events
@@ -599,10 +701,16 @@ class EventsController extends AppController
         $this->set('titleForLayout', '');
     }
 
+    /**
+     * moderate method
+     *
+     * @return redirect
+     */
     public function moderate()
     {
         if ($this->request->session()->read('Auth.User.role') != 'admin') {
             $this->Flash->error("You are not authorized to view that page.");
+
             return $this->redirect('/');
         }
         // Collect all unapproved events
@@ -638,6 +746,13 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * month method
+     *
+     * @param string|null $month month of Event
+     * @param string|null $year year of Event
+     * @return void
+     */
     public function month($month = null, $year = null)
     {
         if (!$month || !$year) {
@@ -663,11 +778,16 @@ class EventsController extends AppController
         $dateString = date('F, Y', $timestamp);
         $this->set(compact('month', 'year'));
         $this->set([
-            'titleForLayout' => 'Events in '.$dateString,
+            'titleForLayout' => 'Events in ' . $dateString,
             'displayedDate' => date('F, Y', $timestamp)
         ]);
     }
 
+    /**
+     * pastLocations method
+     *
+     * @return void
+     */
     public function pastLocations()
     {
         $locations = $this->Events->getPastLocations();
@@ -678,9 +798,14 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * search method
+     *
+     * @return void
+     */
     public function search()
     {
-        $filter= $this->request->query;
+        $filter = $this->request->query;
 
         // Determine the direction (past or future)
         $direction = $filter['direction'];
@@ -737,7 +862,7 @@ class EventsController extends AppController
             'search' => $filter]);
         $tagCount = null;
         foreach ($tags as $tag) {
-            if ($tag-> id) {
+            if ($tag->id) {
                 $tagCount = true;
             }
         }
@@ -753,6 +878,13 @@ class EventsController extends AppController
         ]);
     }
 
+    /**
+     * uponFormSubmissionPr method
+     *
+     * @param string|null $slug tag slug
+     * @param string|null $nextStartDate next start date for the tags
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function tag($slug = '', $nextStartDate = null)
     {
         if ($nextStartDate == null) {
@@ -766,11 +898,7 @@ class EventsController extends AppController
             'contain' => false
         ])->first();
         if (empty($tag)) {
-            return $this->renderMessage([
-                'title' => 'Tag Not Found',
-                'message' => "Sorry, but we couldn't find that tag ($slug)",
-                'class' => 'error'
-            ]);
+            return $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
         }
 
         $eventId = $this->Events->getIdsFromTag($tagId);
@@ -784,18 +912,28 @@ class EventsController extends AppController
         $this->indexEvents($events);
 
         $this->set([
-            'titleForLayout' => 'Tag: '.ucwords($tag->name),
+            'titleForLayout' => 'Tag: ' . ucwords($tag->name),
             'eventId' => $eventId,
             'tag' => $tag,
             'slug' => $slug
         ]);
     }
 
+    /**
+     * today method
+     *
+     * @return void
+     */
     public function today()
     {
         $this->redirect('/events/day/' . date('m') . '/' . date('d') . '/' . date('Y'));
     }
 
+    /**
+     * tomorrow method
+     *
+     * @return void
+     */
     public function tomorrow()
     {
         $tomorrow = date('m-d-Y', strtotime('+1 day'));
@@ -803,6 +941,11 @@ class EventsController extends AppController
         $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
 
+    /**
+     * uponFormSubmissionPr method
+     *
+     * @return void
+     */
     private function uponFormSubmissionPr()
     {
         // kill the end time if it hasn't been set
@@ -819,6 +962,13 @@ class EventsController extends AppController
         }
     }
 
+    /**
+     * View method
+     *
+     * @param string|null $id Event id.
+     * @return void
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
     public function view($id = null)
     {
         $event = $this->Events->get($id, [

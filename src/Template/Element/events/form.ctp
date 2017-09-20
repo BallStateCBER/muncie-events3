@@ -15,6 +15,32 @@
     <?= $this->element('rules'); ?>
 </div>
 
+<?php if (!$this->request->session()->read('Auth.User.id')): ?>
+    <div class="alert alert-info">
+        <p>
+            <strong>You're not currently logged in</strong>. You can still submit this event, but...
+        </p>
+        <ul>
+            <li>you will not be able to edit it,</li>
+            <li>you will not be able to add custom tags,</li>
+            <li>you will not be able to include images,</li>
+            <li>you'll have to fill out one of those annoying CAPTCHA challenges, and</li>
+            <li>it won't be published until an administrator reviews it.</li>
+        </ul>
+        <p>
+            You can
+            <strong>
+                <?= $this->Html->link('register an account', ['controller' => 'users', 'action' => 'register']) ?>
+            </strong>
+            and
+            <strong>
+                <?= $this->Html->link('log in', ['controller' => 'users', 'action' => 'login']) ?>
+            </strong>
+            to skip the hassle.
+        </p>
+    </div>
+<?php endif; ?>
+
 <?= $this->Form->create($event, [
     'type' => 'file'
     ]) ?>
@@ -224,16 +250,18 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <th>
-                    Images
-                </th>
-                <td>
-                    <div class="form-group col-xs-12">
-                        <?= $this->element('images/form'); ?>
-                    </div>
-                </td>
-            </tr>
+            <?php if ($this->request->session()->read('Auth.User.id')): ?>
+                <tr>
+                    <th>
+                        Images
+                    </th>
+                    <td>
+                        <div class="form-group col-xs-12">
+                            <?= $this->element('images/form'); ?>
+                        </div>
+                    </td>
+                </tr>
+            <?php endif; ?>
             <tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : ''; ?>>
                 <td></td>
                 <td>

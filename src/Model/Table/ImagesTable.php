@@ -100,6 +100,11 @@ class ImagesTable extends Table
         return $rules;
     }
 
+    /**
+     * get next ID of an image
+     *
+     * @return ResultSet
+     */
     public function getNextId()
     {
         $result = $this->find('list', [
@@ -113,9 +118,16 @@ class ImagesTable extends Table
             $result = intval($val);
             $result = $result + 1;
         }
+
         return $result;
     }
 
+    /**
+     * Automatically resize images
+     *
+     * @param string $filepath to resize
+     * @return bool
+     */
     public function autoResize($filepath)
     {
         list($width, $height) = getimagesize($filepath);
@@ -136,18 +148,21 @@ class ImagesTable extends Table
         if ($this->resize($filepath, $filepath, $newWidth, $newHeight, $this->fullQuality)) {
             return true;
         }
+
         return false;
     }
 
     /**
      * Accepts the filename of an uploaded image and creates a tiny thumbnail
-     * @param string $filename
+     *
+     * @param string $sourceFile to resize
+     * @return bool
      */
     public function createTiny($sourceFile)
     {
-        $path = WWW_ROOT.'img'.DS.'events'.DS.'tiny'.DS;
+        $path = WWW_ROOT . 'img' . DS . 'events' . DS . 'tiny' . DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
-        $destinationFile = $path.$filename;
+        $destinationFile = $path . $filename;
         list($width, $height) = getimagesize($sourceFile);
 
         // Make the shortest side fit inside the maximum dimensions
@@ -173,13 +188,15 @@ class ImagesTable extends Table
 
     /**
      * Accepts the filename of an uploaded image and creates a smaller (limited width) version
-     * @param string $filename
+     *
+     * @param string $sourceFile to resize
+     * @return bool
      */
     public function createSmall($sourceFile)
     {
-        $path = WWW_ROOT.'img'.DS.'events'.DS.'small'.DS;
+        $path = WWW_ROOT . 'img' . DS . 'events' . DS . 'small' . DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
-        $destinationFile = $path.$filename;
+        $destinationFile = $path . $filename;
 
         $newWidth = $this->smallWidth;
         $newHeight = 0; // Automatically determined in ResizeBehavior::resize()
@@ -191,10 +208,21 @@ class ImagesTable extends Table
         return true;
     }
 
+    /**
+     * resizes image files
+     *
+     * @param string $sourceFile incoming
+     * @param string $newFilename outgoing
+     * @param int $newWidth width
+     * @param int $newHeight height
+     * @param int $quality of image
+     * @return bool
+     */
     public function resize($sourceFile, $newFilename, $newWidth = 0, $newHeight = 0, $quality = 100)
     {
         if (!($imageParams = getimagesize($sourceFile))) {
             $this->errors[] = 'Original file is not a valid image: ' . $sourceFile;
+
             return false;
         }
 
@@ -216,7 +244,6 @@ class ImagesTable extends Table
             $scaledHeight = $height;
         }
 
-
         //create image
         $ext = $imageParams[2];
         switch ($ext) {
@@ -237,6 +264,17 @@ class ImagesTable extends Table
         return $return;
     }
 
+    /**
+     * resizes gif files
+     *
+     * @param string $original incoming
+     * @param string $newFilename outgoing
+     * @param int $scaledWidth width
+     * @param int $scaledHeight height
+     * @param int $width width
+     * @param int $height height
+     * @return bool
+     */
     private function resizeGifPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height)
     {
         $error = false;
@@ -270,6 +308,18 @@ class ImagesTable extends Table
         return false;
     }
 
+    /**
+     * resizes jpeg files
+     *
+     * @param string $original incoming
+     * @param string $newFilename outgoing
+     * @param int $scaledWidth width
+     * @param int $scaledHeight height
+     * @param int $width width
+     * @param int $height height
+     * @param int $quality of image
+     * @return bool
+     */
     private function resizeJpegPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
@@ -303,15 +353,25 @@ class ImagesTable extends Table
         return false;
     }
 
+    /**
+     * resizes png files
+     *
+     * @param string $original incoming
+     * @param string $newFilename outgoing
+     * @param int $scaledWidth width
+     * @param int $scaledHeight height
+     * @param int $width width
+     * @param int $height height
+     * @param int $quality of image
+     * @return bool
+     */
     private function resizePngPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
-        /**
-         * we need to recalculate the quality for imagepng()
-         * the quality parameter in imagepng() is actually the compression level,
-         * so the higher the value (0-9), the lower the quality. this is pretty much
-         * the opposite of how imagejpeg() works.
-         */
+        // we need to recalculate the quality for imagepng()
+        // the quality parameter in imagepng() is actually the compression level,
+        // so the higher the value (0-9), the lower the quality. this is pretty much
+        // the opposite of how imagejpeg() works.
         $quality = ceil($quality / 10); // 0 - 100 value
         if (0 == $quality) {
             $quality = 9;
@@ -355,12 +415,13 @@ class ImagesTable extends Table
 
     /**
      * Saves to $destinationFile the cropped center of $sourceFile.
-     * @param string $sourceFile
-     * @param string $destinationFile
-     * @param int $w
-     * @param int $h
-     * @param int $quality
-     * @return boolean
+     *
+     * @param string $sourceFile incoming
+     * @param string $destinationFile outgoing
+     * @param int $wVar width
+     * @param int $hVar height
+     * @param int $quality of image
+     * @return bool
      */
     public function cropCenter($sourceFile, $destinationFile, $wVar, $hVar, $quality)
     {
@@ -371,24 +432,27 @@ class ImagesTable extends Table
         $halfNewHeight = round($hVar / 2);
         $xVar = max(0, ($centerX - $halfNewWidth));
         $yVar = max(0, ($centerY - $halfNewHeight));
+
         return $this->crop($sourceFile, $destinationFile, $wVar, $hVar, $xVar, $yVar, $quality);
     }
 
     /**
      * Crops $sourceFile and saves the result to $destinationFile.
-     * @param string $sourceFile
-     * @param string $destinationFile
-     * @param int $w
-     * @param int $h
-     * @param int $x
-     * @param int $y
-     * @param int $quality
-     * @return boolean
+     *
+     * @param string $sourceFile incoming
+     * @param string $destinationFile outgoing
+     * @param int $wVar width
+     * @param int $hVar height
+     * @param int $xVar x-plane
+     * @param int $yVar y-plane
+     * @param int $quality of image
+     * @return bool
      */
     public function crop($sourceFile, $destinationFile, $wVar, $hVar, $xVar, $yVar, $quality)
     {
         if (!$sourceFile || !file_exists($sourceFile)) {
             $this->errors[] = 'No image found to crop';
+
             return false;
         }
 
@@ -405,7 +469,7 @@ class ImagesTable extends Table
                 $imgType = ($destinationImgType) ? $destinationImgType : 'gif';
                 break;
             case 'image/jpeg':
-                $src = imagecreatefromjpeg($sourceFile) ;
+                $src = imagecreatefromjpeg($sourceFile);
                 $imgType = ($destinationImgType) ? $destinationImgType : 'jpg';
                 break;
             case 'image/png':
@@ -415,7 +479,8 @@ class ImagesTable extends Table
                 $imgType = ($destinationImgType) ? $destinationImgType : 'png';
                 break;
             default:
-                $this->errors[] = 'Cannot crop an image of type '.$imageInfo['mime'];
+                $this->errors[] = 'Cannot crop an image of type ' . $imageInfo['mime'];
+
                 return false;
         }
 
@@ -435,7 +500,7 @@ class ImagesTable extends Table
                 $newImg = imagejpeg($canvas, $destinationFile, $quality);
                 break;
             case 'png':
-                $quality = (intval($quality) > 90) ? 9 : round(intval($quality)/10);
+                $quality = (intval($quality) > 90) ? 9 : round(intval($quality) / 10);
                 $newImg = imagepng($canvas, $destinationFile, $quality);
                 break;
             default:

@@ -44,7 +44,7 @@
             <div class="form-control mailing-options">
                 <?= $this->Icon->category($category) ?>
                 <?= $this->Form->input(
-                    'MailingList.selected_categories.'.$key,
+                    'selected_categories.'.$key,
                     [
                         'type' => 'checkbox',
                         'label' => $category,

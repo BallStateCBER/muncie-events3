@@ -20,6 +20,7 @@
     <div class="col-lg-6">
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
+    <div class="g-recaptcha" data-sitekey="6Lcg6tkSAAAAALkenFi1dIQ5B-4BVLJur5hYl-2J"></div>
     <?= $this->Form->button(__('Submit'), ['class' => 'btn']) ?>
     <?= $this->Form->end() ?>
 </div>

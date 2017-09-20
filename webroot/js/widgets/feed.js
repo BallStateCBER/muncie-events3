@@ -1,5 +1,5 @@
 var muncieEventsFeedWidget = {
-     next_start_date: null,     
+     next_start_date: null,
      no_more_events: false,
      fade_duration: 200,
 
@@ -19,6 +19,8 @@ var muncieEventsFeedWidget = {
                var event_id = event_ids[i];
                (function(eid, elist) {
                     $('#event_link_'+eid).click(function (event) {
+                        $('#load_more_events').hide();
+                        $('#load_more_events_wrapper').hide();
                          event.preventDefault();
                          muncieEventsFeedWidget.showEvent(eid, elist);
                     });
@@ -40,48 +42,48 @@ var muncieEventsFeedWidget = {
      },
 
      showEvent: function(eid, elist) {
-          var event_view = $('#event_'+eid);
-          if (event_view.length > 0) {
-               elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
-                    event_view.fadeIn(muncieEventsFeedWidget.fade_duration);
-                    $(window).scrollTop(0);
-               });
-               return;
-          }
-          var event_link = $('#event_link_'+eid);
-          $.ajax({
-               url: '/widgets/event/'+eid,
-               beforeSend: function() {
-                    muncieEventsFeedWidget.loadingStart();
-               },
-               success: function(data) {
-                    $('#load_more_events').hide();
-                    elist.after($('<div id="event_'+eid+'" style="display: none;"></div>').html(data));
-                    muncieEventsFeedWidget.setupEventActions('#event_'+eid);
-                    elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
-                         var event_view = $('#event_'+eid);
-                         var back_link = $('<a href="#" class="back">&larr; Back</a>').click(function (event) {
-                              event.preventDefault();
-                              $('#event_'+eid).fadeOut(muncieEventsFeedWidget.fade_duration, function() {
-                                   $('#event_list').fadeIn(muncieEventsFeedWidget.fade_duration);
-                                   $(window).scrollTop(event_link.offset().top);
-                                   $('#load_more_events').show();
-                              });
-                         });
-                         event_view.prepend(back_link);
-                         event_view.fadeIn(muncieEventsFeedWidget.fade_duration);
-                         $(window).scrollTop(0);
-                         muncieEventsImagePopups.prepare();
-                    });
-               },
-               error: function() {
-                    alert('There was an error loading that event. Please try again.');
-               },
-               complete: function() {
-                    muncieEventsFeedWidget.loadingEnd();
-               }
-          });
-     },
+ 		var event_view = $('#event_'+eid);
+ 		if (event_view.length > 0) {
+ 			elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
+ 				event_view.fadeIn(muncieEventsFeedWidget.fade_duration);
+ 				$(window).scrollTop(0);
+ 			});
+ 			return;
+ 		}
+ 		var event_link = $('#event_link_'+eid);
+ 		$.ajax({
+ 			url: '/widgets/event/'+eid,
+ 			beforeSend: function() {
+ 				muncieEventsFeedWidget.loadingStart();
+ 			},
+ 			success: function(data) {
+ 				elist.after($('<div id="event_'+eid+'" style="display: none;"></div>').html(data));
+ 				muncieEventsFeedWidget.setupEventActions('#event_'+eid);
+ 				elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
+ 					var event_view = $('#event_'+eid);
+ 					var back_link = $('<a href="#" class="back">&larr; Back</a>').click(function (event) {
+                        $('#load_more_events').show();
+                         $('#load_more_events_wrapper').show();
+ 						event.preventDefault();
+ 						$('#event_'+eid).fadeOut(muncieEventsFeedWidget.fade_duration, function() {
+ 							$('#event_list').fadeIn(muncieEventsFeedWidget.fade_duration);
+ 							$(window).scrollTop(event_link.offset().top);
+ 						});
+ 					});
+ 					event_view.prepend(back_link);
+ 					event_view.fadeIn(muncieEventsFeedWidget.fade_duration);
+ 					$(window).scrollTop(0);
+ 					muncieEventsImagePopups.prepare();
+ 				});
+ 			},
+ 			error: function() {
+ 				alert('There was an error loading that event. Please try again.');
+ 			},
+ 			complete: function() {
+ 				muncieEventsFeedWidget.loadingEnd();
+ 			}
+ 		});
+ 	},
 
      /**Sets the date that the next "page" of events will start at
       * @param date A string in 'YYYY-MM-DD' format

@@ -4,9 +4,9 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Routing\Router;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
+use Cake\Routing\Router;
 
 /**
  * Users Controller
@@ -15,6 +15,11 @@ use Cake\I18n\Time;
  */
 class UsersController extends AppController
 {
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -25,11 +30,23 @@ class UsersController extends AppController
         ]);
     }
 
+    /**
+     * beforeFilter
+     *
+     * @param  Event  $event beforeFilter
+     * @return void
+     */
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
     }
 
+    /**
+     * view for users
+     *
+     * @param int|null $id of the user
+     * @return void
+     */
     public function view($id = null)
     {
         $user = $this->Users->get($id, [
@@ -62,7 +79,11 @@ class UsersController extends AppController
         $this->set('_serialize', ['user']);
     }
 
-
+    /**
+     * login for users
+     *
+     * @return redirect
+     */
     public function login()
     {
         $this->set('titleForLayout', 'Log In');
@@ -89,6 +110,7 @@ class UsersController extends AppController
                         'password' => $this->request->data('password')
                     ]);
                 }
+
                 return $this->redirect($this->Auth->redirectUrl());
             }
             if (!$user) {
@@ -99,8 +121,10 @@ class UsersController extends AppController
 
     /**
      * Intercepts failed Facebook logins
+     *
+     * @return void
      */
-    public function confirm_facebook_login()
+    public function confirmFacebookLogin()
     {
         /*
          * THIS IS APPARENTLY NOT DOING WHAT IT'S SUPPOSED TO.
@@ -118,36 +142,67 @@ class UsersController extends AppController
         $this->redirect($this->referer());
     }
 
+    /**
+     * log out users
+     *
+     * @return redirect
+     */
     public function logout()
     {
+        $this->Flash->success('Thanks for stopping by!');
+
         return $this->redirect($this->Auth->logout());
     }
 
+    /**
+     * registering a user
+     *
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function register()
     {
         $this->set('titleForLayout', 'Register');
 
         $user = $this->Users->newEntity();
 
+        $this->set(compact('user'));
+        $this->set('_serialize', ['user']);
+
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower($user['email']);
+
+            // validation things:
+            // is this email a valid email?
+            $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+            $validEmail = preg_match($regex, $user['email']);
+            if (!$validEmail) {
+                return $this->Flash->error("That's not a valid email address. Please enter a valid email address.");
+            }
+            // is there a previous user associated?
+            $prevUser = $this->Users->getIdFromEmail($user['email']);
+            if ($prevUser) {
+                return $this->Flash->error('There is already a user with this email address.');
+            }
+
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Success! You have been registered.'));
                 $this->Auth->setUser($user);
+
                 return $this->redirect(['action' => 'account']);
             }
             $this->Flash->error(__('Sorry, we could not register you. Please try again.'));
         }
-
-        #$mailingLists = $this->Users->MailingList->find('list', ['limit' => 200]);
-        $this->set(compact('user'));
-        $this->set('_serialize', ['user']);
     }
 
+    /**
+     * account info for user
+     *
+     * @return redirect
+     */
     public function account()
     {
-        $this->set('titleForLayout', 'Your Account');
+        $this->set('titleForLayout', 'My Account');
 
         $id = $this->Auth->user('id');
         $email = $this->Auth->user('email');
@@ -170,6 +225,7 @@ class UsersController extends AppController
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
                 $this->Flash->success(__('Your account has been updated.'));
+
                 return $this->redirect('/');
             }
             $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
@@ -177,6 +233,11 @@ class UsersController extends AppController
         $this->set(compact('user'));
     }
 
+    /**
+     * for when the user forgets their password
+     *
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function forgotPassword()
     {
         $this->set([
@@ -191,10 +252,10 @@ class UsersController extends AppController
                 if ($this->Users->sendPasswordResetEmail($userId, $email)) {
                     return $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
                 }
-                $this->Flash->error('Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email <a href="mailto:'.$adminEmail.'">'.$adminEmail.'</a> for assistance.');
+                $this->Flash->error("Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email $adminEmail for more assistance.");
             }
             if (!$userId) {
-                $this->Flash->error('We couldn\'t find an account registered with the email address '.$email.'.');
+                $this->Flash->error("We couldn't find an account registered with the email address $email.");
             }
 
             if (!isset($email)) {
@@ -203,6 +264,13 @@ class UsersController extends AppController
         }
     }
 
+    /**
+     * reset password of user
+     *
+     * @param int $userId of the user to reset
+     * @param string $resetPasswordHash for the user to reset
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function resetPassword($userId, $resetPasswordHash)
     {
         $user = $this->Users->get($userId);
@@ -231,22 +299,32 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
+
                 return $this->Flash->success('Password changed. You are now logged in.');
             }
             $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
+
             return $this->redirect('/');
         }
     }
 
+    /**
+     * deleting users
+     *
+     * @param int|null $id of the user to delete
+     * @return redirect
+     */
     public function delete($id = null)
     {
         $this->autoRender = false;
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
+
             return $this->redirect('/');
         }
         $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+
         return $this->redirect(['action' => 'index']);
     }
 }

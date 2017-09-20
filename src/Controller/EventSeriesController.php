@@ -13,6 +13,11 @@ class EventSeriesController extends AppController
 {
     public $helpers = ['Html'];
 
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -37,6 +42,7 @@ class EventSeriesController extends AppController
         ])->first();
         if ($eventSeries == null) {
             $this->Flash->error(__('Sorry, we can\'t find that event series.'));
+
             return $this->redirect(['controller' => 'events', 'action' => 'index']);
         }
         $eventSeries = $this->EventSeries->get($id, [
@@ -58,6 +64,7 @@ class EventSeriesController extends AppController
                     foreach ($events as $event) {
                         $this->EventSeries->Events->delete($event);
                     }
+
                     return $this->redirect(['controller' => 'events', 'action' => 'index']);
                 }
                 $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
@@ -72,7 +79,7 @@ class EventSeriesController extends AppController
                     }
                     if ($event['delete']) {
                         if ($this->EventSeries->Events->delete($eventSeries->events[$x])) {
-                            $this->Flash->success(__('Event deleted: '.$event['id'].'.'));
+                            $this->Flash->success(__('Event deleted: ' . $event['id'] . '.'));
                         }
                         $x = $x + 1;
                         continue;
@@ -80,18 +87,21 @@ class EventSeriesController extends AppController
 
                     $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
                     $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
-                    $eventSeries->events[$x]->time_start = new Time(date('H:i',
-                        strtotime($event['time_start']['hour'].':'.$event['time_start']['minute'].' '.$event['time_start']['meridian'])
-                    ));
+                    $eventSeries->events[$x]->time_start = new Time(
+                        date(
+                            'H:i',
+                            strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
+                        )
+                    );
                     $eventSeries->events[$x]->title = $event['title'];
 
                     if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
-                        $this->Flash->success(__('Event #'.$event['id'].' has been saved.'));
+                        $this->Flash->success(__('Event #' . $event['id'] . ' has been saved.'));
                         $x = $x + 1;
                         continue;
                     }
 
-                    $this->Flash->error(__('Event #'.$event['id'].' was not saved.'));
+                    $this->Flash->error(__('Event #' . $event['id'] . ' was not saved.'));
                     $x = $x + 1;
                 }
             }
@@ -107,7 +117,7 @@ class EventSeriesController extends AppController
         $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
         $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
         $this->set('_serialize', ['eventSeries']);
-        $this->set(['titleForLayout' => 'Edit Series: '.$eventSeries->title]);
+        $this->set(['titleForLayout' => 'Edit Series: ' . $eventSeries->title]);
     }
 
     /**
@@ -124,6 +134,7 @@ class EventSeriesController extends AppController
         ])->first();
         if ($eventSeries == null) {
             $this->Flash->error(__('Sorry, we can\'t find that event series.'));
+
             return $this->redirect(['controller' => 'events', 'action' => 'index']);
         }
         $eventSeries = $this->EventSeries->get($id, [
@@ -132,6 +143,6 @@ class EventSeriesController extends AppController
 
         $this->set('eventSeries', $eventSeries);
         $this->set('_serialize', ['eventSeries']);
-        $this->set(['titleForLayout' => 'Event Series: '.$eventSeries->title]);
+        $this->set(['titleForLayout' => 'Event Series: ' . $eventSeries->title]);
     }
 }

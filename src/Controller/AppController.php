@@ -31,17 +31,6 @@ use Facebook\FacebookRedirectLoginHelper;
  */
 class AppController extends Controller
 {
-
-    /**
-     * Initialization hook method.
-     *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('Security');`
-     *
-     * @return void
-     */
-
     public $helpers = ['AkkaCKEditor.CKEditor' =>
         ['distribution' => 'basic',
         'local_plugin' => [
@@ -58,10 +47,15 @@ class AppController extends Controller
         'Html'
     ];
 
-    /*
-     * initialize app, load components, set legacy hasher for new logins to Cake3
-     */
+    public $components = [
+        'Auth'
+    ];
 
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -70,7 +64,9 @@ class AppController extends Controller
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
         $this->loadComponent('Cookie');
-        $this->loadComponent('Auth', [
+        $this->loadComponent(
+            'Auth',
+            [
             'loginAction' => [
                 'prefix' => false,
                 'controller' => 'Users',
@@ -147,9 +143,12 @@ class AppController extends Controller
         ]);
     }
 
-    /*
-     * to index events,
+    /**
+     * to index events
      * function placed in AppController so as to be shared by all controllers
+     *
+     * @param ResultSet $events Event entities
+     * @return void
      */
     public function indexEvents($events)
     {
@@ -178,9 +177,11 @@ class AppController extends Controller
         $this->set(compact('dates', 'events', 'multipleDates', 'nextStartDate', 'prevStartDate'));
     }
 
-    /*
-     * to index events
-     * for Json array
+    /**
+     * to index events for Json array
+     *
+     * @param ResultSet $events Event entities
+     * @return void
      */
     public function getEventsForJson($events)
     {
@@ -202,8 +203,12 @@ class AppController extends Controller
         }
     }
 
-    /*
+    /**
      * to set Json array
+     *
+     * @param string $date date string
+     * @param ResultSet $daysEvents Events entities
+     * @return void
      */
     private function setJsonArrayPr($date, $daysEvents)
     {
@@ -221,8 +226,12 @@ class AppController extends Controller
         $this->set(compact('eventsForJson'));
     }
 
-    /*
+    /**
      * to index dates with multiple events happening during them
+     *
+     * @param ResultSet $dates This is an array full of date objects
+     * @param ResultSet $events This is various Events entities
+     * @return ResultSet $events Events entities with new multiplicity
      */
     public function multipleDateIndex($dates, $events)
     {
@@ -233,14 +242,22 @@ class AppController extends Controller
         }
 
         // if a date has more than one event, add the event to its end, as a new array
-        array_walk($events, create_function('&$v',
-            '$v = (count($v) == 1)? array_pop($v): $v;'
-        ));
+        array_walk(
+            $events,
+            create_function(
+                '&$v',
+                '$v = (count($v) == 1)? array_pop($v): $v;'
+            )
+        );
 
         // remove any null or empty events from the array
-        $events = array_filter($events, function ($value) {
-            return $value !== null;
-        });
+        $events = array_filter(
+            $events,
+            function ($value) {
+                return $value !== null;
+            }
+        );
+
         return $events;
     }
 }

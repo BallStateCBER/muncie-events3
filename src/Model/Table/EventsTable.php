@@ -128,6 +128,12 @@ class EventsTable extends Table
         'pastWithTag' => true
     ];
 
+    /**
+     * buildRules method
+     *
+     * @param RulesChecker $rules for Event entity
+     * @return RulesChecker $rules
+     */
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
@@ -137,6 +143,14 @@ class EventsTable extends Table
         return $rules;
     }
 
+    /**
+     * getEventsOnDay method
+     *
+     * @param string $year of Events
+     * @param string $month of Events
+     * @param string $day of Events
+     * @return ResultSet $events
+     */
     public function getEventsOnDay($year, $month, $day)
     {
         $date = "$year-$month-$day";
@@ -151,6 +165,11 @@ class EventsTable extends Table
         return $events;
     }
 
+    /**
+     * getUpcomingEvents method
+     *
+     * @return ResultSet $events
+     */
     public function getUpcomingEvents()
     {
         $events = $this
@@ -160,9 +179,16 @@ class EventsTable extends Table
             ])
             ->where(['date >=' => date('Y-m-d')])
             ->toArray();
+
         return $events;
     }
 
+    /**
+     * getUpcomingFilteredEvents method
+     *
+     * @param array $options for filtering events
+     * @return ResultSet $events
+     */
     public function getUpcomingFilteredEvents($options)
     {
         $params = [];
@@ -172,7 +198,7 @@ class EventsTable extends Table
             if ($param == 'category') {
                 $cats = explode(',', $value);
                 foreach ($cats as $cat) {
-                    $categories  .= "category_id = $cat OR ";
+                    $categories .= "category_id = $cat OR ";
                 }
                 $categories = substr($categories, 0, -4);
                 $categories = '(' . $categories;
@@ -241,9 +267,15 @@ class EventsTable extends Table
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'conditions' => $params
         ])->order(['date' => 'ASC'])->toArray();
+
         return $events;
     }
 
+    /**
+     * getUnapproved method
+     *
+     * @return int $total
+     */
     public function getUnapproved()
     {
         $count = $this->find();
@@ -252,29 +284,49 @@ class EventsTable extends Table
             ->where(['Events.approved_by IS' => null])
             ->order(['Events.created' => 'asc']);
         $total = $count->count();
+
         return $total;
     }
 
+    /**
+     * getNextStartDate method
+     *
+     * @param array $dates of events
+     * @return string $lastDate
+     */
     public function getNextStartDate($dates)
     {
         $lastDate = end($dates);
-        $lastDate = strtotime($lastDate.' +1 day');
+        $lastDate = strtotime($lastDate . ' +1 day');
         $lastDate = date('Y-m-d', $lastDate);
         list($year, $month, $day) = explode('-', $lastDate);
-        $lastDate = $year.$month.$day;
+        $lastDate = $year . $month . $day;
+
         return $lastDate;
     }
 
+    /**
+     * getPrevStartDate method
+     *
+     * @param array $dates of events
+     * @return string $firstDate
+     */
     public function getPrevStartDate($dates)
     {
         $firstDate = current($dates);
-        $firstDate = strtotime($firstDate.' -1 day');
+        $firstDate = strtotime($firstDate . ' -1 day');
         $firstDate = date('Y-m-d', $firstDate);
         list($year, $month, $day) = explode('-', $firstDate);
-        $firstDate = $year.$month.$day;
+        $firstDate = $year . $month . $day;
+
         return $firstDate;
     }
 
+    /**
+     * getLocations method
+     *
+     * @return array $retval
+     */
     public function getLocations()
     {
         $locations = $this->find();
@@ -290,6 +342,11 @@ class EventsTable extends Table
         return $retval;
     }
 
+    /**
+     * getPastLocations method
+     *
+     * @return array $retval
+     */
     public function getPastLocations()
     {
         $locations = $this->find();
@@ -305,6 +362,11 @@ class EventsTable extends Table
         return $retval;
     }
 
+    /**
+     * getAllUpcomingEventCounts method
+     *
+     * @return array $retval
+     */
     public function getAllUpcomingEventCounts()
     {
         $results = $this->find();
@@ -320,9 +382,17 @@ class EventsTable extends Table
             $count = $result->count;
             $retval[$catId] = $count;
         }
+
         return $retval;
     }
 
+    /**
+     * getCountInDirectionWithTag method
+     *
+     * @param string $direction of events
+     * @param int $tagId of tag we need events from
+     * @return int
+     */
     public function getCountInDirectionWithTag($direction, $tagId)
     {
         $conditions = ['tag_id' => $tagId];
@@ -334,19 +404,37 @@ class EventsTable extends Table
             // than pulling the IDs of all past events
             $conditions['event_id NOT IN'] = $this->getFutureEventIDs();
         }
+
         return $this->EventsTags->find('all', ['conditions' => $conditions])->count();
     }
 
+    /**
+     * getCountPastWithTag method
+     *
+     * @param int $tagId id of tag-in-question
+     * @return int
+     */
     public function getCountPastWithTag($tagId)
     {
         return $this->getCountInDirectionWithTag('past', $tagId);
     }
 
+    /**
+     * getCountUpcomingWithTag method
+     *
+     * @param int $tagId id of tag-in-question
+     * @return int
+     */
     public function getCountUpcomingWithTag($tagId)
     {
         return $this->getCountInDirectionWithTag('future', $tagId);
     }
 
+    /**
+     * getPastEventIds method
+     *
+     * @return array $retval
+     */
     public function getPastEventIds()
     {
         $results = $this->find()
@@ -355,13 +443,15 @@ class EventsTable extends Table
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
-            $retval[] = (int) $result->id;
+            $retval[] = (int)$result->id;
         }
+
         return $retval;
     }
 
     /**
      * Returns the IDs of all events taking place today and in the future
+     *
      * @return array
      */
     public function getFutureEventIds()
@@ -372,11 +462,17 @@ class EventsTable extends Table
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
-            $retval[] = (int) $result->id;
+            $retval[] = (int)$result->id;
         }
+
         return $retval;
     }
 
+    /**
+     * getFutureEvents method
+     *
+     * @return array $evDates
+     */
     public function getFutureEvents()
     {
         $results = $this->find()
@@ -391,9 +487,16 @@ class EventsTable extends Table
         foreach ($events as $event) {
             $evDates[] = [$event->format('l'), $event->format('M'), $event->format('m'), $event->format('d'), $event->format('Y')];
         }
+
         return $evDates;
     }
 
+    /**
+     * getIdsFromTag method
+     *
+     * @param int $tagId id of tag-in-question
+     * @return ResultSet $eventId
+     */
     public function getIdsFromTag($tagId)
     {
         $eventId = $this->EventsTags->find();
@@ -401,9 +504,16 @@ class EventsTable extends Table
             ->select('event_id')
             ->where(['tag_id' => $tagId])
             ->toArray();
+
         return $eventId;
     }
 
+    /**
+     * getValidFilters method
+     *
+     * @param array $options filter options
+     * @return array $filters
+     */
     public function getValidFilters($options)
     {
         // Correct formatting of $options

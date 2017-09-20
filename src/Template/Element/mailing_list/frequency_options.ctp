@@ -6,20 +6,6 @@
         ];
         $this->Form->setTemplates($formTemplate);
     ?>
-    <div class="form-control mailing-options">
-        <?= $this->Form->input(
-            'frequency',
-            [
-                'type' => 'radio',
-                'options' => [
-                    'custom' => 'Custom'
-                ],
-                'class' => 'frequency_options',
-                'legend' => false,
-                'label' => false
-            ]
-        ); ?>
-    </div>
     <div id="custom_frequency_options">
         <?php if (isset($frequency_error)): ?>
             <div class="error">

@@ -29,6 +29,11 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesController extends AppController
 {
+    /**
+     * Initialize hook method.
+     *
+     * @return void
+     */
     public function initialize()
     {
         parent::initialize();
@@ -38,17 +43,27 @@ class PagesController extends AppController
          ]);
     }
 
+    /**
+     * view for the terms page
+     *
+     * @return void
+     */
     public function about()
     {
         $this->set('titleForLayout', 'About Us');
     }
 
+    /**
+     * view for the terms page
+     *
+     * @return Cake\View\Helper\FlashHelper
+     */
     public function contact()
     {
         $this->set('titleForLayout', 'Contact Us');
         $this->validate = [
              'name' => [
-                 'rule'    => 'notEmpty',
+                 'rule' => 'notEmpty',
                  'message' => 'Please tell us who you are.'
              ],
              'email' => [
@@ -56,7 +71,7 @@ class PagesController extends AppController
                  'message' => 'Please provide a valid email address. Otherwise, we can\'t respond back.'
              ],
              'body' => [
-                 'rule'    => 'notEmpty',
+                 'rule' => 'notEmpty',
                  'message' => 'This field cannot be left blank.'
              ]
          ];
@@ -67,14 +82,13 @@ class PagesController extends AppController
                 $email = new Email('contact_form');
                 $email->setFrom([$this->request->data['email'] => $this->request->data['name']])
                      ->setTo(Configure::read('admin_email'))
-                     ->setSubject('Muncie Events contact form: '.$this->request->data['category']);
+                     ->setSubject('Muncie Events contact form: ' . $this->request->data['category']);
                 if ($email->send($this->request->data['body'])) {
                     return $this->Flash->success('Thanks for contacting us. We will try to respond to your message soon.');
                 } else {
                     $this->Flash->error('There was some problem sending your email.
                          It could be a random glitch, or something could be permanently
-                         broken. Please contact <a href="mailto:'.Configure::read('admin_email').'">'
-                         .Configure::read('admin_email').'</a> for assistance.');
+                         broken. Please contact <a href="mailto:' . Configure::read('admin_email') . '">' . Configure::read('admin_email') . '</a> for assistance.');
                 }
             }
         }
@@ -83,6 +97,11 @@ class PagesController extends AppController
          ]);
     }
 
+    /**
+     * view for the terms page
+     *
+     * @return void
+     */
     public function terms()
     {
         $this->set('titleForLayout', 'Terms of Use and Privacy Policy');

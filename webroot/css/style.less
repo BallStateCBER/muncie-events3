@@ -110,6 +110,9 @@ body {
 }
 
 /* HEADER */
+a [class^="icon-"]:before, a [class*=" icon-"]:before {
+    cursor: default !important;
+}
 #EventFilter {
     border-bottom-right-radius: 0px;
     border-top-right-radius: 0px;
@@ -324,6 +327,16 @@ body {
     .navbar-brand {
         padding-top: 0px;
     }
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                color: #fff;
+                &:hover, &:active {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
     #res-nav {
         @media @large {
             position: absolute;
@@ -511,15 +524,24 @@ body {
     }
 }
 #search_options {
+    background-clip: padding-box;
     background-color: #fff;
     border-radius: @LayoutBorderRadius;
     border: @LayoutBorderWidth solid @LayoutPrimaryColor;
     box-shadow: @LayoutBoxShadow;
+    color: #292b2c;
+    font-size: 1rem;
     font-weight: normal;
+    float: left;
     left: inherit;
+    list-style: none;
+    margin: .125rem 0 0;
+    min-width: 10rem;
     padding: 0;
     position: absolute;
     right: 0;
+    text-align: left;
+    top: 100%;
     z-index: 3;
     @media @medium {
         top: 100%;
@@ -574,6 +596,7 @@ h1.page_title {
     color: #fff;
     font-size: 80%;
     margin-top: 15px;
+    padding-bottom: 20px;
     text-align: center;
 
     a {
@@ -594,6 +617,7 @@ h1.page_title {
 /* SIDEBAR */
 #sidebar {
     float: right;
+    padding-right: 10px;
 
     > div {
         border-radius: @LayoutBorderRadius;
@@ -952,6 +976,18 @@ div.checkbox label {
 
 
 /* EVENT ACCORDION */
+.card {
+    border: none;
+}
+.card-footer {
+    border-top: none;
+}
+.card-header {
+    border-bottom: none;
+}
+.card, .card-header, .card-footer {
+    background-color: #f0f0f0;
+}
 div.event_accordion,
 .event_accordion_aside > div {
     -moz-box-sizing: border-box;
@@ -1183,7 +1219,7 @@ ul.event_accordion {
     .description {
         background-color: #fff;
         line-height: 1.6em;
-        margin: 15px;
+        margin: 0px 15px;
         overflow: hidden;
         padding: 10px;
         word-break: normal;
@@ -2176,6 +2212,17 @@ iframe.widgets {
         height: 375px;
     }
 }
+.jPicker {
+    .Icon {
+        bottom: 8px !important;
+        height: 34px !important;
+        position: relative !important;
+        width: 36px !important;
+    }
+    .Image {
+        background-size: 100%;
+    }
+}
 #widgets_overview {
     h2 {
         margin-top: 0;
@@ -2258,6 +2305,11 @@ iframe.widgets {
             font-weight: normal;
             width: auto;
         }
+    }
+    .form-control {
+        background-color: transparent;
+        display: inline-block;
+        margin: 10px;
     }
 }
 #WidgetFilter_categories {

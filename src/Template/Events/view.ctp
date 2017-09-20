@@ -75,10 +75,10 @@ use Cake\Utility\Inflector;
                     <td><?= $event->cost; ?></td>
                 </tr>
             <?php endif; ?>
-            <?php if ($event->age_restrictions): ?>
+            <?php if ($event->age_restriction): ?>
                 <tr>
                     <th>Ages</th>
-                    <td><?= $event->age_restrictions; ?></td>
+                    <td><?= $event->age_restriction; ?></td>
                 </tr>
             <?php endif; ?>
             <?php if (isset($event->series_id) && isset($event->event_series->title)): ?>
