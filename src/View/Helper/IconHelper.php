@@ -22,7 +22,7 @@ class IconHelper extends Helper
 
                 return "<img src='$dir" . "$filename' title='$categoryName' class='category' />";
             default:
-                $class = 'icon-'.strtolower(str_replace(' ', '-', $categoryName));
+                $class = 'icon-' . strtolower(str_replace(' ', '-', $categoryName));
 
                 return "<i class='icon $class' title='$categoryName'></i>";
         }

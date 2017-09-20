@@ -138,7 +138,8 @@ class CalendarHelper extends Helper
 
     /**
      * Return filter parameters to be used in 'previous' and 'next' links
-     * @param array $filter
+     *
+     * @param array $filter for params
      * @return array
      */
     private function getFilterUrlParamsPr($filter)
@@ -260,7 +261,7 @@ class CalendarHelper extends Helper
     {
         $retval = date('g:ia', strtotime($event->time_start));
         if ($event->time_end) {
-            $retval .= ' to '.date('g:ia', strtotime($event->time_end));
+            $retval .= ' to ' . date('g:ia', strtotime($event->time_end));
         }
 
         return $retval;

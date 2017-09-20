@@ -62,7 +62,7 @@ class TagHelper extends Helper
      * If necessary, convert selectedTags from an array of IDs to a full array of tag info
      *
      * @param array $newTags to check for duplicates
-     * @param ResultSet event being tagged
+     * @param ResultSet $event being tagged
      * @return array
      */
     private function formatSelectedTagsPr($newTags, $event)
