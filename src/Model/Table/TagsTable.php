@@ -197,15 +197,29 @@ class TagsTable extends Table
         if (empty($result)) {
             return false;
         }
+
         return $result->id;
     }
 
+    /**
+     * get tag id from slug
+     *
+     * @param string $slug of tag we want
+     * @return void
+     */
     public function getIdFromSlug($slug)
     {
         $splitSlug = explode('_', $slug);
-        return (int) $splitSlug[0];
+
+        return (int)$splitSlug[0];
     }
 
+    /**
+     * get indent level in tree of a tag
+     *
+     * @param string $name of tag
+     * @return int $level
+     */
     public function getIndentLevel($name)
     {
         $level = 0;
@@ -216,9 +230,16 @@ class TagsTable extends Table
             }
             break;
         }
+
         return $level;
     }
 
+    /**
+     * look up a tag entity with the tag id
+     *
+     * @param int $tagId of tag
+     * @return ResultSet $result
+     */
     public function getTagFromId($tagId)
     {
         $result = $this->find()
@@ -228,11 +249,13 @@ class TagsTable extends Table
         if (empty($result)) {
             return false;
         }
+
         return $result;
     }
 
     /**
      * Returns the ID of the 'unlisted' tag group that new custom tags automatically go into.
+     *
      * @return int
      */
     public function getUnlistedGroupId()
@@ -240,12 +263,24 @@ class TagsTable extends Table
         return 1012;
     }
 
+    /**
+     * get tags with upcoming events
+     *
+     * @param array $filter future events
+     * @return array
+     */
     public function getUpcoming($filter = [])
     {
         $filter['direction'] = 'future';
+
         return $this->getWithCounts($filter);
     }
 
+    /**
+     * get ids of tags with events
+     *
+     * @return array $retval
+     */
     public function getUsedTagIds()
     {
         $this->EventsTags = TableRegistry::get('EventsTags');
@@ -260,9 +295,17 @@ class TagsTable extends Table
         foreach ($results as $result) {
             $retval[] = $result->tag_id;
         }
+
         return $retval;
     }
 
+    /**
+     * getWithCounts method for getting tags with how many events they have
+     *
+     * @param array $filter
+     * @param string $sort
+     * @return array
+     */
     public function getWithCounts($filter = [], $sort = 'alpha')
     {
         // Apply filters and find tags
@@ -297,9 +340,16 @@ class TagsTable extends Table
                 $finalTags[$tag['name']] = $tag;
             }
         }
+
         return $finalTags;
     }
 
+    /**
+     * Checks if a tag is under the unlisted group.
+     *
+     * @param int|null $id of the tag
+     * @return bool
+     */
     public function isUnderUnlistedGroup($id = null)
     {
         if (!$id) {

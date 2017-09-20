@@ -8,13 +8,13 @@ use Cake\Validation\Validator;
 
 class MailingListLogTable extends Table
 {
+    /**
+     * Initialize hook method.
+     *
+     * @return void
+     */
     public function initialize(array $config)
     {
-        /**
-         * Initialize hook method.
-         *
-         * @return void
-         */
         parent::initialize($config);
 
         $this->setTable('mailing_list_log');
