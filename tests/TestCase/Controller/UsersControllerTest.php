@@ -55,7 +55,6 @@ class UsersControllerTest extends IntegrationTestCase
             'email' => 'mal@blum.com'
         ];
 
-
         $this->post('/register', $data);
 
         $this->assertResponseSuccess();

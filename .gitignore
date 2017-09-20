@@ -1,3 +1,4 @@
+/config/Migrations/*
 /vendor/*
 /tmp/*
 /logs/*
