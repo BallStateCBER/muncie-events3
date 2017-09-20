@@ -154,15 +154,15 @@ class ImagesTable extends Table
 
     /**
      * Accepts the filename of an uploaded image and creates a tiny thumbnail
-      *
-      * @param string $sourceFile to resize
-      * @return bool
-      */
+     *
+     * @param string $sourceFile to resize
+     * @return bool
+     */
     public function createTiny($sourceFile)
     {
         $path = WWW_ROOT . 'img' . DS . 'events' . DS . 'tiny' . DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
-        $destinationFile = $path.$filename;
+        $destinationFile = $path . $filename;
         list($width, $height) = getimagesize($sourceFile);
 
         // Make the shortest side fit inside the maximum dimensions
@@ -273,7 +273,6 @@ class ImagesTable extends Table
      * @param int $scaledHeight height
      * @param int $width width
      * @param int $height height
-     * @param int $quality of image
      * @return bool
      */
     private function resizeGifPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height)
@@ -369,12 +368,10 @@ class ImagesTable extends Table
     private function resizePngPr($original, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality)
     {
         $error = false;
-        /**
-         * we need to recalculate the quality for imagepng()
-         * the quality parameter in imagepng() is actually the compression level,
-         * so the higher the value (0-9), the lower the quality. this is pretty much
-         * the opposite of how imagejpeg() works.
-        */
+        // we need to recalculate the quality for imagepng()
+        // the quality parameter in imagepng() is actually the compression level,
+        // so the higher the value (0-9), the lower the quality. this is pretty much
+        // the opposite of how imagejpeg() works.
         $quality = ceil($quality / 10); // 0 - 100 value
         if (0 == $quality) {
             $quality = 9;

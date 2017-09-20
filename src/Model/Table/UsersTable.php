@@ -54,8 +54,9 @@ class UsersTable extends Table
                 'nameCallback' => function (array $data, array $settings) {
                     $ext = pathinfo($data['name'], PATHINFO_EXTENSION);
                     $salt = Configure::read('profile_salt');
-                    $newFilename = md5($data['name'].$salt);
-                    return $newFilename.'.'.$ext;
+                    $newFilename = md5($data['name'] . $salt);
+
+                    return $newFilename . '.' . $ext;
                 },
                 'path' => 'webroot' . DS . 'img' . DS . 'users'
             ]
@@ -126,6 +127,12 @@ class UsersTable extends Table
         return $rules;
     }
 
+    /**
+     * send the email from someone's user ID
+     *
+     * @param int $userId of user
+     * @return string
+     */
     public function getEmailFromId($userId)
     {
         $query = TableRegistry::get('Users')->find()->select(['email'])->where(['id' => $userId]);
@@ -139,6 +146,12 @@ class UsersTable extends Table
         return $email;
     }
 
+    /**
+     * get a user ID from their email address
+     *
+     * @param string $email of user
+     * @return bool
+     */
     public function getIdFromEmail($email)
     {
         $result = $this->find()
@@ -148,16 +161,32 @@ class UsersTable extends Table
         if ($result) {
             return $result->id;
         }
+
         return false;
     }
 
+    /**
+     * get the security hash for the password reset
+     *
+     * @param int $userId of user
+     * @param string $email to send to
+     * @return string
+     */
     public function getResetPasswordHash($userId, $email)
     {
         $salt = Configure::read('password_reset_salt');
         $month = date('my');
-        return md5($userId.$email.$salt.$month);
+
+        return md5($userId . $email . $salt . $month);
     }
 
+    /**
+     * send the user their password reset email
+     *
+     * @param int $userId of user
+     * @param string $email to send to
+     * @return Cake\Mailer\Email
+     */
     public function sendPasswordResetEmail($userId, $email)
     {
         $resetPasswordHash = $this->getResetPasswordHash($userId, $email);
@@ -178,9 +207,16 @@ class UsersTable extends Table
                 'email',
                 'resetUrl'
             ));
+
         return $resetEmail->send();
     }
 
+    /**
+     * get list of images associated with this user
+     *
+     * @param int $id of user
+     * @return ResultSet
+     */
     public function getImagesList($id)
     {
         return $this->Images->find()
