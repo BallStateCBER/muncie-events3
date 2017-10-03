@@ -29,35 +29,41 @@ var muncieEvents = {
 } */
 
 function setupHeaderNav() {
-    // Set up datepicker
-    $('#header_datepicker').datepicker({
-        onSelect: function(date) {
-            window.location.href = '/events/day/'+date;
-        },
-        beforeShowDay: function(date) {
-            // Get zero-padded date components
-            var day = date.getDate().toString();
-            if (day < 10) {
-                day = '0'+day.toString();
-            }
-            // Because they're zero-indexed for some reason
-            var month = (date.getMonth() + 1).toString();
-            if (month < 10) {
-                month = '0'+month;
-            }
-            var year = date.getFullYear().toString();
+	// Set up datepicker
+	$('#header_datepicker').datepicker({
+		onSelect: function(date) {
+			window.location.href = '/events/day/'+date;
+		},
+		beforeShowDay: function(date) {
+			// Get zero-padded date components
+			var day = date.getDate().toString();
+			if (day < 10) {
+				day = '0'+day.toString();
+			}
+			// Because they're zero-indexed for some reason
+			var month = (date.getMonth() + 1).toString();
+			if (month < 10) {
+				month = '0'+month;
+			}
+			var year = date.getFullYear().toString();
+			var month_year = month+'-'+year;
 
-            var full_date = month+'-'+day+'-'+year;
-            var selectable = true;
-            var class_name = selectable ? 'has_events' : 'no_events';
-            var tooltip = selectable ? full_date : 'No events.';
+			if (muncieEvents.populatedDates.hasOwnProperty(month_year)) {
+				var selectable = muncieEvents.populatedDates[month_year].indexOf(day) != -1;
+				var class_name = selectable ? 'has_events' : 'no_events';
+				var tooltip = selectable ? null : 'No events';
+			} else {
+				var selectable = true;
+				var class_name = 'has_events';
+				var tooltip = 'tooltip text?';
+			}
 
-            return [selectable, class_name, tooltip];
-        },
-    }).change(function(event) {
-        var date = $(this).val();
-        window.location.href = '/events/day/'+date;
-    });
+			return [selectable, class_name, tooltip];
+		},
+	}).change(function(event) {
+		var date = $(this).val();
+		window.location.href = '/events/day/'+date;
+	});
 }
 
 function setupSidebar() {
