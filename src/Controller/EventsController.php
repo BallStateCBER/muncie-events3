@@ -417,7 +417,6 @@ class EventsController extends AppController
         #$this->viewBuilder()->setLayout('blank');
     }
 
-
     /**
      * day method
      *

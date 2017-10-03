@@ -547,6 +547,7 @@ class EventsTable extends Table
                 $dates[] = $result['DISTINCT Events']['date'];
             }
         }
+
         return $dates;
     }
 
