@@ -21,8 +21,6 @@ use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\TestSuite\IntegrationTestCase;
 use Cake\View\Exception\MissingTemplateException;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * PagesControllerTest class

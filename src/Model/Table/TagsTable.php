@@ -244,7 +244,7 @@ class TagsTable extends Table
     {
         $level = 0;
         $len = strlen($name);
-        for ($i = 0; $i < $len ; $i++) {
+        for ($i = 0; $i < $len; $i++) {
             if ($name[$i] == "\t" || $name[$i] == '-') {
                 $level++;
                 continue;

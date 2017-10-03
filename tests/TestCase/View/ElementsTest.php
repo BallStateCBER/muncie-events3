@@ -21,8 +21,6 @@ use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\TestSuite\IntegrationTestCase;
 use Cake\View\Exception\MissingTemplateException;
-use Facebook\FacebookSession;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * ElementsTest class
@@ -68,7 +66,7 @@ class ElementsTest extends IntegrationTestCase
         $this->get('/');
 
         // test the datepicker
-        $this->assertResponseContains('/events/day/'.date('m'));
+        $this->assertResponseContains('/events/day/' . date('m'));
     }
 
     /*
@@ -102,7 +100,7 @@ class ElementsTest extends IntegrationTestCase
         $this->get('/events/search?filter=market&direction=future');
 
         // do the view variables match up?
-        $filter =  $this->viewVariable('filter');
+        $filter = $this->viewVariable('filter');
         $this->assertEquals('market', $filter['filter']);
         $this->assertEquals('future', $filter['direction']);
 

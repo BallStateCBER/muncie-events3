@@ -83,7 +83,7 @@ class MailingListTableTest extends TestCase
      */
     public function testGetWeeklyDeliveryDay()
     {
-        $weekday  = $this->MailingList->getWeeklyDeliveryDay();
+        $weekday = $this->MailingList->getWeeklyDeliveryDay();
         if (date('l') == 'Thursday') {
             $this->assertEquals(true, $weekday);
         }
@@ -156,7 +156,7 @@ class MailingListTableTest extends TestCase
             ->first();
 
         $hash = $this->MailingList->getHash($mailingListWeekly->id);
-        $secondHash = md5('recipient'.$mailingListWeekly->id);
+        $secondHash = md5('recipient' . $mailingListWeekly->id);
 
         $this->assertEquals($hash, $secondHash);
     }
@@ -273,6 +273,7 @@ class MailingListTableTest extends TestCase
 
         if (!is_array($list)) {
             $this->assertEquals('General Events, Music, Art, Religion', $list);
+
             return;
         }
 
@@ -347,7 +348,6 @@ class MailingListTableTest extends TestCase
         if ($events) {
             $this->assertEquals($sendDaily[0], true);
         }
-
 
         $this->MailingList->delete($mailingListDaily);
     }

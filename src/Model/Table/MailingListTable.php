@@ -154,21 +154,32 @@ class MailingListTable extends Table
         return $rules;
     }
 
+    /**
+     * an array version of today's date
+     *
+     * @return array
+     */
     public function getTodayYMD()
     {
         return [date('Y'), date('m'), date('d')];
     }
 
+    /**
+     * getDailyRecipients method.
+     *
+     * @return ResultSet
+     */
     public function getDailyRecipients()
     {
         list($year, $mon, $day) = $this->getTodayYMD();
         $conditions = [
-        'MailingList.daily_'.strtolower(date('D')) => 1,
+        'MailingList.daily_' . strtolower(date('D')) => 1,
         'OR' => [
             'MailingList.processed_daily' => null,
             'MailingList.processed_daily <' => "$year-$mon-$day 00:00:00"
             ]
         ];
+
         return $this->find('all', [
         'conditions' => $conditions,
         'contain' => 'Categories',
@@ -176,11 +187,21 @@ class MailingListTable extends Table
         ])->toArray();
     }
 
+    /**
+     * gives the day that the weekly mailing list is sent out.
+     *
+     * @return $string
+     */
     public function getWeeklyDeliveryDay()
     {
         return date('l') == 'Thursday';
     }
 
+    /**
+     * getWeeklyRecipients method.
+     *
+     * @return ResultSet
+     */
     public function getWeeklyRecipients()
     {
         list($year, $mon, $day) = $this->getTodayYMD();
@@ -191,6 +212,7 @@ class MailingListTable extends Table
             'MailingList.processed_weekly <' => "$year-$mon-$day 00:00:00"
             ]
         ];
+
         return $this->find('all', [
         'conditions' => $conditions,
         'contain' => 'Categories',
@@ -198,6 +220,11 @@ class MailingListTable extends Table
         ])->toArray();
     }
 
+    /**
+     * these are the days of the week.
+     *
+     * @return array
+     */
     public function getDays()
     {
         return [
@@ -213,7 +240,8 @@ class MailingListTable extends Table
 
     /**
      * Determined the values that MailingListController->request->data should be prepopulated with for the 'join' and 'settings' pages
-     * @param array $recipient
+     *
+     * @param array|null $recipient data provided
      * @return array
      */
     public function getDefaultFormValues($recipient = null)
@@ -224,8 +252,8 @@ class MailingListTable extends Table
         // Settings page: Recipient data provided
         if ($recipient) {
             $daysSelected = 0;
-            foreach ($days as $dayAbbrev => $day_name) {
-                $daysSelected += $recipient->daily_.$dayAbbrev;
+            foreach ($days as $dayAbbrev => $dayName) {
+                $daysSelected += $recipient->daily_ . $dayAbbrev;
             }
             if ($recipient->weekly && $daysSelected == 0) {
                 $data->frequency = 'weekly';
@@ -247,7 +275,7 @@ class MailingListTable extends Table
                 }
             }
             foreach ($days as $code => $day) {
-                $data->daily_.$code = $recipient->daily_.$code;
+                $data->daily_ . $code = $recipient->daily_ . $code;
             }
             $data->weekly = $recipient->weekly;
             $data->email = $recipient->email;
@@ -263,25 +291,45 @@ class MailingListTable extends Table
                 $data->daily[$code] = true;
             }
             $categories = $this->Categories->getList();
-            foreach ($categories as $category_id => $category_name) {
-                $data->selected_categories[$category_id] = true;
+            foreach ($categories as $categoryId => $categoryName) {
+                $data->selected_categories[$categoryId] = true;
             }
         }
 
         return $data;
     }
 
+    /**
+     * isNewSubscriber method.
+     *
+     * @param int $id for recipient
+     * @return bool
+     */
     public function isNewSubscriber($id)
     {
         $subscriber = $this->get($id);
-        return (boolean) $subscriber->new_subscriber;
+
+        return (bool)$subscriber->new_subscriber;
     }
 
+    /**
+     * getHash method.
+     *
+     * @param int $recipientId for recipient
+     * @return string
+     */
     public function getHash($recipientId)
     {
-        return md5('recipient'.$recipientId);
+        return md5('recipient' . $recipientId);
     }
 
+    /**
+     * setDailyAsProcessed method.
+     *
+     * @param int $recipientId for recipient
+     * @param string $result of process
+     * @return Cake\ORM\Table::save()
+     */
     public function setDailyAsProcessed($recipientId, $result)
     {
         $processed = $this->MailingListLogTable->newEntity();
@@ -303,6 +351,13 @@ class MailingListTable extends Table
         );
     }
 
+    /**
+     * setWeeklyAsProcessed method.
+     *
+     * @param int $recipientId for recipient
+     * @param string $result of process
+     * @return Cake\ORM\Table::save()
+     */
     public function setWeeklyAsProcessed($recipientId, $result)
     {
         $processed = $this->MailingListLogTable->newEntity();
@@ -324,6 +379,13 @@ class MailingListTable extends Table
         );
     }
 
+    /**
+     * setAllDailyAsProcessed method.
+     *
+     * @param array $recipients settings for recipients
+     * @param array $result of processing
+     * @return bool
+     */
     public function setAllDailyAsProcessed($recipients, $result)
     {
         foreach ($recipients as $r) {
@@ -334,6 +396,13 @@ class MailingListTable extends Table
         }
     }
 
+    /**
+     * setAllWeeklyAsProcessed method.
+     *
+     * @param array $recipients settings for recipients
+     * @param array $result of processing
+     * @return bool
+     */
     public function setAllWeeklyAsProcessed($recipients, $result)
     {
         foreach ($recipients as $r) {
@@ -344,6 +413,13 @@ class MailingListTable extends Table
         }
     }
 
+    /**
+     * filterEvents method.
+     *
+     * @param array $recipient settings for recipient
+     * @param array $events which need filtered
+     * @return array $events
+     */
     public function filterEvents($recipient, $events)
     {
         if (!$recipient->all_categories) {
@@ -359,14 +435,16 @@ class MailingListTable extends Table
                 }
             }
         }
+
         return $events;
     }
 
     /**
      * A duplication of the TextHelper method with serial comma added
-     * @param array $list
-     * @param string $and
-     * @param string $separator
+     *
+     * @param array $list needs converted
+     * @param string $and the actual word "and"
+     * @param string $separator a comma for the array to implode with
      * @return string
      */
     public function toList($list, $and = 'and', $separator = ', ')
@@ -376,6 +454,7 @@ class MailingListTable extends Table
             $retval = implode($separator, array_slice($list, null, -1));
             $retval .= $and;
             $retval .= array_pop($list);
+
             return $retval;
         }
         if (count($list) <= 1) {
@@ -383,6 +462,12 @@ class MailingListTable extends Table
         }
     }
 
+    /**
+     * getSettingsDisplay method.
+     *
+     * @param array $recipient settings for recipient
+     * @return viewVars
+     */
     public function getSettingsDisplay($recipient)
     {
         // Categories
@@ -395,7 +480,7 @@ class MailingListTable extends Table
                 $category = $this->Categories->get($sc->category_id);
                 $categoryNames[] = $category->name;
             }
-            $eventTypes = 'Only '.$this->toList($categoryNames);
+            $eventTypes = 'Only ' . $this->toList($categoryNames);
         }
 
         // Frequency
@@ -415,7 +500,7 @@ class MailingListTable extends Table
             }
         }
         if ($dayCount > 0) {
-            $frequency = 'Daily on '.$this->toList($selectedDays);
+            $frequency = 'Daily on ' . $this->toList($selectedDays);
             if ($recipient->weekly) {
                 $frequency .= ' and weekly';
             }
@@ -431,7 +516,8 @@ class MailingListTable extends Table
      * Returns a welcome message if $recipientId is not set or
      * corresponds to a user who hasn't received any emails yet,
      * null otherwise.
-     * @param int $recipientId
+     *
+     * @param int $recipientId for who needs a welcome message
      * @return NULL|string
      */
     public function getWelcomeMessage($recipientId = null)
@@ -439,20 +525,23 @@ class MailingListTable extends Table
         if ($recipientId && $this->isNewSubscriber($recipientId)) {
             $message = 'Thanks for signing up for the Muncie Events ';
             $message .= 'mailing list! Don\'t hesitate to contact us ';
-            $message .= '('.Router::url(['controller' => 'pages', 'action' => 'contact'], true).') ';
+            $message .= '(' . Router::url(['controller' => 'pages', 'action' => 'contact'], true) . ') ';
             $message .= 'if you have any questions, comments, or suggestions. ';
             $message .= 'Remember that at any time, you can adjust your settings and ';
             $message .= 'change how often you receive these emails and what types of ';
-            $message .= 'events you\'re interested in hearing about.';
+            $message .= "events you're interested in hearing about.";
+
             return $message;
         }
+
         return null;
     }
 
     /**
      * Sends the daily version of the event email.
-     * @param array $recipient
-     * @param array $events
+     *
+     * @param array $recipient settings
+     * @param array $events for the day
      * @return array:boolean string
      */
     public function sendDaily($recipient, $events)
@@ -462,7 +551,8 @@ class MailingListTable extends Table
         // Make sure there are events to begin with
         if (empty($events)) {
             $this->setDailyAsProcessed($recipientId, 2);
-            return [false, 'Email not sent to '.$recipient->email.' because there are no events to report.'];
+
+            return [false, 'Email not sent to ' . $recipient->email . ' because there are no events to report.'];
         }
 
         // Eliminate any events that this user isn't interested in
@@ -474,7 +564,8 @@ class MailingListTable extends Table
             foreach ($events as $e) {
                 $eventTitles[] = $e->title;
             }
-            $message = 'Email would have been sent to '.$recipient->email.'<br />Events: '.implode('; ', $eventTitles);
+            $message = 'Email would have been sent to ' . $recipient->email . '<br />Events: ' . implode('; ', $eventTitles);
+
             return [true, $message];
         }
 
@@ -485,16 +576,17 @@ class MailingListTable extends Table
                 $eventCategories[] = $event->category_id;
             }
             $this->setDailyAsProcessed($recipientId, 3);
-            $message = 'No events to report, resulting from '.$recipient->email.'\'s settings<br />';
-            $message .= 'Selected: '.$recipient->categories.'<br />';
-            $message .= 'Available: '.(empty($eventCategories) ? 'None' : implode(',', $eventCategories));
+            $message = "No events to report, resulting from $recipient->email's settings<br />";
+            $message .= "Selected: $recipient->categories<br />";
+            $message .= 'Available: ' . (empty($eventCategories) ? 'None' : implode(',', $eventCategories));
+
             return [false, $message];
         }
 
         // Send real email
         $recipientId = $recipient->id;
         $email = new Email('mailing_list');
-        $subject = 'Today in Muncie: '.date("l, M j");
+        $subject = 'Today in Muncie: ' . date("l, M j");
         $email
             ->setTo($recipient->email)
             ->setSubject($subject)
@@ -513,18 +605,21 @@ class MailingListTable extends Table
             ]);
         if ($email->send()) {
             $this->setDailyAsProcessed($recipientId, 0);
-            return [true, 'Email sent to '.$recipient->email];
+
+            return [true, "Email sent to $recipient->email"];
         }
         if (!$email->send()) {
             $this->setDailyAsProcessed($recipientId, 1);
-            return [false, 'Error sending email to '.$recipient->email];
+
+            return [false, "Error sending email to $recipient->email"];
         }
     }
 
     /**
      * Sends the weekly version of the event email.
-     * @param array $recipient
-     * @param array $events
+     *
+     * @param array $recipient settings
+     * @param array $events that week
      * @return array:boolean string
      */
     public function sendWeekly($recipient, $events)
@@ -538,7 +633,8 @@ class MailingListTable extends Table
         }
         if (!$eventsCount) {
             $this->setWeeklyAsProcessed($recipientId, 2);
-            return [false, 'Email not sent to '.$recipient->email.' because there are no events to report.'];
+
+            return [false, 'Email not sent to ' . $recipient->email . ' because there are no events to report.'];
         }
 
         // Eliminate any events that this user isn't interested in
@@ -559,7 +655,8 @@ class MailingListTable extends Table
                     $eventTitles[] = $e->title;
                 }
             }
-            $message = 'Email would have been sent to '.$recipient->email.'<br />Events: '.implode('; ', $eventTitles);
+            $message = 'Email would have been sent to ' . $recipient->email . '<br />Events: ' . implode('; ', $eventTitles);
+
             return [true, $message];
         }
 
@@ -571,16 +668,17 @@ class MailingListTable extends Table
                 $eventCategories[] = $event->category_id;
             }
             $this->setWeeklyAsProcessed($recipientId, 3);
-            $message = 'No events to report, resulting from '.$recipient->email.'\'s settings<br />';
-            $message .= 'Selected: '.$cats.'<br />';
-            $message .= 'Available: '.(empty($eventCategories) ? 'None' : implode(',', $eventCategories));
+            $message = "No events to report, resulting from $recipient->email's settings<br />";
+            $message .= "Selected: $cats <br />";
+            $message .= 'Available: ' . (empty($eventCategories) ? 'None' : implode(',', $eventCategories));
+
             return [false, $message];
         }
 
         // Send real email
         $recipientId = $recipient->id;
         $email = new Email('mailing_list');
-        $subject = 'Upcoming Week in Muncie: '.date("M j");
+        $subject = 'Upcoming Week in Muncie: ' . date("M j");
         $email
             ->setTo($recipient->email)
             ->setSubject($subject)
@@ -599,11 +697,13 @@ class MailingListTable extends Table
             ]);
         if ($email->send()) {
             $this->setWeeklyAsProcessed($recipientId, 0);
-            return [true, 'Email sent to '.$recipient->email];
+
+            return [true, 'Email sent to ' . $recipient->email];
         }
         if (!$email->send()) {
             $this->setWeeklyAsProcessed($recipientId, 1);
-            return [false, 'Error sending email to '.$recipient->email];
+
+            return [false, 'Error sending email to ' . $recipient->email];
         }
     }
 }
