@@ -129,11 +129,19 @@ class AppController extends Controller
             $populatedDates[] = $result;
         }
 
+        $results = $this->Events->getPopulatedDates();
+        $populated = [];
+        foreach ($results as $result) {
+            list($year, $month, $day) = explode('-', $result);
+            $populated["$month-$year"][] = $day;
+        }
+
         $this->set([
             'headerVars' => [
                 'categories' => $categories,
                 'populatedDates' => $populatedDates
             ],
+            'populated' => $populated,
             'sidebarVars' => [
                 'locations' => $this->Events->getLocations(),
                 'upcomingTags' => $this->Tags->getUpcoming(),

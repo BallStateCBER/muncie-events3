@@ -18,16 +18,6 @@ var muncieEvents = {
     populatedDates: {}
 };
 
-/* function closeSubmenu(name) {
-    setTimeout(function() {
-        if (muncieEvents.keepOpenMenus[name]) {
-            return;
-        }
-        var submenu = $('#header_nav_'+name);
-        submenu.slideUp(200);
-    }, 1000);
-} */
-
 function setupHeaderNav() {
 	// Set up datepicker
 	$('#header_datepicker').datepicker({
@@ -49,6 +39,7 @@ function setupHeaderNav() {
 			var month_year = month+'-'+year;
 
 			if (muncieEvents.populatedDates.hasOwnProperty(month_year)) {
+                day = parseInt(day);
 				var selectable = muncieEvents.populatedDates[month_year].indexOf(day) != -1;
 				var class_name = selectable ? 'has_events' : 'no_events';
 				var tooltip = selectable ? null : 'No events';

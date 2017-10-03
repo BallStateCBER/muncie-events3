@@ -41,7 +41,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'add', 'category', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'today', 'tomorrow', 'view'
+            'add', 'category', 'datepickerPopulatedDates', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'today', 'tomorrow', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -399,6 +399,24 @@ class EventsController extends AppController
             'titleForLayout' => $category->name
         ]);
     }
+
+    /**
+     * Produces a view with JS used by the datepicker in the header
+     *
+     * @return void
+     */
+    public function datepickerPopulatedDates()
+    {
+        $results = $this->Events->getPopulatedDates();
+        $dates = [];
+        foreach ($results as $result) {
+            list($year, $month, $day) = explode('-', $result);
+            $dates["$month-$year"][] = $day;
+        }
+        $this->set(compact('dates'));
+        #$this->viewBuilder()->setLayout('blank');
+    }
+
 
     /**
      * day method

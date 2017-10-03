@@ -509,6 +509,48 @@ class EventsTable extends Table
     }
 
     /**
+     * Returns an array of dates (YYYY-MM-DD) with published events
+     *
+     * @param string $month Optional, zero-padded
+     * @param int $year Optional
+     * @param array $filters Optional
+     * @return array
+     */
+    public function getPopulatedDates($month = null, $year = null, $filters = null)
+    {
+        $findParams = [
+            'conditions' => ['published' => 1],
+            'fields' => ['DISTINCT Events.date'],
+            'contain' => [],
+            'order' => ['date ASC']
+        ];
+
+        // Apply optional month/year limits
+        if ($month && $year) {
+            $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+            $findParams['conditions']['Events.date LIKE'] = "$year-$month-%";
+            $findParams['limit'] = 31;
+        } elseif ($year) {
+            $findParams['conditions']['Events.date LIKE'] = "$year-%";
+        }
+
+        // Apply optional filters
+        if ($filters) {
+            $startDate = null;
+            $findParams = $this->applyFiltersToFindParams($findParams, $filters, $startDate);
+        }
+
+        $dateResults = $this->find('all', $findParams)->toArray();
+        $dates = [];
+        foreach ($dateResults as $result) {
+            if (isset($result['DISTINCT Events']['date'])) {
+                $dates[] = $result['DISTINCT Events']['date'];
+            }
+        }
+        return $dates;
+    }
+
+    /**
      * getValidFilters method
      *
      * @param array $options filter options
