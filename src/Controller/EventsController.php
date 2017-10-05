@@ -706,7 +706,7 @@ class EventsController extends AppController
             'conditions' => ['location' => $location],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
-        ]);
+            ]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
         $this->set(compact('location'));
