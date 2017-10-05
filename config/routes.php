@@ -74,7 +74,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
 
     // viewing locations indexes
-    $routes->connect('/location/:direction/*',
+    $routes->connect(
+        '/location/:direction/*',
         ['controller' => 'events', 'action' => 'location'],
         ['pass' => ['direction', 'location']]
     );
