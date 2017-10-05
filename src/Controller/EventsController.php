@@ -701,18 +701,16 @@ class EventsController extends AppController
      */
     public function location($location = null)
     {
-        $events = $this->Events
+        $listing = $this->Events
             ->find('all', [
             'conditions' => ['location' => $location],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
         ]);
-        $events = $this->paginate($events);
-            #->toArray();
-        #$this->indexEvents($events);
-        $this->set(compact('events', 'location'));
+        $listing = $this->paginate($listing)->toArray();
+        $this->indexEvents($listing);
+        $this->set(compact('location'));
         $this->set('multipleDates', true);
-        #$this->set('location', $location);
         $this->set('titleForLayout', '');
     }
 
@@ -836,8 +834,9 @@ class EventsController extends AppController
             'search' => $filter,
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']])
             ->where([$dateQuery => $dateWhen])
-            ->order(['date' => $dir])
-            ->toArray();
+            ->order(['date' => $dir]);
+
+        $events = $this->paginate($events)->toArray();
 
         if ($events) {
             $this->indexEvents($events);
@@ -917,19 +916,16 @@ class EventsController extends AppController
         }
 
         $eventId = $this->Events->getIdsFromTag($tagId);
-        $events = $this->Events
+        $listing = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['date' => 'DESC']
             ])
             ->where(['Events.id IN' => $eventId]);
-            #->toArray();
-        $events = $this->paginate($events);
-        #$this->indexEvents($events);
+        $listing = $this->paginate($listing)->toArray();
+        $this->indexEvents($listing);
 
         $this->set([
-            'events' => $events,
-            'multipleDates' => true,
             'titleForLayout' => 'Tag: ' . ucwords($tag->name),
             'eventId' => $eventId,
             'tag' => $tag,
