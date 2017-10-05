@@ -379,12 +379,16 @@ class EventsController extends AppController
             'conditions' => ['slug' => $slug]
             ])
             ->first();
-        $events = $this->Events->find('all', [
+        // the app breaks if there is a 2-week gap in between events
+        $endDate = strtotime($nextStartDate . ' + 2 weeks');
+        $events = $this->Events
+            ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'ASC']
             ])
-            ->where(['category_id' => $category->id])
-            ->andWhere(['date >=' => date('Y-m-d')])
+            ->where(['date >=' => $nextStartDate])
+            ->andWhere(['category_id' => $category->id])
+            ->andwhere(['date <=' => $endDate])
             ->toArray();
         if ($events) {
             $this->indexEvents($events);
