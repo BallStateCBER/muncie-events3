@@ -31,6 +31,10 @@ use Facebook\FacebookRedirectLoginHelper;
  */
 class AppController extends Controller
 {
+    public $components = [
+        'Auth'
+    ];
+
     public $helpers = ['AkkaCKEditor.CKEditor' =>
         ['distribution' => 'basic',
         'local_plugin' => [
@@ -47,8 +51,11 @@ class AppController extends Controller
         'Html'
     ];
 
-    public $components = [
-        'Auth'
+    public $paginate = [
+        'limit' => 15,
+        'order' => [
+            'title' => 'desc'
+        ]
     ];
 
     /**

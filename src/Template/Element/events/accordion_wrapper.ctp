@@ -2,7 +2,7 @@
     <div class="event_accordion" id="event_accordion">
         <?php if (empty($events)): ?>
             <p class="no_events alert alert-info" id="no_events">
-                No events found.
+                No upcoming events found.
             </p>
         <?php else: ?>
             <?= $this->element('events/accordion', ['events' => $events]); ?>

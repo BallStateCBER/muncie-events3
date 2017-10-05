@@ -23,13 +23,6 @@ class EventsController extends AppController
     public $eventFilter = [];
     public $adminActions = ['publish', 'approve', 'moderate', 'delete'];
 
-    public $paginate = [
-        'limit' => 25,
-        'order' => [
-            'title' => 'desc'
-        ]
-    ];
-
     /**
      * Initialization hook method.
      *
@@ -350,6 +343,8 @@ class EventsController extends AppController
                 }
 
                 $this->Flash->success(__('The event series has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
             }
 
             // if neither a single event nor multiple-event series can be saved
@@ -711,10 +706,13 @@ class EventsController extends AppController
             'conditions' => ['location' => $location],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
-            ])
-            ->toArray();
-        $this->indexEvents($events);
-        $this->set('location', $location);
+        ]);
+        $events = $this->paginate($events);
+            #->toArray();
+        #$this->indexEvents($events);
+        $this->set(compact('events', 'location'));
+        $this->set('multipleDates', true);
+        #$this->set('location', $location);
         $this->set('titleForLayout', '');
     }
 
@@ -924,11 +922,14 @@ class EventsController extends AppController
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['date' => 'DESC']
             ])
-            ->where(['Events.id IN' => $eventId])
-            ->toArray();
-        $this->indexEvents($events);
+            ->where(['Events.id IN' => $eventId]);
+            #->toArray();
+        $events = $this->paginate($events);
+        #$this->indexEvents($events);
 
         $this->set([
+            'events' => $events,
+            'multipleDates' => true,
             'titleForLayout' => 'Tag: ' . ucwords($tag->name),
             'eventId' => $eventId,
             'tag' => $tag,
