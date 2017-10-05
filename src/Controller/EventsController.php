@@ -703,17 +703,23 @@ class EventsController extends AppController
      * @param string|null $location location of Event entity
      * @return void
      */
-    public function location($location = null)
+    public function location($location = null, $direction = null)
     {
+        $dir = $direction == 'past' ? 'DESC' : 'ASC';
+        $date = $direction == 'past' ? '<' : '>=';
+        $opposite = $direction == 'past' ? 'upcoming' : 'past';
         $listing = $this->Events
             ->find('all', [
-            'conditions' => ['location' => $location],
+            'conditions' => [
+                'location' => $location,
+                "date $date" => date('Y-m-d')
+            ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+            'order' => ['date' => $dir]
             ]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
-        $this->set(compact('location'));
+        $this->set(compact('location', 'opposite'));
         $this->set('multipleDates', true);
         $this->set('titleForLayout', '');
     }
@@ -897,17 +903,17 @@ class EventsController extends AppController
     }
 
     /**
-     * uponFormSubmissionPr method
+     * tag method
      *
      * @param string|null $slug tag slug
-     * @param string|null $nextStartDate next start date for the tags
      * @return Cake\View\Helper\FlashHelper
      */
-    public function tag($slug = '', $nextStartDate = null)
+    public function tag($slug = '', $direction = null)
     {
-        if ($nextStartDate == null) {
-            $nextStartDate = date('Y-m-d');
-        }
+        $dir = $direction == 'past' ? 'DESC' : 'ASC';
+        $date = $direction == 'past' ? '<' : '>=';
+        $opposite = $direction == 'past' ? 'upcoming' : 'past';
+
         // Get tag
         $tagId = $this->Events->Tags->getIdFromSlug($slug);
         $tag = $this->Events->Tags->find('all', [
@@ -923,17 +929,16 @@ class EventsController extends AppController
         $listing = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'DESC']
+                'order' => ['date' => $dir]
             ])
-            ->where(['Events.id IN' => $eventId]);
+            ->where(['Events.id IN' => $eventId])
+            ->andWhere(["Events.date $date" => date('Y-m-d')]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
+        $this->set(compact('eventId', 'opposite', 'slug', 'tag'));
         $this->set([
-            'titleForLayout' => 'Tag: ' . ucwords($tag->name),
-            'eventId' => $eventId,
-            'tag' => $tag,
-            'slug' => $slug
+            'titleForLayout' => 'Tag: ' . ucwords($tag->name)
         ]);
     }
 

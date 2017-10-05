@@ -74,7 +74,10 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
 
     // viewing locations indexes
-    $routes->connect('/location/*', ['controller' => 'events', 'action' => 'location']);
+    $routes->connect('/location/:direction/*',
+        ['controller' => 'events', 'action' => 'location'],
+        ['pass' => ['direction', 'location']]
+    );
 
     // viewing event series
     Router::connect(
@@ -104,9 +107,9 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // Tag
     Router::connect(
-        "/tag/:slug/*",
+        "/tag/:slug/:direction",
         ['controller' => 'events', 'action' => 'tag'],
-        ['pass' => ['slug']]
+        ['pass' => ['slug', 'direction']]
     );
 
     // Tags
