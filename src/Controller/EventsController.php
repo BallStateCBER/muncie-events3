@@ -701,13 +701,17 @@ class EventsController extends AppController
      * location method
      *
      * @param string|null $location location of Event entity
+     * @param string|null $direction of index
      * @return void
      */
     public function location($location = null, $direction = null)
     {
-        $dir = $direction == 'past' ? 'DESC' : 'ASC';
+        $dir = $direction == 'past' ? 'ASC' : 'DESC';
         $date = $direction == 'past' ? '<' : '>=';
+        $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
+        $oppDate = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
+
         $listing = $this->Events
             ->find('all', [
             'conditions' => [
@@ -719,7 +723,17 @@ class EventsController extends AppController
             ]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
-        $this->set(compact('location', 'opposite'));
+
+        $oppCount = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $oppDir]
+            ])
+            ->where(['location' => $location])
+            ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
+            ->count();
+
+        $this->set(compact('location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
         $this->set('titleForLayout', '');
     }
@@ -906,12 +920,15 @@ class EventsController extends AppController
      * tag method
      *
      * @param string|null $slug tag slug
+     * @param string|null $direction of results
      * @return Cake\View\Helper\FlashHelper
      */
     public function tag($slug = '', $direction = null)
     {
-        $dir = $direction == 'past' ? 'DESC' : 'ASC';
+        $dir = $direction == 'past' ? 'ASC' : 'DESC';
         $date = $direction == 'past' ? '<' : '>=';
+        $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
+        $oppDate = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
 
         // Get tag
@@ -936,7 +953,16 @@ class EventsController extends AppController
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
-        $this->set(compact('eventId', 'opposite', 'slug', 'tag'));
+        $oppCount = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $oppDir]
+            ])
+            ->where(['Events.id IN' => $eventId])
+            ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
+            ->count();
+
+        $this->set(compact('eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([
             'titleForLayout' => 'Tag: ' . ucwords($tag->name)
         ]);
