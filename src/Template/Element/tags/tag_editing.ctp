@@ -98,4 +98,4 @@ echo $this->Html->script('tag_manager.js');
     </div>
 </div>
 
-<?= $this->Tag->setup($availableTags, 'available_tags', $selectedTags, $event); ?>
+<?= $this->Tag->setup($availableTags, 'available_tags', $event, $selectedTags); ?>

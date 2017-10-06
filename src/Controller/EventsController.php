@@ -300,7 +300,6 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
-            $this->processCustomTagsPr($event);
 
             // count how many dates have been picked
             $dateInput = strlen($this->request->data['date']);
@@ -308,6 +307,7 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
+                $this->processCustomTagsPr($event);
                 $event->date = new Date($this->request->data['date']);
                 $event->series_id = null;
                 if ($this->Events->save($event, [
@@ -335,6 +335,7 @@ class EventsController extends AppController
                     $newDate = new Date($date);
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $this->processCustomTagsPr($event);
                     $event->date = $newDate;
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [

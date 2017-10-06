@@ -84,7 +84,7 @@ class EventsViewTest extends IntegrationTestCase
      */
     public function testTagsIndex()
     {
-        $this->get("tag/1212_martial-arts?direction=past");
+        $this->get("tag/1212_martial-arts/past");
         $this->assertResponseOk();
         $this->assertResponseContains('Tag: Martial Arts');
     }
