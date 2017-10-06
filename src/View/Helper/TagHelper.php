@@ -123,7 +123,7 @@ class TagHelper extends Helper
      * @param array|null $selectedTags which are selected
      * @return void
      */
-    public function setup($availableTags, $containerId, $event, $selectedTags = [])
+    public function setup($availableTags, $containerId, $selectedTags = [], $event)
     {
         $newTags = empty($this->request->data['data']['Tags']) ? [] : $this->request->data['data']['Tags'];
         $selectedTags = $this->formatSelectedTagsPr($newTags, $event);

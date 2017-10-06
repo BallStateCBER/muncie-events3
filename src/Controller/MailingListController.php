@@ -145,7 +145,7 @@ class MailingListController extends AppController
      * readFormDataPr method
      *
      * @param ResultSet $mailingList mailingList entity
-     * @return void
+     * @return ResultSet $mailingList
      */
     private function readFormDataPr($mailingList)
     {
@@ -200,7 +200,7 @@ class MailingListController extends AppController
      * addCategoryJoins method
      *
      * @param ResultSet $mailingList mailingList entity
-     * @return void
+     * @return ResultSet $mailingList
      */
     private function addCategoryJoins($mailingList)
     {

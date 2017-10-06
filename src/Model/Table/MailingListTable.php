@@ -324,7 +324,7 @@ class MailingListTable extends Table
             ->where(['email' => $email])
             ->first();
 
-        return (bool) !$subscriber;
+        return (bool)!$subscriber;
     }
 
     /**
