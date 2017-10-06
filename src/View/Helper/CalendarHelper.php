@@ -9,134 +9,6 @@ class CalendarHelper extends Helper
     public $helpers = ['Html', 'Js'];
 
     /**
-     * Returns a header describing the dates included in this selection
-     */
-/*    public function selectionHeader($events, $boundary, $startingDate, $endingDate)
-    {
-        if (empty($events)) {
-            $boundaryDate = ($boundary[1] == date('Y-m-d')) ? 'Today' : date('M j, Y', strtotime($boundary[1]));
-            return ($boundary[0] == 'start') ? 'After '.$boundaryDate : 'Before '.$boundaryDate;
-        }
-
-        $retval = '';
-        $startsToday = $startingDate == date('Y-m-d');
-        if ($startingDate == $endingDate) {
-            $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
-        }
-        if ($startingDate !== $endingDate) {
-            $startYear = date('Y', strtotime($startingDate));
-            $endYear = date('Y', strtotime($endingDate));
-            if ($startYear != $endYear) {
-                $retval .= $startsToday ? 'Today' : date('M j, Y', strtotime($startingDate));
-                $retval .= ' to '.date('M j, Y', strtotime($endingDate));
-            }
-            if ($startYear == $endYear) {
-                $startMonth = date('M', strtotime($startingDate));
-                $endMonth = date('M', strtotime($endingDate));
-                if ($startMonth != $endMonth) {
-                    $retval .= $startsToday ? 'Today' : date('M j', strtotime($startingDate));
-                    $retval .= ' to '.date('M j, Y', strtotime($endingDate));
-                }
-                if ($startMonth == $endMonth) {
-                    if ($startsToday) {
-                        $retval .= 'Today to '.date('M j, Y', strtotime($endingDate));
-                    }
-                    if (!$startsToday) {
-                        $retval .= date('M j', strtotime($startingDate));
-                        $retval .= '-'.date('j, Y', strtotime($endingDate));
-                    }
-                }
-            }
-        }
-        return $retval;
-    }
-
-    public function prevLink($startingDate, $filter)
-    {
-        if ($startingDate) {
-            $prevUrl = array_merge(
-                [
-                    'controller' => 'events',
-                    'action' => 'accordion',
-                    'end_date' => date('Y-m-d', strtotime("$startingDate - 1 day"))
-                ],
-                $this->getFilterUrlParamsPr($filter)
-            );
-            return $this->Js->link(
-                '&larr; <span>Previous</span> <img id="event_accordion_prev_indicator" src="/img/loading_small.gif" style="visibility: hidden;" />',
-                $prevUrl,
-                [
-                    'update' => 'event_accordion_inner',
-                    'before' => "$('#event_accordion_prev_indicator').css('visibility', 'visible');",
-                    'escape' => false,
-                    'evalScripts' => true,
-                    'class' => 'prev'
-                ]
-            );
-        }
-        if (!$startingDate) {
-            // Non-breaking space forces element to appear even if it has no link
-            return '&nbsp;';
-        }
-    }
-
-    public function nextLink($endingDate, $filter)
-    {
-        if ($endingDate) {
-            $nextUrl = array_merge(
-                [
-                    'controller' => 'events',
-                    'action' => 'accordion',
-                    'startDate' => date('Y-m-d', strtotime("$endingDate + 1 day"))
-                ],
-                $this->getFilterUrlParamsPr($filter)
-            );
-            return $this->Js->link(
-                '<img id="event_accordion_next_indicator" src="/img/loading_small.gif" style="visibility: hidden;" /> <span>Next</span> &rarr;',
-                $nextUrl,
-                [
-                    'update' => 'event_accordion_inner',
-                    'before' => "$('event_accordion_next_indicator').setStyle({visibility: 'visible'});",
-                    'escape' => false,
-                    'evalScripts' => true,
-                    'class' => 'next'
-                ]
-            );
-        }
-        if (!$endingDate) {
-            // Non-breaking space forces element to appear even if it has no link
-            return '&nbsp;';
-        }
-    }
-
-    /**
-     * Returns subheader reflecting current tag filter(s)
-
-    public function tagFilterHeader($filter)
-    {
-        $retval = '';
-        if (isset($filter['tag'])) {
-            $retval .= '<br /><span class="filter">Tag: '.ucwords($filter['tag']['name']).'</span>';
-            $unselectTagUrl = ['controller' => 'events', 'action' => 'accordion'];
-            if (isset($filter['categories'])) {
-                $unselectTagUrl['categories'] = implode(',', $filter['categories']);
-            }
-            $retval .= $this->Js->link(
-                'Unselect tag',
-                $unselectTagUrl,
-                [
-                    'update' => 'event_accordion_inner',
-                    'before' => "$('#event_accordion_loading_indicator').show();",
-                    'escape' => false,
-                    'evalScripts' => true,
-                    'class' => 'reset'
-                ]
-            );
-        }
-        return $retval;
-    }   */
-
-    /**
      * Return filter parameters to be used in 'previous' and 'next' links
      *
      * @param array $filter for params
@@ -228,11 +100,11 @@ class CalendarHelper extends Helper
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tagSlug
+                    'slug' => $tag['id'].'_'.Inflector::slug($tag['name']),
+                    'direction' => 'upcoming'
                 ],
                 [
-                    'escape' => false,
-                    'id' => $tagLinkId
+                    'escape' => false
                 ]
             );
         }
