@@ -12,20 +12,7 @@
             [
                 'type' => 'radio',
                 'options' => [
-                    'all' => 'All Events'
-                ],
-                'class' => 'category_options',
-                'legend' => false,
-                'label' => false
-            ]
-        ); ?>
-    </div>
-    <div class="form-control mailing-options">
-        <?= $this->Form->input(
-            'event_categories',
-            [
-                'type' => 'radio',
-                'options' => [
+                    'all' => 'All Events',
                     'custom' => 'Custom'
                 ],
                 'class' => 'category_options',

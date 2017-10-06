@@ -313,6 +313,21 @@ class MailingListTable extends Table
     }
 
     /**
+     * isNewSubscriberEmail method.
+     *
+     * @param string $email for recipient
+     * @return bool
+     */
+    public function isNewSubscriberEmail($email)
+    {
+        $subscriber = $this->find()
+            ->where(['email' => $email])
+            ->first();
+
+        return (bool) !$subscriber;
+    }
+
+    /**
      * getHash method.
      *
      * @param int $recipientId for recipient

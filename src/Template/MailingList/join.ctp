@@ -18,25 +18,12 @@
                         'type' => 'radio',
                         'options' => [
                             'default' => 'Default Settings',
-                        ],
-                        'default' => 'default',
-                        'class' => 'settings_options',
-                        'legend' => false,
-                        'label' => false
-                    ]
-                ); ?>
-            </div>
-            <div class="form-control mailing-options">
-                <?= $this->Form->control('settings',
-                    [
-                        'type' => 'radio',
-                        'options' => [
                             'custom' => 'Custom'
                         ],
                         'default' => 'default',
                         'class' => 'settings_options',
                         'legend' => false,
-                        'label' => false,
+                        'label' => false
                     ]
                 ); ?>
             </div>

@@ -154,13 +154,16 @@ class MailingListController extends AppController
         $allCategories = $this->MailingList->Categories->getAll();
         $mailingList->email = strtolower(trim($mailingList->email));
 
-        // If joining for the first time with default settings
+        // Is this person new?
+        $mailingList->new_subscriber = $this->MailingList->isNewSubscriberEmail($mailingList->email);
+
+        // If joining for with default settings
         if (isset($mailingList['settings'])) {
             if ($mailingList['settings'] == 'default') {
                 $mailingList->weekly = 1;
                 $mailingList->all_categories = 1;
 
-                return;
+                return $mailingList;
             }
         }
 
@@ -188,6 +191,7 @@ class MailingListController extends AppController
         }
 
         $mailingList->new_subscriber = 1;
+        $mailingList->all_categories = 1;
 
         return $mailingList;
     }
@@ -214,31 +218,42 @@ class MailingListController extends AppController
                     $this->CategoriesMailingList->save($newJoin);
                 }
 
-                return;
+                return $mailingList;
             }
         }
 
         // All event types
         // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
-        $allCatSelected = ($mailingList['event_categories'] == 'all');
-        if (!$allCatSelected) {
+        if (!$mailingList->all_categories) {
             $selectedCatCount = count($mailingList->selected_categories);
             $allCatCount = count($allCategories);
             if ($selectedCatCount == $allCatCount) {
-                foreach ($allCategories as $key => $cat) {
+                foreach ($allCategories as $cat) {
                     $newJoin = $this->CategoriesMailingList->newEntity();
                     $newJoin->mailing_list_id = $mailingList->id;
-                    $newJoin->category_id = $key;
+                    $newJoin->category_id = $cat->id;
                     $this->CategoriesMailingList->save($newJoin);
                 }
             }
             if ($selectedCatCount != $allCatCount) {
                 foreach ($mailingList['selected_categories'] as $key => $scat) {
-                    $newJoin = $this->CategoriesMailingList->newEntity();
-                    $newJoin->mailing_list_id = $mailingList->id;
-                    $newJoin->category_id = $key;
-                    $this->CategoriesMailingList->save($newJoin);
+                    if ($scat) {
+                        $newJoin = $this->CategoriesMailingList->newEntity();
+                        $newJoin->mailing_list_id = $mailingList->id;
+                        $newJoin->category_id = $key;
+                        $this->CategoriesMailingList->save($newJoin);
+                    }
                 }
+            }
+        }
+
+        // Finally, let's just say someone wants all events
+        if ($mailingList->all_categories) {
+            foreach ($allCategories as $cat) {
+                $newJoin = $this->CategoriesMailingList->newEntity();
+                $newJoin->mailing_list_id = $mailingList->id;
+                $newJoin->category_id = $cat->id;
+                $this->CategoriesMailingList->save($newJoin);
             }
         }
     }
@@ -296,6 +311,10 @@ class MailingListController extends AppController
      */
     public function bulkAdd()
     {
+        $this->set([
+            'titleForLayout' => 'Bulk Add - Mailing List'
+        ]);
+
         if (!empty($this->request->data)) {
             $addresses = explode("\n", $this->request->data['email_addresses']);
             $retainedAddresses = [];
@@ -320,10 +339,6 @@ class MailingListController extends AppController
             }
             $this->request->data['email_addresses'] = implode("\n", $retainedAddresses);
         }
-
-        $this->set([
-            'titleForLayout' => 'Bulk Add - Mailing List'
-        ]);
     }
 
     /**
