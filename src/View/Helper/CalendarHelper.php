@@ -100,7 +100,7 @@ class CalendarHelper extends Helper
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag['id'].'_'.Inflector::slug($tag['name']),
+                    'slug' => $tag['id'] . '_' . Inflector::slug($tag['name']),
                     'direction' => 'upcoming'
                 ],
                 [
