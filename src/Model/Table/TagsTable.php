@@ -235,6 +235,31 @@ class TagsTable extends Table
     }
 
     /**
+     * Returns an array of the IDs of Tags associated with Events
+     *
+     * @param string $direction Optional, either 'future' or 'past'
+     * @return array
+     */
+    public function getIdsWithEvents($direction = null)
+    {
+        $conditions = [];
+        if ($direction == 'future') {
+            $conditions['event_id'] = $this->Events->getFutureEventIds();
+        } elseif ($direction == 'past') {
+            $conditions['event_id'] = $this->Events->getPastEventIds();
+        }
+        $results = $this->EventsTags->find()
+            ->select('tag_id')
+            ->where($conditions);
+        $retval = [];
+        foreach ($results as $result) {
+            $retval[] = $result->tag_id;
+        }
+
+        return $retval;
+    }
+
+    /**
      * get indent level in tree of a tag
      *
      * @param string $name of tag

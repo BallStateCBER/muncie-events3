@@ -34,7 +34,7 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'add', 'category', 'datepickerPopulatedDates', 'day', 'ics', 'index', 'location', 'month', 'search', 'tag', 'today', 'tomorrow', 'view'
+            'add', 'category', 'datepickerPopulatedDates', 'day', 'ics', 'index', 'location', 'month', 'search', 'searchAutocomplete', 'tag', 'today', 'tomorrow', 'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -693,9 +693,6 @@ class EventsController extends AppController
             ->andwhere(['date <=' => $endDate])
             ->toArray();
         $this->indexEvents($events);
-        $this->set([
-            'titleForLayout', ''
-        ]);
     }
 
     /**
@@ -915,6 +912,58 @@ class EventsController extends AppController
             'tags' => $tags,
             'tagCount' => $tagCount
         ]);
+    }
+
+    /**
+     * searchAutocomplete method
+     *
+     * @return void
+     */
+    public function searchAutocomplete()
+    {
+        $stringToComplete = $_GET['term'];
+        $limit = 10;
+        $qualifyingTagIds = $this->Events->Tags->getIdsWithEvents();
+
+        // name will be compared via LIKE to each of these,
+        // in order, until $limit tags are found.
+        $likeConditions = [
+            $stringToComplete,
+            $stringToComplete.' %',
+            $stringToComplete.'%',
+            '% '.$stringToComplete.'%',
+            '%'.$stringToComplete.'%'
+        ];
+
+        // Collect tags up to $limit
+        $tags = [];
+        foreach ($likeConditions as $like) {
+            if (count($tags) == $limit) {
+                break;
+            }
+            $newLimit = $limit - count($tags);
+            $results = $this->Events->tags->find()
+                ->limit($newLimit)
+                ->where(['name LIKE' => $like])
+                ->andWhere(['listed' => 1])
+                ->andWhere(['selectable' => 1])
+                ->select(['id', 'name'])
+                ->contain(false)
+                ->toArray();
+
+            if (!empty($results)) {
+                foreach ($results as $result) {
+                    if (!in_array($result->name, $tags)) {
+                        $tagId = $result->id;
+                        $tags[$tagId] = $result->name;
+                    }
+                }
+            }
+        }
+
+        $tags = implode(",", $tags);
+        $this->set(compact('tags'));
+        $this->viewBuilder()->setLayout('ajax');
     }
 
     /**

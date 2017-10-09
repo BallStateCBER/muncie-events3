@@ -101,13 +101,15 @@ class AppController extends Controller
                 ]
             ]
         );
-        $this->loadComponent('AkkaFacebook.Graph', [
-            'app_id' => '496726620385625',
-            'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
-            'app_scope' => 'email,public_profile', // https://developers.facebook.com/docs/facebook-login/permissions/v2.4
-            'redirect_url' => Router::url(['controller' => 'Users', 'action' => 'login'], true), // This should be enabled by default
-            'post_login_redirect' => '/', //ie. Router::url(['controller' => 'Users', 'action' => 'account'], TRUE)
-        ]);
+        if ($this->request->action != 'searchAutocomplete') {
+            $this->loadComponent('AkkaFacebook.Graph', [
+                'app_id' => '496726620385625',
+                'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
+                'app_scope' => 'email,public_profile', // https://developers.facebook.com/docs/facebook-login/permissions/v2.4
+                'redirect_url' => Router::url(['controller' => 'Users', 'action' => 'login'], true), // This should be enabled by default
+                'post_login_redirect' => '/', //ie. Router::url(['controller' => 'Users', 'action' => 'account'], TRUE)
+            ]);
+        }
     }
 
     /**
@@ -143,19 +145,21 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
-        $this->set([
-            'headerVars' => [
-                'categories' => $categories,
-                'populatedDates' => $populatedDates
-            ],
-            'populated' => $populated,
-            'sidebarVars' => [
-                'locations' => $this->Events->getLocations(),
-                'upcomingTags' => $this->Tags->getUpcoming(),
-                'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
-            ],
-            'unapprovedCount' => $this->Events->getUnapproved()
-        ]);
+        if ($this->request->action != 'searchAutocomplete') {
+            $this->set([
+                'headerVars' => [
+                    'categories' => $categories,
+                    'populatedDates' => $populatedDates
+                ],
+                'populated' => $populated,
+                'sidebarVars' => [
+                    'locations' => $this->Events->getLocations(),
+                    'upcomingTags' => $this->Tags->getUpcoming(),
+                    'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
+                ],
+                'unapprovedCount' => $this->Events->getUnapproved()
+            ]);
+        }
     }
 
     /**

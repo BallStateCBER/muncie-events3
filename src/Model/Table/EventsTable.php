@@ -397,12 +397,12 @@ class EventsTable extends Table
     {
         $conditions = ['tag_id' => $tagId];
         if ($direction == 'future') {
-            $conditions['event_id IN'] = $this->getFutureEventIDs();
+            $conditions['event_id IN'] = $this->getFutureEventIds();
         }
         if ($direction == 'past') {
             // Since there are always more past events than future, this is quicker
             // than pulling the IDs of all past events
-            $conditions['event_id NOT IN'] = $this->getFutureEventIDs();
+            $conditions['event_id NOT IN'] = $this->getFutureEventIds();
         }
 
         return $this->EventsTags->find('all', ['conditions' => $conditions])->count();
