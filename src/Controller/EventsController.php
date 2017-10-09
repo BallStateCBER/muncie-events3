@@ -929,10 +929,10 @@ class EventsController extends AppController
         // in order, until $limit tags are found.
         $likeConditions = [
             $stringToComplete,
-            $stringToComplete.' %',
-            $stringToComplete.'%',
-            '% '.$stringToComplete.'%',
-            '%'.$stringToComplete.'%'
+            $stringToComplete . ' %',
+            $stringToComplete . '%',
+            '% ' . $stringToComplete . '%',
+            '%' . $stringToComplete . '%'
         ];
 
         // Collect tags up to $limit
@@ -961,8 +961,13 @@ class EventsController extends AppController
             }
         }
 
-        $tags = implode(",", $tags);
-        $this->set(compact('tags'));
+        $x = 0;
+        foreach ($tags as $tag) {
+            $this->set([
+                $x => $tag
+            ]);
+            $x = $x + 1;
+        }
         $this->viewBuilder()->setLayout('ajax');
     }
 
