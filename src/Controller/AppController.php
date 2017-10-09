@@ -101,7 +101,7 @@ class AppController extends Controller
                 ]
             ]
         );
-        if ($this->request->action != 'searchAutocomplete') {
+        if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {
             $this->loadComponent('AkkaFacebook.Graph', [
                 'app_id' => '496726620385625',
                 'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
@@ -145,7 +145,7 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
-        if ($this->request->action != 'searchAutocomplete') {
+        if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {
             $this->set([
                 'headerVars' => [
                     'categories' => $categories,

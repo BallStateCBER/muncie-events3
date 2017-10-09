@@ -205,7 +205,7 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/auto_complete', {
+                $.getJSON('/tags/autocomplete', {
                     term: extractLast(request.term)
                 }, response);
             },
@@ -247,7 +247,7 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/auto_complete', {
+                $.getJSON('/tags/autocomplete', {
                     term: extractLast(request.term)
                 }, response);
             },
