@@ -15,9 +15,9 @@
         <?php else: ?>
             were
         <?php endif; ?>
-        posted for this date.
+        posted for this month.
         <br />
-        If you know of an event happening on this date,
+        If you know of an event happening on this month,
         <?php echo $this->Html->link('tell us about it', [
             'controller' => 'events',
             'action' => 'add',
