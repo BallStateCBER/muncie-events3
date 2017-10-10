@@ -25,6 +25,11 @@ class TagsController extends AppController
         $this->Auth->allow([
             'index'
         ]);
+
+        if (!$this->isAuthorized()) {
+            $this->Flash->error('You are not authorized to view that page.');
+            $this->redirect('/');
+        }
     }
 
     /**
@@ -39,7 +44,7 @@ class TagsController extends AppController
             return true;
 
         // Some actions are admin-only
-        } elseif (in_array($this->action, $this->adminActions)) {
+        } elseif (in_array($this->request->action, $this->adminActions)) {
             return false;
         }
 
