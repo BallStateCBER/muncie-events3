@@ -734,6 +734,15 @@ class EventsController extends AppController
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
+        $count = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $dir]
+            ])
+            ->where(['location' => $location])
+            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->count();
+
         $oppCount = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -743,8 +752,9 @@ class EventsController extends AppController
             ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
             ->count();
 
-        $this->set(compact('location', 'oppCount', 'opposite'));
+        $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
+        $this->set(['slug' => $location]);
         $this->set('titleForLayout', '');
     }
 
@@ -1020,6 +1030,15 @@ class EventsController extends AppController
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
+        $count = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $dir]
+            ])
+            ->where(['Events.id IN' => $eventId])
+            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->count();
+
         $oppCount = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -1029,7 +1048,7 @@ class EventsController extends AppController
             ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
             ->count();
 
-        $this->set(compact('eventId', 'oppCount', 'opposite', 'slug', 'tag'));
+        $this->set(compact('count', 'direction', 'eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([
             'titleForLayout' => 'Tag: ' . ucwords($tag->name)
         ]);

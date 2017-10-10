@@ -4,13 +4,12 @@
 $s = $oppCount == 1 ? '' : 's';
 
 ?>
-<h1><?= $location ?></h1>
+<h1><?= "$count $direction events at $location" ?></h1>
 <?= $this->Html->link(
     "$oppCount $opposite event$s",
     [
         'controller' => 'events',
-        'action' => 'location', $opposite,
-        'direction' => $location,
+        'action' => 'location', $location, $opposite
     ],
     [
         'escape' => false
