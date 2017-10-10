@@ -192,6 +192,7 @@ class CalendarHelper extends Helper
     {
         $newMonth = $month == 1 ? 12 : $month - 1;
         $newYear = $month == 1 ? $year - 1 : $year;
+
         return $this->Html->link(
             '&larr; Previous Month',
             [
@@ -218,6 +219,7 @@ class CalendarHelper extends Helper
         }
         $newMonth = $month == 12 ? 1 : $month + 1;
         $newYear = $month == 12 ? $year + 1 : $year;
+
         return $this->Html->link(
             'Next Month &rarr;',
             [
