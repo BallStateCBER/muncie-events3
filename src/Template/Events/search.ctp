@@ -95,6 +95,8 @@ use Cake\Utility\Inflector;
 
         <?php $this->Js->buffer("setupEventAccordion();"); ?>
 
+        <?= $this->element('pagination') ?>
+
     <?php elseif (!isset($this->request->data['Event']['filter']) && empty($this->request->data['Event']['filter'])): ?>
         <p class="alert alert-info">
             No events have been found.

@@ -73,6 +73,7 @@ class EventsControllerTest extends IntegrationTestCase
         if ($event->id) {
             $this->assertResponseSuccess();
             $this->Events->delete($event);
+
             return;
         }
         if (!$event->id) {
@@ -140,6 +141,7 @@ class EventsControllerTest extends IntegrationTestCase
 
             if ($tags) {
                 $this->assertResponseSuccess();
+
                 return;
             }
         }
@@ -188,6 +190,7 @@ class EventsControllerTest extends IntegrationTestCase
         if ($event->id) {
             $this->assertResponseSuccess();
             $this->get("/events/delete/$event->id");
+
             return;
         }
         if (!$event->id) {

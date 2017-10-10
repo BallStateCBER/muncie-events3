@@ -144,6 +144,29 @@ class EventsTable extends Table
     }
 
     /**
+     * Returns the most recently published address
+     * for the provided location name or FALSE if none is found
+     *
+     * @param string $location we need address for
+     * @return bool
+     */
+    public function getAddress($location)
+    {
+        $result = $this->find()
+            ->select(['address'])
+            ->where(['published' => 1])
+            ->andWhere(['location' => $location])
+            ->andWhere(['address IS NOT' => ''])
+            ->andWhere(['address IS NOT' => null])
+            ->first();
+        if (empty($result)) {
+            return false;
+        }
+
+        return $result->address;
+    }
+
+    /**
      * getEventsOnDay method
      *
      * @param string $year of Events
@@ -397,12 +420,12 @@ class EventsTable extends Table
     {
         $conditions = ['tag_id' => $tagId];
         if ($direction == 'future') {
-            $conditions['event_id IN'] = $this->getFutureEventIDs();
+            $conditions['event_id IN'] = $this->getFutureEventIds();
         }
         if ($direction == 'past') {
             // Since there are always more past events than future, this is quicker
             // than pulling the IDs of all past events
-            $conditions['event_id NOT IN'] = $this->getFutureEventIDs();
+            $conditions['event_id NOT IN'] = $this->getFutureEventIds();
         }
 
         return $this->EventsTags->find('all', ['conditions' => $conditions])->count();
@@ -506,6 +529,49 @@ class EventsTable extends Table
             ->toArray();
 
         return $eventId;
+    }
+
+    /**
+     * Returns an array of dates (YYYY-MM-DD) with published events
+     *
+     * @param string $month Optional, zero-padded
+     * @param int $year Optional
+     * @param array $filters Optional
+     * @return array
+     */
+    public function getPopulatedDates($month = null, $year = null, $filters = null)
+    {
+        $findParams = [
+            'conditions' => ['published' => 1],
+            'fields' => ['DISTINCT Events.date'],
+            'contain' => [],
+            'order' => ['date ASC']
+        ];
+
+        // Apply optional month/year limits
+        if ($month && $year) {
+            $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+            $findParams['conditions']['Events.date LIKE'] = "$year-$month-%";
+            $findParams['limit'] = 31;
+        } elseif ($year) {
+            $findParams['conditions']['Events.date LIKE'] = "$year-%";
+        }
+
+        // Apply optional filters
+        if ($filters) {
+            $startDate = null;
+            $findParams = $this->applyFiltersToFindParams($findParams, $filters, $startDate);
+        }
+
+        $dateResults = $this->find('all', $findParams)->toArray();
+        $dates = [];
+        foreach ($dateResults as $result) {
+            if (isset($result['DISTINCT Events']['date'])) {
+                $dates[] = $result['DISTINCT Events']['date'];
+            }
+        }
+
+        return $dates;
     }
 
     /**

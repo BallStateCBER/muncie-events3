@@ -62,5 +62,17 @@
     </li>
 </ul>
 <?php
+    #if (isset($headerVars['populatedDates'])) {
+        #    foreach ($headerVars['populatedDates'] as $month => $days) {
+    #        $quotedDays = array();
+    #        foreach ($days as $day) {
+    #            $quotedDays[] = "'$day'";
+    #        }
+    #        $this->Js->buffer("muncieEvents.populatedDates['$month'] = [" . implode(',', $quotedDays) . "];");
+    #    }
+    #}
+    foreach ($populated as $monthYear => $days) {
+        $this->Js->buffer("muncieEvents.populatedDates['$monthYear'] = [".implode(',', $days)."];");
+    }
     $this->Js->buffer("setupHeaderNav();");
 ?>

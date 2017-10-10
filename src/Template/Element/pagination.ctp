@@ -1,57 +1,10 @@
-<?php
-
-	use Cake\Routing\Router;
-
-	$total_pages = $this->Paginator->counter(['format' => '{:pages}']);
-	$current_page = $this->Paginator->counter(['format' => '{:page}']);
-	/* $paginator_url = urldecode(Router::url(array_merge(
-		$this->request->params['named'],
-		$this->request->params['pass'],
-		['page' => '{page}']	// Replaced by JS with the appropriate page number
-	), true)); */
-?>
-<?php if ($total_pages > 1): ?>
-
-	<ul class="pagination">
-
-		<li class="page-item">
-			<?php
-				$first = $this->Paginator->first("&laquo; First", ['escape' => false, 'class' => 'page-link']);
-				echo $first ? $first : "<a class='page-link'>&laquo; First</a>";
-			?>
-		</li>
-
-		<li class="page-item">
-			<?php
-				$prev = $this->Paginator->prev("&lsaquo; Prev", ['escape' => false, 'class' => 'page-link']);
-				echo $prev ? $prev : "<a class='page-link'>&lsaquo; Prev</a>";
-			?>
-		</li>
-
-		<select class="paginator_select custom-select" data-url="<?php # echo $paginator_url; ?>">
-			<?php for ($p = 1; $p <= $total_pages; $p++): ?>
-				<option <?php if ($p == $current_page): ?>selected="selected"<?php endif; ?>>
-					<?php echo $p; ?>
-				</option>
-			<?php endfor; ?>
-		</select>
-
-		<?php $this->Js->buffer("setupPagination();"); ?>
-
-		<li class="page-item">
-			<?php
-				$next = $this->Paginator->next("Next &rsaquo;", ['escape' => false, 'class' => 'page-link']);
-				echo $next ? $next : "<a class='page-link'>Next &rsaquo;</a>";
-			?>
-		</li>
-
-		<li class="page-item">
-			<?php
-				$last = $this->Paginator->last("Last &raquo;", ['escape' => false, 'class' => 'page-link']);
-				echo $last ? $last : "<a class='page-link'>Last &raquo;</a>";
-			?>
-		</li>
-
-	</ul>
-
-<?php endif; ?>
+<div class="paginator">
+    <ul class="pagination">
+        <?= $this->Paginator->first('<< ' . __('first')) ?>
+        <?= $this->Paginator->hasPrev() ? $this->Paginator->prev('< ' . __('previous')) : '' ?>
+        <?= $this->Paginator->numbers() ?>
+        <?= $this->Paginator->hasNext() ? $this->Paginator->next(__('next') . ' >') : '' ?>
+        <?= $this->Paginator->last(__('last') . ' >>') ?>
+    </ul>
+    <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+</div>

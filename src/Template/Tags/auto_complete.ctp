@@ -1,1 +1,1 @@
-<?php echo $this->Js->object($tags);
+<?= $this->Js->object($tags);

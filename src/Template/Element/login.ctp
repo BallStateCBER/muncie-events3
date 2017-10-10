@@ -29,7 +29,7 @@
     </div>
 </div>
 
-<div class="form-group col-lg-4 col-xs-12">
+<div>
     <?= $this->Facebook->loginLink([
         'label' => "<img src='img/fb_login.png' />",
         'show-faces' => false,
@@ -37,7 +37,7 @@
         'redirect' => "/users/confirm_facebook_login"
     ]); ?>
 </div>
-<div class="form-group col-lg-4 col-xs-12">
+<div>
     Don't have an account yet?
 
     <?= $this->Html->link('Register', [

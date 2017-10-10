@@ -25,6 +25,11 @@ class TagsController extends AppController
         $this->Auth->allow([
             'index'
         ]);
+
+        if (!$this->isAuthorized()) {
+            $this->Flash->error('You are not authorized to view that page.');
+            $this->redirect('/');
+        }
     }
 
     /**
@@ -39,7 +44,7 @@ class TagsController extends AppController
             return true;
 
         // Some actions are admin-only
-        } elseif (in_array($this->action, $this->adminActions)) {
+        } elseif (in_array($this->request->action, $this->adminActions)) {
             return false;
         }
 
@@ -113,13 +118,11 @@ class TagsController extends AppController
     /**
      * autoComplete method
      *
-     * @param bool $onlyListed only one listed
-     * @param bool $onlySelectable only one selectable
      * @return void
      */
-    public function autoComplete($onlyListed, $onlySelectable)
+    public function autoComplete()
     {
-        $stringToComplete = htmlspecialchars_decode($_GET['term']);
+        $stringToComplete = $_GET['term'];
         $limit = 10;
 
         // Tag.name will be compared via LIKE to each of these,
@@ -139,12 +142,6 @@ class TagsController extends AppController
                 break;
             }
             $conditions = ['name LIKE' => $like];
-            if ($onlyListed) {
-                $conditions['listed'] = 1;
-            }
-            if ($onlySelectable) {
-                $conditions['selectable'] = 1;
-            }
             $results = $this->Tags->find()
                 ->where($conditions)
                 ->limit($limit - count($tags));
@@ -171,7 +168,7 @@ class TagsController extends AppController
         }
 
         $this->set(compact('tags'));
-        $this->viewBuilder()->setLayout('blank');
+        $this->viewBuilder()->setLayout('ajax');
     }
 
     /**

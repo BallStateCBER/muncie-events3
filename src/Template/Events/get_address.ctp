@@ -1,1 +1,1 @@
-<?php echo $address; ?>
+<?= $address;

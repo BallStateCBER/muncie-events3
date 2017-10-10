@@ -9,7 +9,7 @@ try {
         'toServer' => false,
         'skipExisting' => ['toServer'],
         'raiseExceptions' => true
-   ]);
+    ]);
 } catch (InvalidArgumentException $e) {
     // If there's a problem loading the .env file - load .env.default
     // That means the code can assume appropriate env config always exists
@@ -352,7 +352,7 @@ $config = [
     /**
      * Configures logging options
      */
-    'Log' => [
+     'Log' => [
         'debug' => [
             'className' => 'Cake\Log\Engine\FileLog',
             'path' => LOGS,
@@ -367,7 +367,7 @@ $config = [
             'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
             'url' => env('LOG_ERROR_URL', null),
         ],
-    ],
+     ],
 
     /**
      * Session configuration.

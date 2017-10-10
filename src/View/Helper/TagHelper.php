@@ -1,13 +1,19 @@
 <?php
 namespace App\View\Helper;
 
-use Cake\View\Helper;
 use Cake\ORM\TableRegistry;
+use Cake\View\Helper;
 
 class TagHelper extends Helper
 {
     public $helpers = ['Html', 'Js'];
 
+    /**
+     * create array for json of available tags
+     *
+     * @param array $availableTags to convert for json
+     * @return array
+     */
     private function availableTagsForJsPr($availableTags)
     {
         $this->Tags = TableRegistry::get('Tags');
@@ -22,14 +28,21 @@ class TagHelper extends Helper
                 $arrayForJson[] = [
                     'id' => $tag->id,
                     'name' => $tag->name,
-                    'selectable' => (boolean) $tag->selectable,
+                    'selectable' => (bool)$tag->selectable,
                     'children' => $this->availableTagsForJsPr($children)
                 ];
             }
         }
+
         return $arrayForJson;
     }
 
+    /**
+     * create array for json of selected tags
+     *
+     * @param array $selectedTags to convert for json
+     * @return array
+     */
     private function selectedTagsForJsPr($selectedTags)
     {
         $arrayForJson = [];
@@ -41,12 +54,15 @@ class TagHelper extends Helper
                 ];
             }
         }
+
         return $arrayForJson;
     }
 
     /**
      * If necessary, convert selectedTags from an array of IDs to a full array of tag info
-     * @param array $selectedTags
+     *
+     * @param array $newTags to check for duplicates
+     * @param ResultSet $event being tagged
      * @return array
      */
     private function formatSelectedTagsPr($newTags, $event)
@@ -94,16 +110,26 @@ class TagHelper extends Helper
                 $retval[] = $result;
             }
         }
+
         return $retval;
     }
 
-    public function setup($availableTags, $containerId, $selectedTags = [], $event)
+    /**
+     * Sets up the javascript for the tag menu
+     *
+     * @param array $availableTags to be selected
+     * @param string $containerId of the tag menu
+     * @param ResultSet $event that is being tagged
+     * @param array|null $selectedTags which are selected
+     * @return void
+     */
+    public function setup($availableTags, $containerId, $event, $selectedTags = [])
     {
         $newTags = empty($this->request->data['data']['Tags']) ? [] : $this->request->data['data']['Tags'];
         $selectedTags = $this->formatSelectedTagsPr($newTags, $event);
 
         $this->Js->buffer("
-            TagManager.selectedTags = ".$this->Js->object($this->selectedTagsForJsPr($selectedTags)).";
+            TagManager.selectedTags = " . $this->Js->object($this->selectedTagsForJsPr($selectedTags)) . ";
             TagManager.preselectTags(TagManager.selectedTags);
         ");
 
@@ -115,7 +141,7 @@ class TagHelper extends Helper
         }
 
         $this->Js->buffer("
-            TagManager.tags = ".$this->Js->object($this->availableTagsForJsPr($parentTags)).";
+            TagManager.tags = " . $this->Js->object($this->availableTagsForJsPr($parentTags)) . ";
             TagManager.createTagList(TagManager.tags, $('#$containerId'));
             $('#new_tag_rules_toggler').click(function(event) {
                 event.preventDefault();

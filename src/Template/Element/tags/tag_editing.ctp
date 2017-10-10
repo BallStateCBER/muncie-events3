@@ -44,6 +44,7 @@ echo $this->Html->script('tag_manager.js');
         </div>
     </div>
 
+<?php if ($this->request->session()->read('Auth.User.id')): ?>
     <div id="custom_tag_input_wrapper">
         <label for="custom_tag_input">
             Additional Tags
@@ -96,6 +97,7 @@ echo $this->Html->script('tag_manager.js');
             </ul>
         </div>
     </div>
+<?php endif ?>
 </div>
 
-<?= $this->Tag->setup($availableTags, 'available_tags', $selectedTags, $event); ?>
+<?= $this->Tag->setup($availableTags, 'available_tags', $event, $selectedTags); ?>
