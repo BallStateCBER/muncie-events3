@@ -639,6 +639,12 @@ class EventsController extends AppController
         $this->render('/Element/events/form');
     }
 
+    public function getAddress($location = '')
+    {
+        $this->viewBuilder()->setLayout('blank');
+        $this->set('address', $this->Events->getAddress($location));
+    }
+
     /**
      * getFilteredEventsOnDates method
      *

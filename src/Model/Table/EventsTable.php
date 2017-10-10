@@ -144,6 +144,29 @@ class EventsTable extends Table
     }
 
     /**
+     * Returns the most recently published address
+     * for the provided location name or FALSE if none is found
+     *
+     * @param string $location we need address for
+     * @return boolean
+     */
+    public function getAddress($location)
+    {
+        $result = $this->find()
+            ->select(['address'])
+            ->where(['published' => 1])
+            ->andWhere(['location' => $location])
+            ->andWhere(['address IS NOT' => ''])
+            ->andWhere(['address IS NOT' => null])
+            ->first();
+        if (empty($result)) {
+            return false;
+        }
+
+        return $result->address;
+    }
+
+    /**
      * getEventsOnDay method
      *
      * @param string $year of Events

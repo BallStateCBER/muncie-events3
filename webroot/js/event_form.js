@@ -172,7 +172,7 @@ function setupLocationAutocomplete() {
 	if (eventForm.previousLocations.length == 0) {
 		return;
 	}
-	$('#EventLocation').bind('keydown', function (event) {
+	$('#location').bind('keydown', function (event) {
 		// don't navigate away from the field on tab when selecting an item
 		if (event.keyCode === $.ui.keyCode.TAB && $(this).data('is_open')) {
 			event.preventDefault();
@@ -224,7 +224,7 @@ function setupLocationAutocomplete() {
 }
 
 function setupAddressLookup() {
-	$('#EventLocation').change(function() {
+	$('#location').change(function() {
 		var location_field = $(this);
 		var location_name = location_field.val();
 		var address_field = $('#EventAddress');
