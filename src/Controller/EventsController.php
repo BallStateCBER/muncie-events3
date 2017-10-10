@@ -639,6 +639,12 @@ class EventsController extends AppController
         $this->render('/Element/events/form');
     }
 
+    /**
+     * getAddress method
+     *
+     * @param  string $location we need address
+     * @return void
+     */
     public function getAddress($location = '')
     {
         $this->viewBuilder()->setLayout('blank');

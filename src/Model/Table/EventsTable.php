@@ -148,7 +148,7 @@ class EventsTable extends Table
      * for the provided location name or FALSE if none is found
      *
      * @param string $location we need address for
-     * @return boolean
+     * @return bool
      */
     public function getAddress($location)
     {
