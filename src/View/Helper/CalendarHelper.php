@@ -190,13 +190,15 @@ class CalendarHelper extends Helper
      */
     public function prevMonth($month, $year)
     {
+        $newMonth = $month == 1 ? 12 : $month - 1;
+        $newYear = $month == 1 ? $year - 1 : $year;
         return $this->Html->link(
             '&larr; Previous Month',
             [
                 'controller' => 'events',
                 'action' => 'month',
-                $month - 1,
-                $year
+                $newMonth,
+                $newYear
             ],
             ['escape' => false]
         );
@@ -211,13 +213,18 @@ class CalendarHelper extends Helper
      */
     public function nextMonth($month, $year)
     {
+        if ($month == 12) {
+            $newMonth = 1;
+        }
+        $newMonth = $month == 12 ? 1 : $month + 1;
+        $newYear = $month == 12 ? $year + 1 : $year;
         return $this->Html->link(
             'Next Month &rarr;',
             [
                 'controller' => 'events',
                 'action' => 'month',
-                $month + 1,
-                $year
+                $newMonth,
+                $newYear
             ],
             ['escape' => false]
         );
