@@ -616,7 +616,13 @@ class WidgetsController extends AppController
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
+        $eventIds = [];
+        foreach ($events as $event) {
+            $eventIds[] = $event->id;
+        }
+
         $this->set([
+            'eventIds' => $eventIds,
             'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('feed', $queryString)),
             'titleForLayout' => 'Upcoming Events',
             'isAjax' => $this->request->is('ajax'),

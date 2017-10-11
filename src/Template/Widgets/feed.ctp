@@ -45,7 +45,7 @@ use Cake\Routing\Router;
                             ]);
                         ?>
                     <?php endif; ?>
-                    <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $event->id]); ?>
+                    <?php $url = Router::url(['controller' => 'widgets', 'action' => 'event', $event->id]); ?>
                     <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $event->id; ?>" target="_blank">
                         <?= $this->Icon->category($event->category->name); ?>
                         <div class="title">
@@ -90,7 +90,7 @@ use Cake\Routing\Router;
                             ]);
                         ?>
                     <?php endif; ?>
-                    <?php $url = Router::url(['controller' => 'events', 'action' => 'view', 'id' => $daysEvents->id]); ?>
+                    <?php $url = Router::url(['controller' => 'widgets', 'action' => 'event', $daysEvents->id]); ?>
                     <a href="<?= $url; ?>" title="Click for more info" class="event_link" id="event_link_<?= $daysEvents->id; ?>" target="_blank">
                         <?= $this->Icon->category($daysEvents->category->name); ?>
                         <div class="title">
@@ -114,7 +114,11 @@ use Cake\Routing\Router;
                         </div>
                     <?php endif; ?>
                 </li>
+            <?php endif; ?>
         </ul>
-    <?php endif; ?>
     <?php endforeach; ?>
+
+    <?php $this->Js->buffer("
+        muncieEventsFeedWidget.prepareLinks([".implode(',', $eventIds)."]);
+    "); ?>
 <?php endif; ?>

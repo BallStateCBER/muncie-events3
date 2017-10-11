@@ -57,6 +57,7 @@ var muncieEventsFeedWidget = {
  				muncieEventsFeedWidget.loadingStart();
  			},
  			success: function(data) {
+                muncieEventsFeedWidget.loadingEnd();
  				elist.after($('<div id="event_'+eid+'" style="display: none;"></div>').html(data));
  				muncieEventsFeedWidget.setupEventActions('#event_'+eid);
  				elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
@@ -77,10 +78,11 @@ var muncieEventsFeedWidget = {
  				});
  			},
  			error: function() {
+                muncieEventsFeedWidget.loadingEnd();
  				alert('There was an error loading that event. Please try again.');
  			},
  			complete: function() {
- 				muncieEventsFeedWidget.loadingEnd();
+                muncieEventsFeedWidget.loadingEnd();
  			}
  		});
  	},
