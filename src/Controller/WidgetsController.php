@@ -678,19 +678,22 @@ class WidgetsController extends AppController
         // manually set $eventsForJson just for debugging purposes...
         $eventsForJson = [];
         foreach ($events as $event) {
-            $date = date('Y-m-d', strtotime($event->date));
-            $eventsForJson[$date] = [
-                'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
-                'events' => []
-            ];
-            $eventsForJson[$date]['events'][] = [
-                'id' => $event->id,
-                'title' => $event->title,
-                'category_name' => $event->category['name'],
-                'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
-                'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
-                'time' => date('h:ia')
-            ];
+            $thisMonth = date('m', strtotime($event->date));
+            if ($thisMonth == $month) {
+                $date = date('Y-m-d', strtotime($event->date));
+                $eventsForJson[$date] = [
+                    'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
+                    'events' => []
+                ];
+                $eventsForJson[$date]['events'][] = [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'category_name' => $event->category['name'],
+                    'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
+                    'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
+                    'time' => date('h:ia')
+                ];
+            }
         }
 
         $this->set([
