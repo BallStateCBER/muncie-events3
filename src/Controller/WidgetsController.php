@@ -676,18 +676,22 @@ class WidgetsController extends AppController
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         // manually set $eventsForJson just for debugging purposes...
-        $eventsForJson['2017-06-03'] = [
-            'heading' => 'Events on ' . date('F j, Y', (strtotime('2017-06-03'))),
-            'events' => []
-        ];
-        $eventsForJson['2017-06-03']['events'][] = [
-            'id' => '4459',
-            'title' => 'The Steampunk Kids go to the park and wear corsets',
-            'category_name' => 'General Events',
-            'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', 'General Events')),
-            'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => 4459]),
-            'time' => '2 PM'
-        ];
+        $eventsForJson = [];
+        foreach ($events as $event) {
+            $date = date('Y-m-d', strtotime($event->date));
+            $eventsForJson[$date] = [
+                'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
+                'events' => []
+            ];
+            $eventsForJson[$date]['events'][] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'category_name' => $event->category['name'],
+                'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
+                'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
+                'time' => date('h:ia')
+            ];
+        }
 
         $this->set([
             'titleForLayout' => "$monthName $year",

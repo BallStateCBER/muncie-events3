@@ -33,7 +33,7 @@
         <div></div>
         <div></div>
     </div>
-    <div id="load_more_events_wrapper">
+    <div id="load_more_events_wrapper" style="display:none;">
         <a href="#" id="load_more_events">&darr; More events &darr;</a>
     </div>
     <?php $this->Js->buffer("muncieEventsFeedWidget.prepareWidget();"); ?>
