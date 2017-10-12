@@ -1,3 +1,4 @@
+
 var muncieEventsMonthWidget = {
 	current_month: null,
 	current_year: null,
@@ -10,11 +11,6 @@ var muncieEventsMonthWidget = {
 	},
 
 	prepareLinks: function(calendar_selector) {
-		// Skip if this calendar has already been prepared
-		if (this.prepared_calendars.indexOf(calendar_selector) != -1) {
-			return;
-		}
-
 		var calendar = $(calendar_selector);
 
 		// Prev / next links
@@ -274,12 +270,6 @@ var muncieEventsMonthWidget = {
 					$(this).parent().hide().append(data).fadeIn(muncieEventsMonthWidget.fade_duration);
                     console.log(muncieEventsMonthWidget);
 				});
-
-				/*
-				var calendar = $(data).hide();
-				$('#calendar_container').append(calendar);
-				$('#calendar_container table:last-child').fadeIn(muncieEventsMonthWidget.fade_duration);
-				*/
 			},
 			error: function() {
 				alert('There was an error loading that month. Please try again.');

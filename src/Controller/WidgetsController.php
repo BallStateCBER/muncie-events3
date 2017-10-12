@@ -643,16 +643,14 @@ class WidgetsController extends AppController
 
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
-        if (!empty($options)) {
-            $events = $this->Events->getUpcomingFilteredEvents($options);
-        }
-        if (empty($options)) {
-            $events = $this->Events->getUpcomingEvents();
-        }
+
         // Process various date information
         if (!$yearMonth) {
             $yearMonth = date('Y-m');
         }
+
+        $events = $this->Events->getMonthEvents($yearMonth, $options);
+
         $split = explode('-', $yearMonth);
         $year = reset($split);
         $month = end($split);
@@ -679,7 +677,8 @@ class WidgetsController extends AppController
         $eventsForJson = [];
         foreach ($events as $event) {
             $thisMonth = date('m', strtotime($event->date));
-            if ($thisMonth == $month) {
+            $thisYear = date('Y', strtotime($event->date));
+            if ($thisMonth == $month && $thisYear == $year) {
                 $date = date('Y-m-d', strtotime($event->date));
                 $eventsForJson[$date] = [
                     'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),

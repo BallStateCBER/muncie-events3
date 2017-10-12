@@ -189,6 +189,25 @@ class EventsTable extends Table
     }
 
     /**
+     * getMonthEvents method
+     *
+     * @return ResultSet $events
+     */
+    public function getMonthEvents($yearMonth, $options)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC'],
+            'conditions' => $options
+            ])
+            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
+            ->toArray();
+
+        return $events;
+    }
+
+    /**
      * getUpcomingEvents method
      *
      * @return ResultSet $events
