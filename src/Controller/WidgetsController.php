@@ -641,15 +641,10 @@ class WidgetsController extends AppController
     {
         $this->setDemoDataPr('month');
 
-        $options = $_GET;
-        $filters = $this->Events->getValidFilters($options);
-
         // Process various date information
         if (!$yearMonth) {
             $yearMonth = date('Y-m');
         }
-
-        $events = $this->Events->getMonthEvents($yearMonth, $options);
 
         $split = explode('-', $yearMonth);
         $year = reset($split);
@@ -664,9 +659,12 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y') . date('m') . date('j');
 
+        $options = $_GET;
+        $filters = $this->Events->getValidFilters($options);
+
+        $events = $this->Events->getMonthEvents($yearMonth, $options);
         $this->indexEvents($events);
 
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
         $this->processCustomStyles($options);
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
@@ -703,6 +701,7 @@ class WidgetsController extends AppController
             'customStyles' => $this->customStyles
         ]);
         $this->set(compact('month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'monthName', 'eventsForJson', 'filters', 'options'));
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
     }
 
     /**

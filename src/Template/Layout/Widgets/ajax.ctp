@@ -1,2 +1,3 @@
 <?php
-	echo $this->Js->writeBuffer();
+    echo $this->fetch('content');
+    echo $this->Js->writeBuffer();
