@@ -694,16 +694,28 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        // the app breaks if there is a 2-week gap in between events
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
-        $events = $this->Events
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => $nextStartDate])
-            ->andwhere(['date <=' => $endDate])
-            ->toArray();
+        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+        if (empty($events)) {
+            $endDate = strtotime($nextStartDate . ' + 4 weeks');
+            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+            if (empty($events)) {
+                $endDate = strtotime($nextStartDate . ' + 8 weeks');
+                $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                if (empty($events)) {
+                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
+                    $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                    if (empty($events)) {
+                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
+                        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                        if (empty($events)) {
+                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
+                            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                        }
+                    }
+                }
+            }
+        }
         $this->indexEvents($events);
     }
 

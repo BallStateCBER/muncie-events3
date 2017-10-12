@@ -297,6 +297,27 @@ class EventsTable extends Table
     }
 
     /**
+     * getRangeEvents method
+     *
+     * @param string $nextStartDate to begin
+     * @param string $endDate to end
+     * @return ResultSet $events
+     */
+    public function getRangeEvents($nextStartDate, $endDate)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => $nextStartDate])
+            ->andwhere(['date <=' => $endDate])
+            ->toArray();
+
+        return $events;
+    }
+
+    /**
      * getUpcomingEvents method
      *
      * @return ResultSet $events
