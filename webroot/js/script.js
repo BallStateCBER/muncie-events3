@@ -44,9 +44,9 @@ function setupHeaderNav() {
 				var class_name = selectable ? 'has_events' : 'no_events';
 				var tooltip = selectable ? null : 'No events';
 			} else {
-				var selectable = true;
-				var class_name = 'has_events';
-				var tooltip = 'tooltip text?';
+				var selectable = false;
+				var class_name = 'no_events';
+				var tooltip = 'No events';
 			}
 
 			return [selectable, class_name, tooltip];

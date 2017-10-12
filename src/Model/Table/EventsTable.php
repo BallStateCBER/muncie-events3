@@ -191,7 +191,7 @@ class EventsTable extends Table
     /**
      * getFilteredEvents method
      *
-     * @param string $yearMonth of events
+     * @param string $date of events
      * @param array $options for filtering events
      * @return ResultSet $events
      */
@@ -276,7 +276,6 @@ class EventsTable extends Table
 
         return $events;
     }
-
 
     /**
      * getMonthEvents method
