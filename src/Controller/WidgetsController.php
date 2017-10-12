@@ -602,7 +602,7 @@ class WidgetsController extends AppController
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
         if (!empty($options)) {
-            $events = $this->Events->getUpcomingFilteredEvents($options);
+            $events = $this->Events->getFilteredEvents(date('Y-m-d'), $options);
         }
         if (empty($options)) {
             $events = $this->Events->getUpcomingEvents();
@@ -662,7 +662,7 @@ class WidgetsController extends AppController
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
 
-        $events = $this->Events->getMonthEvents($yearMonth, $options);
+        $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $options) : $this->Events->getMonthEvents($yearMonth);
         $this->indexEvents($events);
 
         $this->processCustomStyles($options);

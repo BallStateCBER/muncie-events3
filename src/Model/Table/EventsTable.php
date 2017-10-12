@@ -189,52 +189,16 @@ class EventsTable extends Table
     }
 
     /**
-     * getMonthEvents method
+     * getFilteredEvents method
      *
-     * @return ResultSet $events
-     */
-    public function getMonthEvents($yearMonth, $options)
-    {
-        $events = $this
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC'],
-            'conditions' => $options
-            ])
-            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
-            ->toArray();
-
-        return $events;
-    }
-
-    /**
-     * getUpcomingEvents method
-     *
-     * @return ResultSet $events
-     */
-    public function getUpcomingEvents()
-    {
-        $events = $this
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => date('Y-m-d')])
-            ->toArray();
-
-        return $events;
-    }
-
-    /**
-     * getUpcomingFilteredEvents method
-     *
+     * @param string $yearMonth of events
      * @param array $options for filtering events
      * @return ResultSet $events
      */
-    public function getUpcomingFilteredEvents($options)
+    public function getFilteredEvents($date, $options)
     {
         $params = [];
-        $params[] = ['date >=' => date('Y-m-d')];
+        $params[] = ['date >=' => date('Y-m-d', strtotime($date))];
         foreach ($options as $param => $value) {
             $categories = '';
             if ($param == 'category') {
@@ -309,6 +273,44 @@ class EventsTable extends Table
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'conditions' => $params
         ])->order(['date' => 'ASC'])->toArray();
+
+        return $events;
+    }
+
+
+    /**
+     * getMonthEvents method
+     *
+     * @param string $yearMonth of events
+     * @return ResultSet $events
+     */
+    public function getMonthEvents($yearMonth)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
+            ->toArray();
+
+        return $events;
+    }
+
+    /**
+     * getUpcomingEvents method
+     *
+     * @return ResultSet $events
+     */
+    public function getUpcomingEvents()
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d')])
+            ->toArray();
 
         return $events;
     }
