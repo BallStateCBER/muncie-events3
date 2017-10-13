@@ -119,6 +119,7 @@ use Cake\Routing\Router;
     <?php endforeach; ?>
 
     <?php $this->Js->buffer("
+		muncieEventsFeedWidget.setNextStartDate('$nextStartDate');
         muncieEventsFeedWidget.prepareLinks([".implode(',', $eventIds)."]);
     "); ?>
 <?php endif; ?>

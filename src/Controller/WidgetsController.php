@@ -595,9 +595,35 @@ class WidgetsController extends AppController
      *
      * @return void
      */
-    public function feed()
+    public function feed($nextStartDate = null)
     {
         $this->setDemoDataPr('feed');
+
+        if ($nextStartDate == null) {
+            $nextStartDate = date('Y-m-d');
+        }
+        $endDate = strtotime($nextStartDate . ' + 2 weeks');
+        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+        if (empty($events)) {
+            $endDate = strtotime($nextStartDate . ' + 4 weeks');
+            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+            if (empty($events)) {
+                $endDate = strtotime($nextStartDate . ' + 8 weeks');
+                $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                if (empty($events)) {
+                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
+                    $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                    if (empty($events)) {
+                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
+                        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                        if (empty($events)) {
+                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
+                            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
+                        }
+                    }
+                }
+            }
+        }
 
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
@@ -605,7 +631,7 @@ class WidgetsController extends AppController
             $events = $this->Events->getFilteredEvents(date('Y-m-d'), $options);
         }
         if (empty($options)) {
-            $events = $this->Events->getUpcomingEvents();
+            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
         }
         $this->indexEvents($events);
 
