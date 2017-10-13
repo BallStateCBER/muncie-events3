@@ -191,14 +191,16 @@ class EventsTable extends Table
     /**
      * getFilteredEvents method
      *
-     * @param string $date of events
+     * @param string $nextStartDate to begin
+     * @param string $endDate to end
      * @param array $options for filtering events
      * @return ResultSet $events
      */
-    public function getFilteredEvents($date, $options)
+    public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
         $params = [];
-        $params[] = ['date >=' => date('Y-m-d', strtotime($date))];
+        $params[] = ['date >=' => date('Y-m-d', strtotime($nextStartDate))];
+        $params[] = ['date <' => date('Y-m-d', $endDate)];
         foreach ($options as $param => $value) {
             $categories = '';
             if ($param == 'category') {

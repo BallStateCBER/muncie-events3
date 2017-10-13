@@ -628,12 +628,31 @@ class WidgetsController extends AppController
 
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
+
         if (!empty($options)) {
-            $events = $this->Events->getFilteredEvents(date('Y-m-d'), $options);
+            $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+            if (empty($events)) {
+                $endDate = strtotime($nextStartDate . ' + 4 weeks');
+                $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+                if (empty($events)) {
+                    $endDate = strtotime($nextStartDate . ' + 8 weeks');
+                    $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+                    if (empty($events)) {
+                        $endDate = strtotime($nextStartDate . ' + 16 weeks');
+                        $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+                        if (empty($events)) {
+                            $endDate = strtotime($nextStartDate . ' + 32 weeks');
+                            $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+                            if (empty($events)) {
+                                $endDate = strtotime($nextStartDate . ' + 64 weeks');
+                                $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
+                            }
+                        }
+                    }
+                }
+            }
         }
-        if (empty($options)) {
-            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-        }
+
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'feed');
