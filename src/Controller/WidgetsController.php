@@ -593,6 +593,7 @@ class WidgetsController extends AppController
     /**
      * Produces a view that lists seven event-populated days, starting with $startDate
      *
+     * @param string|null $nextStartDate of events
      * @return void
      */
     public function feed($nextStartDate = null)
