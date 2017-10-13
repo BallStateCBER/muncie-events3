@@ -706,9 +706,13 @@ class WidgetsController extends AppController
         $today = date('Y') . date('m') . date('j');
 
         $options = $_GET;
+        if (!isset($options)) {
+            $options = [];
+        }
         $filters = $this->Events->getValidFilters($options);
+        $nextMonth = strtotime($yearMonth . '+1 month');
 
-        $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $options) : $this->Events->getMonthEvents($yearMonth);
+        $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $nextMonth, $options) : $this->Events->getMonthEvents($yearMonth);
         $this->indexEvents($events);
 
         $this->processCustomStyles($options);
