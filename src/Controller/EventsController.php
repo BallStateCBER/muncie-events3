@@ -562,10 +562,7 @@ class EventsController extends AppController
             foreach ($oldDates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
                 if (!in_array($oldDate, $newDates)) {
-                    $deleteEvent = $this->Events->find()
-                        ->where(['date' => $date])
-                        ->andWhere(['series_id' => $seriesId])
-                        ->first();
+                    $deleteEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                     if ($this->Events->delete($deleteEvent)) {
                         $this->Flash->success(__("Event '$deleteEvent->title' has been deleted."));
                     }
@@ -573,11 +570,7 @@ class EventsController extends AppController
             }
             foreach ($newDates as $date) {
                 $date = date('Y-m-d', strtotime($date));
-                $oldEvent = $this->Events->find()
-                    ->select(['id'])
-                    ->where(['date' => $date])
-                    ->andWhere(['series_id' => $seriesId])
-                    ->first();
+                $oldEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                 if (isset($oldEvent->id)) {
                     $event = $this->Events->get($oldEvent->id);
                 }
@@ -955,7 +948,7 @@ class EventsController extends AppController
      */
     public function searchAutocomplete()
     {
-        $stringToComplete = $_GET['term'];
+        $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
         $qualifyingTagIds = $this->Events->Tags->getIdsWithEvents();
 

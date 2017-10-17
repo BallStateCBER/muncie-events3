@@ -167,6 +167,23 @@ class EventsTable extends Table
     }
 
     /**
+     * getEventByDateAndSeries method
+     *
+     * @param str $date of events
+     * @param str $seriesId of events
+     * @return ResultSet $event
+     */
+    public function getEventsByDateAndSeries($date, $seriesId)
+    {
+        $event = $this->Events->find()
+            ->where(['date' => $date])
+            ->andWhere(['series_id' => $seriesId])
+            ->first();
+
+        return $event;
+    }
+
+    /**
      * getEventsOnDay method
      *
      * @param string $year of Events
