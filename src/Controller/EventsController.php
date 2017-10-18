@@ -21,7 +21,6 @@ class EventsController extends AppController
     ];
     public $uses = ['Event'];
     public $eventFilter = [];
-    public $adminActions = ['publish', 'approve', 'moderate', 'delete'];
 
     /**
      * Initialization hook method.
@@ -39,6 +38,38 @@ class EventsController extends AppController
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
         ]);
+    }
+
+    /**
+     * determine if admin
+     *
+     * @param ResultSet $event need to check
+     * @return void
+     */
+    private function isAdmin($event = null)
+    {
+        if ($this->request->session()->read('Auth.User.role') != 'admin') {
+            if ($this->request->action == 'edit' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                $this->Flash->error(__('You are not authorized to view this page.'));
+
+                return $this->redirect('/');
+            }
+
+            if ($this->request->action == 'editSeries' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                $this->Flash->error(__('You are not authorized to view this page.'));
+
+                return $this->redirect('/');
+            }
+
+            $adminActions = ['approve', 'moderate', 'delete'];
+            foreach ($adminActions as $action) {
+                if ($this->request->action == $action) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
+
+                    return $this->redirect('/');
+                }
+            }
+        }
     }
 
     /**
@@ -255,6 +286,7 @@ class EventsController extends AppController
      */
     public function approve($id = null)
     {
+        $this->isAdmin();
         $ids = $this->request->pass;
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
@@ -459,13 +491,7 @@ class EventsController extends AppController
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You cannot delete this event.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-        }
+        $this->isAdmin();
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
 
@@ -488,13 +514,7 @@ class EventsController extends AppController
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
 
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You are not authorized to view this page.'));
-
-                return $this->redirect('/');
-            }
-        }
+        $this->isAdmin($event);
         // prepare form
         $this->setEventForm($event);
         $this->setImageData($event);
@@ -537,13 +557,6 @@ class EventsController extends AppController
         if (!$eventSeries) {
             return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
         }
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You are not authorized to view this page.'));
-
-                return $this->redirect('/');
-            }
-        }
         $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
             'contain' => ['EventSeries']
@@ -562,6 +575,8 @@ class EventsController extends AppController
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
+
+        $this->isAdmin($event);
 
         $event->date = $dates;
         $this->setEventForm($event);
@@ -763,11 +778,7 @@ class EventsController extends AppController
      */
     public function moderate()
     {
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            $this->Flash->error("You are not authorized to view that page.");
-
-            return $this->redirect('/');
-        }
+        $this->isAdmin();
         // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
@@ -943,7 +954,6 @@ class EventsController extends AppController
     {
         $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
-        $qualifyingTagIds = $this->Events->Tags->getIdsWithEvents();
 
         // name will be compared via LIKE to each of these,
         // in order, until $limit tags are found.
