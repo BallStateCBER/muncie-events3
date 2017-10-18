@@ -121,7 +121,7 @@ class EventsController extends AppController
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
-        if ($this->request->action == 'editseries') {
+        if ($this->request->action == 'editSeries') {
             $dateFieldValues = [];
             foreach ($event->date as $date) {
                 list($year, $month, $day) = explode('-', $date);
@@ -131,14 +131,17 @@ class EventsController extends AppController
                 $dateFieldValues[] = date_create("$month/$day/$year");
             }
             $preselectedDates = [];
+            $eventSelectedDates = [];
             foreach ($dateFieldValues as $date) {
                 $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
+                $eventSelectedDates[] = date_format($date, 'm/d/Y');
             }
             $preselectedDates = implode(',', $preselectedDates);
+            $eventSelectedDates = implode(',', $eventSelectedDates);
+            $event->date = $eventSelectedDates;
             $preselectedDates = '[' . $preselectedDates . ']';
-            $event->date = $preselectedDates;
         }
-        $this->set(compact('defaultDate', 'preselectedDates'));
+        $this->set(compact('dateFieldValues', 'defaultDate', 'preselectedDates'));
     }
 
     /**
@@ -162,7 +165,7 @@ class EventsController extends AppController
             ->toArray();
         $this->set(compact('availableTags'));
 
-        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
+        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
             $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
@@ -497,6 +500,13 @@ class EventsController extends AppController
         $this->setImageData($event);
         $this->setDatePicker($event);
 
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        $eventseries = $this->Events->EventSeries->find('list');
+        $this->set(compact('event', 'users', 'categories', 'eventseries'));
+        $this->set('_serialize', ['event']);
+        $this->set('titleForLayout', 'Edit Event');
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
             $this->uponFormSubmissionPr();
@@ -507,18 +517,10 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
-                $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                return $this->Flash->success(__('The event has been saved.'));
             }
+            $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
-
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Edit Event');
     }
 
     /**
@@ -538,12 +540,13 @@ class EventsController extends AppController
             'conditions' => ['series_id' => $seriesId],
             'contain' => ['EventSeries']
             ])
+            ->order(['date' => 'ASC'])
             ->toArray();
 
-        $oldDates = [];
+        $dates = [];
         foreach ($events as $event) {
             $dateString = date_format($event->date, 'Y-m-d');
-            $oldDates[] = $dateString;
+            $dates[] = $dateString;
         }
 
         // Pick the first event in the series
@@ -552,14 +555,14 @@ class EventsController extends AppController
             'contain' => ['EventSeries']
         ]);
 
-        $event->date = $oldDates;
+        $event->date = $dates;
         $this->setEventForm($event);
         $this->setDatePicker($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
             $newDates = explode(',', $this->request->data['date']);
-            foreach ($oldDates as $date) {
+            foreach ($dates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
                 if (!in_array($oldDate, $newDates)) {
                     $deleteEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
@@ -617,6 +620,7 @@ class EventsController extends AppController
             $series->title = $this->request->data['event_series']['title'];
             if ($this->Events->EventSeries->save($series)) {
                 $this->Flash->success(__("The event series '$series->title' was saved."));
+                return $this->redirect('/');
             }
             if (!$this->Events->EventSeries->save($series)) {
                 $this->Flash->error(__("The event series '$series->title' was not saved."));

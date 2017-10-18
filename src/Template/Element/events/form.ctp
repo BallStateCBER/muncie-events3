@@ -79,9 +79,9 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <div id="datepicker" class="<?= ($multipleDatesAllowed ? 'multi' : 'single'); ?>"></div>
+                        <div id="datepicker" class="<?= ($has['series'] ? 'multi' : 'single'); ?>"></div>
                         <?php
-                        if ($multipleDatesAllowed) {
+                        if ($has['series']) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
                                 var default_date = '".$defaultDate."';
@@ -99,7 +99,7 @@
                             'type' => 'hidden'
                         ]);
                         ?>
-                        <?php if ($multipleDatesAllowed): ?>
+                        <?php if ($has['series']): ?>
                             <div class="text-muted">
                                 Select more than one date to create multiple events connected by a series.
                             </div>
