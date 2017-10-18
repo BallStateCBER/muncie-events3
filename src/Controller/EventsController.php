@@ -44,7 +44,7 @@ class EventsController extends AppController
      * determine if admin
      *
      * @param ResultSet $event need to check
-     * @return void
+     * @return redirect
      */
     private function isAdmin($event = null)
     {
@@ -774,7 +774,7 @@ class EventsController extends AppController
     /**
      * moderate method
      *
-     * @return redirect
+     * @return void
      */
     public function moderate()
     {
