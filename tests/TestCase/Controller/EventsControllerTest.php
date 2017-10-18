@@ -293,6 +293,10 @@ class EventsControllerTest extends IntegrationTestCase
             ->andWhere(['event_id' => $event->id])
             ->orWhere(['tag_id' => $customTag->id])
             ->firstOrFail();
+
+        if ($tags) {
+            $this->assertResponseSuccess();
+        }
     }
 
     /**

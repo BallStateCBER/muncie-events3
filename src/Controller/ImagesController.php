@@ -40,7 +40,8 @@ class ImagesController extends AppController
                             $newImage->filename = $filename;
                             if ($this->Images->save($newImage)) {
                                 // great success!
-                            } else {
+                            }
+                            if (!$this->Images->save($newImage)) {
                                 $this->response->statusCode(500);
                                 echo 'Error saving image';
                                 debug($newImage);
@@ -101,7 +102,8 @@ class ImagesController extends AppController
             'fields' => ['id', 'filename']
         ]);
         if ($result) {
-        } else {
+        }
+        if (!$result) {
             echo 0;
         }
         $this->viewbuilder()->setLayout('blank');

@@ -124,8 +124,8 @@ class UsersController extends AppController
      *
      * @return void
      */
-    public function confirmFacebookLogin()
-    {
+    /* public function confirmFacebookLogin()
+    { */
         /*
          * THIS IS APPARENTLY NOT DOING WHAT IT'S SUPPOSED TO.
          * $this->Auth->user('id') is coming up null even when the user
@@ -133,14 +133,14 @@ class UsersController extends AppController
          */
 
         // User was successfully logged in
-        if (true || $this->Auth->user('id')) {
+        /* if (true || $this->Auth->user('id')) {
             $this->redirect('/');
         }
 
         // User was not logged in
         //$this->Flash->error('There was an error logging you in via Facebook. Make sure that you have registered an account with Facebook or synced an account with Facebook before trying to log in to it.');
         $this->redirect($this->referer());
-    }
+    } */
 
     /**
      * log out users
