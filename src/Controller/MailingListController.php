@@ -488,9 +488,8 @@ class MailingListController extends AppController
 
                 return $this->Flash->error('Please try again, or <a href="/contact">contact support</a> for assistance.');
             }
-        } else {
-            $this->setDefaultValuesPr($recipient);
         }
+        $this->setDefaultValuesPr($recipient);
 
         $this->set(compact('recipient', 'recipientId', 'hash'));
     }
