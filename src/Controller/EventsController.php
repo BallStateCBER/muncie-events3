@@ -517,6 +517,7 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
+
                 return $this->Flash->success(__('The event has been saved.'));
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
@@ -620,6 +621,7 @@ class EventsController extends AppController
             $series->title = $this->request->data['event_series']['title'];
             if ($this->Events->EventSeries->save($series)) {
                 $this->Flash->success(__("The event series '$series->title' was saved."));
+
                 return $this->redirect('/');
             }
             if (!$this->Events->EventSeries->save($series)) {
