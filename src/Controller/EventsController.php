@@ -42,66 +42,12 @@ class EventsController extends AppController
     }
 
     /**
-     * prepareEventFormPr method
+     * setCustomTags method
      *
      * @param ResultSet $event Event entity
      * @return void
      */
-    private function prepareEventFormPr($event)
-    {
-        $userId = $this->request->session()->read('Auth.User.id');
-        $this->set([
-            'previous_locations' => $this->Events->getPastLocations(),
-            'userId' => $userId,
-        ]);
-
-        // prepare the tag helper
-        $availableTags = $this->Events->Tags->find()
-            ->where(['listed' => 1])
-            ->order(['name' => 'ASC'])
-            ->toArray();
-        $this->set(compact('availableTags'));
-
-        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
-            $hasSeries = count($event->date) > 1;
-            $hasEndTime = isset($event['time_end']);
-        } elseif ($this->request->action == 'edit') {
-            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
-            $hasEndTime = isset($event['time_end']) && $event['time_end'];
-        }
-
-        $this->set([
-            'has' => [
-                'series' => $hasSeries,
-                'end_time' => $hasEndTime,
-                'address' => isset($event['address']) && $event['address'],
-                'cost' => isset($event['cost']) && $event['cost'],
-                'ages' => isset($event['age_restriction']) && $event['age_restriction'],
-                'source' => isset($event['source']) && $event['source']
-            ]
-        ]);
-
-        // Fixes bug where midnight is saved as null
-        if (!$event['time_start']) {
-            $event['time_start'] = '00:00:00';
-        }
-        if ($this->has['end_time'] && !$event['time_end']) {
-            $event['time_end'] = '00:00:00';
-        }
-
-        // Fixes bug that prevents CakePHP from deleting all tags
-        if (null !== $this->request->getData('Tags')) {
-            $this->set('Tags', []);
-        }
-    }
-
-    /**
-     * processCustomTagsPr method
-     *
-     * @param ResultSet $event Event entity
-     * @return void
-     */
-    private function processCustomTagsPr($event)
+    private function setCustomTags($event)
     {
         if (!isset($event->customTags)) {
             return;
@@ -162,12 +108,100 @@ class EventsController extends AppController
     }
 
     /**
-     * processImageDataPr method
+     * setDatePicker method
      *
      * @param ResultSet $event Event entity
      * @return void
      */
-    private function processImageDataPr($event)
+    private function setDatePicker($event)
+    {
+        // Prepare date picker
+        if ($this->request->action == 'add') {
+            $dateFieldValues = [];
+            $preselectedDates = '[]';
+            $defaultDate = 0; // Today
+        }
+        if ($this->request->action == 'editseries') {
+            $dateFieldValues = [];
+            foreach ($event->date as $date) {
+                list($year, $month, $day) = explode('-', $date);
+                if (!isset($defaultDate)) {
+                    $defaultDate = "$month/$day/$year";
+                }
+                $dateFieldValues[] = date_create("$month/$day/$year");
+            }
+            $preselectedDates = [];
+            foreach ($dateFieldValues as $date) {
+                $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
+            }
+            $preselectedDates = implode(',', $preselectedDates);
+            $preselectedDates = '[' . $preselectedDates . ']';
+            $event->date = $preselectedDates;
+        }
+        $this->set(compact('defaultDate', 'preselectedDates'));
+    }
+
+    /**
+     * setEventForm method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
+    private function setEventForm($event)
+    {
+        $userId = $this->request->session()->read('Auth.User.id');
+        $this->set([
+            'previous_locations' => $this->Events->getPastLocations(),
+            'userId' => $userId,
+        ]);
+
+        // prepare the tag helper
+        $availableTags = $this->Events->Tags->find()
+            ->where(['listed' => 1])
+            ->order(['name' => 'ASC'])
+            ->toArray();
+        $this->set(compact('availableTags'));
+
+        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
+            $hasSeries = count($event->date) > 1;
+            $hasEndTime = isset($event['time_end']);
+        } elseif ($this->request->action == 'edit') {
+            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
+            $hasEndTime = isset($event['time_end']) && $event['time_end'];
+        }
+
+        $this->set([
+            'has' => [
+                'series' => $hasSeries,
+                'end_time' => $hasEndTime,
+                'address' => isset($event['address']) && $event['address'],
+                'cost' => isset($event['cost']) && $event['cost'],
+                'ages' => isset($event['age_restriction']) && $event['age_restriction'],
+                'source' => isset($event['source']) && $event['source']
+            ]
+        ]);
+
+        // Fixes bug where midnight is saved as null
+        if (!$event['time_start']) {
+            $event['time_start'] = '00:00:00';
+        }
+        if ($this->has['end_time'] && !$event['time_end']) {
+            $event['time_end'] = '00:00:00';
+        }
+
+        // Fixes bug that prevents CakePHP from deleting all tags
+        if (null !== $this->request->getData('Tags')) {
+            $this->set('Tags', []);
+        }
+    }
+
+    /**
+     * setImageData method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
+    private function setImageData($event)
     {
         $weight = 1;
         $place = 0;
@@ -208,40 +242,6 @@ class EventsController extends AppController
             }
         }
         $event->dirty('images', true);
-    }
-
-    /**
-     * prepareDatePickerPr method
-     *
-     * @param ResultSet $event Event entity
-     * @return void
-     */
-    private function prepareDatePickerPr($event)
-    {
-        // Prepare date picker
-        if ($this->request->action == 'add') {
-            $dateFieldValues = [];
-            $preselectedDates = '[]';
-            $defaultDate = 0; // Today
-        }
-        if ($this->request->action == 'editseries') {
-            $dateFieldValues = [];
-            foreach ($event->date as $date) {
-                list($year, $month, $day) = explode('-', $date);
-                if (!isset($defaultDate)) {
-                    $defaultDate = "$month/$day/$year";
-                }
-                $dateFieldValues[] = date_create("$month/$day/$year");
-            }
-            $preselectedDates = [];
-            foreach ($dateFieldValues as $date) {
-                $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
-            }
-            $preselectedDates = implode(',', $preselectedDates);
-            $preselectedDates = '[' . $preselectedDates . ']';
-            $event->date = $preselectedDates;
-        }
-        $this->set(compact('defaultDate', 'preselectedDates'));
     }
 
     /**
@@ -294,9 +294,9 @@ class EventsController extends AppController
         $event = $this->Events->newEntity();
 
         // prepare form
-        $this->prepareEventFormPr($event);
-        $this->processImageDataPr($event);
-        $this->prepareDatePickerPr($event);
+        $this->setEventForm($event);
+        $this->setImageData($event);
+        $this->setDatePicker($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
@@ -307,7 +307,7 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
-                $this->processCustomTagsPr($event);
+                $this->setCustomTags($event);
                 $event->date = new Date($this->request->data['date']);
                 $event->series_id = null;
                 if ($this->Events->save($event, [
@@ -335,7 +335,7 @@ class EventsController extends AppController
                     $newDate = new Date($date);
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
-                    $this->processCustomTagsPr($event);
+                    $this->setCustomTags($event);
                     $event->date = $newDate;
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
@@ -493,16 +493,16 @@ class EventsController extends AppController
             }
         }
         // prepare form
-        $this->prepareEventFormPr($event);
-        $this->processImageDataPr($event);
-        $this->prepareDatePickerPr($event);
+        $this->setEventForm($event);
+        $this->setImageData($event);
+        $this->setDatePicker($event);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // make sure the end time stays null if it needs to
             $this->uponFormSubmissionPr();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->date = strtotime($this->request->data['date']);
-            $this->processCustomTagsPr($event);
+            $this->setCustomTags($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
@@ -553,8 +553,8 @@ class EventsController extends AppController
         ]);
 
         $event->date = $oldDates;
-        $this->prepareEventFormPr($event);
-        $this->prepareDatePickerPr($event);
+        $this->setEventForm($event);
+        $this->setDatePicker($event);
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
@@ -601,7 +601,7 @@ class EventsController extends AppController
                 $event->time_start = new Time($time);
                 $event->title = $this->request->data['title'];
 
-                $this->processCustomTagsPr($event);
+                $this->setCustomTags($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']
                 ])) {
