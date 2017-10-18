@@ -32,15 +32,16 @@ class MailingListController extends AppController
      *
      * @param ResultSet $events Event entities
      * @param string $recipient mailing list recipient
-     * @param bool|false $testing whether or not this is testing mode
+     * @param bool $testing whether or not this is testing mode
      * @return $result
      */
-    private function sendDailyEmailPr($events, $recipient, $testing = false)
+    private function sendDailyEmailPr($events, $recipient, $testing)
     {
         list($result, $message) = $this->MailingList->sendDaily($recipient, $events, $testing);
         if ($result) {
             $this->Flash->success($message);
-        } else {
+        }
+        if (!$result) {
             $this->Flash->error($message);
         }
 
@@ -52,15 +53,16 @@ class MailingListController extends AppController
      *
      * @param ResultSet $events Event entities
      * @param string $recipient mailing list recipient
-     * @param bool|false $testing whether or not this is testing mode
+     * @param bool $testing whether or not this is testing mode
      * @return $result
      */
-    private function sendWeeklyEmailPr($events, $recipient, $testing = false)
+    private function sendWeeklyEmailPr($events, $recipient, $testing)
     {
         list($result, $message) = $this->MailingList->sendWeekly($recipient, $events, $testing);
         if ($result) {
             $this->Flash->success($message);
-        } else {
+        }
+        if (!$result) {
             $this->Flash->error($message);
         }
 
@@ -275,7 +277,8 @@ class MailingListController extends AppController
             if ($this->MailingList->save($mailingList)) {
                 $this->addCategoryJoins($mailingList);
                 $this->Flash->success(__('The mailing list has been saved.'));
-            } else {
+            }
+            if (!$this->MailingList->save($mailingList)) {
                 $this->Flash->error(__('The mailing list could not be saved. Please, try again.'));
             }
         }
@@ -332,7 +335,8 @@ class MailingListController extends AppController
 
                 if ($this->MailingList->save($mailingList)) {
                     $this->Flash->success("$address added.");
-                } else {
+                }
+                if (!$this->MailingList->save($mailingList)) {
                     $retainedAddresses[] = $address;
                     $this->Flash->error("Error adding $address.");
                 }
@@ -393,9 +397,10 @@ class MailingListController extends AppController
                 $errorFound = true;
                 $this->MailingList->validationErrors['email'] = 'Cannot change to that email address because another subscriber is currently signed up with it.';
             }
+        }
 
         // If creating a new subscription
-        } else {
+        if (!$recipientId) {
             $emailInUse = $this->MailingList->find()
                 ->where(['email' => $this->request->data['email']])
                 ->count();
@@ -404,9 +409,9 @@ class MailingListController extends AppController
                 $this->MailingList->validationErrors['email'] = 'That address is already subscribed to the mailing list.';
             }
         }
-        $allCategoriesSelected = ($this->request->data['event_categories'] == 'all');
-        $noCategoriesSelected = empty($this->request->data['selected_categories']);
-        if (! $allCategoriesSelected && $noCategoriesSelected) {
+        $allCategories = ($this->request->data['event_categories'] == 'all');
+        $noCategories = empty($this->request->data['selected_categories']);
+        if (!$allCategories && $noCategories) {
             $errorFound = true;
             $this->set('categories_error', 'At least one category must be selected.');
         }

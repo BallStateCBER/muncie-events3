@@ -537,6 +537,13 @@ class EventsController extends AppController
         if (!$eventSeries) {
             return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
         }
+        if ($this->request->session()->read('Auth.User.role') != 'admin') {
+            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
+                $this->Flash->error(__('You are not authorized to view this page.'));
+
+                return $this->redirect('/');
+            }
+        }
         $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
             'contain' => ['EventSeries']

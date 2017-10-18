@@ -626,7 +626,7 @@ class WidgetsController extends AppController
             }
         }
 
-        $options = $_GET;
+        $options = filter_input_array(INPUT_GET);
         $filters = $this->Events->getValidFilters($options);
 
         if (!empty($options)) {
@@ -705,7 +705,7 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y') . date('m') . date('j');
 
-        $options = $_GET;
+        $options = filter_input_array(INPUT_GET);
         if (!isset($options)) {
             $options = [];
         }
