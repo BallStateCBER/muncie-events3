@@ -122,7 +122,7 @@ class TagsController extends AppController
      */
     public function autoComplete()
     {
-        $stringToComplete = $_GET['term'];
+        $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
 
         // Tag.name will be compared via LIKE to each of these,
@@ -367,7 +367,8 @@ class TagsController extends AppController
         $position = intval($_POST['position']);
         if ($position == 0) {
             $this->Tags->moveUp($tag, true);
-        } else {
+        }
+        if ($position != 0) {
             $count = $this->Tags->childCount($parent, true);
             $delta = $count - $position - 1;
             if ($delta > 0) {
@@ -661,7 +662,8 @@ class TagsController extends AppController
         if ($class == 'success') {
             if ($this->Tags->delete($removedTag)) {
                 $message .= "Removed \"$removedTagName\".";
-            } else {
+            }
+            if (!$this->Tags->delete($removedTag)) {
                 $message .= "Error trying to delete \"$removedTagName\" from the database. ";
                 $class = 'error';
             }
