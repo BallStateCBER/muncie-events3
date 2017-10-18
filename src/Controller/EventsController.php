@@ -701,27 +701,7 @@ class EventsController extends AppController
             $nextStartDate = date('Y-m-d');
         }
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
-        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-        if (empty($events)) {
-            $endDate = strtotime($nextStartDate . ' + 4 weeks');
-            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-            if (empty($events)) {
-                $endDate = strtotime($nextStartDate . ' + 8 weeks');
-                $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                if (empty($events)) {
-                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
-                    $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                    if (empty($events)) {
-                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
-                        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                        if (empty($events)) {
-                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
-                            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                        }
-                    }
-                }
-            }
-        }
+        $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);
         $this->indexEvents($events);
     }
 

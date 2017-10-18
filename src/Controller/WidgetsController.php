@@ -604,53 +604,13 @@ class WidgetsController extends AppController
             $nextStartDate = date('Y-m-d');
         }
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
-        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-        if (empty($events)) {
-            $endDate = strtotime($nextStartDate . ' + 4 weeks');
-            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-            if (empty($events)) {
-                $endDate = strtotime($nextStartDate . ' + 8 weeks');
-                $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                if (empty($events)) {
-                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
-                    $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                    if (empty($events)) {
-                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
-                        $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                        if (empty($events)) {
-                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
-                            $events = $this->Events->getRangeEvents($nextStartDate, $endDate);
-                        }
-                    }
-                }
-            }
-        }
+        $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);
 
-        $options = filter_input_array(INPUT_GET);
+        $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
 
         if (!empty($options)) {
-            $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-            if (empty($events)) {
-                $endDate = strtotime($nextStartDate . ' + 4 weeks');
-                $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-                if (empty($events)) {
-                    $endDate = strtotime($nextStartDate . ' + 8 weeks');
-                    $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-                    if (empty($events)) {
-                        $endDate = strtotime($nextStartDate . ' + 16 weeks');
-                        $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-                        if (empty($events)) {
-                            $endDate = strtotime($nextStartDate . ' + 32 weeks');
-                            $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-                            if (empty($events)) {
-                                $endDate = strtotime($nextStartDate . ' + 64 weeks');
-                                $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-                            }
-                        }
-                    }
-                }
-            }
+            $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, $options);
         }
 
         $this->indexEvents($events);
@@ -705,7 +665,7 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y') . date('m') . date('j');
 
-        $options = filter_input_array(INPUT_GET);
+        $options = $_GET;
         if (!isset($options)) {
             $options = [];
         }
@@ -767,7 +727,7 @@ class WidgetsController extends AppController
     {
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $day = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $options = filter_input_array(INPUT_GET);
+        $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
         $this->set([
