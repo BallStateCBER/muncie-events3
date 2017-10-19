@@ -550,6 +550,7 @@ class EventsController extends AppController
 
                 return $this->Flash->success(__('The event has been saved.'));
             }
+            
             return $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
     }
