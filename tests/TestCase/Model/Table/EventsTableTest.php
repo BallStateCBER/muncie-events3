@@ -188,7 +188,7 @@ class EventsTableTest extends TestCase
     {
         $count = $this->Events->getUnapproved();
 
-        $this->assertEquals(7, $count);
+        $this->assertEquals(5, $count);
     }
 
     public function testGetNextStartDate()
@@ -234,6 +234,7 @@ class EventsTableTest extends TestCase
         $event->date = '1992-01-28';
         $event->time_start = strtotime('Now');
         $event->location = 'Placeholder palace';
+        $event->address = '1234 Counting St';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
 
@@ -244,7 +245,7 @@ class EventsTableTest extends TestCase
 
         $locations = $this->Events->getPastLocations();
 
-        $this->assertContains('Placeholder palace', $locations);
+        $this->assertContains('1234 Counting St', $locations);
     }
 
     public function testGetAllUpcomingEventCounts()

@@ -473,13 +473,13 @@ class EventsTable extends Table
     {
         $locations = $this->find();
         $locations
-            ->select(['location'])
-            ->where(['date <' => date('Y-m-d')])
-            ->group(['location'])
-            ->toArray();
+            ->select(['location', 'address'])
+            ->where(['date <' => date('Y-m-d')]);
         foreach ($locations as $location) {
-            $retval[] = $location->location;
+            $locs[] = $location->location;
+            $adds[] = $location->address;
         }
+        $retval = array_combine($locs, $adds);
 
         return $retval;
     }

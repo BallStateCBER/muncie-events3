@@ -49,19 +49,27 @@ class EventsController extends AppController
     private function isAdmin($event = null)
     {
         if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($this->request->action == 'edit' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You are not authorized to view this page.'));
+            if (isset($event)) {
+                if ($this->request->action == 'delete' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
 
-                return $this->redirect('/');
+                    return $this->redirect('/');
+                }
+
+                if ($this->request->action == 'edit' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
+
+                    return $this->redirect('/');
+                }
+
+                if ($this->request->action == 'editseries' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
+
+                    return $this->redirect('/');
+                }
             }
 
-            if ($this->request->action == 'editSeries' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You are not authorized to view this page.'));
-
-                return $this->redirect('/');
-            }
-
-            $adminActions = ['approve', 'moderate', 'delete'];
+            $adminActions = ['approve', 'moderate'];
             foreach ($adminActions as $action) {
                 if ($this->request->action == $action) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
@@ -152,7 +160,7 @@ class EventsController extends AppController
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
-        if ($this->request->action == 'editSeries') {
+        if ($this->request->action == 'editseries') {
             $dateFieldValues = [];
             foreach ($event->date as $date) {
                 list($year, $month, $day) = explode('-', $date);
@@ -185,7 +193,7 @@ class EventsController extends AppController
     {
         $userId = $this->request->session()->read('Auth.User.id');
         $this->set([
-            'previous_locations' => $this->Events->getPastLocations(),
+            'previousLocations' => $this->Events->getPastLocations(),
             'userId' => $userId,
         ]);
 
@@ -196,12 +204,18 @@ class EventsController extends AppController
             ->toArray();
         $this->set(compact('availableTags'));
 
-        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
+        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
             $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
-            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
+            $hasSeries = isset($event['series_id']);
             $hasEndTime = isset($event['time_end']) && $event['time_end'];
+        }
+        if (!isset($hasSeries)) {
+            $hasSeries = false;
+        }
+        if (!isset($hasEndTime)) {
+            $hasEndTime = false;
         }
 
         $this->set([
@@ -346,9 +360,11 @@ class EventsController extends AppController
                 $event->date = new Date($this->request->data['date']);
                 $event->series_id = null;
                 if ($this->Events->save($event, [
-                    'associated' => ['EventSeries', 'Images', 'Tags']
+                    'associated' => ['Images', 'Tags']
                 ])) {
                     $this->Flash->success(__('The event has been saved.'));
+
+                    return $this->redirect(['action' => 'index']);
                 }
             }
 
@@ -537,20 +553,23 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
+                $this->Flash->success(__('The event has been saved.'));
 
-                return $this->Flash->success(__('The event has been saved.'));
+                return $this->redirect('/');
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
+            return $this->redirect('/');
         }
     }
 
     /**
-     * editSeries method
+     * editseries method
      *
      * @param int $seriesId id for series
      * @return Cake\View\Helper\FlashHelper
      */
-    public function editSeries($seriesId)
+    public function editseries($seriesId)
     {
         // Get information about series
         $eventSeries = $this->Events->EventSeries->get($seriesId);
@@ -1092,7 +1111,7 @@ class EventsController extends AppController
     private function uponFormSubmissionPr()
     {
         // kill the end time if it hasn't been set
-        if (!$this->has['end_time']) {
+        if (!isset($this->request->data['has_end_time'])) {
             $this->request->data['time_end'] = null;
         }
 

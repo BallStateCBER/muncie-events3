@@ -157,11 +157,11 @@ class EventSeriesControllerTest extends IntegrationTestCase
     {
         $series = $this->EventSeries->find()
             ->where(['title' => 'Placeholder Event Series'])
-            ->first();
+            ->firstOrFail();
 
         $this->session(['Auth.User.id' => 74]);
 
-        $this->get("/event/editseries/$series->id");
+        $this->get("/events/editseries/$series->id");
 
         $this->assertResponseOk();
 

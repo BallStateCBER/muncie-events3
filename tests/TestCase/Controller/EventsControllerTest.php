@@ -46,14 +46,23 @@ class EventsControllerTest extends IntegrationTestCase
     public function testAddingEventAnonymously()
     {
         $this->get('/events/add');
-        $this->assertResponseOk();
+        $this->assertResponseSuccess();
 
-        $event = [
+        $newData = [
             'title' => 'Anonymous event!',
             'category_id' => 13,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                      'hour' => '12',
+                      'minute' => '00',
+                      'meridian' => 'am'
+             ],
+            'time_end' => [
+                      'hour' => '01',
+                      'minute' => '00',
+                      'meridian' => 'am'
+             ],
+            'has_end_time' => 1,
             'location' => 'Mr. Placeholder\'s Place',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',
@@ -63,11 +72,11 @@ class EventsControllerTest extends IntegrationTestCase
             'source' => 'Placeholder Digest Tri-Weekly'
         ];
 
-        $this->post('/events/add', $event);
+        $this->post('/events/add', $newData);
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
-            ->where(['title' => $event['title']])
+            ->where(['title' => $newData['title']])
             ->first();
 
         if ($event->id) {
@@ -104,14 +113,23 @@ class EventsControllerTest extends IntegrationTestCase
     {
         $this->session(['Auth.User.id' => 74]);
         $this->get('/events/add');
-        $this->assertResponseOk();
+        $this->assertResponseSuccess();
 
-        $event = [
+        $newData = [
             'title' => 'Placeholder Party',
             'category_id' => 13,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                      'hour' => '12',
+                      'minute' => '00',
+                      'meridian' => 'am'
+             ],
+            'time_end' => [
+                      'hour' => '01',
+                      'minute' => '00',
+                      'meridian' => 'am'
+             ],
+            'has_end_time' => 1,
             'location' => 'Mr. Placeholder\'s Place',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',
@@ -126,11 +144,11 @@ class EventsControllerTest extends IntegrationTestCase
             ]
         ];
 
-        $this->post('/events/add', $event);
+        $this->post('/events/add', $newData);
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
-            ->where(['title' => $event['title']])
+            ->where(['title' => $newData['title']])
             ->first();
 
         if ($event->id) {
@@ -162,7 +180,7 @@ class EventsControllerTest extends IntegrationTestCase
         $this->session(['Auth.User.id' => 1]);
         $this->session(['Auth.User.role' => 'admin']);
         $this->get('/events/add');
-        $this->assertResponseOk();
+        $this->assertResponseSuccess();
 
         $event = [
             'title' => 'Get better soon Jessica!',
@@ -231,7 +249,7 @@ class EventsControllerTest extends IntegrationTestCase
 
         $this->get("/event/$event->id");
 
-        $this->assertResponseOk();
+        $this->assertResponseSuccess();
         $this->assertResponseContains($event->title);
         $this->assertResponseContains($event->description);
         $this->assertResponseContains($event->location);
@@ -313,6 +331,7 @@ class EventsControllerTest extends IntegrationTestCase
         $this->session(['Auth.User.id' => 75]);
 
         $this->get("/event/edit/$event->id");
+
         $this->assertRedirect('/');
     }
 

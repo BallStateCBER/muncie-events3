@@ -1,5 +1,5 @@
 <?php
-    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'editseries');
+    $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'editseries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
@@ -79,9 +79,9 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <div id="datepicker" class="<?= ($has['series'] ? 'multi' : 'single'); ?>"></div>
+                        <div id="datepicker" class='<?= $multipleDatesAllowed ? 'multi' : 'single'; ?>'></div>
                         <?php
-                        if ($has['series']) {
+                        if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
                                 var default_date = '".$defaultDate."';
@@ -99,7 +99,7 @@
                             'type' => 'hidden'
                         ]);
                         ?>
-                        <?php if ($has['series']): ?>
+                        <?php if ($multipleDatesAllowed): ?>
                             <div class="text-muted">
                                 Select more than one date to create multiple events connected by a series.
                             </div>
@@ -344,7 +344,7 @@
 <?= $this->Form->end() ?>
 <?php
     $previous_locations_for_autocomplete = [];
-    foreach ($previous_locations as $location => $address) {
+    foreach ($previousLocations as $location => $address) {
         $previous_locations_for_autocomplete[] = [
             'label' => $location,
             'value' => $address
@@ -352,9 +352,6 @@
     }
     $this->Js->buffer('
         eventForm.previousLocations = '.$this->Js->object($previous_locations_for_autocomplete).';
-        setupEventForm();
-    ');
-    $this->Js->buffer('
         setupEventForm();
     ');
 ?>
