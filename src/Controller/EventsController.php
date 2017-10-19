@@ -126,16 +126,16 @@ class EventsController extends AppController
 
             // Get ID of existing tag, if it exists
             $tagId = $this->Events->Tags->find()
-                     ->select('id')
-                     ->where(['name' => $ct])
-                     ->first();
+                 ->select('id')
+                 ->where(['name' => $ct])
+                 ->first();
 
             // Include this tag if it exists and is selectable
             if ($tagId) {
                 $selectable = $this->Events->Tags->find()
-                              ->select('selectable')
-                              ->where(['id' => $tagId->id])
-                              ->toArray();
+                    ->select('selectable')
+                    ->where(['id' => $tagId->id])
+                    ->toArray();
                 if (!$selectable) {
                     continue;
                 }
@@ -329,15 +329,15 @@ class EventsController extends AppController
                 $seriesId = $event['event_series']['id'];
                 $seriesToApprove[$seriesId] = true;
             }
-                // approve & publish it
+            // approve & publish it
             $event['approved_by'] = $this->request->session()->read('Auth.User.id');
             $event['published'] = 1;
 
             $url = Router::url([
-                    'controller' => 'events',
-                    'action' => 'view',
-                    'id' => $id
-                ]);
+                'controller' => 'events',
+                'action' => 'view',
+                'id' => $id
+            ]);
             if ($this->Events->save($event)) {
                 $this->Flash->success("Event #$id approved <a href=\"$url\">Go to event page</a>");
             }
@@ -435,14 +435,14 @@ class EventsController extends AppController
         }
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
-            ])
+        ])
             ->first();
         // the app breaks if there is a 2-week gap in between events
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
         $events = $this->Events
             ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => 'ASC']
             ])
             ->where(['date >=' => $nextStartDate])
             ->andWhere(['category_id' => $category->id])
@@ -585,7 +585,7 @@ class EventsController extends AppController
         $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
             'contain' => ['EventSeries']
-            ])
+        ])
             ->order(['date' => 'ASC'])
             ->toArray();
 
@@ -708,9 +708,9 @@ class EventsController extends AppController
     {
         $events = $this->Events
             ->find('all', [
-            'conditions' => ['date' => $date],
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+                'conditions' => ['date' => $date],
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => 'DESC']
             ])
             ->toArray();
         $this->indexEvents($events);
@@ -763,12 +763,12 @@ class EventsController extends AppController
 
         $listing = $this->Events
             ->find('all', [
-            'conditions' => [
-                'location' => $location,
-                "date $date" => date('Y-m-d')
-            ],
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => $dir]
+                'conditions' => [
+                    'location' => $location,
+                    "date $date" => date('Y-m-d')
+                ],
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $dir]
             ]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
@@ -808,8 +808,8 @@ class EventsController extends AppController
         // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => 'ASC']
             ])
             ->where(['Events.approved_by' => null])
             ->orWhere(['Events.published' => '0'])
@@ -855,12 +855,12 @@ class EventsController extends AppController
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $events = $this->Events
             ->find('all', [
-            'conditions' => [
-                'MONTH(date)' => $month,
-                'YEAR(date)' => $year
+                'conditions' => [
+                    'MONTH(date)' => $month,
+                    'YEAR(date)' => $year
                 ],
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'asc']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => 'asc']
             ])
             ->toArray();
         if ($events) {
@@ -911,7 +911,8 @@ class EventsController extends AppController
 
         $events = $this->Events->find('search', [
             'search' => $filter,
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']])
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
+        ])
             ->where([$dateQuery => $dateWhen])
             ->order(['date' => $dir]);
 
@@ -939,12 +940,14 @@ class EventsController extends AppController
             $this->passedArgs['direction'] = ($direction == 'future') ? 'past' : 'future';
             if ($this->passedArgs['direction'] == 'past') {
                 $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter])
+                    'search' => $filter
+                ])
                     ->where(['date <' => date('Y-m-d')])
                     ->count();
             } elseif ($this->passedArgs['direction'] == 'future') {
                 $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter])
+                    'search' => $filter
+                ])
                     ->where(['date >=' => date('Y-m-d')])
                     ->count();
             }
@@ -952,7 +955,8 @@ class EventsController extends AppController
         }
 
         $tags = $this->Events->Tags->find('search', [
-            'search' => $filter]);
+            'search' => $filter
+        ]);
         $tagCount = null;
         foreach ($tags as $tag) {
             if ($tag->id) {
