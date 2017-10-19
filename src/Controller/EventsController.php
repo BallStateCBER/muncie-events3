@@ -30,8 +30,6 @@ class EventsController extends AppController
     public function initialize()
     {
         parent::initialize();
-        // you don't need to log in to view events,
-        // just to add & edit them
         $this->Auth->allow([
             'add',
             'category',
@@ -473,7 +471,6 @@ class EventsController extends AppController
             $dates["$month-$year"][] = $day;
         }
         $this->set(compact('dates'));
-        #$this->viewBuilder()->setLayout('blank');
     }
 
     /**
