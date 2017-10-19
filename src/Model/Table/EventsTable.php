@@ -480,6 +480,7 @@ class EventsTable extends Table
             $adds[] = $location->address;
         }
         $retval = array_combine($locs, $adds);
+        ksort($retval);
 
         return $retval;
     }
