@@ -8,12 +8,12 @@
     </p>
 <?php else: ?>
     <ul>
-        <?php foreach ($pastLocations as $pastLocation): ?>
+        <?php foreach ($pastLocations as $location => $address): ?>
             <li>
-                <?php echo $this->Html->link($pastLocation, [
+                <?php echo $this->Html->link($location, [
                     'controller' => 'events',
                     'action' => 'location',
-                    $pastLocation,
+                    $location,
                     'past'
                 ]); ?>
             </li>
