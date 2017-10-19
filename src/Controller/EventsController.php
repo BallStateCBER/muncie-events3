@@ -52,7 +52,7 @@ class EventsController extends AppController
     }
 
     /**
-     * determine if admin
+     * Determine if the user is admin
      *
      * @param ResultSet $event need to check
      * @return redirect
@@ -93,7 +93,7 @@ class EventsController extends AppController
     }
 
     /**
-     * setCustomTags method
+     * Processes custom tag input and populates $this->request->data['data']['Tags']
      *
      * @param ResultSet $event Event entity
      * @return void
@@ -159,7 +159,7 @@ class EventsController extends AppController
     }
 
     /**
-     * setDatePicker method
+     * Sends the variables $dateFieldValues, $defaultDate, and $preselectedDates to the view
      *
      * @param ResultSet $event Event entity
      * @return void
@@ -196,7 +196,7 @@ class EventsController extends AppController
     }
 
     /**
-     * setEventForm method
+     * Sets various variables used in the event form
      *
      * @param ResultSet $event Event entity
      * @return void
@@ -209,7 +209,7 @@ class EventsController extends AppController
             'userId' => $userId,
         ]);
 
-        // prepare the tag helper
+        // Prepare the tag helper
         $availableTags = $this->Events->Tags->find()
             ->where(['listed' => 1])
             ->order(['name' => 'ASC'])
@@ -256,7 +256,7 @@ class EventsController extends AppController
     }
 
     /**
-     * setImageData method
+     * Creates and/or removes associations between this event and its new/deleted images
      *
      * @param ResultSet $event Event entity
      * @return void
@@ -305,7 +305,7 @@ class EventsController extends AppController
     }
 
     /**
-     * approve method
+     * Marks the specified event as approved by an administrator
      *
      * @param int|null $id Event entity id
      * @return void
@@ -346,7 +346,7 @@ class EventsController extends AppController
     }
 
     /**
-     * add method
+     * Adds a new event
      *
      * @return redirect
      */
@@ -367,7 +367,7 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Submit an Event');
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $this->uponFormSubmissionPr();
+            $this->uponFormSubmission();
 
             // count how many dates have been picked
             $dateInput = strlen($this->request->data['date']);
@@ -422,7 +422,7 @@ class EventsController extends AppController
     }
 
     /**
-     * category method
+     * Displays events in the specified category
      *
      * @param string $slug Category entity slug
      * @param string|null $nextStartDate param for Events
@@ -437,7 +437,7 @@ class EventsController extends AppController
             'conditions' => ['slug' => $slug]
         ])
             ->first();
-        // the app breaks if there is a 2-week gap in between events
+
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
         $events = $this->Events
             ->find('all', [
@@ -474,7 +474,7 @@ class EventsController extends AppController
     }
 
     /**
-     * day method
+     * Shows the events taking place on the specified day
      *
      * @param string|null $month param for Events
      * @param string|null $day param for Events
@@ -504,7 +504,7 @@ class EventsController extends AppController
     }
 
     /**
-     * delete method
+     * Deletes an event
      *
      * @param int|null $id id for series
      * @return redirect
@@ -524,7 +524,7 @@ class EventsController extends AppController
     }
 
     /**
-     * edit method
+     * Edits an event
      *
      * @param int $id id for series
      * @return redirect
@@ -536,7 +536,8 @@ class EventsController extends AppController
         ]);
 
         $this->isAdmin($event);
-        // prepare form
+
+        // Prepare form
         $this->setEventForm($event);
         $this->setImageData($event);
         $this->setDatePicker($event);
@@ -549,8 +550,8 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Edit Event');
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            // make sure the end time stays null if it needs to
-            $this->uponFormSubmissionPr();
+            // Make sure the end time stays null if it needs to
+            $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->date = strtotime($this->request->data['date']);
             $this->setCustomTags($event);
@@ -568,7 +569,7 @@ class EventsController extends AppController
     }
 
     /**
-     * editseries method
+     * Edits the basic information about an event series
      *
      * @param int $seriesId id for series
      * @return Cake\View\Helper\FlashHelper
@@ -617,7 +618,7 @@ class EventsController extends AppController
         $this->render('/Element/events/form');
 
         if ($this->request->is('put') || $this->request->is('post')) {
-            // save every event
+            // Save every event
             $newDates = explode(',', $this->request->data['date']);
             foreach ($dates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
@@ -687,9 +688,9 @@ class EventsController extends AppController
     }
 
     /**
-     * getAddress method
+     * Returns an address associated with the specified location name
      *
-     * @param  string $location we need address
+     * @param string $location we need address
      * @return void
      */
     public function getAddress($location = '')
@@ -699,7 +700,7 @@ class EventsController extends AppController
     }
 
     /**
-     * getFilteredEventsOnDates method
+     * Gets events on the selected date and runs indexEvents()
      *
      * @param string $date date object
      * @return void
@@ -717,7 +718,7 @@ class EventsController extends AppController
     }
 
     /**
-     * ics method
+     * Returns an iCalendar file
      *
      * @return \Cake\Controller\Controller::render('/Events/ics/view')
      */
@@ -731,7 +732,7 @@ class EventsController extends AppController
     }
 
     /**
-     * index method
+     * Shows a page of events
      *
      * @param string|null $nextStartDate next start date for Event entity
      * @return void
@@ -747,7 +748,7 @@ class EventsController extends AppController
     }
 
     /**
-     * location method
+     * Shows events taking place at the specified location, optionally limited to past or future events
      *
      * @param string|null $location location of Event entity
      * @param string|null $direction of index
@@ -798,7 +799,7 @@ class EventsController extends AppController
     }
 
     /**
-     * moderate method
+     * Shows events needing administrator approval
      *
      * @return void
      */
@@ -815,8 +816,8 @@ class EventsController extends AppController
             ->orWhere(['Events.published' => '0'])
             ->toArray();
 
-        // Find sets of identical events (belonging to the same series
-        // and with the same modified date) and remove all but the first
+        /* Find sets of identical events (belonging to the same series and with the same modified date)
+         * and remove all but the first */
         $identicalSeries = [];
         foreach ($unapproved as $k => $event) {
             if (empty($event['EventsSeries'])) {
@@ -839,7 +840,7 @@ class EventsController extends AppController
     }
 
     /**
-     * month method
+     * Shows all events for the specified month
      *
      * @param string|null $month month of Event
      * @param string|null $year year of Event
@@ -876,7 +877,7 @@ class EventsController extends AppController
     }
 
     /**
-     * pastLocations method
+     * Shows all of the locations associated with past events
      *
      * @return void
      */
@@ -891,7 +892,7 @@ class EventsController extends AppController
     }
 
     /**
-     * search method
+     * Shows events that match a provided search term
      *
      * @return void
      */
@@ -976,7 +977,7 @@ class EventsController extends AppController
     }
 
     /**
-     * searchAutocomplete method
+     * Provides an autocomplete suggestion for a partial search term
      *
      * @return void
      */
@@ -985,8 +986,7 @@ class EventsController extends AppController
         $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
 
-        // name will be compared via LIKE to each of these,
-        // in order, until $limit tags are found.
+        // The search term will be compared via LIKE to each of these, in order, until $limit tags are found
         $likeConditions = [
             $stringToComplete,
             $stringToComplete . ' %',
@@ -1032,7 +1032,7 @@ class EventsController extends AppController
     }
 
     /**
-     * tag method
+     * Shows the events with a specified tag
      *
      * @param string|null $slug tag slug
      * @param string|null $direction of results
@@ -1093,7 +1093,7 @@ class EventsController extends AppController
     }
 
     /**
-     * today method
+     * Shows the events taking place today
      *
      * @return void
      */
@@ -1103,7 +1103,7 @@ class EventsController extends AppController
     }
 
     /**
-     * tomorrow method
+     * Shows the events taking place tomorrow
      *
      * @return void
      */
@@ -1115,18 +1115,18 @@ class EventsController extends AppController
     }
 
     /**
-     * uponFormSubmissionPr method
+     * Conditionally removes time_end and auto-approves the submitted event
      *
      * @return void
      */
-    private function uponFormSubmissionPr()
+    private function uponFormSubmission()
     {
-        // kill the end time if it hasn't been set
+        // Kill the end time if it hasn't been set
         if (!isset($this->request->data['has_end_time'])) {
             $this->request->data['time_end'] = null;
         }
 
-        // auto-approve if posted by an admin
+        // Auto-approve if posted by an admin
         $userId = $this->request->session()->read('Auth.User.id') ?: null;
         $this->request->data['user_id'] = $userId;
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
@@ -1136,7 +1136,7 @@ class EventsController extends AppController
     }
 
     /**
-     * View method
+     * Shows a specific event
      *
      * @param string|null $id Event id.
      * @return void
