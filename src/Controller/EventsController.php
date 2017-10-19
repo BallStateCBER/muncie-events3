@@ -33,7 +33,20 @@ class EventsController extends AppController
         // you don't need to log in to view events,
         // just to add & edit them
         $this->Auth->allow([
-            'add', 'category', 'datepickerPopulatedDates', 'day', 'ics', 'index', 'location', 'month', 'search', 'searchAutocomplete', 'tag', 'today', 'tomorrow', 'view'
+            'add',
+            'category',
+            'datepickerPopulatedDates',
+            'day',
+            'ics',
+            'index',
+            'location',
+            'month',
+            'search',
+            'searchAutocomplete',
+            'tag',
+            'today',
+            'tomorrow',
+            'view'
         ]);
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
@@ -50,19 +63,20 @@ class EventsController extends AppController
     {
         if ($this->request->session()->read('Auth.User.role') != 'admin') {
             if (isset($event)) {
-                if ($this->request->action == 'delete' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                $isAuthor = $event->user_id === $this->request->session()->read('Auth.User.id');
+                if ($this->request->action == 'delete' && !$isAuthor) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
 
                     return $this->redirect('/');
                 }
 
-                if ($this->request->action == 'edit' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                if ($this->request->action == 'edit' && !$isAuthor) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
 
                     return $this->redirect('/');
                 }
 
-                if ($this->request->action == 'editseries' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                if ($this->request->action == 'editseries' && !$isAuthor) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
 
                     return $this->redirect('/');
@@ -327,7 +341,7 @@ class EventsController extends AppController
                     'id' => $id
                 ]);
             if ($this->Events->save($event)) {
-                $this->Flash->success(__("Event #$id approved <a href=$url>Go to event page</a>"), ['escape' => false]);
+                $this->Flash->success("Event #$id approved <a href=\"$url\">Go to event page</a>");
             }
         }
         $this->redirect($this->referer());
@@ -567,7 +581,9 @@ class EventsController extends AppController
         // Get information about series
         $eventSeries = $this->Events->EventSeries->get($seriesId);
         if (!$eventSeries) {
-            return $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
+            $msg = 'Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.';
+
+            return $this->Flash->error($msg);
         }
         $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
@@ -635,7 +651,8 @@ class EventsController extends AppController
                     if (isset($this->request->data[$option])) {
                         if ($option = 'time_end') {
                             $time = $this->request->data['time_end'];
-                            $time = date('H:i:s', strtotime($time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian']));
+                            $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
+                            $time = date('H:i:s', strtotime($timeString));
                             $event->time_end = new Time($time);
                             continue;
                         }
@@ -644,7 +661,8 @@ class EventsController extends AppController
                 }
                 $event->series_id = $seriesId;
                 $time = $this->request->data['time_start'];
-                $time = date('H:i:s', strtotime($time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian']));
+                $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
+                $time = date('H:i:s', strtotime($timeString));
                 $event->time_start = new Time($time);
                 $event->title = $this->request->data['title'];
 
