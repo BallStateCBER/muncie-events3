@@ -122,7 +122,7 @@ class EventsController extends AppController
             if ($tagId) {
                 $selectable = $this->Events->Tags->find()
                               ->select('selectable')
-                              ->where(['id' => $tagId])
+                              ->where(['id' => $tagId->id])
                               ->toArray();
                 if (!$selectable) {
                     continue;
@@ -135,7 +135,7 @@ class EventsController extends AppController
                 $newTag->name = $ct;
                 $newTag->user_id = $this->Auth->user('id');
                 $newTag->parent_id = 1012; // 'Unlisted' group
-                $newTag->listed = 0;
+                $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
 
                 $this->Events->Tags->save($newTag);
@@ -347,6 +347,13 @@ class EventsController extends AppController
         $this->setImageData($event);
         $this->setDatePicker($event);
 
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        $eventseries = $this->Events->EventSeries->find('list');
+        $this->set(compact('event', 'users', 'categories', 'eventseries'));
+        $this->set('_serialize', ['event']);
+        $this->set('titleForLayout', 'Submit an Event');
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
 
@@ -362,9 +369,7 @@ class EventsController extends AppController
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
                 ])) {
-                    $this->Flash->success(__('The event has been saved.'));
-
-                    return $this->redirect(['action' => 'index']);
+                    return $this->Flash->success(__('The event has been saved.'));
                 }
             }
 
@@ -394,25 +399,14 @@ class EventsController extends AppController
                     ]);
                 }
 
-                $this->Flash->success(__('The event series has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->Flash->success(__('The event series has been saved.'));
             }
 
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
         }
-
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Submit an Event');
     }
 
     /**
@@ -553,13 +547,10 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->data['date'];
-                $this->Flash->success(__('The event has been saved.'));
 
-                return $this->redirect('/');
+                return $this->Flash->success(__('The event has been saved.'));
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
-
-            return $this->redirect('/');
+            return $this->Flash->error(__('The event could not be saved. Please, try again.'));
         }
     }
 
@@ -600,6 +591,15 @@ class EventsController extends AppController
         $event->date = $dates;
         $this->setEventForm($event);
         $this->setDatePicker($event);
+
+        $this->Flash->error('Warning: all events in this series will be overwritten.');
+
+        $categories = $this->Events->Categories->find('list');
+        $this->set([
+            'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
+        ]);
+        $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
+        $this->render('/Element/events/form');
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
@@ -661,22 +661,12 @@ class EventsController extends AppController
             $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
             $series->title = $this->request->data['event_series']['title'];
             if ($this->Events->EventSeries->save($series)) {
-                $this->Flash->success(__("The event series '$series->title' was saved."));
-
-                return $this->redirect('/');
+                return $this->Flash->success(__("The event series '$series->title' was saved."));
             }
             if (!$this->Events->EventSeries->save($series)) {
-                $this->Flash->error(__("The event series '$series->title' was not saved."));
+                return $this->Flash->error(__("The event series '$series->title' was not saved."));
             }
         }
-        $this->Flash->error('Warning: all events in this series will be overwritten.');
-
-        $categories = $this->Events->Categories->find('list');
-        $this->set([
-            'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
-        ]);
-        $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
-        $this->render('/Element/events/form');
     }
 
     /**

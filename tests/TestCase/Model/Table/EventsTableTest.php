@@ -180,7 +180,10 @@ class EventsTableTest extends TestCase
             'tags_excluded' => 'adult oriented'
         ];
 
-        $events = $this->Events->getUpcomingFilteredEvents($options);
+        $nextStartDate = $date;
+        $endDate = strtotime('2020-01-28');
+
+        $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
         $this->assertEquals($date, $events[0]->date);
     }
 
