@@ -1,5 +1,5 @@
 <?php
-    $multipleDatesAllowed = ($this->request->params['action'] == 'add' || $this->request->params['action'] == 'editseries');
+    $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'editseries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
 ?>
 
@@ -79,7 +79,7 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8">
-                        <div id="datepicker" class="<?= ($multipleDatesAllowed ? 'multi' : 'single'); ?>"></div>
+                        <div id="datepicker" class='<?= $multipleDatesAllowed ? 'multi' : 'single'; ?>'></div>
                         <?php
                         if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
@@ -344,7 +344,7 @@
 <?= $this->Form->end() ?>
 <?php
     $previous_locations_for_autocomplete = [];
-    foreach ($previous_locations as $location => $address) {
+    foreach ($previousLocations as $location => $address) {
         $previous_locations_for_autocomplete[] = [
             'label' => $location,
             'value' => $address
@@ -352,9 +352,6 @@
     }
     $this->Js->buffer('
         eventForm.previousLocations = '.$this->Js->object($previous_locations_for_autocomplete).';
-        setupEventForm();
-    ');
-    $this->Js->buffer('
         setupEventForm();
     ');
 ?>

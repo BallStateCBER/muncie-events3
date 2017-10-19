@@ -148,7 +148,7 @@ class EventsTable extends Table
      * for the provided location name or FALSE if none is found
      *
      * @param string $location we need address for
-     * @return bool
+     * @return ResultSet $result->address
      */
     public function getAddress($location)
     {
@@ -164,6 +164,23 @@ class EventsTable extends Table
         }
 
         return $result->address;
+    }
+
+    /**
+     * getEventByDateAndSeries method
+     *
+     * @param str $date of events
+     * @param str $seriesId of events
+     * @return ResultSet $event
+     */
+    public function getEventsByDateAndSeries($date, $seriesId)
+    {
+        $event = $this->find()
+            ->where(['date' => $date])
+            ->andWhere(['series_id' => $seriesId])
+            ->first();
+
+        return $event;
     }
 
     /**
@@ -189,33 +206,18 @@ class EventsTable extends Table
     }
 
     /**
-     * getUpcomingEvents method
+     * getFilteredEvents method
      *
-     * @return ResultSet $events
-     */
-    public function getUpcomingEvents()
-    {
-        $events = $this
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => date('Y-m-d')])
-            ->toArray();
-
-        return $events;
-    }
-
-    /**
-     * getUpcomingFilteredEvents method
-     *
+     * @param string $nextStartDate to begin
+     * @param string $endDate to end
      * @param array $options for filtering events
      * @return ResultSet $events
      */
-    public function getUpcomingFilteredEvents($options)
+    public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
         $params = [];
-        $params[] = ['date >=' => date('Y-m-d')];
+        $params[] = ['date >=' => date('Y-m-d', strtotime($nextStartDate))];
+        $params[] = ['date <' => date('Y-m-d', $endDate)];
         foreach ($options as $param => $value) {
             $categories = '';
             if ($param == 'category') {
@@ -290,6 +292,103 @@ class EventsTable extends Table
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'conditions' => $params
         ])->order(['date' => 'ASC'])->toArray();
+
+        return $events;
+    }
+
+    /**
+     * getMonthEvents method
+     *
+     * @param string $yearMonth of events
+     * @return ResultSet $events
+     */
+    public function getMonthEvents($yearMonth)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
+            ->toArray();
+
+        return $events;
+    }
+
+    /**
+     * getRangeEvents method
+     *
+     * @param string $nextStartDate to begin
+     * @param string $endDate to end
+     * @return ResultSet $events
+     */
+    public function getRangeEvents($nextStartDate, $endDate)
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => $nextStartDate])
+            ->andwhere(['date <=' => $endDate])
+            ->toArray();
+
+        return $events;
+    }
+
+    /**
+     * getStartEndEvents searches for events by range
+     *
+     * @param string $nextStartDate of range
+     * @param string $endDate of range
+     * @param array $options in case of filter
+     * @return ResultSet $events
+     */
+    public function getStartEndEvents($nextStartDate, $endDate, $options = null)
+    {
+        $events = $this->getRangeEvents($nextStartDate, $endDate);
+        if (empty($events)) {
+            $endDate = strtotime($nextStartDate . ' + 4 weeks');
+            $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+            if (empty($events)) {
+                $endDate = strtotime($nextStartDate . ' + 8 weeks');
+                $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                if (empty($events)) {
+                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
+                    $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                    if (empty($events)) {
+                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
+                        $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                        if (empty($events)) {
+                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
+                            $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                            if (empty($events)) {
+                                $endDate = strtotime($nextStartDate . ' + 128 weeks');
+                                $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * getUpcomingEvents method
+     *
+     * @return ResultSet $events
+     */
+    public function getUpcomingEvents()
+    {
+        $events = $this
+            ->find('all', [
+            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+            'order' => ['date' => 'ASC']
+            ])
+            ->where(['date >=' => date('Y-m-d')])
+            ->toArray();
 
         return $events;
     }
@@ -374,13 +473,13 @@ class EventsTable extends Table
     {
         $locations = $this->find();
         $locations
-            ->select(['location'])
-            ->where(['date <' => date('Y-m-d')])
-            ->group(['location'])
-            ->toArray();
+            ->select(['location', 'address'])
+            ->where(['date <' => date('Y-m-d')]);
         foreach ($locations as $location) {
-            $retval[] = $location->location;
+            $locs[] = $location->location;
+            $adds[] = $location->address;
         }
+        $retval = array_combine($locs, $adds);
 
         return $retval;
     }

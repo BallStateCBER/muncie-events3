@@ -57,13 +57,14 @@ var muncieEventsFeedWidget = {
  				muncieEventsFeedWidget.loadingStart();
  			},
  			success: function(data) {
+                muncieEventsFeedWidget.loadingEnd();
  				elist.after($('<div id="event_'+eid+'" style="display: none;"></div>').html(data));
  				muncieEventsFeedWidget.setupEventActions('#event_'+eid);
  				elist.fadeOut(muncieEventsFeedWidget.fade_duration, function() {
  					var event_view = $('#event_'+eid);
  					var back_link = $('<a href="#" class="back">&larr; Back</a>').click(function (event) {
-                        $('#load_more_events').show();
-                         $('#load_more_events_wrapper').show();
+                //        $('#load_more_events').show();
+                //         $('#load_more_events_wrapper').show();
  						event.preventDefault();
  						$('#event_'+eid).fadeOut(muncieEventsFeedWidget.fade_duration, function() {
  							$('#event_list').fadeIn(muncieEventsFeedWidget.fade_duration);
@@ -77,10 +78,11 @@ var muncieEventsFeedWidget = {
  				});
  			},
  			error: function() {
+                muncieEventsFeedWidget.loadingEnd();
  				alert('There was an error loading that event. Please try again.');
  			},
  			complete: function() {
- 				muncieEventsFeedWidget.loadingEnd();
+                muncieEventsFeedWidget.loadingEnd();
  			}
  		});
  	},

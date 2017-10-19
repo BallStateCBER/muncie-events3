@@ -279,7 +279,7 @@ class MailingListTable extends Table
             }
             $data->weekly = $recipient->weekly;
             $data->email = $recipient->email;
-            if (isset($_GET['unsubscribe'])) {
+            if (isset(filter_input_array(INPUT_GET)['unsubscribe'])) {
                 $data['unsubscribe'] = 1;
             }
 

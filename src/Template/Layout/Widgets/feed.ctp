@@ -33,9 +33,11 @@
         <div></div>
         <div></div>
     </div>
-    <div id="load_more_events_wrapper">
-        <a href="#" id="load_more_events">&darr; More events &darr;</a>
-    </div>
+    <?php if ($this->request->action == 'feed'): ?>
+        <div id="load_more_events_wrapper">
+            <a href="#" id="load_more_events">&darr; More events &darr;</a>
+        </div>
+    <?php endif ?>
     <?php $this->Js->buffer("muncieEventsFeedWidget.prepareWidget();"); ?>
     <noscript>
         <div id="noscript">

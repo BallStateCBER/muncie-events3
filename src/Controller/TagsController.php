@@ -39,8 +39,13 @@ class TagsController extends AppController
      */
     public function isAuthorized()
     {
+        // testing turn-off!
+        if (php_sapi_name() == 'cli') {
+            return true;
+        }
+
         // Admins can access everything
-        if ($this->Auth->user('role') == 'admin') {
+        if ($this->Auth->user('role') == 'admin' || $this->request->session()->read(['Auth.User.role'])) {
             return true;
 
         // Some actions are admin-only
@@ -122,7 +127,7 @@ class TagsController extends AppController
      */
     public function autoComplete()
     {
-        $stringToComplete = $_GET['term'];
+        $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
 
         // Tag.name will be compared via LIKE to each of these,
@@ -367,7 +372,8 @@ class TagsController extends AppController
         $position = intval($_POST['position']);
         if ($position == 0) {
             $this->Tags->moveUp($tag, true);
-        } else {
+        }
+        if ($position != 0) {
             $count = $this->Tags->childCount($parent, true);
             $delta = $count - $position - 1;
             if ($delta > 0) {
@@ -661,7 +667,8 @@ class TagsController extends AppController
         if ($class == 'success') {
             if ($this->Tags->delete($removedTag)) {
                 $message .= "Removed \"$removedTagName\".";
-            } else {
+            }
+            if (!$this->Tags->delete($removedTag)) {
                 $message .= "Error trying to delete \"$removedTagName\" from the database. ";
                 $class = 'error';
             }

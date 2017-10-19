@@ -21,7 +21,6 @@ class EventsController extends AppController
     ];
     public $uses = ['Event'];
     public $eventFilter = [];
-    public $adminActions = ['publish', 'approve', 'moderate', 'delete'];
 
     /**
      * Initialization hook method.
@@ -42,66 +41,52 @@ class EventsController extends AppController
     }
 
     /**
-     * prepareEventFormPr method
+     * determine if admin
      *
-     * @param ResultSet $event Event entity
-     * @return void
+     * @param ResultSet $event need to check
+     * @return redirect
      */
-    private function prepareEventFormPr($event)
+    private function isAdmin($event = null)
     {
-        $userId = $this->request->session()->read('Auth.User.id');
-        $this->set([
-            'previous_locations' => $this->Events->getPastLocations(),
-            'userId' => $userId,
-        ]);
+        if ($this->request->session()->read('Auth.User.role') != 'admin') {
+            if (isset($event)) {
+                if ($this->request->action == 'delete' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
 
-        // prepare the tag helper
-        $availableTags = $this->Events->Tags->find()
-            ->where(['listed' => 1])
-            ->order(['name' => 'ASC'])
-            ->toArray();
-        $this->set(compact('availableTags'));
+                    return $this->redirect('/');
+                }
 
-        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
-            $hasSeries = count($event->date) > 1;
-            $hasEndTime = isset($event['time_end']);
-        } elseif ($this->request->action == 'edit') {
-            $hasSeries = isset($event['series_id']) ? (bool)$event['series_id'] : false;
-            $hasEndTime = isset($event['time_end']) && $event['time_end'];
-        }
+                if ($this->request->action == 'edit' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
 
-        $this->set([
-            'has' => [
-                'series' => $hasSeries,
-                'end_time' => $hasEndTime,
-                'address' => isset($event['address']) && $event['address'],
-                'cost' => isset($event['cost']) && $event['cost'],
-                'ages' => isset($event['age_restriction']) && $event['age_restriction'],
-                'source' => isset($event['source']) && $event['source']
-            ]
-        ]);
+                    return $this->redirect('/');
+                }
 
-        // Fixes bug where midnight is saved as null
-        if (!$event['time_start']) {
-            $event['time_start'] = '00:00:00';
-        }
-        if ($this->has['end_time'] && !$event['time_end']) {
-            $event['time_end'] = '00:00:00';
-        }
+                if ($this->request->action == 'editseries' && $event->user_id != $this->request->session()->read('Auth.User.id')) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
 
-        // Fixes bug that prevents CakePHP from deleting all tags
-        if (null !== $this->request->getData('Tags')) {
-            $this->set('Tags', []);
+                    return $this->redirect('/');
+                }
+            }
+
+            $adminActions = ['approve', 'moderate'];
+            foreach ($adminActions as $action) {
+                if ($this->request->action == $action) {
+                    $this->Flash->error(__('You are not authorized to view this page.'));
+
+                    return $this->redirect('/');
+                }
+            }
         }
     }
 
     /**
-     * processCustomTagsPr method
+     * setCustomTags method
      *
      * @param ResultSet $event Event entity
      * @return void
      */
-    private function processCustomTagsPr($event)
+    private function setCustomTags($event)
     {
         if (!isset($event->customTags)) {
             return;
@@ -137,7 +122,7 @@ class EventsController extends AppController
             if ($tagId) {
                 $selectable = $this->Events->Tags->find()
                               ->select('selectable')
-                              ->where(['id' => $tagId])
+                              ->where(['id' => $tagId->id])
                               ->toArray();
                 if (!$selectable) {
                     continue;
@@ -150,7 +135,7 @@ class EventsController extends AppController
                 $newTag->name = $ct;
                 $newTag->user_id = $this->Auth->user('id');
                 $newTag->parent_id = 1012; // 'Unlisted' group
-                $newTag->listed = 0;
+                $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
 
                 $this->Events->Tags->save($newTag);
@@ -162,12 +147,109 @@ class EventsController extends AppController
     }
 
     /**
-     * processImageDataPr method
+     * setDatePicker method
      *
      * @param ResultSet $event Event entity
      * @return void
      */
-    private function processImageDataPr($event)
+    private function setDatePicker($event)
+    {
+        // Prepare date picker
+        if ($this->request->action == 'add') {
+            $dateFieldValues = [];
+            $preselectedDates = '[]';
+            $defaultDate = 0; // Today
+        }
+        if ($this->request->action == 'editseries') {
+            $dateFieldValues = [];
+            foreach ($event->date as $date) {
+                list($year, $month, $day) = explode('-', $date);
+                if (!isset($defaultDate)) {
+                    $defaultDate = "$month/$day/$year";
+                }
+                $dateFieldValues[] = date_create("$month/$day/$year");
+            }
+            $preselectedDates = [];
+            $eventSelectedDates = [];
+            foreach ($dateFieldValues as $date) {
+                $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
+                $eventSelectedDates[] = date_format($date, 'm/d/Y');
+            }
+            $preselectedDates = implode(',', $preselectedDates);
+            $eventSelectedDates = implode(',', $eventSelectedDates);
+            $event->date = $eventSelectedDates;
+            $preselectedDates = '[' . $preselectedDates . ']';
+        }
+        $this->set(compact('dateFieldValues', 'defaultDate', 'preselectedDates'));
+    }
+
+    /**
+     * setEventForm method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
+    private function setEventForm($event)
+    {
+        $userId = $this->request->session()->read('Auth.User.id');
+        $this->set([
+            'previousLocations' => $this->Events->getPastLocations(),
+            'userId' => $userId,
+        ]);
+
+        // prepare the tag helper
+        $availableTags = $this->Events->Tags->find()
+            ->where(['listed' => 1])
+            ->order(['name' => 'ASC'])
+            ->toArray();
+        $this->set(compact('availableTags'));
+
+        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
+            $hasSeries = count($event->date) > 1;
+            $hasEndTime = isset($event['time_end']);
+        } elseif ($this->request->action == 'edit') {
+            $hasSeries = isset($event['series_id']);
+            $hasEndTime = isset($event['time_end']) && $event['time_end'];
+        }
+        if (!isset($hasSeries)) {
+            $hasSeries = false;
+        }
+        if (!isset($hasEndTime)) {
+            $hasEndTime = false;
+        }
+
+        $this->set([
+            'has' => [
+                'series' => $hasSeries,
+                'end_time' => $hasEndTime,
+                'address' => isset($event['address']) && $event['address'],
+                'cost' => isset($event['cost']) && $event['cost'],
+                'ages' => isset($event['age_restriction']) && $event['age_restriction'],
+                'source' => isset($event['source']) && $event['source']
+            ]
+        ]);
+
+        // Fixes bug where midnight is saved as null
+        if (!$event['time_start']) {
+            $event['time_start'] = '00:00:00';
+        }
+        if ($this->has['end_time'] && !$event['time_end']) {
+            $event['time_end'] = '00:00:00';
+        }
+
+        // Fixes bug that prevents CakePHP from deleting all tags
+        if (null !== $this->request->getData('Tags')) {
+            $this->set('Tags', []);
+        }
+    }
+
+    /**
+     * setImageData method
+     *
+     * @param ResultSet $event Event entity
+     * @return void
+     */
+    private function setImageData($event)
     {
         $weight = 1;
         $place = 0;
@@ -211,40 +293,6 @@ class EventsController extends AppController
     }
 
     /**
-     * prepareDatePickerPr method
-     *
-     * @param ResultSet $event Event entity
-     * @return void
-     */
-    private function prepareDatePickerPr($event)
-    {
-        // Prepare date picker
-        if ($this->request->action == 'add') {
-            $dateFieldValues = [];
-            $preselectedDates = '[]';
-            $defaultDate = 0; // Today
-        }
-        if ($this->request->action == 'editseries') {
-            $dateFieldValues = [];
-            foreach ($event->date as $date) {
-                list($year, $month, $day) = explode('-', $date);
-                if (!isset($defaultDate)) {
-                    $defaultDate = "$month/$day/$year";
-                }
-                $dateFieldValues[] = date_create("$month/$day/$year");
-            }
-            $preselectedDates = [];
-            foreach ($dateFieldValues as $date) {
-                $preselectedDates[] = "'" . date_format($date, 'm/d/Y') . "'";
-            }
-            $preselectedDates = implode(',', $preselectedDates);
-            $preselectedDates = '[' . $preselectedDates . ']';
-            $event->date = $preselectedDates;
-        }
-        $this->set(compact('defaultDate', 'preselectedDates'));
-    }
-
-    /**
      * approve method
      *
      * @param int|null $id Event entity id
@@ -252,6 +300,7 @@ class EventsController extends AppController
      */
     public function approve($id = null)
     {
+        $this->isAdmin();
         $ids = $this->request->pass;
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
@@ -294,9 +343,16 @@ class EventsController extends AppController
         $event = $this->Events->newEntity();
 
         // prepare form
-        $this->prepareEventFormPr($event);
-        $this->processImageDataPr($event);
-        $this->prepareDatePickerPr($event);
+        $this->setEventForm($event);
+        $this->setImageData($event);
+        $this->setDatePicker($event);
+
+        $users = $this->Events->Users->find('list');
+        $categories = $this->Events->Categories->find('list');
+        $eventseries = $this->Events->EventSeries->find('list');
+        $this->set(compact('event', 'users', 'categories', 'eventseries'));
+        $this->set('_serialize', ['event']);
+        $this->set('titleForLayout', 'Submit an Event');
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmissionPr();
@@ -307,13 +363,13 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
-                $this->processCustomTagsPr($event);
+                $this->setCustomTags($event);
                 $event->date = new Date($this->request->data['date']);
                 $event->series_id = null;
                 if ($this->Events->save($event, [
-                    'associated' => ['EventSeries', 'Images', 'Tags']
+                    'associated' => ['Images', 'Tags']
                 ])) {
-                    $this->Flash->success(__('The event has been saved.'));
+                    return $this->Flash->success(__('The event has been saved.'));
                 }
             }
 
@@ -335,7 +391,7 @@ class EventsController extends AppController
                     $newDate = new Date($date);
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
-                    $this->processCustomTagsPr($event);
+                    $this->setCustomTags($event);
                     $event->date = $newDate;
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
@@ -343,25 +399,14 @@ class EventsController extends AppController
                     ]);
                 }
 
-                $this->Flash->success(__('The event series has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->Flash->success(__('The event series has been saved.'));
             }
 
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
-
-                return $this->redirect(['action' => 'index']);
+                return $this->Flash->error(__('The event could not be saved. Please, try again.'));
             }
         }
-
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Submit an Event');
     }
 
     /**
@@ -456,13 +501,7 @@ class EventsController extends AppController
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You cannot delete this event.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-        }
+        $this->isAdmin();
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
 
@@ -485,33 +524,11 @@ class EventsController extends AppController
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
 
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if ($event->user_id != $this->request->session()->read('Auth.User.id')) {
-                $this->Flash->error(__('You are not authorized to view this page.'));
-
-                return $this->redirect('/');
-            }
-        }
+        $this->isAdmin($event);
         // prepare form
-        $this->prepareEventFormPr($event);
-        $this->processImageDataPr($event);
-        $this->prepareDatePickerPr($event);
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            // make sure the end time stays null if it needs to
-            $this->uponFormSubmissionPr();
-            $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = strtotime($this->request->data['date']);
-            $this->processCustomTagsPr($event);
-            if ($this->Events->save($event, [
-                'associated' => ['EventSeries', 'Images', 'Tags']
-            ])) {
-                $event->date = $this->request->data['date'];
-                $this->Flash->success(__('The event has been saved.'));
-            } else {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
-            }
-        }
+        $this->setEventForm($event);
+        $this->setImageData($event);
+        $this->setDatePicker($event);
 
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
@@ -519,15 +536,33 @@ class EventsController extends AppController
         $this->set(compact('event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Edit Event');
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            // make sure the end time stays null if it needs to
+            $this->uponFormSubmissionPr();
+            $event = $this->Events->patchEntity($event, $this->request->getData());
+            $event->date = strtotime($this->request->data['date']);
+            $this->setCustomTags($event);
+            if ($this->Events->save($event, [
+                'associated' => ['EventSeries', 'Images', 'Tags']
+            ])) {
+                $event->date = $this->request->data['date'];
+
+                return $this->Flash->success(__('The event has been saved.'));
+            }
+            $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
+            return;
+        }
     }
 
     /**
-     * editSeries method
+     * editseries method
      *
      * @param int $seriesId id for series
      * @return Cake\View\Helper\FlashHelper
      */
-    public function editSeries($seriesId)
+    public function editseries($seriesId)
     {
         // Get information about series
         $eventSeries = $this->Events->EventSeries->get($seriesId);
@@ -538,12 +573,13 @@ class EventsController extends AppController
             'conditions' => ['series_id' => $seriesId],
             'contain' => ['EventSeries']
             ])
+            ->order(['date' => 'ASC'])
             ->toArray();
 
-        $oldDates = [];
+        $dates = [];
         foreach ($events as $event) {
             $dateString = date_format($event->date, 'Y-m-d');
-            $oldDates[] = $dateString;
+            $dates[] = $dateString;
         }
 
         // Pick the first event in the series
@@ -552,20 +588,28 @@ class EventsController extends AppController
             'contain' => ['EventSeries']
         ]);
 
-        $event->date = $oldDates;
-        $this->prepareEventFormPr($event);
-        $this->prepareDatePickerPr($event);
+        $this->isAdmin($event);
+
+        $event->date = $dates;
+        $this->setEventForm($event);
+        $this->setDatePicker($event);
+
+        $this->Flash->error('Warning: all events in this series will be overwritten.');
+
+        $categories = $this->Events->Categories->find('list');
+        $this->set([
+            'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
+        ]);
+        $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
+        $this->render('/Element/events/form');
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // save every event
             $newDates = explode(',', $this->request->data['date']);
-            foreach ($oldDates as $date) {
+            foreach ($dates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
                 if (!in_array($oldDate, $newDates)) {
-                    $deleteEvent = $this->Events->find()
-                        ->where(['date' => $date])
-                        ->andWhere(['series_id' => $seriesId])
-                        ->first();
+                    $deleteEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                     if ($this->Events->delete($deleteEvent)) {
                         $this->Flash->success(__("Event '$deleteEvent->title' has been deleted."));
                     }
@@ -573,11 +617,7 @@ class EventsController extends AppController
             }
             foreach ($newDates as $date) {
                 $date = date('Y-m-d', strtotime($date));
-                $oldEvent = $this->Events->find()
-                    ->select(['id'])
-                    ->where(['date' => $date])
-                    ->andWhere(['series_id' => $seriesId])
-                    ->first();
+                $oldEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                 if (isset($oldEvent->id)) {
                     $event = $this->Events->get($oldEvent->id);
                 }
@@ -608,7 +648,7 @@ class EventsController extends AppController
                 $event->time_start = new Time($time);
                 $event->title = $this->request->data['title'];
 
-                $this->processCustomTagsPr($event);
+                $this->setCustomTags($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']
                 ])) {
@@ -623,20 +663,12 @@ class EventsController extends AppController
             $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
             $series->title = $this->request->data['event_series']['title'];
             if ($this->Events->EventSeries->save($series)) {
-                $this->Flash->success(__("The event series '$series->title' was saved."));
+                return $this->Flash->success(__("The event series '$series->title' was saved."));
             }
             if (!$this->Events->EventSeries->save($series)) {
-                $this->Flash->error(__("The event series '$series->title' was not saved."));
+                return $this->Flash->error(__("The event series '$series->title' was not saved."));
             }
         }
-        $this->Flash->error('Warning: all events in this series will be overwritten.');
-
-        $categories = $this->Events->Categories->find('list');
-        $this->set([
-            'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
-        ]);
-        $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
-        $this->render('/Element/events/form');
     }
 
     /**
@@ -694,16 +726,8 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        // the app breaks if there is a 2-week gap in between events
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
-        $events = $this->Events
-            ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => $nextStartDate])
-            ->andwhere(['date <=' => $endDate])
-            ->toArray();
+        $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);
         $this->indexEvents($events);
     }
 
@@ -734,6 +758,15 @@ class EventsController extends AppController
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
+        $count = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $dir]
+            ])
+            ->where(['location' => $location])
+            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->count();
+
         $oppCount = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -743,23 +776,20 @@ class EventsController extends AppController
             ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
             ->count();
 
-        $this->set(compact('location', 'oppCount', 'opposite'));
+        $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
+        $this->set(['slug' => $location]);
         $this->set('titleForLayout', '');
     }
 
     /**
      * moderate method
      *
-     * @return redirect
+     * @return void
      */
     public function moderate()
     {
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            $this->Flash->error("You are not authorized to view that page.");
-
-            return $this->redirect('/');
-        }
+        $this->isAdmin();
         // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
@@ -933,9 +963,8 @@ class EventsController extends AppController
      */
     public function searchAutocomplete()
     {
-        $stringToComplete = $_GET['term'];
+        $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
-        $qualifyingTagIds = $this->Events->Tags->getIdsWithEvents();
 
         // name will be compared via LIKE to each of these,
         // in order, until $limit tags are found.
@@ -1020,6 +1049,15 @@ class EventsController extends AppController
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
 
+        $count = $this->Events
+            ->find('all', [
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['date' => $dir]
+            ])
+            ->where(['Events.id IN' => $eventId])
+            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->count();
+
         $oppCount = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -1029,7 +1067,7 @@ class EventsController extends AppController
             ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
             ->count();
 
-        $this->set(compact('eventId', 'oppCount', 'opposite', 'slug', 'tag'));
+        $this->set(compact('count', 'direction', 'eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([
             'titleForLayout' => 'Tag: ' . ucwords($tag->name)
         ]);
@@ -1065,7 +1103,7 @@ class EventsController extends AppController
     private function uponFormSubmissionPr()
     {
         // kill the end time if it hasn't been set
-        if (!$this->has['end_time']) {
+        if (!isset($this->request->data['has_end_time'])) {
             $this->request->data['time_end'] = null;
         }
 

@@ -6,7 +6,7 @@ $s = $oppCount == 1 ? '' : 's';
 ?>
 
 <h1 class="page_title">
-    <?= $titleForLayout ?>
+    <?= "$count $direction Events with $titleForLayout" ?>
 </h1>
 
 <?= $this->Html->link(

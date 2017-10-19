@@ -593,20 +593,26 @@ class WidgetsController extends AppController
     /**
      * Produces a view that lists seven event-populated days, starting with $startDate
      *
+     * @param string|null $nextStartDate of events
      * @return void
      */
-    public function feed()
+    public function feed($nextStartDate = null)
     {
         $this->setDemoDataPr('feed');
 
+        if ($nextStartDate == null) {
+            $nextStartDate = date('Y-m-d');
+        }
+        $endDate = strtotime($nextStartDate . ' + 2 weeks');
+        $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);
+
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
+
         if (!empty($options)) {
-            $events = $this->Events->getUpcomingFilteredEvents($options);
+            $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, $options);
         }
-        if (empty($options)) {
-            $events = $this->Events->getUpcomingEvents();
-        }
+
         $this->indexEvents($events);
 
         $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'feed');
@@ -616,7 +622,13 @@ class WidgetsController extends AppController
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'feed'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
+        $eventIds = [];
+        foreach ($events as $event) {
+            $eventIds[] = $event->id;
+        }
+
         $this->set([
+            'eventIds' => $eventIds,
             'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('feed', $queryString)),
             'titleForLayout' => 'Upcoming Events',
             'isAjax' => $this->request->is('ajax'),
@@ -635,18 +647,11 @@ class WidgetsController extends AppController
     {
         $this->setDemoDataPr('month');
 
-        $options = $_GET;
-        $filters = $this->Events->getValidFilters($options);
-        if (!empty($options)) {
-            $events = $this->Events->getUpcomingFilteredEvents($options);
-        }
-        if (empty($options)) {
-            $events = $this->Events->getUpcomingEvents();
-        }
         // Process various date information
         if (!$yearMonth) {
             $yearMonth = date('Y-m');
         }
+
         $split = explode('-', $yearMonth);
         $year = reset($split);
         $month = end($split);
@@ -660,9 +665,16 @@ class WidgetsController extends AppController
         $nextMonth = ($month == 12) ? 1 : $month + 1;
         $today = date('Y') . date('m') . date('j');
 
+        $options = $_GET;
+        if (!isset($options)) {
+            $options = [];
+        }
+        $filters = $this->Events->getValidFilters($options);
+        $nextMonth = strtotime($yearMonth . '+1 month');
+
+        $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $nextMonth, $options) : $this->Events->getMonthEvents($yearMonth);
         $this->indexEvents($events);
 
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
         $this->processCustomStyles($options);
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
@@ -670,18 +682,26 @@ class WidgetsController extends AppController
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
         // manually set $eventsForJson just for debugging purposes...
-        $eventsForJson['2017-06-03'] = [
-            'heading' => 'Events on ' . date('F j, Y', (strtotime('2017-06-03'))),
-            'events' => []
-        ];
-        $eventsForJson['2017-06-03']['events'][] = [
-            'id' => '4459',
-            'title' => 'The Steampunk Kids go to the park and wear corsets',
-            'category_name' => 'General Events',
-            'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', 'General Events')),
-            'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => 4459]),
-            'time' => '2 PM'
-        ];
+        $eventsForJson = [];
+        foreach ($events as $event) {
+            $thisMonth = date('m', strtotime($event->date));
+            $thisYear = date('Y', strtotime($event->date));
+            if ($thisMonth == $month && $thisYear == $year) {
+                $date = date('Y-m-d', strtotime($event->date));
+                $eventsForJson[$date] = [
+                    'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
+                    'events' => []
+                ];
+                $eventsForJson[$date]['events'][] = [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'category_name' => $event->category['name'],
+                    'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
+                    'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
+                    'time' => date('h:ia')
+                ];
+            }
+        }
 
         $this->set([
             'titleForLayout' => "$monthName $year",
@@ -691,6 +711,7 @@ class WidgetsController extends AppController
             'customStyles' => $this->customStyles
         ]);
         $this->set(compact('month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'monthName', 'eventsForJson', 'filters', 'options'));
+        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
     }
 
     /**
@@ -706,7 +727,7 @@ class WidgetsController extends AppController
     {
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
         $day = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $options = filter_input_array(INPUT_GET);
+        $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
         $this->set([

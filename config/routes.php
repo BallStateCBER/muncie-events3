@@ -75,9 +75,15 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // viewing locations indexes
     $routes->connect(
-        '/location/:direction/*',
+        '/location/*',
+        ['controller' => 'events', 'action' => 'location']
+    );
+
+    // viewing locations indexes
+    $routes->connect(
+        '/location/:location/:direction*',
         ['controller' => 'events', 'action' => 'location'],
-        ['pass' => ['direction', 'location']]
+        ['pass' => ['location', 'direction']]
     );
 
     // viewing event series
