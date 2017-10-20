@@ -68,7 +68,7 @@ class EventsController extends AppController
             return true;
         }
 
-        $authorAccessiblePages = [
+        $authorPages = [
             'delete',
             'edit',
             'editseries'
@@ -77,7 +77,7 @@ class EventsController extends AppController
 
         /* If the request isn't for an author-accessible page,
          * then it's for an admin-only page, and this user isn't an admin */
-        if (!in_array($action, $authorAccessiblePages)) {
+        if (!in_array($action, $authorPages)) {
             return false;
         }
 
