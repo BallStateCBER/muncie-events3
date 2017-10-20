@@ -1,7 +1,9 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Event;
 use Cake\ORM\Query;
+use Cake\ORM\ResultSet;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -169,12 +171,13 @@ class EventsTable extends Table
     /**
      * getEventByDateAndSeries method
      *
-     * @param str $date of events
-     * @param str $seriesId of events
-     * @return ResultSet $event
+     * @param string $date Date string in 'YYYY-MM-DD' format
+     * @param string $seriesId Event series ID
+     * @return Event $event
      */
     public function getEventsByDateAndSeries($date, $seriesId)
     {
+        /** @var Event $event */
         $event = $this->find()
             ->where(['date' => $date])
             ->andWhere(['series_id' => $seriesId])
@@ -189,7 +192,7 @@ class EventsTable extends Table
      * @param string $year of Events
      * @param string $month of Events
      * @param string $day of Events
-     * @return ResultSet $events
+     * @return Event[] $events
      */
     public function getEventsOnDay($year, $month, $day)
     {

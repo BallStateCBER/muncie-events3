@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use AkkaFacebook\Controller\Component\GraphComponent;
 use Cake\Controller\Controller;
+use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\Routing\Router;
@@ -72,33 +73,34 @@ class AppController extends Controller
         $this->loadComponent('Flash');
         $this->loadComponent('Cookie');
         $this->loadComponent(
-            'Auth',
-            [
-            'loginAction' => [
-                'prefix' => false,
-                'controller' => 'Users',
-                'action' => 'login'
-            ],
-            'logoutRedirect' => [
-                'prefix' => false,
-                'controller' => 'Events',
-                'action' => 'index'
-            ],
-            'authenticate' => [
-                'Form' => [
-                    'fields' => [
-                        'username' => 'email',
-                        'password' => 'password'
-                    ],
-                    'passwordHasher' => [
-                        'className' => 'Fallback',
-                        'hashers' => [
-                            'Default',
-                            'Weak' => ['hashType' => 'sha1']
+            'Auth', [
+                'loginAction' => [
+                    'prefix' => false,
+                    'controller' => 'Users',
+                    'action' => 'login'
+                ],
+                'logoutRedirect' => [
+                    'prefix' => false,
+                    'controller' => 'Events',
+                    'action' => 'index'
+                ],
+                'authenticate' => [
+                    'Form' => [
+                        'fields' => [
+                            'username' => 'email',
+                            'password' => 'password'
+                        ],
+                        'passwordHasher' => [
+                            'className' => 'Fallback',
+                            'hashers' => [
+                                'Default',
+                                'Weak' => ['hashType' => 'sha1']
                             ]
                         ]
                     ]
-                ]
+                ],
+                'authError' => 'You are not authorized to view this page',
+                'authorize' => 'Controller'
             ]
         );
         if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {
@@ -166,7 +168,7 @@ class AppController extends Controller
      * to index events
      * function placed in AppController so as to be shared by all controllers
      *
-     * @param ResultSet $events Event entities
+     * @param ResultSetInterface|\App\Model\Entity\Event[] $events Event entities
      * @return void
      */
     public function indexEvents($events)

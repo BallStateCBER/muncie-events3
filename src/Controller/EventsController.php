@@ -2,6 +2,11 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Entity\Category;
+use App\Model\Entity\Event;
+use App\Model\Entity\Image;
+use App\Model\Entity\Tag;
+use App\Model\Entity\User;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
 use Cake\Routing\Router;
@@ -53,49 +58,49 @@ class EventsController extends AppController
     }
 
     /**
-     * Determine if the user is admin
+     * Determines whether or not the user is authorized to make the current request
      *
-     * @param ResultSet $event need to check
-     * @return redirect
+     * @param User|null $user
+     * @return bool
      */
-    private function isAdmin($event = null)
+    public function isAuthorized($user = null)
     {
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if (isset($event)) {
-                $isAuthor = $event->user_id === $this->request->session()->read('Auth.User.id');
-                if ($this->request->action == 'delete' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
+        if ($user['role'] == 'admin') {
+            return true;
+        }
 
-                    return $this->redirect('/');
-                }
+        $authorAccessiblePages = [
+            'delete',
+            'edit',
+            'editseries'
+        ];
+        $action = $this->request->getParam('action');
 
-                if ($this->request->action == 'edit' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
+        /* If the request isn't for an author-accessible page,
+         * then it's for an admin-only page, and this user isn't an admin */
+        if (!in_array($action, $authorAccessiblePages)) {
+            return false;
+        }
 
-                    return $this->redirect('/');
-                }
-
-                if ($this->request->action == 'editseries' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
-
-                    return $this->redirect('/');
-                }
-            }
-
+<<<<<<< HEAD
             foreach ($this->adminActions as $action) {
                 if ($this->request->action == $action) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
+=======
+        // Grant access only if this user is the event/series's author
+        $entityId = $this->request->getParam('pass')[0];
+        $entity = ($action == 'editseries')
+            ? $this->Events->EventSeries->get($entityId)
+            : $this->Events->get($entityId);
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
 
-                    return $this->redirect('/');
-                }
-            }
-        }
+        return $entity->user_id === $user['id'];
     }
 
     /**
      * Processes custom tag input and populates $this->request->getData('data')['Tags']
      *
-     * @param ResultSet $event Event entity
+     * @param Event $event Event entity
      * @return void
      */
     private function setCustomTags($event)
@@ -118,6 +123,7 @@ class EventsController extends AppController
         // Remove duplicates
         $customTags = array_unique($customTags);
 
+        $tagIds = [];
         foreach ($customTags as $ct) {
             // Skip over blank tags
             if ($ct == '') {
@@ -139,7 +145,11 @@ class EventsController extends AppController
                 if (!$selectable) {
                     continue;
                 }
+<<<<<<< HEAD
                 $this->request->getData('data')['Tags'][] = $tagId;
+=======
+                $tagIds[] = $tagId;
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
             }
             // Create the custom tag if it does not already exist
             if (!$tagId) {
@@ -151,17 +161,25 @@ class EventsController extends AppController
                 $newTag->selectable = 1;
 
                 $this->Events->Tags->save($newTag);
+<<<<<<< HEAD
                 $this->request->getData('data')['Tags'][] = $newTag->id;
             }
         }
         $this->request->getData('data')['Tags'] = array_unique($this->request->getData('data')['Tags']);
+=======
+                $tagIds[] = $newTag->id;
+            }
+        }
+        $tagIds = array_unique($tagIds);
+        $this->request = $this->request->withData('Tags', $tagIds);
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
         $event->customTags = '';
     }
 
     /**
      * Sends the variables $dateFieldValues, $defaultDate, and $preselectedDates to the view
      *
-     * @param ResultSet $event Event entity
+     * @param Event $event Event entity
      * @return void
      */
     private function setDatePicker($event)
@@ -198,7 +216,7 @@ class EventsController extends AppController
     /**
      * Sets various variables used in the event form
      *
-     * @param ResultSet $event Event entity
+     * @param Event $event Event entity
      * @return void
      */
     private function setEventForm($event)
@@ -258,18 +276,27 @@ class EventsController extends AppController
     /**
      * Creates and/or removes associations between this event and its new/deleted images
      *
-     * @param ResultSet $event Event entity
+     * @param Event $event Event entity
      * @return void
      */
     private function setImageData($event)
     {
         $weight = 1;
         $place = 0;
+<<<<<<< HEAD
         $imageData = null == $this->request->getData('newImages') ? $this->request->getData('newImages') : null;
+=======
+        $imageData = $this->request->getData('newImages');
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
+                /** @var Image $newImage */
                 $newImage = $this->Events->Images->get($imageId);
+<<<<<<< HEAD
                 $delete = $this->request->getData('delete')[$imageId];
+=======
+                $delete = $this->request->getData("delete.$imageId");
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
                 if ($delete == 1) {
                     $this->Events->Images->unlink($event, [$newImage]);
                 }
@@ -284,7 +311,11 @@ class EventsController extends AppController
                 $place++;
             }
         }
+<<<<<<< HEAD
         $imageData = isset($this->request->getData('data')['Image']) ? $this->request->getData('data')['Image'] : null;
+=======
+        $imageData = $this->request->getData('Image');
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Events->Images->get($imageId);
@@ -307,29 +338,29 @@ class EventsController extends AppController
     /**
      * Marks the specified event as approved by an administrator
      *
-     * @param int|null $id Event entity id
-     * @return void
+     * @return \Cake\Http\Response
      */
-    public function approve($id = null)
+    public function approve()
     {
-        $this->isAdmin();
-        $ids = $this->request->pass;
+        $ids = $this->request->getParam('pass');
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
-            $this->redirect('/');
+
+            return $this->redirect('/');
         }
         $seriesToApprove = [];
         foreach ($ids as $id) {
-            $this->Events->id = $id;
-            $event = $this->Events->get($id);
             if (!$this->Events->exists($id)) {
                 $this->Flash->error('Cannot approve. Event with ID# ' . $id . ' not found.');
+                continue;
             }
+
+            $event = $this->Events->get($id);
             if ($event['event_series']['id']) {
                 $seriesId = $event['event_series']['id'];
                 $seriesToApprove[$seriesId] = true;
             }
-            // approve & publish it
+            // Approve & publish it
             $event['approved_by'] = $this->request->session()->read('Auth.User.id');
             $event['published'] = 1;
 
@@ -342,19 +373,20 @@ class EventsController extends AppController
                 $this->Flash->success("Event #$id approved <a href=\"$url\">Go to event page</a>");
             }
         }
-        $this->redirect($this->referer());
+
+        return $this->redirect($this->referer());
     }
 
     /**
      * Adds a new event
      *
-     * @return redirect
+     * @return void
      */
     public function add()
     {
         $event = $this->Events->newEntity();
 
-        // prepare form
+        // Prepare form
         $this->setEventForm($event);
         $this->setImageData($event);
         $this->setDatePicker($event);
@@ -381,7 +413,9 @@ class EventsController extends AppController
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
                 ])) {
-                    return $this->Flash->success(__('The event has been saved.'));
+                    $this->Flash->success(__('The event has been saved.'));
+
+                    return;
                 }
             }
 
@@ -411,12 +445,16 @@ class EventsController extends AppController
                     ]);
                 }
 
-                return $this->Flash->success(__('The event series has been saved.'));
+                $this->Flash->success(__('The event series has been saved.'));
+
+                return;
             }
 
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
-                return $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
+                return;
             }
         }
     }
@@ -433,6 +471,7 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
+        /** @var Category $category */
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
         ])
@@ -479,12 +518,12 @@ class EventsController extends AppController
      * @param string|null $month param for Events
      * @param string|null $day param for Events
      * @param string|null $year param for Events
-     * @return void
+     * @return \Cake\Http\Response|null
      */
     public function day($month = null, $day = null, $year = null)
     {
         if (! $year || ! $month || ! $day) {
-            $this->redirect('/');
+            return $this->redirect('/');
         }
 
         // Zero-pad day and month numbers
@@ -501,18 +540,19 @@ class EventsController extends AppController
             'titleForLayout' => 'Events on ' . $dateString,
             'displayedDate' => date('l F j, Y', $timestamp)
         ]);
+
+        return null;
     }
 
     /**
      * Deletes an event
      *
      * @param int|null $id id for series
-     * @return redirect
+     * @return \Cake\Http\Response
      */
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
-        $this->isAdmin();
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
 
@@ -527,15 +567,13 @@ class EventsController extends AppController
      * Edits an event
      *
      * @param int $id id for series
-     * @return redirect
+     * @return void
      */
     public function edit($id = null)
     {
         $event = $this->Events->get($id, [
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
-
-        $this->isAdmin($event);
 
         // Prepare form
         $this->setEventForm($event);
@@ -559,8 +597,12 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->getData('date');
+<<<<<<< HEAD
+=======
+                $this->Flash->success(__('The event has been saved.'));
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
 
-                return $this->Flash->success(__('The event has been saved.'));
+                return;
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
 
@@ -572,7 +614,7 @@ class EventsController extends AppController
      * Edits the basic information about an event series
      *
      * @param int $seriesId id for series
-     * @return Cake\View\Helper\FlashHelper
+     * @return void
      */
     public function editseries($seriesId)
     {
@@ -580,8 +622,9 @@ class EventsController extends AppController
         $eventSeries = $this->Events->EventSeries->get($seriesId);
         if (!$eventSeries) {
             $msg = 'Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.';
+            $this->Flash->error($msg);
 
-            return $this->Flash->error($msg);
+            return;
         }
         $events = $this->Events->find('all', [
             'conditions' => ['series_id' => $seriesId],
@@ -601,8 +644,6 @@ class EventsController extends AppController
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
-
-        $this->isAdmin($event);
 
         $event->date = $dates;
         $this->setEventForm($event);
@@ -646,7 +687,11 @@ class EventsController extends AppController
                 $event->location = $this->request->getData('location');
                 $optional = ['time_end', 'age_restriction', 'cost', 'source', 'address', 'location_details'];
                 foreach ($optional as $option) {
+<<<<<<< HEAD
                     if (null == $this->request->getData($option)) {
+=======
+                    if ($this->request->getData($option)) {
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
                         if ($option = 'time_end') {
                             $time = $this->request->getData('time_end');
                             $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
@@ -677,12 +722,20 @@ class EventsController extends AppController
             }
             $series = $this->Events->EventSeries->get($seriesId);
             $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
+<<<<<<< HEAD
             $series->title = $this->request->getData('event_series')['title'];
+=======
+            $series->title = $this->request->getData('event_series.title');
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
             if ($this->Events->EventSeries->save($series)) {
-                return $this->Flash->success(__("The event series '$series->title' was saved."));
+                $this->Flash->success(__("The event series '$series->title' was saved."));
+
+                return;
             }
             if (!$this->Events->EventSeries->save($series)) {
-                return $this->Flash->error(__("The event series '$series->title' was not saved."));
+                $this->Flash->error(__("The event series '$series->title' was not saved."));
+
+                return;
             }
         }
     }
@@ -715,20 +768,6 @@ class EventsController extends AppController
             ])
             ->toArray();
         $this->indexEvents($events);
-    }
-
-    /**
-     * Returns an iCalendar file
-     *
-     * @return \Cake\Controller\Controller::render('/Events/ics/view')
-     */
-    public function ics()
-    {
-        $this->response->type('text/calendar');
-        $this->response->download('foo.bar');
-        $this->viewBuilder()->setLayout('ics/default');
-
-        return $this->render('/Events/ics/view');
     }
 
     /**
@@ -805,7 +844,6 @@ class EventsController extends AppController
      */
     public function moderate()
     {
-        $this->isAdmin();
         // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
@@ -844,12 +882,12 @@ class EventsController extends AppController
      *
      * @param string|null $month month of Event
      * @param string|null $year year of Event
-     * @return void
+     * @return \Cake\Http\Response|null
      */
     public function month($month = null, $year = null)
     {
         if (!$month || !$year) {
-            $this->redirect('/');
+            return $this->redirect('/');
         }
 
         // Zero-pad day and month numbers
@@ -874,6 +912,8 @@ class EventsController extends AppController
             'titleForLayout' => 'Events in ' . $dateString,
             'displayedDate' => date('F, Y', $timestamp)
         ]);
+
+        return null;
     }
 
     /**
@@ -936,22 +976,13 @@ class EventsController extends AppController
             }
             $this->set(compact('counts'));
         }
+
+        // Determine if there are events in the opposite direction
         if ($direction == 'past' || $direction = 'future') {
-            // Determine if there are events in the opposite direction
-            $this->passedArgs['direction'] = ($direction == 'future') ? 'past' : 'future';
-            if ($this->passedArgs['direction'] == 'past') {
-                $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter
-                ])
-                    ->where(['date <' => date('Y-m-d')])
-                    ->count();
-            } elseif ($this->passedArgs['direction'] == 'future') {
-                $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter
-                ])
-                    ->where(['date >=' => date('Y-m-d')])
-                    ->count();
-            }
+            $whereKey = ($direction == 'future') ? 'date <' : 'date >=';
+            $oppositeCount = $this->Events->find('search', ['search' => $filter])
+                ->where([$whereKey => date('Y-m-d')])
+                ->count();
             $this->set('oppositeEvents', $oppositeCount);
         }
 
@@ -1036,7 +1067,7 @@ class EventsController extends AppController
      *
      * @param string|null $slug tag slug
      * @param string|null $direction of results
-     * @return Cake\View\Helper\FlashHelper
+     * @return void
      */
     public function tag($slug = '', $direction = null)
     {
@@ -1047,14 +1078,18 @@ class EventsController extends AppController
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
 
         // Get tag
-        $tagId = $this->Events->Tags->getIdFromSlug($slug);
+        $this->loadModel('Tags');
+        $tagId = $this->Tags->getIdFromSlug($slug);
+        /** @var Tag $tag */
         $tag = $this->Events->Tags->find('all', [
             'conditions' => ['id' => $tagId],
             'fields' => ['id', 'name'],
             'contain' => false
         ])->first();
         if (empty($tag)) {
-            return $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
+            $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
+
+            return;
         }
 
         $eventId = $this->Events->getIdsFromTag($tagId);
@@ -1095,23 +1130,24 @@ class EventsController extends AppController
     /**
      * Shows the events taking place today
      *
-     * @return void
+     * @return \Cake\Http\Response
      */
     public function today()
     {
-        $this->redirect('/events/day/' . date('m') . '/' . date('d') . '/' . date('Y'));
+        return $this->redirect('/events/day/' . date('m') . '/' . date('d') . '/' . date('Y'));
     }
 
     /**
      * Shows the events taking place tomorrow
      *
-     * @return void
+     * @return \Cake\Http\Response
      */
     public function tomorrow()
     {
         $tomorrow = date('m-d-Y', strtotime('+1 day'));
         $tomorrow = explode('-', $tomorrow);
-        $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
+
+        return $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
 
     /**
@@ -1123,16 +1159,28 @@ class EventsController extends AppController
     private function uponFormSubmission($event)
     {
         // Kill the end time if it hasn't been set
+<<<<<<< HEAD
         if (null !== $this->request->getData('has_end_time')) {
             $event->time_end = null;
+=======
+        if (!$this->request->getData('has_end_time')) {
+            $this->request = $this->request->withData('time_end', null);
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
         }
 
         // Auto-approve if posted by an admin
         $userId = $this->request->session()->read('Auth.User.id') ?: null;
+<<<<<<< HEAD
         $event->user_id = $userId;
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
             $event->approved_by = $userId;
             $event->published = true;
+=======
+        $this->request = $this->request->withData('user_id', $userId);
+        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+            $this->request = $this->request->withData('approved_by', $userId);
+            $this->request = $this->request->withData('published', true);
+>>>>>>> ddd5cc41d3a6349cc7fb18e02da08b3858899ac6
         }
 
         return $event;
