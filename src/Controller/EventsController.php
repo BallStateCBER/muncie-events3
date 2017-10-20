@@ -59,7 +59,7 @@ class EventsController extends AppController
     /**
      * Determines whether or not the user is authorized to make the current request
      *
-     * @param User|null $user
+     * @param User|null $user User entity
      * @return bool
      */
     public function isAuthorized($user = null)
