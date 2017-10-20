@@ -118,6 +118,7 @@ class EventsController extends AppController
         // Remove duplicates
         $customTags = array_unique($customTags);
 
+        $tagIds = [];
         foreach ($customTags as $ct) {
             // Skip over blank tags
             if ($ct == '') {
@@ -139,7 +140,7 @@ class EventsController extends AppController
                 if (!$selectable) {
                     continue;
                 }
-                $this->request->data['data']['Tags'][] = $tagId;
+                $tagIds[] = $tagId;
             }
             // Create the custom tag if it does not already exist
             if (!$tagId) {
@@ -151,10 +152,11 @@ class EventsController extends AppController
                 $newTag->selectable = 1;
 
                 $this->Events->Tags->save($newTag);
-                $this->request->data['data']['Tags'][] = $newTag->id;
+                $tagIds[] = $newTag->id;
             }
         }
-        $this->request->data['data']['Tags'] = array_unique($this->request->getData('Tags'));
+        $tagIds = array_unique($tagIds);
+        $this->request = $this->request->withData('Tags', $tagIds);
         $event->customTags = '';
     }
 
@@ -1123,15 +1125,15 @@ class EventsController extends AppController
     {
         // Kill the end time if it hasn't been set
         if (!$this->request->getData('has_end_time')) {
-            $this->request->data['time_end'] = null;
+            $this->request = $this->request->withData('time_end', null);
         }
 
         // Auto-approve if posted by an admin
         $userId = $this->request->session()->read('Auth.User.id') ?: null;
-        $this->request->data['user_id'] = $userId;
+        $this->request = $this->request->withData('user_id', $userId);
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
-            $this->request->data['approved_by'] = $userId;
-            $this->request->data['published'] = true;
+            $this->request = $this->request->withData('approved_by', $userId);
+            $this->request = $this->request->withData('published', true);
         }
     }
 
