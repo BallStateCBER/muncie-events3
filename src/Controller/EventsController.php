@@ -730,19 +730,6 @@ class EventsController extends AppController
     }
 
     /**
-     * Returns an iCalendar file
-     *
-     * @return void
-     */
-    public function ics()
-    {
-        $this->response->type('text/calendar');
-        $this->response->download('foo.bar');
-        $this->viewBuilder()->setLayout('ics/default');
-        $this->render('/Events/ics/view');
-    }
-
-    /**
      * Shows a page of events
      *
      * @param string|null $nextStartDate next start date for Event entity
