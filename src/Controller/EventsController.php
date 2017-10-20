@@ -320,16 +320,17 @@ class EventsController extends AppController
         }
         $seriesToApprove = [];
         foreach ($ids as $id) {
-            $this->Events->id = $id;
-            $event = $this->Events->get($id);
             if (!$this->Events->exists($id)) {
                 $this->Flash->error('Cannot approve. Event with ID# ' . $id . ' not found.');
+                continue;
             }
+
+            $event = $this->Events->get($id);
             if ($event['event_series']['id']) {
                 $seriesId = $event['event_series']['id'];
                 $seriesToApprove[$seriesId] = true;
             }
-            // approve & publish it
+            // Approve & publish it
             $event['approved_by'] = $this->request->session()->read('Auth.User.id');
             $event['published'] = 1;
 
