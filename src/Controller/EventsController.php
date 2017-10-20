@@ -1055,7 +1055,8 @@ class EventsController extends AppController
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
 
         // Get tag
-        $tagId = $this->Events->Tags->getIdFromSlug($slug);
+        $this->loadModel('Tags');
+        $tagId = $this->Tags->getIdFromSlug($slug);
         /** @var Tag $tag */
         $tag = $this->Events->Tags->find('all', [
             'conditions' => ['id' => $tagId],
