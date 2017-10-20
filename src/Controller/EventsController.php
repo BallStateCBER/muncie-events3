@@ -944,22 +944,13 @@ class EventsController extends AppController
             }
             $this->set(compact('counts'));
         }
+
+        // Determine if there are events in the opposite direction
         if ($direction == 'past' || $direction = 'future') {
-            // Determine if there are events in the opposite direction
-            $this->passedArgs['direction'] = ($direction == 'future') ? 'past' : 'future';
-            if ($this->passedArgs['direction'] == 'past') {
-                $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter
-                ])
-                    ->where(['date <' => date('Y-m-d')])
-                    ->count();
-            } elseif ($this->passedArgs['direction'] == 'future') {
-                $oppositeCount = $this->Events->find('search', [
-                    'search' => $filter
-                ])
-                    ->where(['date >=' => date('Y-m-d')])
-                    ->count();
-            }
+            $whereKey = ($direction == 'future') ? 'date <' : 'date >=';
+            $oppositeCount = $this->Events->find('search', ['search' => $filter])
+                ->where([$whereKey => date('Y-m-d')])
+                ->count();
             $this->set('oppositeEvents', $oppositeCount);
         }
 
