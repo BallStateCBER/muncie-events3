@@ -308,12 +308,11 @@ class EventsController extends AppController
     /**
      * Marks the specified event as approved by an administrator
      *
-     * @param int|null $id Event entity id
      * @return \Cake\Http\Response
      */
-    public function approve($id = null)
+    public function approve()
     {
-        $ids = $this->request->pass;
+        $ids = $this->request->getParam('pass');
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
 
