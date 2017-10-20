@@ -191,7 +191,7 @@ class EventsTable extends Table
      * @param string $year of Events
      * @param string $month of Events
      * @param string $day of Events
-     * @return ResultSet $events
+     * @return Event[] $events
      */
     public function getEventsOnDay($year, $month, $day)
     {
