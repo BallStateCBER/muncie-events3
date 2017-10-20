@@ -72,33 +72,34 @@ class AppController extends Controller
         $this->loadComponent('Flash');
         $this->loadComponent('Cookie');
         $this->loadComponent(
-            'Auth',
-            [
-            'loginAction' => [
-                'prefix' => false,
-                'controller' => 'Users',
-                'action' => 'login'
-            ],
-            'logoutRedirect' => [
-                'prefix' => false,
-                'controller' => 'Events',
-                'action' => 'index'
-            ],
-            'authenticate' => [
-                'Form' => [
-                    'fields' => [
-                        'username' => 'email',
-                        'password' => 'password'
-                    ],
-                    'passwordHasher' => [
-                        'className' => 'Fallback',
-                        'hashers' => [
-                            'Default',
-                            'Weak' => ['hashType' => 'sha1']
+            'Auth', [
+                'loginAction' => [
+                    'prefix' => false,
+                    'controller' => 'Users',
+                    'action' => 'login'
+                ],
+                'logoutRedirect' => [
+                    'prefix' => false,
+                    'controller' => 'Events',
+                    'action' => 'index'
+                ],
+                'authenticate' => [
+                    'Form' => [
+                        'fields' => [
+                            'username' => 'email',
+                            'password' => 'password'
+                        ],
+                        'passwordHasher' => [
+                            'className' => 'Fallback',
+                            'hashers' => [
+                                'Default',
+                                'Weak' => ['hashType' => 'sha1']
                             ]
                         ]
                     ]
-                ]
+                ],
+                'authError' => 'You are not authorized to view this page',
+                'authorize' => 'Controller'
             ]
         );
         if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {

@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Model\Entity\Event;
+use App\Model\Entity\User;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
 use Cake\Routing\Router;
@@ -53,44 +54,37 @@ class EventsController extends AppController
     }
 
     /**
-     * Determine if the user is admin
+     * Determines whether or not the user is authorized to make the current request
      *
-     * @param Event $event need to check
-     * @return \Cake\Http\Response|null
+     * @param User|null $user
+     * @return bool
      */
-    private function isAdmin($event = null)
+    public function isAuthorized($user = null)
     {
-        if ($this->request->session()->read('Auth.User.role') != 'admin') {
-            if (isset($event)) {
-                $isAuthor = $event->user_id === $this->request->session()->read('Auth.User.id');
-                if ($this->request->action == 'delete' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
-
-                    return $this->redirect('/');
-                }
-
-                if ($this->request->action == 'edit' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
-
-                    return $this->redirect('/');
-                }
-
-                if ($this->request->action == 'editseries' && !$isAuthor) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
-
-                    return $this->redirect('/');
-                }
-            }
-
-            $adminActions = ['approve', 'moderate'];
-            foreach ($adminActions as $action) {
-                if ($this->request->action == $action) {
-                    $this->Flash->error(__('You are not authorized to view this page.'));
-
-                    return $this->redirect('/');
-                }
-            }
+        if ($user['role'] == 'admin') {
+            return true;
         }
+
+        $authorAccessiblePages = [
+            'delete',
+            'edit',
+            'editseries'
+        ];
+        $action = $this->request->getParam('action');
+
+        /* If the request isn't for an author-accessible page,
+         * then it's for an admin-only page, and this user isn't an admin */
+        if (!in_array($action, $authorAccessiblePages)) {
+            return false;
+        }
+
+        // Grant access only if this user is the event/series's author
+        $entityId = $this->request->getParam('pass')[0];
+        $entity = ($action == 'editseries')
+            ? $this->Events->EventSeries->get($entityId)
+            : $this->Events->get($entityId);
+
+        return $entity->user_id === $user['id'];
     }
 
     /**
@@ -315,7 +309,6 @@ class EventsController extends AppController
      */
     public function approve($id = null)
     {
-        $this->isAdmin();
         $ids = $this->request->pass;
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
@@ -523,7 +516,6 @@ class EventsController extends AppController
     public function delete($id = null)
     {
         $event = $this->Events->get($id);
-        $this->isAdmin();
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
 
@@ -545,8 +537,6 @@ class EventsController extends AppController
         $event = $this->Events->get($id, [
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
-
-        $this->isAdmin($event);
 
         // Prepare form
         $this->setEventForm($event);
@@ -614,8 +604,6 @@ class EventsController extends AppController
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
-
-        $this->isAdmin($event);
 
         $event->date = $dates;
         $this->setEventForm($event);
@@ -821,7 +809,6 @@ class EventsController extends AppController
      */
     public function moderate()
     {
-        $this->isAdmin();
         // Collect all unapproved events
         $unapproved = $this->Events
             ->find('all', [
