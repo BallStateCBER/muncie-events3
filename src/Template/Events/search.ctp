@@ -97,7 +97,7 @@ use Cake\Utility\Inflector;
 
         <?= $this->element('pagination') ?>
 
-    <?php elseif (!isset($this->request->data['Event']['filter']) && empty($this->request->data['Event']['filter'])): ?>
+    <?php elseif (!isset($this->request->getData('Event')['filter']) && empty($this->request->getData('Event')['filter'])): ?>
         <p class="alert alert-info">
             No events have been found.
         </p>

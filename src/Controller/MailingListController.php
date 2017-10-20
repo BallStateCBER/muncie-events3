@@ -318,8 +318,8 @@ class MailingListController extends AppController
             'titleForLayout' => 'Bulk Add - Mailing List'
         ]);
 
-        if (!empty($this->request->data)) {
-            $addresses = explode("\n", $this->request->data['email_addresses']);
+        if (!empty($this->request->getData())) {
+            $addresses = explode("\n", $this->request->getData('email_addresses'));
             $retainedAddresses = [];
             foreach ($addresses as $address) {
                 $address = trim(strtolower($address));
@@ -341,7 +341,7 @@ class MailingListController extends AppController
                     $this->Flash->error("Error adding $address.");
                 }
             }
-            $this->request->data['email_addresses'] = implode("\n", $retainedAddresses);
+            $this->request->getData('email_addresses') = implode("\n", $retainedAddresses);
         }
     }
 
@@ -390,7 +390,7 @@ class MailingListController extends AppController
         // If updating an existing subscription
         if ($recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->data['email']])
+                ->where(['email' => $this->request->getData('email')])
                 ->andWhere(['id NOT' => $recipientId])
                 ->count();
             if ($emailInUse) {
@@ -402,26 +402,26 @@ class MailingListController extends AppController
         // If creating a new subscription
         if (!$recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->data['email']])
+                ->where(['email' => $this->request->getData('email')])
                 ->count();
             if ($emailInUse) {
                 $errorFound = true;
                 $this->MailingList->validationErrors['email'] = 'That address is already subscribed to the mailing list.';
             }
         }
-        $allCategories = ($this->request->data['event_categories'] == 'all');
-        $noCategories = empty($this->request->data['selected_categories']);
+        $allCategories = ($this->request->getData('event_categories') == 'all');
+        $noCategories = empty($this->request->getData('event_categories'));
         if (!$allCategories && $noCategories) {
             $errorFound = true;
             $this->set('categories_error', 'At least one category must be selected.');
         }
-        $frequency = $this->request->data['frequency'];
-        $weekly = $this->request->data['weekly'];
+        $frequency = $this->request->getData('frequency');
+        $weekly = $this->request->getData('weekly');
         if ($frequency == 'custom' && ! $weekly) {
             $selectedDaysCount = 0;
             $days = $this->MailingList->getDays();
             foreach ($days as $code => $day) {
-                $selectedDaysCount += $this->request->data["daily_$code"];
+                $selectedDaysCount += $this->request->getData("daily_$code");
             }
             if (! $selectedDaysCount) {
                 $errorFound = true;
@@ -467,7 +467,7 @@ class MailingListController extends AppController
 
         if ($this->request->is('post')) {
             // Unsubscribe
-            if ($this->request->data['unsubscribe']) {
+            if ($this->request->getData('unsubscribe')) {
                 return $this->unsubscribePr($recipientId);
             }
 
@@ -477,7 +477,7 @@ class MailingListController extends AppController
             // $userId = $this->MailingList->getAssociatedUserId();
             // if ($userId) {
             //    $this->User->id = $userId;
-            //    $this->User->saveField('email', $this->request->data['MailingList']['email']);
+            //    $this->User->saveField('email', $this->request->getData('MailingList')['email']);
             // }
 
             // Update settings

@@ -215,7 +215,7 @@ class TagsTable extends Table
             ->where(['name' => strtolower($name)])
             ->first();
         if (empty($result)) {
-            return false;
+            return null;
         }
 
         return $result->id;
@@ -278,6 +278,22 @@ class TagsTable extends Table
         }
 
         return $level;
+    }
+
+    /**
+     * find the id of parent tag
+     *
+     * @param string $parentName
+     * return int
+     */
+    public function getParentIdFromName($parentName)
+    {
+        $id = $this->find()
+            ->select(['id'])
+            ->where(['name' => $parentName])
+            ->first();
+
+        return $id;
     }
 
     /**

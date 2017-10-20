@@ -100,14 +100,14 @@ class UsersController extends AppController
                 }
 
                 // Remember login information
-                if ($this->request->data('remember_me')) {
+                if ($this->request->getData('remember_me')) {
                     $this->Cookie->configKey('User', [
                         'expires' => '+1 year',
                         'httpOnly' => true
                     ]);
                     $this->Cookie->write('User', [
-                        'email' => $this->request->data('email'),
-                        'password' => $this->request->data('password')
+                        'email' => $this->request->getData('email'),
+                        'password' => $this->request->getData('password')
                     ]);
                 }
 
@@ -246,7 +246,7 @@ class UsersController extends AppController
 
         if ($this->request->is('post')) {
             $adminEmail = Configure::read('admin_email');
-            $email = strtolower(trim($this->request->data['email']));
+            $email = strtolower(trim($this->request->getData('email')));
             $userId = $this->Users->getIdFromEmail($email);
             if ($userId) {
                 if ($this->Users->sendPasswordResetEmail($userId, $email)) {
@@ -292,8 +292,8 @@ class UsersController extends AppController
 
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, [
-                'password' => $this->request->data['new_password'],
-                'confirm_password' => $this->request->data['new_confirm_password']
+                'password' => $this->request->getData('new_password'),
+                'confirm_password' => $this->request->getData('new_confirm_password')
             ]);
 
             if ($this->Users->save($user)) {

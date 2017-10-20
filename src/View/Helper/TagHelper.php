@@ -125,7 +125,7 @@ class TagHelper extends Helper
      */
     public function setup($availableTags, $containerId, $event, $selectedTags = [])
     {
-        $newTags = empty($this->request->data['data']['Tags']) ? [] : $this->request->data['data']['Tags'];
+        $newTags = $this->request->getData('Tags') == null ? [] : $this->request->getData('data')['Tags'];
         $selectedTags = $this->formatSelectedTagsPr($newTags, $event);
 
         $this->Js->buffer("

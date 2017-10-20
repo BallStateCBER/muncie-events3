@@ -76,14 +76,14 @@ class PagesController extends AppController
              ]
          ];
         if ($this->request->is('post')) {
-            $this->set($this->request->data);
+            $this->set($this->request->getData());
 
             if ($this->validate) {
                 $email = new Email('contact_form');
-                $email->setFrom([$this->request->data['email'] => $this->request->data['name']])
+                $email->setFrom([$this->request->getData('email') => $this->request->getData('name')])
                      ->setTo(Configure::read('admin_email'))
-                     ->setSubject('Muncie Events contact form: ' . $this->request->data['category']);
-                if ($email->send($this->request->data['body'])) {
+                     ->setSubject('Muncie Events contact form: ' . $this->request->getData('category'));
+                if ($email->send($this->request->getData('body'))) {
                     return $this->Flash->success('Thanks for contacting us. We will try to respond to your message soon.');
                 } else {
                     $this->Flash->error('There was some problem sending your email.

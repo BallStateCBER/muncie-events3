@@ -21,6 +21,7 @@ class EventsController extends AppController
     ];
     public $uses = ['Event'];
     public $eventFilter = [];
+    public $adminActions = ['approve', 'moderate'];
 
     /**
      * Initialization hook method.
@@ -81,8 +82,7 @@ class EventsController extends AppController
                 }
             }
 
-            $adminActions = ['approve', 'moderate'];
-            foreach ($adminActions as $action) {
+            foreach ($this->adminActions as $action) {
                 if ($this->request->action == $action) {
                     $this->Flash->error(__('You are not authorized to view this page.'));
 
@@ -93,7 +93,7 @@ class EventsController extends AppController
     }
 
     /**
-     * Processes custom tag input and populates $this->request->data['data']['Tags']
+     * Processes custom tag input and populates $this->request->getData('data')['Tags']
      *
      * @param ResultSet $event Event entity
      * @return void
@@ -139,7 +139,7 @@ class EventsController extends AppController
                 if (!$selectable) {
                     continue;
                 }
-                $this->request->data['data']['Tags'][] = $tagId;
+                $this->request->getData('data')['Tags'][] = $tagId;
             }
             // Create the custom tag if it does not already exist
             if (!$tagId) {
@@ -151,10 +151,10 @@ class EventsController extends AppController
                 $newTag->selectable = 1;
 
                 $this->Events->Tags->save($newTag);
-                $this->request->data['data']['Tags'][] = $newTag->id;
+                $this->request->getData('data')['Tags'][] = $newTag->id;
             }
         }
-        $this->request->data['data']['Tags'] = array_unique($this->request->data['data']['Tags']);
+        $this->request->getData('data')['Tags'] = array_unique($this->request->getData('data')['Tags']);
         $event->customTags = '';
     }
 
@@ -265,11 +265,11 @@ class EventsController extends AppController
     {
         $weight = 1;
         $place = 0;
-        $imageData = isset($this->request->data['newImages']) ? $this->request->data['newImages'] : null;
+        $imageData = null == $this->request->getData('newImages') ? $this->request->getData('newImages') : null;
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Events->Images->get($imageId);
-                $delete = $this->request->data['delete'][$imageId];
+                $delete = $this->request->getData('delete')[$imageId];
                 if ($delete == 1) {
                     $this->Events->Images->unlink($event, [$newImage]);
                 }
@@ -284,7 +284,7 @@ class EventsController extends AppController
                 $place++;
             }
         }
-        $imageData = isset($this->request->data['data']['Image']) ? $this->request->data['data']['Image'] : null;
+        $imageData = isset($this->request->getData('data')['Image']) ? $this->request->getData('data')['Image'] : null;
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Events->Images->get($imageId);
@@ -367,16 +367,16 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Submit an Event');
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $this->uponFormSubmission();
+            $this->uponFormSubmission($event);
 
             // count how many dates have been picked
-            $dateInput = strlen($this->request->data['date']);
+            $dateInput = strlen($this->request->getData('date'));
 
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
                 $this->setCustomTags($event);
-                $event->date = new Date($this->request->data['date']);
+                $event->date = new Date($this->request->getData('date'));
                 $event->series_id = null;
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
@@ -390,7 +390,7 @@ class EventsController extends AppController
                 // save the series itself
                 $eventSeries = $this->Events->EventSeries->newEntity();
                 $eventSeries = $this->Events->EventSeries->patchEntity($eventSeries, $this->request->getData());
-                $eventSeries->title = $this->request->data['title'];
+                $eventSeries->title = $this->request->getData('title');
                 $eventSeries->user_id = $this->request->session()->read('Auth.User.id');
                 $eventSeries->published = ($this->request->session()->read('Auth.User.role') == 'admin') ? 1 : 0;
                 $eventSeries->created = date('Y-m-d');
@@ -398,7 +398,7 @@ class EventsController extends AppController
                 $this->Events->EventSeries->save($eventSeries);
 
                 // now save every event
-                $dates = explode(',', $this->request->data['date']);
+                $dates = explode(',', $this->request->getData('date'));
                 foreach ($dates as $date) {
                     $newDate = new Date($date);
                     $event = $this->Events->newEntity();
@@ -551,14 +551,14 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             // Make sure the end time stays null if it needs to
-            $this->uponFormSubmission();
+            $this->uponFormSubmission($event);
             $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = strtotime($this->request->data['date']);
+            $event->date = strtotime($this->request->getData('date'));
             $this->setCustomTags($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
-                $event->date = $this->request->data['date'];
+                $event->date = $this->request->getData('date');
 
                 return $this->Flash->success(__('The event has been saved.'));
             }
@@ -619,7 +619,7 @@ class EventsController extends AppController
 
         if ($this->request->is('put') || $this->request->is('post')) {
             // Save every event
-            $newDates = explode(',', $this->request->data['date']);
+            $newDates = explode(',', $this->request->getData('date'));
             foreach ($dates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
                 if (!in_array($oldDate, $newDates)) {
@@ -639,30 +639,30 @@ class EventsController extends AppController
                     $event = $this->Events->newEntity();
                 }
 
-                $event->category_id = $this->request->data['category_id'];
+                $event->category_id = $this->request->getData('category_id');
                 $newDate = new Date($date);
                 $event->date = $newDate;
-                $event->description = $this->request->data['description'];
-                $event->location = $this->request->data['location'];
+                $event->description = $this->request->getData('description');
+                $event->location = $this->request->getData('location');
                 $optional = ['time_end', 'age_restriction', 'cost', 'source', 'address', 'location_details'];
                 foreach ($optional as $option) {
-                    if (isset($this->request->data[$option])) {
+                    if (null == $this->request->getData($option)) {
                         if ($option = 'time_end') {
-                            $time = $this->request->data['time_end'];
+                            $time = $this->request->getData('time_end');
                             $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
                             $time = date('H:i:s', strtotime($timeString));
                             $event->time_end = new Time($time);
                             continue;
                         }
-                        $event->$option = $this->request->data[$option];
+                        $event->$option = $this->request->getData($option);
                     }
                 }
                 $event->series_id = $seriesId;
-                $time = $this->request->data['time_start'];
+                $time = $this->request->getData('time_start');
                 $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
                 $time = date('H:i:s', strtotime($timeString));
                 $event->time_start = new Time($time);
-                $event->title = $this->request->data['title'];
+                $event->title = $this->request->getData('title');
 
                 $this->setCustomTags($event);
                 if ($this->Events->save($event, [
@@ -677,7 +677,7 @@ class EventsController extends AppController
             }
             $series = $this->Events->EventSeries->get($seriesId);
             $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
-            $series->title = $this->request->data['event_series']['title'];
+            $series->title = $this->request->getData('event_series')['title'];
             if ($this->Events->EventSeries->save($series)) {
                 return $this->Flash->success(__("The event series '$series->title' was saved."));
             }
@@ -1117,22 +1117,25 @@ class EventsController extends AppController
     /**
      * Conditionally removes time_end and auto-approves the submitted event
      *
+     * @param ResultSet $event to be checked
      * @return void
      */
-    private function uponFormSubmission()
+    private function uponFormSubmission($event)
     {
         // Kill the end time if it hasn't been set
-        if (!isset($this->request->data['has_end_time'])) {
-            $this->request->data['time_end'] = null;
+        if (null !== $this->request->getData('has_end_time')) {
+            $event->time_end = null;
         }
 
         // Auto-approve if posted by an admin
         $userId = $this->request->session()->read('Auth.User.id') ?: null;
-        $this->request->data['user_id'] = $userId;
+        $event->user_id = $userId;
         if ($this->request->session()->read('Auth.User.role') == 'admin') {
-            $this->request->data['approved_by'] = $userId;
-            $this->request->data['published'] = true;
+            $event->approved_by = $userId;
+            $event->published = true;
         }
+
+        return $event;
     }
 
     /**

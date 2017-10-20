@@ -56,7 +56,7 @@ class EventSeriesController extends AppController
             ->select('id')
             ->where(['series_id' => $id]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            if ($this->request->data['delete'] == 1) {
+            if ($this->request->getData('delete') == 1) {
                 if ($this->EventSeries->delete($eventSeries)) {
                     $this->Flash->success(__('The event series has been deleted.'));
                     $events = $this->EventSeries->Events->find()
@@ -70,46 +70,44 @@ class EventSeriesController extends AppController
                 $this->Flash->error(__('The event series could not be deleted. Please, try again.'));
             }
 
-            if (isset($this->request->data['events'])) {
-                $x = 0;
-                foreach ($this->request->data['events'] as $event) {
-                    if (!$event['edited']) {
-                        $x = $x + 1;
-                        continue;
-                    }
-                    if ($event['delete']) {
-                        if ($this->EventSeries->Events->delete($eventSeries->events[$x])) {
-                            $this->Flash->success(__('Event deleted: ' . $event['id'] . '.'));
-                        }
-                        $x = $x + 1;
-                        continue;
-                    }
-
-                    $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
-                    $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
-                    $eventSeries->events[$x]->time_start = new Time(
-                        date(
-                            'H:i',
-                            strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
-                        )
-                    );
-                    $eventSeries->events[$x]->title = $event['title'];
-
-                    if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
-                        $this->Flash->success(__('Event #' . $event['id'] . ' has been saved.'));
-                        $x = $x + 1;
-                        continue;
-                    }
-
-                    $this->Flash->error(__('Event #' . $event['id'] . ' was not saved.'));
+            $x = 0;
+            foreach ($this->request->getData('events') as $event) {
+                if ($event['edited'] != 1) {
                     $x = $x + 1;
+                    continue;
                 }
+                if ($event['delete'] == 1) {
+                    if ($this->EventSeries->Events->delete($eventSeries->events[$x])) {
+                        $this->Flash->success(__('Event deleted: ' . $event['id'] . '.'));
+                    }
+                    $x = $x + 1;
+                    continue;
+                }
+
+                $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
+                $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
+                $eventSeries->events[$x]->time_start = new Time(
+                    date(
+                        'H:i',
+                        strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
+                    )
+                );
+                $eventSeries->events[$x]->title = $event['title'];
+
+                if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
+                    $this->Flash->success(__('Event #' . $event['id'] . ' has been saved.'));
+                    $x = $x + 1;
+                    continue;
+                }
+
+                $this->Flash->error(__('Event #' . $event['id'] . ' was not saved.'));
+                $x = $x + 1;
             }
 
-            $eventSeries->title = $this->request->data['title'];
+            $eventSeries->title = $this->request->getData('title');
             if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
-                #return $this->redirect(['action' => 'view', $id]);
+                return $this->redirect(['action' => 'view', $id]);
             }
 
             $this->Flash->error(__('The event series has NOT been saved.'));
