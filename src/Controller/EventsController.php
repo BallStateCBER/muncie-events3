@@ -510,6 +510,8 @@ class EventsController extends AppController
             'titleForLayout' => 'Events on ' . $dateString,
             'displayedDate' => date('l F j, Y', $timestamp)
         ]);
+
+        return null;
     }
 
     /**
@@ -882,6 +884,8 @@ class EventsController extends AppController
             'titleForLayout' => 'Events in ' . $dateString,
             'displayedDate' => date('F, Y', $timestamp)
         ]);
+
+        return null;
     }
 
     /**
