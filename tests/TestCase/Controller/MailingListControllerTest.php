@@ -1,13 +1,12 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\MailingListController;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\ApplicationTest;
 
 /**
  * App\Controller\MailingListController Test Case
  */
-class MailingListControllerTest extends IntegrationTestCase
+class MailingListControllerTest extends ApplicationTest
 {
     /**
      * Test index method

@@ -16,9 +16,6 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
-use Cake\Network\Exception\ForbiddenException;
-use Cake\Network\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
 
 /**
  * Static content controller

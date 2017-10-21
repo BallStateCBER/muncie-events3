@@ -1,11 +1,8 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\I18n\Date;
-use Cake\I18n\Time;
 use Cake\Routing\Router;
 
 /**
@@ -28,6 +25,17 @@ class UsersController extends AppController
         $this->Auth->allow([
             'register', 'forgotPassword', 'resetPassword', 'view'
         ]);
+    }
+
+    /**
+     * Determines whether or not the user is authorized to make the current request
+     *
+     * @param User|null $user User entity
+     * @return bool
+     */
+    public function isAuthorized()
+    {
+        return true;
     }
 
     /**

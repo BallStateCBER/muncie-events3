@@ -1,6 +1,6 @@
 <?php
 namespace App\Controller;
-use App\Controller\AppController;
+
 use App\Model\Entity\Category;
 use App\Model\Entity\Event;
 use App\Model\Entity\Image;
@@ -60,26 +60,29 @@ class EventsController extends AppController
      */
     public function isAuthorized($user = null)
     {
-        if ($user['role'] == 'admin') {
-            return true;
+        if (isset($user)) {
+            if ($user['role'] == 'admin') {
+                return true;
+            }
+            $authorPages = [
+                'delete',
+                'edit',
+                'editSeries'
+            ];
+            $action = $this->request->getParam('action');
+            /* If the request isn't for an author-accessible page,
+             * then it's for an admin-only page, and this user isn't an admin */
+            if (!in_array($action, $authorPages)) {
+                return false;
+            }
+            // Grant access only if this user is the event/series's author
+            $entityId = $this->request->getParam('pass')[0];
+            $entity = ($action == 'editSeries')
+                ? $this->Events->EventSeries->get($entityId)
+                : $this->Events->get($entityId);
+            return $entity->user_id === $user['id'];
         }
-        $authorPages = [
-            'delete',
-            'edit',
-            'editseries'
-        ];
-        $action = $this->request->getParam('action');
-        /* If the request isn't for an author-accessible page,
-         * then it's for an admin-only page, and this user isn't an admin */
-        if (!in_array($action, $authorPages)) {
-            return false;
-        }
-        // Grant access only if this user is the event/series's author
-        $entityId = $this->request->getParam('pass')[0];
-        $entity = ($action == 'editseries')
-            ? $this->Events->EventSeries->get($entityId)
-            : $this->Events->get($entityId);
-        return $entity->user_id === $user['id'];
+        return false;
     }
     /**
      * Processes custom tag input and populates $this->request->data['data']['Tags']
@@ -156,7 +159,7 @@ class EventsController extends AppController
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
-        if ($this->request->action == 'editseries') {
+        if ($this->request->action == 'editSeries') {
             $dateFieldValues = [];
             foreach ($event->date as $date) {
                 list($year, $month, $day) = explode('-', $date);
@@ -197,7 +200,7 @@ class EventsController extends AppController
             ->order(['name' => 'ASC'])
             ->toArray();
         $this->set(compact('availableTags'));
-        if ($this->request->action == 'add' || $this->request->action == 'editseries') {
+        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
             $hasSeries = count($event->date) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
@@ -522,7 +525,7 @@ class EventsController extends AppController
      * @param int $seriesId id for series
      * @return void
      */
-    public function editseries($seriesId)
+    public function editSeries($seriesId)
     {
         // Get information about series
         $eventSeries = $this->Events->EventSeries->get($seriesId);

@@ -1,14 +1,12 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\EventSeriesController;
-use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\ApplicationTest;
 
 /**
  * App\Controller\EventSeriesController Test Case
  */
-class EventSeriesControllerTest extends IntegrationTestCase
+class EventSeriesControllerTest extends ApplicationTest
 {
     /**
      * setUp method
@@ -18,9 +16,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Events') ? [] : ['className' => 'App\Model\Table\EventsTable'];
-        $this->Events = TableRegistry::get('Events', $config);
-        $this->EventSeries = TableRegistry::get('EventSeries');
     }
 
     /**
@@ -30,9 +25,6 @@ class EventSeriesControllerTest extends IntegrationTestCase
      */
     public function tearDown()
     {
-        unset($this->Events);
-        unset($this->EventSeries);
-
         parent::tearDown();
     }
 
@@ -43,7 +35,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
      */
     public function testAddingEventSeries()
     {
-        $this->session(['Auth.User.id' => 74]);
+        $this->session($this->commoner);
         $this->get('/events/add');
 
         $this->assertResponseOk();
@@ -99,7 +91,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
             $id[] = $event->id;
         }
 
-        $this->session(['Auth.User.id' => 74]);
+        $this->session($this->commoner);
 
         $this->get("/event-series/edit/$series->id");
 
@@ -121,7 +113,8 @@ class EventSeriesControllerTest extends IntegrationTestCase
                     'delete' => 1,
                     'edited' => 1,
                     'id' => $id[0],
-                    'time_start' => $rightNow
+                    'time_start' => $rightNow,
+                    'title' => 'Placeholder Party Series'
                 ],
                 1 => [
                     'date' => $today,
@@ -129,7 +122,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
                     'edited' => 1,
                     'id' => $id[1],
                     'time_start' => $rightNow,
-                    'title' => 'Placeholder Party Series'
+                    'title' => 'Placeholder Event Series'
                 ]
             ],
             'title' => 'Placeholder Event Series',
@@ -159,11 +152,11 @@ class EventSeriesControllerTest extends IntegrationTestCase
             ->where(['title' => 'Placeholder Event Series'])
             ->firstOrFail();
 
-        $this->session(['Auth.User.id' => 74]);
+        $this->session($this->commoner);
 
         $this->get("/events/editseries/$series->id");
 
-        $this->assertResponseOk();
+        $this->assertResponseSuccess();
 
         $dates = [date('m/d/Y', strtotime("+1 day")), date('m/d/Y', strtotime("+2 days"))];
         $dates = implode(',', $dates);
@@ -215,7 +208,7 @@ class EventSeriesControllerTest extends IntegrationTestCase
             ->where(['title' => 'Placeholder Series'])
             ->first();
 
-        $this->session(['Auth.User.id' => 74]);
+        $this->session($this->commoner);
 
         $this->get("/event-series/edit/$series->id");
 

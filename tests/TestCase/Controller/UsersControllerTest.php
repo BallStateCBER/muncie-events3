@@ -2,16 +2,16 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
+use App\Test\TestCase\ApplicationTest;
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
-use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\UsersController Test Case
  */
-class UsersControllerTest extends IntegrationTestCase
+class UsersControllerTest extends ApplicationTest
 {
     /**
      * setUp method
@@ -21,8 +21,6 @@ class UsersControllerTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Users') ? [] : ['className' => 'App\Model\Table\UsersTable'];
-        $this->Users = TableRegistry::get('Users', $config);
     }
 
     /**
@@ -32,8 +30,6 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
-
         parent::tearDown();
     }
 

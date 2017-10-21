@@ -14,13 +14,10 @@
  */
 namespace App\Controller;
 
-use AkkaFacebook\Controller\Component\GraphComponent;
 use Cake\Controller\Controller;
 use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
-use Cake\I18n\Time;
 use Cake\Routing\Router;
-use Facebook\FacebookRedirectLoginHelper;
 
 /**
  * Application Controller

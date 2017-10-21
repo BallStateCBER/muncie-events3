@@ -1,9 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
-use Cake\Routing\Router;
 
 /**
  * MailingList Controller
@@ -341,7 +339,7 @@ class MailingListController extends AppController
                     $this->Flash->error("Error adding $address.");
                 }
             }
-            $this->request->getData('email_addresses') = implode("\n", $retainedAddresses);
+            $this->request->data['email_addresses'] = implode("\n", $retainedAddresses);
         }
     }
 
@@ -390,7 +388,7 @@ class MailingListController extends AppController
         // If updating an existing subscription
         if ($recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->getData('email')])
+                ->where(['email' => $this->request->data['email']])
                 ->andWhere(['id NOT' => $recipientId])
                 ->count();
             if ($emailInUse) {
@@ -402,7 +400,7 @@ class MailingListController extends AppController
         // If creating a new subscription
         if (!$recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->getData('email')])
+                ->where(['email' => $this->request->data['email']])
                 ->count();
             if ($emailInUse) {
                 $errorFound = true;
@@ -416,12 +414,12 @@ class MailingListController extends AppController
             $this->set('categories_error', 'At least one category must be selected.');
         }
         $frequency = $this->request->getData('frequency');
-        $weekly = $this->request->getData('weekly');
+        $weekly = $this->request->data['weekly'];
         if ($frequency == 'custom' && ! $weekly) {
             $selectedDaysCount = 0;
             $days = $this->MailingList->getDays();
             foreach ($days as $code => $day) {
-                $selectedDaysCount += $this->request->getData("daily_$code");
+                $selectedDaysCount += $this->request->data["daily_$code"];
             }
             if (! $selectedDaysCount) {
                 $errorFound = true;
@@ -467,7 +465,7 @@ class MailingListController extends AppController
 
         if ($this->request->is('post')) {
             // Unsubscribe
-            if ($this->request->getData('unsubscribe')) {
+            if ($this->request->data['unsubscribe']) {
                 return $this->unsubscribePr($recipientId);
             }
 
@@ -477,7 +475,7 @@ class MailingListController extends AppController
             // $userId = $this->MailingList->getAssociatedUserId();
             // if ($userId) {
             //    $this->User->id = $userId;
-            //    $this->User->saveField('email', $this->request->getData('MailingList')['email']);
+            //    $this->User->saveField('email', $this->request->data['MailingList']['email']);
             // }
 
             // Update settings

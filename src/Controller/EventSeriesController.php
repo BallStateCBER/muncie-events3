@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
 use Cake\I18n\Time;
 
 /**
@@ -27,7 +26,36 @@ class EventSeriesController extends AppController
             'view'
         ]);
     }
-
+    /**
+     * Determines whether or not the user is authorized to make the current request
+     *
+     * @param User|null $user User entity
+     * @return bool
+     */
+    public function isAuthorized($user = null)
+    {
+        if (isset($user)) {
+            if ($user['role'] == 'admin') {
+                return true;
+            }
+            $authorPages = [
+                'edit'
+            ];
+            $action = $this->request->getParam('action');
+            /* If the request isn't for an author-accessible page,
+             * then it's for an admin-only page, and this user isn't an admin */
+            if (!in_array($action, $authorPages)) {
+                return false;
+            }
+            // Grant access only if this user is the event/series's author
+            $entityId = $this->request->getParam('pass')[0];
+            $entity = ($action == 'edit')
+                ? $this->EventSeries->Event->get($entityId)
+                : $this->EventSeries->get($entityId);
+            return $entity->user_id === $user['id'];
+        }
+        return false;
+    }
     /**
      * Edit method
      *
@@ -107,6 +135,7 @@ class EventSeriesController extends AppController
             $eventSeries->title = $this->request->getData('title');
             if ($this->EventSeries->save($eventSeries)) {
                 $this->Flash->success(__('The event series has been saved.'));
+
                 return $this->redirect(['action' => 'view', $id]);
             }
 
@@ -130,6 +159,7 @@ class EventSeriesController extends AppController
         $eventSeries = $this->EventSeries->find('all', [
             'conditions' => ['id' => $id]
         ])->first();
+
         if ($eventSeries == null) {
             $this->Flash->error(__('Sorry, we can\'t find that event series.'));
 

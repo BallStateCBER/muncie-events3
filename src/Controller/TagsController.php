@@ -1,8 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
-use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -25,42 +23,30 @@ class TagsController extends AppController
         $this->Auth->allow([
             'index'
         ]);
-
-        if (!$this->isAuthorized()) {
-            $this->Flash->error('You are not authorized to view that page.');
-            $this->redirect('/');
-        }
     }
 
     /**
-     * Auth settings for the tag manager
+     * Determines whether or not the user is authorized to make the current request
      *
+     * @param User|null $user User entity
      * @return bool
      */
-    public function isAuthorized()
+    public function isAuthorized($user = null)
     {
-        // testing turn-off!
-        if (php_sapi_name() == 'cli') {
+        if (isset($user)) {
+            // Admins can access everything
+            if ($user['role'] == 'admin') {
+                return true;
+
+                // Some actions are admin-only
+            } elseif (in_array($this->request->action, $this->adminActions)) {
+                return false;
+            }
+
+            // Logged-in users can access everything else
             return true;
         }
-
-        // Admins can access everything
-        if ($this->Auth->user('role') == 'admin' || $this->request->session()->read(['Auth.User.role'])) {
-            return true;
-
-        // Some actions are admin-only
-        } elseif (in_array($this->request->action, $this->adminActions)) {
-            return false;
-        }
-
-        // Otherwise, only authors can modify authored content
-        $authorOnly = [];
-        if (in_array($this->action, $authorOnly)) {
-            return $this->__isAdminOrAuthor($this->request->params['named']['id']);
-        }
-
-        // Logged-in users can access everything else
-        return true;
+        return false;
     }
 
     /**

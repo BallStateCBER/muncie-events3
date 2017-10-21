@@ -1,14 +1,12 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\TagsController;
-use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Test\TestCase\ApplicationTest;
 
 /**
  * App\Controller\TagsController Test Case
  */
-class TagsControllerTest extends IntegrationTestCase
+class TagsControllerTest extends ApplicationTest
 {
     /**
      * setUp method
@@ -18,9 +16,6 @@ class TagsControllerTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Tags') ? [] : ['className' => 'App\Model\Table\TagsTable'];
-        $this->EventsTags = TableRegistry::get('EventsTags');
-        $this->Tags = TableRegistry::get('Tags', $config);
     }
 
     /**
@@ -30,9 +25,6 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function tearDown()
     {
-        unset($this->EventsTags);
-        unset($this->Tags);
-
         parent::tearDown();
     }
 
@@ -43,7 +35,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testAddingTags()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $this->get('/tags/manage');
         $this->assertResponseOk();
@@ -82,7 +74,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testAddingExistingTag()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $this->get('/tags/manage');
         $this->assertResponseOk();
@@ -120,7 +112,7 @@ class TagsControllerTest extends IntegrationTestCase
             ->where(['name' => 'lourdes'])
             ->first();
 
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $this->get("/tags/edit/lourdes");
         $this->assertResponseSuccess();
@@ -145,7 +137,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testMergingTags()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $oldTag = $this->Tags->find()
             ->where(['name' => 'soothsayer lies'])
@@ -179,7 +171,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRegroupingOrphanTags()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         for ($x = 0; $x <= 10; $x++) {
             $orphanTag = $this->Tags->newEntity([
@@ -219,7 +211,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testTagTreeRecovery()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
         $this->get('/tags/recover');
         $this->assertResponseOk();
     }
@@ -231,7 +223,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRemovingUnusedTags()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $this->get('/tags/remove-unlisted-unused');
         $this->assertResponseOk();
@@ -254,7 +246,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testDealingWithDuplicates()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         for ($x = 0; $x <= 10; $x++) {
             $duplicate = $this->Tags->newEntity([
@@ -285,7 +277,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testRemovingBrokenAssociations()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $broken = $this->EventsTags->newEntity();
         $broken->event_id = 99999;
@@ -312,7 +304,7 @@ class TagsControllerTest extends IntegrationTestCase
      */
     public function testDeletingTags()
     {
-        $this->session(['Auth.User.id' => 1]);
+        $this->session($this->adminUser);
 
         $this->get("/tags/remove/we%20the%20heathens");
         $this->assertResponseSuccess();
