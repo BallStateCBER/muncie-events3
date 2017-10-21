@@ -52,8 +52,10 @@ class EventSeriesController extends AppController
             $entity = ($action == 'edit')
                 ? $this->EventSeries->Event->get($entityId)
                 : $this->EventSeries->get($entityId);
+
             return $entity->user_id === $user['id'];
         }
+
         return false;
     }
     /**

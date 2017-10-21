@@ -46,6 +46,7 @@ class TagsController extends AppController
             // Logged-in users can access everything else
             return true;
         }
+
         return false;
     }
 

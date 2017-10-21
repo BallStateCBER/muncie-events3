@@ -30,7 +30,6 @@ class UsersController extends AppController
     /**
      * Determines whether or not the user is authorized to make the current request
      *
-     * @param User|null $user User entity
      * @return bool
      */
     public function isAuthorized()
@@ -165,7 +164,7 @@ class UsersController extends AppController
     /**
      * registering a user
      *
-     * @return Cake\View\Helper\FlashHelper
+     * @return void
      */
     public function register()
     {
@@ -206,7 +205,7 @@ class UsersController extends AppController
     /**
      * account info for user
      *
-     * @return redirect
+     * @return redirect;
      */
     public function account()
     {

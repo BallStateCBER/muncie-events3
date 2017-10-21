@@ -80,8 +80,10 @@ class EventsController extends AppController
             $entity = ($action == 'editSeries')
                 ? $this->Events->EventSeries->get($entityId)
                 : $this->Events->get($entityId);
+
             return $entity->user_id === $user['id'];
         }
+
         return false;
     }
     /**
@@ -248,7 +250,9 @@ class EventsController extends AppController
         $imageData = $this->request->getData('newImages');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-                /** @var Image $newImage */
+                /**
+                 * @var Image $newImage
+                 */
                 $newImage = $this->Events->Images->get($imageId);
                 $delete = $this->request->getData("delete.$imageId");
                 if ($delete == 1) {
@@ -290,6 +294,7 @@ class EventsController extends AppController
         $ids = $this->request->getParam('pass');
         if (empty($ids)) {
             $this->Flash->error('No events approved because no IDs were specified');
+
             return $this->redirect('/');
         }
         $seriesToApprove = [];
@@ -315,6 +320,7 @@ class EventsController extends AppController
                 $this->Flash->success("Event #$id approved <a href=\"$url\">Go to event page</a>");
             }
         }
+
         return $this->redirect($this->referer());
     }
     /**
@@ -349,6 +355,7 @@ class EventsController extends AppController
                     'associated' => ['Images', 'Tags']
                 ])) {
                     $this->Flash->success(__('The event has been saved.'));
+
                     return;
                 }
             }
@@ -377,11 +384,13 @@ class EventsController extends AppController
                     ]);
                 }
                 $this->Flash->success(__('The event series has been saved.'));
+
                 return;
             }
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
                 return;
             }
         }
@@ -398,7 +407,9 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        /** @var Category $category */
+        /**
+         * @var Category $category
+         */
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
         ])
@@ -463,6 +474,7 @@ class EventsController extends AppController
             'titleForLayout' => 'Events on ' . $dateString,
             'displayedDate' => date('l F j, Y', $timestamp)
         ]);
+
         return null;
     }
     /**
@@ -476,9 +488,11 @@ class EventsController extends AppController
         $event = $this->Events->get($id);
         if ($this->Events->delete($event)) {
             $this->Flash->success(__('The event has been deleted.'));
+
             return $this->redirect('/');
         }
         $this->Flash->error(__('The event could not be deleted. Please, try again.'));
+
         return $this->redirect(['action' => 'index']);
     }
     /**
@@ -513,9 +527,11 @@ class EventsController extends AppController
             ])) {
                 $event->date = $this->request->getData('date');
                 $this->Flash->success(__('The event has been saved.'));
+
                 return;
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
+
             return;
         }
     }
@@ -532,6 +548,7 @@ class EventsController extends AppController
         if (!$eventSeries) {
             $msg = 'Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.';
             $this->Flash->error($msg);
+
             return;
         }
         $events = $this->Events->find('all', [
@@ -621,10 +638,12 @@ class EventsController extends AppController
             $series->title = $this->request->getData('event_series.title');
             if ($this->Events->EventSeries->save($series)) {
                 $this->Flash->success(__("The event series '$series->title' was saved."));
+
                 return;
             }
             if (!$this->Events->EventSeries->save($series)) {
                 $this->Flash->error(__("The event series '$series->title' was not saved."));
+
                 return;
             }
         }
@@ -789,6 +808,7 @@ class EventsController extends AppController
             'titleForLayout' => 'Events in ' . $dateString,
             'displayedDate' => date('F, Y', $timestamp)
         ]);
+
         return null;
     }
     /**
@@ -938,7 +958,9 @@ class EventsController extends AppController
         // Get tag
         $this->loadModel('Tags');
         $tagId = $this->Tags->getIdFromSlug($slug);
-        /** @var Tag $tag */
+        /**
+         * @var Tag $tag
+         */
         $tag = $this->Events->Tags->find('all', [
             'conditions' => ['id' => $tagId],
             'fields' => ['id', 'name'],
@@ -946,6 +968,7 @@ class EventsController extends AppController
         ])->first();
         if (empty($tag)) {
             $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
+
             return;
         }
         $eventId = $this->Events->getIdsFromTag($tagId);
@@ -997,6 +1020,7 @@ class EventsController extends AppController
     {
         $tomorrow = date('m-d-Y', strtotime('+1 day'));
         $tomorrow = explode('-', $tomorrow);
+
         return $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
     /**

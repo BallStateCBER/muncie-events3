@@ -70,7 +70,8 @@ class AppController extends Controller
         $this->loadComponent('Flash');
         $this->loadComponent('Cookie');
         $this->loadComponent(
-            'Auth', [
+            'Auth',
+            [
                 'loginAction' => [
                     'prefix' => false,
                     'controller' => 'Users',

@@ -283,8 +283,8 @@ class TagsTable extends Table
     /**
      * find the id of parent tag
      *
-     * @param string $parentName
-     * return int
+     * @param string $parentName for parent tag
+     * @return int
      */
     public function getParentIdFromName($parentName)
     {
