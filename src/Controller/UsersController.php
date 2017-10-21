@@ -164,7 +164,7 @@ class UsersController extends AppController
     /**
      * registering a user
      *
-     * @return void
+     * @return \Cake\Http\Response;
      */
     public function register()
     {
