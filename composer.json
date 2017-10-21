@@ -14,12 +14,12 @@
         "oldskool/cakephp-js": "dev-master",
         "ivanamat/cakephp3-captcha": "^1.0",
         "akkaweb/cakephp-ckeditor": "dev-master",
+        "akkaweb/cakephp-facebook": "dev-master",
         "josegonzalez/cakephp-upload": "^3.6",
         "friendsofcake/search": "^2.4",
         "dereuromark/cakephp-tools": "^1.4",
         "eluceo/ical": "^0.11.3",
         "dereuromark/cakephp-setup": "dev-master",
-        "akkaweb/cakephp-facebook": "dev-master",
         "facebook/php-sdk-v4": "4.0.*"
     },
     "require-dev": {

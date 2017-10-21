@@ -54,11 +54,16 @@ class CategoriesController extends AppController
     /**
      * Add method
      *
-     * @return \Cake\Network\Response|null Redirects on successful add, renders view otherwise.
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
     {
         $category = $this->Categories->newEntity();
+
+        $mailingList = $this->Categories->MailingList->find('list', ['limit' => 200]);
+        $this->set(compact('category', 'mailingList'));
+        $this->set('_serialize', ['category']);
+
         if ($this->request->is('post')) {
             $category = $this->Categories->patchEntity($category, $this->request->getData());
             if ($this->Categories->save($category)) {
@@ -68,16 +73,13 @@ class CategoriesController extends AppController
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
-        $mailingList = $this->Categories->MailingList->find('list', ['limit' => 200]);
-        $this->set(compact('category', 'mailingList'));
-        $this->set('_serialize', ['category']);
     }
 
     /**
      * Edit method
      *
      * @param string|null $id Category id.
-     * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null)
@@ -85,6 +87,11 @@ class CategoriesController extends AppController
         $category = $this->Categories->get($id, [
             'contain' => ['MailingList']
         ]);
+
+        $mailingList = $this->Categories->MailingList->find('list', ['limit' => 200]);
+        $this->set(compact('category', 'mailingList'));
+        $this->set('_serialize', ['category']);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $category = $this->Categories->patchEntity($category, $this->request->getData());
             if ($this->Categories->save($category)) {
@@ -94,8 +101,5 @@ class CategoriesController extends AppController
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
-        $mailingList = $this->Categories->MailingList->find('list', ['limit' => 200]);
-        $this->set(compact('category', 'mailingList'));
-        $this->set('_serialize', ['category']);
     }
 }

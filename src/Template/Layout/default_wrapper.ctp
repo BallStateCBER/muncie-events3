@@ -33,7 +33,7 @@
     <script>window.jQuery || document.write('<script src="js/jquery-3.1.1.min.js">\x3C/script>')</script>
 </head>
 <body class="layout_<?= $this->layout; ?>">
-    <?= $this->Facebook->initJsSDK(); ?>
+    <!--?= $this->Facebook->initJsSDK(); ?-->
     <div class="clearfix" id="header">
         <div class="container">
             <?= $this->element('header'); ?>

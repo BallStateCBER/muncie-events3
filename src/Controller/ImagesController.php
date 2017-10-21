@@ -37,9 +37,7 @@ class ImagesController extends AppController
                             $newImage = $newImage->newEntity();
                             $newImage->user_id = $userId;
                             $newImage->filename = $filename;
-                            if ($this->Images->save($newImage)) {
-                                // great success!
-                            }
+                            $this->Images->save($newImage);
                             if (!$this->Images->save($newImage)) {
                                 $this->response->statusCode(500);
                                 echo 'Error saving image';

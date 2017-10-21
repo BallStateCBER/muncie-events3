@@ -43,7 +43,7 @@ class EventsController extends AppController
             'location',
             'month',
             'search',
-            'searchAutocomplete',
+            'searchAutoComplete',
             'tag',
             'today',
             'tomorrow',
@@ -889,11 +889,11 @@ class EventsController extends AppController
         ]);
     }
     /**
-     * Provides an autocomplete suggestion for a partial search term
+     * Provides an auto complete suggestion for a partial search term
      *
      * @return void
      */
-    public function searchAutocomplete()
+    public function searchAutoComplete()
     {
         $stringToComplete = filter_input(INPUT_GET, 'term');
         $limit = 10;
@@ -936,7 +936,8 @@ class EventsController extends AppController
             ]);
             $x = $x + 1;
         }
-        $this->viewBuilder()->setLayout('ajax');
+        $this->set(compact('tags'));
+       $this->viewBuilder()->setLayout('ajax');
     }
     /**
      * Shows the events with a specified tag

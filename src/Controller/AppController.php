@@ -15,7 +15,6 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
-use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
 use Cake\Routing\Router;
 
@@ -29,6 +28,8 @@ use Cake\Routing\Router;
  */
 class AppController extends Controller
 {
+    public $autoComplete = ['searchAutoComplete', 'searchAutocomplete', 'autoComplete'];
+
     public $components = [
         'Auth'
     ];
@@ -101,7 +102,7 @@ class AppController extends Controller
                 'authorize' => 'Controller'
             ]
         );
-        if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {
+        if (!in_array($this->request->action, $this->autoComplete)) {
             $this->loadComponent('AkkaFacebook.Graph', [
                 'app_id' => '496726620385625',
                 'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
@@ -145,7 +146,7 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
-        if ($this->request->action != 'searchAutocomplete' && $this->request->action != 'autoComplete') {
+        if (!in_array($this->request->action, $this->autoComplete)) {
             $this->set([
                 'headerVars' => [
                     'categories' => $categories,
@@ -166,7 +167,7 @@ class AppController extends Controller
      * to index events
      * function placed in AppController so as to be shared by all controllers
      *
-     * @param ResultSetInterface|\App\Model\Entity\Event[] $events Event entities
+     * @param array $events that need indexed
      * @return void
      */
     public function indexEvents($events)
@@ -199,7 +200,7 @@ class AppController extends Controller
     /**
      * to index events for Json array
      *
-     * @param ResultSet $events Event entities
+     * @param \App\Model\Entity\Event $events Event entities
      * @return void
      */
     public function getEventsForJson($events)
@@ -213,8 +214,8 @@ class AppController extends Controller
                 ];
             }
             if (isset($daysEvents[0])) {
-                foreach ($daysEvents as $daysEvents) {
-                    $this->setJsonArrayPr($date, $daysEvents);
+                foreach ($daysEvents as $daysEvent) {
+                    $this->setJsonArrayPr($date, $daysEvent);
                 }
             } else {
                 $this->setJsonArrayPr($date, $daysEvents);
@@ -226,7 +227,7 @@ class AppController extends Controller
      * to set Json array
      *
      * @param string $date date string
-     * @param ResultSet $daysEvents Events entities
+     * @param \App\Model\Entity\Event $daysEvents Events entities
      * @return void
      */
     private function setJsonArrayPr($date, $daysEvents)
@@ -248,9 +249,9 @@ class AppController extends Controller
     /**
      * to index dates with multiple events happening during them
      *
-     * @param ResultSet $dates This is an array full of date objects
-     * @param ResultSet $events This is various Events entities
-     * @return ResultSet $events Events entities with new multiplicity
+     * @param array $dates This is an array full of date objects
+     * @param array $events This is an array of various Events entities
+     * @return \App\Model\Entity\Event $events Events entities with new multiplicity
      */
     public function multipleDateIndex($dates, $events)
     {

@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Controller\AppController;
 use Cake\I18n\Time;
 
 /**
@@ -29,7 +30,7 @@ class EventSeriesController extends AppController
     /**
      * Determines whether or not the user is authorized to make the current request
      *
-     * @param User|null $user User entity
+     * @param \App\Model\Entity\User|null $user User entity
      * @return bool
      */
     public function isAuthorized($user = null)
@@ -52,17 +53,15 @@ class EventSeriesController extends AppController
             $entity = ($action == 'edit')
                 ? $this->EventSeries->Event->get($entityId)
                 : $this->EventSeries->get($entityId);
-
             return $entity->user_id === $user['id'];
         }
-
         return false;
     }
     /**
      * Edit method
      *
      * @param string|null $id Event Series id.
-     * @return \Cake\Network\Response|null Redirects on successful edit, renders view otherwise.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null)
@@ -122,7 +121,7 @@ class EventSeriesController extends AppController
                         strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
                     )
                 );
-                $eventSeries->events[$x]->title = $event['title'];
+                $eventSeries->events[$x]->title = $event['title'] ?: $eventSeries->events[$x]->title;
 
                 if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
                     $this->Flash->success(__('Event #' . $event['id'] . ' has been saved.'));
@@ -153,7 +152,7 @@ class EventSeriesController extends AppController
      * View method
      *
      * @param string|null $id Event Series id.
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
