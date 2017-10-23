@@ -300,7 +300,7 @@ class TagsTable extends Table
      * look up a tag entity with the tag id
      *
      * @param int $tagId of tag
-     * @return ResultSet $result
+     * @return \App\Model\Entity\Tag|bool $result of tag ID
      */
     public function getTagFromId($tagId)
     {
@@ -308,11 +308,11 @@ class TagsTable extends Table
             ->select()
             ->where(['id' => $tagId])
             ->first();
-        if (empty($result)) {
-            return false;
-        }
 
-        return $result;
+        if (isset($result)) {
+            return $result;
+        }
+        return false;
     }
 
     /**

@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
 use Cake\I18n\Time;
 
 /**
@@ -84,6 +83,10 @@ class EventSeriesController extends AppController
         $eventIds
             ->select('id')
             ->where(['series_id' => $id]);
+        $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
+        $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
+        $this->set('_serialize', ['eventSeries']);
+        $this->set(['titleForLayout' => 'Edit Series: ' . $eventSeries->title]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             if ($this->request->getData('delete') == 1) {
                 if ($this->EventSeries->delete($eventSeries)) {
@@ -142,10 +145,7 @@ class EventSeriesController extends AppController
 
             $this->Flash->error(__('The event series has NOT been saved.'));
         }
-        $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
-        $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
-        $this->set('_serialize', ['eventSeries']);
-        $this->set(['titleForLayout' => 'Edit Series: ' . $eventSeries->title]);
+        return null;
     }
 
     /**
@@ -173,5 +173,7 @@ class EventSeriesController extends AppController
         $this->set('eventSeries', $eventSeries);
         $this->set('_serialize', ['eventSeries']);
         $this->set(['titleForLayout' => 'Event Series: ' . $eventSeries->title]);
+
+        return null;
     }
 }

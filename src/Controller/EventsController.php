@@ -204,7 +204,7 @@ class EventsController extends AppController
             ->toArray();
         $this->set(compact('availableTags'));
         if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
-            $hasSeries = count($event->date) > 1;
+            $hasSeries = count($event['date']) > 1;
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->action == 'edit') {
             $hasSeries = isset($event['series_id']);
@@ -411,16 +411,10 @@ class EventsController extends AppController
             'conditions' => ['slug' => $slug]
         ])
             ->first();
+
+        $options = ['category_id' => $category->id];
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
-        $events = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'ASC']
-            ])
-            ->where(['date >=' => $nextStartDate])
-            ->andWhere(['category_id' => $category->id])
-            ->andwhere(['date <=' => $endDate])
-            ->toArray();
+        $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, $options);
         if ($events) {
             $this->indexEvents($events);
         }

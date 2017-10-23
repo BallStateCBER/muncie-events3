@@ -167,7 +167,7 @@ class AppController extends Controller
      * to index events
      * function placed in AppController so as to be shared by all controllers
      *
-     * @param array $events that need indexed
+     * @param array|\Cake\ORM\ResultSet $events that need indexed
      * @return void
      */
     public function indexEvents($events)

@@ -28,7 +28,7 @@ class MailingListController extends AppController
     /**
      * sendDailyEmailPr method
      *
-     * @param ResultSet $events Event entities
+     * @param \App\Model\Entity\Event $events Event entities
      * @param string $recipient mailing list recipient
      * @param bool $testing whether or not this is testing mode
      * @return $result

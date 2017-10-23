@@ -28,7 +28,7 @@ class TagsController extends AppController
     /**
      * Determines whether or not the user is authorized to make the current request
      *
-     * @param User|null $user User entity
+     * @param \App\Model\Entity\User|null $user User entity
      * @return bool
      */
     public function isAuthorized($user = null)
@@ -149,7 +149,6 @@ class TagsController extends AppController
                     'value' => $result->id
                 ];
 
-                $tag = $result->id;
                 $tag = [
                     'label' => $result->name,
                     'value' => $result->id
@@ -255,29 +254,19 @@ class TagsController extends AppController
         }
 
         $rearrangedNodes = ['branches' => [], 'leaves' => []];
-        foreach ($nodes as $key => &$node) {
-            $tagId = $node->id;
+        if (isset($nodes)) {
+            foreach ($nodes as $key => &$node) {
+                $tagId = $node->id;
 
-            // Check for events associated with this tag
-            if ($node->selectable) {
-                $count = $this->EventsTags->find('all');
-                $count
-                    ->select()
-                    ->where(['tag_id' => $tagId])
-                    ->count();
-                if ($node->no_events) {
-                    $count == 0;
+                // Check for children
+                $hasChildren = $this->Tags->childCount($node);
+                if ($hasChildren) {
+                    $tagName = $node->name;
+                    $rearrangedNodes['branches'][$tagName] = $node;
                 }
-            }
-
-            // Check for children
-            $hasChildren = $this->Tags->childCount($node);
-            if ($hasChildren) {
-                $tagName = $node->name;
-                $rearrangedNodes['branches'][$tagName] = $node;
-            }
-            if (!$hasChildren) {
-                $rearrangedNodes['leaves'][$tagId] = $node;
+                if (!$hasChildren) {
+                    $rearrangedNodes['leaves'][$tagId] = $node;
+                }
             }
         }
 
