@@ -251,7 +251,7 @@ class EventsController extends AppController
         $imageData = $this->request->getData('newImages');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-                /** @var Image $newImage */
+            /** @var Image $newImage */
                 $newImage = $this->Events->Images->get($imageId);
                 $delete = $this->request->getData("delete.$imageId");
                 if ($delete == 1) {
@@ -406,7 +406,7 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-        /** @var Category $category */
+    /** @var Category $category */
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
         ])
@@ -931,7 +931,7 @@ class EventsController extends AppController
             $x = $x + 1;
         }
         $this->set(compact('tags'));
-       $this->viewBuilder()->setLayout('ajax');
+        $this->viewBuilder()->setLayout('ajax');
     }
     /**
      * Shows the events with a specified tag
@@ -950,7 +950,8 @@ class EventsController extends AppController
         // Get tag
         $this->loadModel('Tags');
         $tagId = $this->Tags->getIdFromSlug($slug);
-        /** @var Tag $tag */
+
+    /** @var Tag $tag */
         $tag = $this->Events->Tags->find('all', [
             'conditions' => ['id' => $tagId],
             'fields' => ['id', 'name'],

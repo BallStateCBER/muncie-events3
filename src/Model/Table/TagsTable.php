@@ -312,6 +312,7 @@ class TagsTable extends Table
         if (isset($result)) {
             return $result;
         }
+
         return false;
     }
 

@@ -177,7 +177,7 @@ class EventsTable extends Table
      */
     public function getEventsByDateAndSeries($date, $seriesId)
     {
-        /** @var Event $event */
+    /** @var Event $event */
         $event = $this->find()
             ->where(['date' => $date])
             ->andWhere(['series_id' => $seriesId])

@@ -92,6 +92,7 @@ class PagesController extends AppController
         $this->set([
              'titleForLayout' => 'Contact Us'
          ]);
+
         return null;
     }
 

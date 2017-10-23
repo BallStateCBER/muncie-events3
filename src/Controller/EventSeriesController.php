@@ -52,8 +52,10 @@ class EventSeriesController extends AppController
             $entity = ($action == 'edit')
                 ? $this->EventSeries->Event->get($entityId)
                 : $this->EventSeries->get($entityId);
+
             return $entity->user_id === $user['id'];
         }
+
         return false;
     }
     /**
@@ -145,6 +147,7 @@ class EventSeriesController extends AppController
 
             $this->Flash->error(__('The event series has NOT been saved.'));
         }
+
         return null;
     }
 
