@@ -251,7 +251,7 @@ class EventsController extends AppController
         $imageData = $this->request->getData('newImages');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-            /** @var Image $newImage */
+    /** @var Image $newImage */
                 $newImage = $this->Events->Images->get($imageId);
                 $delete = $this->request->getData("delete.$imageId");
                 if ($delete == 1) {
