@@ -53,7 +53,7 @@ class PagesController extends AppController
     /**
      * view for the terms page
      *
-     * @return Cake\View\Helper\FlashHelper
+     * @return null
      */
     public function contact()
     {
@@ -81,11 +81,15 @@ class PagesController extends AppController
                      ->setTo(Configure::read('admin_email'))
                      ->setSubject('Muncie Events contact form: ' . $this->request->getData('category'));
                 if ($email->send($this->request->getData('body'))) {
-                    return $this->Flash->success('Thanks for contacting us. We will try to respond to your message soon.');
+                    $this->Flash->success('Thanks for contacting us. We will try to respond to your message soon.');
+
+                    return null;
                 } else {
                     $this->Flash->error('There was some problem sending your email.
                          It could be a random glitch, or something could be permanently
                          broken. Please contact <a href="mailto:' . Configure::read('admin_email') . '">' . Configure::read('admin_email') . '</a> for assistance.');
+
+                    return null;
                 }
             }
         }

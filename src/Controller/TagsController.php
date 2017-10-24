@@ -419,18 +419,20 @@ class TagsController extends AppController
      * remove individual tags
      *
      * @param string $name of the tag you want gone
-     * @return void
+     * @return null
      */
     public function remove($name)
     {
         if (!$name) {
             $message = "You have not entered a tag name. Please try again.";
             $class = "error";
+            $this->Flash->$class($message);
         }
         $tagId = $this->Tags->getIdFromName($name);
         if (!$tagId) {
             $message = "The tag \"$name\" does not exist (you may have already deleted it).";
             $class = 'error';
+            $this->Flash->$class($message);
         }
         $tag = $this->Tags->get($tagId);
         if ($tag) {
@@ -440,9 +442,11 @@ class TagsController extends AppController
                 $message = "Tag \"$name\" deleted.";
                 $class = 'success';
             }
+            $this->Flash->$class($message);
         }
-        $this->Flash->$class($message);
         $this->render('/Tags/flash');
+
+        return null;
     }
 
     /**
@@ -470,18 +474,21 @@ class TagsController extends AppController
             $this->Tags->delete($tag);
             $deletedTags[] = $tag->name;
         }
+        $messages = [];
         if (empty($deletedTags)) {
-            $message = 'No tags found that were both unlisted and unused.';
+            $messages[0] = 'No tags found that were both unlisted and unused.';
         }
         if (!empty($deletedTags)) {
-            $message = 'Deleted the following tags: <br />- ';
-            $message .= implode('<br />- ', $deletedTags);
+            $messages[0] = 'Deleted the following tags: <br />- ';
+            $messages[0] .= implode('<br />- ', $deletedTags);
         }
         if (!empty($skippedTags)) {
-            $message .= '<br />&nbsp;<br />Did not delete the following tags, since they have child-tags: <br />- ';
-            $message .= implode('<br />- ', $skippedTags);
+            $messages[1] = 'Did not delete the following tags, since they have child-tags: <br />- ';
+            $messages[1] = implode('<br />- ', $skippedTags);
         }
-        $this->Flash->success($message);
+        foreach ($messages as $message) {
+            $this->Flash->success($message);
+        }
         $this->render('/Tags/flash');
     }
 
@@ -610,7 +617,7 @@ class TagsController extends AppController
                 ->toArray();
 
             foreach ($results as $result) {
-                $result->tag_id = $retainedTagId;
+                $result->tag_id = isset($retainedTagId) ? $retainedTagId : null;
                 $this->EventsTags->save($result);
             }
 
@@ -630,7 +637,7 @@ class TagsController extends AppController
         if (!empty($children)) {
             foreach ($children as $childId => $childName) {
                 $childTag = $this->Tags->get($childId);
-                $childTag->parent_id = $retainedTagId;
+                $childTag->parent_id = isset($retainedTagId) ? $retainedTagId : null;;
                 if ($this->Tags->save($childTag)) {
                     $message .= "Moved \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\". ";
                     continue;
@@ -722,7 +729,7 @@ class TagsController extends AppController
      * tag editor
      *
      * @param string|null $tagName name of the tag you wish to edit
-     * @return Cake\View\Helper\FlashHelper
+     * @return null
      */
     public function edit($tagName = null)
     {
@@ -748,8 +755,9 @@ class TagsController extends AppController
                 $message .= '" because another tag (';
                 $message .= print_r($oldTags);
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
+                $this->Flash->error($message);
 
-                return $this->Flash->error($message);
+                return null;
             }
 
             // Set flag to recover tag tree if necessary
@@ -768,29 +776,37 @@ class TagsController extends AppController
                 if ($this->request->getData('listed') && $tag->parent_id == $this->Tags->getUnlistedGroupId()) {
                     $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
                 }
+                $this->Flash->success($message);
 
-                return $this->Flash->success($message);
+                return null;
             }
+            $this->Flash->error('There was an error editing that tag.');
 
-            return $this->Flash->error('There was an error editing that tag.');
+            return null;
         }
         if (!$tagName) {
-            return $this->Flash->error('Please try again, but with a tag name provided this time.');
+            $this->Flash->error('Please try again, but with a tag name provided this time.');
+
+            return null;
         }
         $result = $this->Tags->find()
             ->where(['name' => $tagName])
             ->first();
         if (empty($result)) {
-            return $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
+            $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
+
+            return null;
         }
         if (count($result) > 1) {
             $tagIds = [];
             foreach ($result as $tag) {
                 $tagIds[] = $tag->id;
             }
+            $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . '<br />You will need to merge them before editing.');
 
-            return $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . '<br />You will need to merge them before editing.');
+            return null;
         }
+        return null;
     }
 
     /**
@@ -819,11 +835,7 @@ class TagsController extends AppController
         if (!isset($rootParentId) || $this->request->getData('parent_name') == '') {
             $rootParentId = $this->Tags->getUnlistedGroupId();
         }
-
-        $class = 'success';
-        $message = '';
         $inputtedNames = explode("\n", trim(strtolower($this->request->getData('name'))));
-        $level = 0;
         $parents = [$rootParentId];
         foreach ($inputtedNames as $lineNum => $name) {
             $level = $this->Tags->getIndentLevel($name);
@@ -837,8 +849,7 @@ class TagsController extends AppController
             } elseif (isset($parents[$level])) {
                 $parentId = $parents[$level];
             } else {
-                $class = 'error';
-                $message .= "Error with nested tag structure. Looks like there's an extra indent in line $lineNum: \"$name\".<br />";
+                $this->Flash->error("Error with nested tag structure. Looks like there's an extra indent in line $lineNum: \"$name\".<br />");
             }
 
             // Strip leading/trailing whitespace and hyphens used for indenting
@@ -852,8 +863,7 @@ class TagsController extends AppController
                 ->where(['name' => $name])
                 ->count();
             if ($exists) {
-                $class = 'error';
-                $message .= "Cannot create the tag \"$name\" because a tag with that name already exists.<br />";
+                $this->Flash->error("Cannot create the tag \"$name\" because a tag with that name already exists.<br />");
                 continue;
             }
 
@@ -861,7 +871,7 @@ class TagsController extends AppController
             $newTag = $this->Tags->newEntity();
             $newTag->name = $name;
             $newTag->user_id = $this->request->session()->read('Auth.User.id');
-            $newTag->parent_id = $parentId;
+            $newTag->parent_id = isset($parentId) ? $parentId : null;
             $newTag->listed = 0;
             $newTag->selectable = 1;
             if ($this->Tags->save($newTag)) {
@@ -869,7 +879,6 @@ class TagsController extends AppController
                 $parents[$level + 1] = $newTag->id;
                 continue;
             }
-            $class = 'error';
             $this->Flash->error("Error creating the tag \"$name\"");
         }
         $this->render('/Tags/flash');

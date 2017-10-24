@@ -38,6 +38,48 @@ class UsersController extends AppController
     }
 
     /**
+     * login for users
+     *
+     * @return \Cake\Http\Response|null
+     */
+    public function login()
+    {
+        $this->set('titleForLayout', 'Log In');
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+
+                // do they have an old sha1 password?
+                if ($this->Auth->authenticationProvider()->needsPasswordRehash()) {
+                    $user = $this->Users->get($this->Auth->user('id'));
+                    $user->password = $this->request->getData('password');
+                    $this->Users->save($user);
+                }
+
+                // Remember login information
+                if ($this->request->getData('remember_me')) {
+                    $this->Cookie->configKey('User', [
+                        'expires' => '+1 year',
+                        'httpOnly' => true
+                    ]);
+                    $this->Cookie->write('User', [
+                        'email' => $this->request->getData('email'),
+                        'password' => $this->request->getData('password')
+                    ]);
+                }
+
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+            if (!$user) {
+                $this->Flash->error(__('We could not log you in. Please check your email & password.'));
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * beforeFilter
      *
      * @param  Event  $event beforeFilter
@@ -87,46 +129,6 @@ class UsersController extends AppController
     }
 
     /**
-     * login for users
-     *
-     * @return redirect
-     */
-    public function login()
-    {
-        $this->set('titleForLayout', 'Log In');
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-
-                // do they have an old sha1 password?
-                if ($this->Auth->authenticationProvider()->needsPasswordRehash()) {
-                    $user = $this->Users->get($this->Auth->user('id'));
-                    $user->password = $this->request->getData('password');
-                    $this->Users->save($user);
-                }
-
-                // Remember login information
-                if ($this->request->getData('remember_me')) {
-                    $this->Cookie->configKey('User', [
-                        'expires' => '+1 year',
-                        'httpOnly' => true
-                    ]);
-                    $this->Cookie->write('User', [
-                        'email' => $this->request->getData('email'),
-                        'password' => $this->request->getData('password')
-                    ]);
-                }
-
-                return $this->redirect($this->Auth->redirectUrl());
-            }
-            if (!$user) {
-                $this->Flash->error(__('We could not log you in. Please check your email & password.'));
-            }
-        }
-    }
-
-    /**
      * Intercepts failed Facebook logins
      *
      * @return void
@@ -152,7 +154,7 @@ class UsersController extends AppController
     /**
      * log out users
      *
-     * @return redirect
+     * @return \Cake\Http\Response
      */
     public function logout()
     {
@@ -164,7 +166,7 @@ class UsersController extends AppController
     /**
      * registering a user
      *
-     * @return \Cake\Http\Response;
+     * @return \Cake\Http\Response|null;
      */
     public function register()
     {
@@ -184,12 +186,16 @@ class UsersController extends AppController
             $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
             $validEmail = preg_match($regex, $user['email']);
             if (!$validEmail) {
-                return $this->Flash->error("That's not a valid email address. Please enter a valid email address.");
+                $this->Flash->error("That's not a valid email address. Please enter a valid email address.");
+
+                return null;
             }
             // is there a previous user associated?
             $prevUser = $this->Users->getIdFromEmail($user['email']);
             if ($prevUser) {
-                return $this->Flash->error('There is already a user with this email address.');
+                $this->Flash->error('There is already a user with this email address.');
+
+                return null;
             }
 
             if ($this->Users->save($user)) {
@@ -200,12 +206,14 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('Sorry, we could not register you. Please try again.'));
         }
+
+        return null;
     }
 
     /**
      * account info for user
      *
-     * @return redirect;
+     * @return \Cake\Http\Response|null;
      */
     public function account()
     {
@@ -238,12 +246,14 @@ class UsersController extends AppController
             $this->Flash->error(__('Sorry, we could not update your information. Please try again.'));
         }
         $this->set(compact('user'));
+
+        return null;
     }
 
     /**
      * for when the user forgets their password
      *
-     * @return Cake\View\Helper\FlashHelper
+     * @return null
      */
     public function forgotPassword()
     {
@@ -257,7 +267,9 @@ class UsersController extends AppController
             $userId = $this->Users->getIdFromEmail($email);
             if ($userId) {
                 if ($this->Users->sendPasswordResetEmail($userId, $email)) {
-                    return $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
+                    $this->Flash->success('Message sent. You should be shortly receiving an email with a link to reset your password.');
+
+                    return null;
                 }
                 $this->Flash->error("Whoops. There was an error sending your password-resetting email out. Please try again, and if it continues to not work, email $adminEmail for more assistance.");
             }
@@ -269,6 +281,8 @@ class UsersController extends AppController
                 $this->Flash->error('Please enter the email address you registered with to have your password reset.');
             }
         }
+
+        return null;
     }
 
     /**
@@ -276,7 +290,7 @@ class UsersController extends AppController
      *
      * @param int $userId of the user to reset
      * @param string $resetPasswordHash for the user to reset
-     * @return Cake\View\Helper\FlashHelper
+     * @return null
      */
     public function resetPassword($userId, $resetPasswordHash)
     {
@@ -306,20 +320,22 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $data = $user->toArray();
                 $this->Auth->setUser($data);
+                $this->Flash->success('Password changed. You are now logged in.');
 
-                return $this->Flash->success('Password changed. You are now logged in.');
+                return null;
             }
             $this->Flash->error('There was an error changing your password. Please check to make sure they\'ve been entered correctly.');
 
             return $this->redirect('/');
         }
+        return null;
     }
 
     /**
      * deleting users
      *
      * @param int|null $id of the user to delete
-     * @return redirect
+     * @return \Cake\Http\Response;
      */
     public function delete($id = null)
     {

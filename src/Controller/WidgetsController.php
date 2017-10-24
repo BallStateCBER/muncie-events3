@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
+use Cake\Network\Exception\InternalErrorException;
 use Cake\Routing\Router;
 
 class WidgetsController extends AppController
@@ -213,26 +213,14 @@ class WidgetsController extends AppController
 
         // Dimensions for height
         foreach (['height'] as $dimension) {
-            if (isset($options[$dimension])) {
-                $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
-                $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            }
-            if (!isset($options[$dimension])) {
-                $unit = 'px';
-                $value = $defaults['iframeOptions'][$dimension];
-            }
+            $unit = isset($options[$dimension]) ? (substr($options[$dimension], -1) == '%' ? '%' : 'px') : 'px';
+            $value = isset($options[$dimension]) ? (preg_replace("/[^0-9]/", "", $options[$dimension])) : $defaults['iframeOptions'][$dimension];
             $iframeStyles .= "$dimension:{$value}$unit;";
         }
         // Dimensions for width
         foreach (['width'] as $dimension) {
-            if (isset($options[$dimension])) {
-                $unit = substr($options[$dimension], -1) == '%' ? '%' : 'px';
-                $value = preg_replace("/[^0-9]/", "", $options[$dimension]);
-            }
-            if (isset($options[$dimension])) {
-                $unit = '%';
-                $value = $defaults['iframeOptions'][$dimension];
-            }
+            $unit = isset($options[$dimension]) ? (substr($options[$dimension], -1) == '%' ? '%' : 'px') : '%';
+            $value = isset($options[$dimension]) ? (preg_replace("/[^0-9]/", "", $options[$dimension])) : $defaults['iframeOptions'][$dimension];
             $iframeStyles .= "$dimension:{$value}$unit;";
         }
 
@@ -241,12 +229,7 @@ class WidgetsController extends AppController
             $iframeStyles .= "border:0;";
         }
         if (!isset($options['outerBorder']) || !$options['outerBorder'] == 0) {
-            if (isset($options['borderColorDark'])) {
-                $outerBorderColor = $options['borderColorDark'];
-            }
-            if (!isset($options['borderColorDark'])) {
-                $outerBorderColor = $defaults['styles']['borderColorDark'];
-            }
+            $outerBorderColor = isset($options['borderColorDark']) ? $options['borderColorDark'] : $defaults['styles']['borderColorDark'];
             $iframeStyles .= "border:1px solid $outerBorderColor;";
         }
 
@@ -670,7 +653,6 @@ class WidgetsController extends AppController
             $options = [];
         }
         $filters = $this->Events->getValidFilters($options);
-        $nextMonth = strtotime($yearMonth . '+1 month');
 
         $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $nextMonth, $options) : $this->Events->getMonthEvents($yearMonth);
         $this->indexEvents($events);
@@ -726,7 +708,7 @@ class WidgetsController extends AppController
     public function day($year, $month, $day)
     {
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $day = str_pad($month, 2, '0', STR_PAD_LEFT);
+        $day = str_pad($day, 2, '0', STR_PAD_LEFT);
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
         $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
@@ -745,12 +727,9 @@ class WidgetsController extends AppController
      */
     private function getAllEventsUrlPr($action, $queryString)
     {
-        if (empty($queryString)) {
-            $newQueryString = '';
-        }
+        $filteredParams = [];
         if (!empty($queryString)) {
             $parameters = explode('&', urldecode($queryString));
-            $filteredParams = [];
             $defaults = $this->getDefaults();
             foreach ($parameters as $paramPair) {
                 $pairSplit = explode('=', $paramPair);
@@ -759,8 +738,8 @@ class WidgetsController extends AppController
                     $filteredParams[$var] = $val;
                 }
             }
-            $newQueryString = http_build_query($filteredParams, '', '&');
         }
+        $newQueryString = (!empty($queryString)) ? http_build_query($filteredParams, '', '&') : '';
 
         return Router::url([
             'controller' => 'widgets',
@@ -773,7 +752,7 @@ class WidgetsController extends AppController
      * event page for the widget
      *
      * @param int $id of the event
-     * @return Cake\View\Helper\FlashHelper
+     * @return null
      */
     public function event($id)
     {
@@ -783,12 +762,16 @@ class WidgetsController extends AppController
             ]
         ]);
         if (empty($event)) {
-            return $this->Flash->error("Sorry, but we couldn't find the event (#$id) you were looking for.");
+            $this->Flash->error("Sorry, but we couldn't find the event (#$id) you were looking for.");
+
+            return null;
         }
-        $this->viewBuilder()->layout('Widgets' . DS . 'feed');
+        $this->viewBuilder()->setLayout('Widgets' . DS . 'feed');
         $this->set([
             'event' => $event
         ]);
+
+        return null;
     }
 
     /**
@@ -801,7 +784,7 @@ class WidgetsController extends AppController
         $this->set([
             'titleForLayout' => 'Website Widgets'
         ]);
-        $this->viewBuilder()->layout('no_sidebar');
+        $this->viewBuilder()->setLayout('no_sidebar');
     }
 
     /**
@@ -831,7 +814,7 @@ class WidgetsController extends AppController
             $events[$date][] = $result;
         }
         if ($this->request->is('ajax')) {
-            $this->viewBuilder()->layout('widgets/ajax');
+            $this->viewBuilder()->setLayout('widgets/ajax');
         }
         $this->set([
             'events' => $events,
@@ -851,7 +834,7 @@ class WidgetsController extends AppController
     public function demoFeed()
     {
         $this->setDemoDataPr('feed');
-        $this->viewBuilder()->layout('ajax');
+        $this->viewBuilder()->setLayout('ajax');
         $this->render('customize/demo');
     }
 
@@ -863,7 +846,7 @@ class WidgetsController extends AppController
     public function demoMonth()
     {
         $this->setDemoDataPr('month');
-        $this->viewBuilder()->layout('ajax');
+        $this->viewBuilder()->setLayout('ajax');
         $this->render('customize/demo');
     }
 
