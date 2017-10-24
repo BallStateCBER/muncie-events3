@@ -637,7 +637,7 @@ class TagsController extends AppController
         if (!empty($children)) {
             foreach ($children as $childId => $childName) {
                 $childTag = $this->Tags->get($childId);
-                $childTag->parent_id = isset($retainedTagId) ? $retainedTagId : null;;
+                $childTag->parent_id = isset($retainedTagId) ? $retainedTagId : null;
                 if ($this->Tags->save($childTag)) {
                     $message .= "Moved \"$childName\" from under \"$removedTagName\" to under \"$retainedTagName\". ";
                     continue;
@@ -806,6 +806,7 @@ class TagsController extends AppController
 
             return null;
         }
+
         return null;
     }
 
