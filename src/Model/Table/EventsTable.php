@@ -187,7 +187,7 @@ class EventsTable extends Table
         if (isset($eventIds['excluded'])) {
             $findParams['conditions']['id NOT'] = $eventIds['excluded'];
         }
-        
+
         return $findParams;
     }
 
