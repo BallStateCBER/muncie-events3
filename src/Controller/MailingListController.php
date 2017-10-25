@@ -265,6 +265,7 @@ class MailingListController extends AppController
                 $this->CategoriesMailingList->save($newJoin);
             }
         }
+        
         return null;
     }
 

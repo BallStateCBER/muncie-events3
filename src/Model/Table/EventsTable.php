@@ -148,22 +148,23 @@ class EventsTable extends Table
     /**
      * applyFiltersToFindParams method
      *
-     * @param $findParams
-     * @param array $filters
+     * @param array $findParams we need to find
+     * @param array $filters the results
      * @return mixed
      */
-    public function applyFiltersToFindParams($findParams, $filters = []) {
+    public function applyFiltersToFindParams($findParams, $filters = [])
+    {
         if (isset($filters['category']) && ! empty($filters['category'])) {
             $findParams['conditions']['category_id'] = $filters['category'];
         }
         if (isset($filters['location']) && ! empty($filters['location'])) {
-            $findParams['conditions']['location LIKE'] = '%'.$filters['location'].'%';
+            $findParams['conditions']['location LIKE'] = '%' . $filters['location'] . '%';
         }
 
         // If there are included/excluded tags, retrieve all potentially
         // applicable event IDs that must / must not be part of the final results
-        $event_ids = [];
-        foreach(['included', 'excluded'] as $foocluded) {
+        $eventIds = [];
+        foreach (['included', 'excluded'] as $foocluded) {
             if (isset($filters["tags_$foocluded"])) {
                 $results = $this->Tags->find(['contain' => ['Event' => [
                     'fields' => ['id'],
@@ -172,20 +173,21 @@ class EventsTable extends Table
                     ->select(['id'])
                     ->where(['id' => $filters["tags_$foocluded"]])
                     ->toArray();
-                $event_ids[$foocluded] = array();
+                $eventIds[$foocluded] = [];
                 foreach ($results as $result) {
                     foreach ($result['Event'] as $event) {
-                        $event_ids[$foocluded][] = $event['id'];
+                        $eventIds[$foocluded][] = $event['id'];
                     }
                 }
             }
         }
-        if (isset($event_ids['included'])) {
-            $findParams['conditions']['Event.id'] = $event_ids['included'];
+        if (isset($eventIds['included'])) {
+            $findParams['conditions']['id'] = $eventIds['included'];
         }
-        if (isset($event_ids['excluded'])) {
-            $findParams['conditions']['Event.id NOT'] = $event_ids['excluded'];
+        if (isset($eventIds['excluded'])) {
+            $findParams['conditions']['id NOT'] = $eventIds['excluded'];
         }
+        
         return $findParams;
     }
 

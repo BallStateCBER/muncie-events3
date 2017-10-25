@@ -365,6 +365,7 @@ class MailingListTable extends Table
         $recipient->new_subscriber = 0;
 
         $this->save($recipient);
+
         return null;
     }
 
@@ -392,6 +393,7 @@ class MailingListTable extends Table
         $recipient->new_subscriber = 0;
 
         $this->save($recipient);
+
         return null;
     }
 
@@ -599,7 +601,7 @@ class MailingListTable extends Table
             }
             $this->setDailyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from ' . $recipient['email'] . '\'s settings<br>';
-            $message .= 'Selected: ' . $recipient['categories'] .'<br>';
+            $message .= 'Selected: ' . $recipient['categories'] . '<br>';
             $message .= 'Available: ' . (empty($eventCategories) ? 'None' : implode(',', $eventCategories));
 
             return [false, $message];
@@ -693,7 +695,7 @@ class MailingListTable extends Table
             }
             $this->setWeeklyAsProcessed($recipientId, 3);
             $message = 'No events to report, resulting from ' . $recipient['email'] . '\'s settings<br>';
-            $message .= 'Selected: ' . $cats .'<br>';
+            $message .= 'Selected: ' . $cats . '<br>';
             $message .= 'Available: ' . (empty($eventCategories) ? 'None' : implode(',', $eventCategories));
 
             return [false, $message];
