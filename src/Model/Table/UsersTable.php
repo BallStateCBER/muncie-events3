@@ -3,8 +3,6 @@ namespace App\Model\Table;
 
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
-use Cake\Network\Session;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -51,7 +49,7 @@ class UsersTable extends Table
 
         $this->addBehavior('Josegonzalez/Upload.Upload', [
             'photo' => [
-                'nameCallback' => function (array $data, array $settings) {
+                'nameCallback' => function (array $data) {
                     $ext = pathinfo($data['name'], PATHINFO_EXTENSION);
                     $salt = Configure::read('profile_salt');
                     $newFilename = md5($data['name'] . $salt);
@@ -185,7 +183,7 @@ class UsersTable extends Table
      *
      * @param int $userId of user
      * @param string $email to send to
-     * @return Cake\Mailer\Email
+     * @return array
      */
     public function sendPasswordResetEmail($userId, $email)
     {
@@ -200,10 +198,10 @@ class UsersTable extends Table
         $resetEmail
             ->setTo($email)
             ->setSubject('Muncie Events: Reset Password')
-            ->template('forgot_password')
-            ->emailFormat('both')
-            ->helpers(['Html', 'Text'])
-            ->viewVars(compact(
+            ->setTemplate('forgot_password')
+            ->setEmailFormat('both')
+            ->setHelpers(['Html', 'Text'])
+            ->setViewVars(compact(
                 'email',
                 'resetUrl'
             ));
@@ -215,13 +213,15 @@ class UsersTable extends Table
      * get list of images associated with this user
      *
      * @param int $id of user
-     * @return ResultSet
+     * @return array
      */
     public function getImagesList($id)
     {
-        return $this->Images->find()
+        $retval = $this->Images->find()
             ->where(['user_id' => $id])
             ->order(['created' => 'DESC'])
             ->toArray();
+
+        return $retval;
     }
 }

@@ -2,7 +2,6 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
-use Cake\ORM\Query;
 use Cake\ORM\ResultSet;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -27,6 +26,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Event findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin \Search\Model\Behavior\SearchBehavior
  */
 class EventsTable extends Table
 {
@@ -146,11 +146,55 @@ class EventsTable extends Table
     }
 
     /**
+     * applyFiltersToFindParams method
+     *
+     * @param $findParams
+     * @param array $filters
+     * @return mixed
+     */
+    public function applyFiltersToFindParams($findParams, $filters = []) {
+        if (isset($filters['category']) && ! empty($filters['category'])) {
+            $findParams['conditions']['category_id'] = $filters['category'];
+        }
+        if (isset($filters['location']) && ! empty($filters['location'])) {
+            $findParams['conditions']['location LIKE'] = '%'.$filters['location'].'%';
+        }
+
+        // If there are included/excluded tags, retrieve all potentially
+        // applicable event IDs that must / must not be part of the final results
+        $event_ids = [];
+        foreach(['included', 'excluded'] as $foocluded) {
+            if (isset($filters["tags_$foocluded"])) {
+                $results = $this->Tags->find(['contain' => ['Event' => [
+                    'fields' => ['id'],
+                    'conditions' => $findParams['conditions']
+                ]]])
+                    ->select(['id'])
+                    ->where(['id' => $filters["tags_$foocluded"]])
+                    ->toArray();
+                $event_ids[$foocluded] = array();
+                foreach ($results as $result) {
+                    foreach ($result['Event'] as $event) {
+                        $event_ids[$foocluded][] = $event['id'];
+                    }
+                }
+            }
+        }
+        if (isset($event_ids['included'])) {
+            $findParams['conditions']['Event.id'] = $event_ids['included'];
+        }
+        if (isset($event_ids['excluded'])) {
+            $findParams['conditions']['Event.id NOT'] = $event_ids['excluded'];
+        }
+        return $findParams;
+    }
+
+    /**
      * Returns the most recently published address
      * for the provided location name or FALSE if none is found
      *
      * @param string $location we need address for
-     * @return ResultSet $result->address
+     * @return bool|array
      */
     public function getAddress($location)
     {
@@ -165,7 +209,7 @@ class EventsTable extends Table
             return false;
         }
 
-        return $result->address;
+        return $result['address'];
     }
 
     /**
@@ -214,7 +258,7 @@ class EventsTable extends Table
      * @param string $nextStartDate to begin
      * @param string $endDate to end
      * @param array $options for filtering events
-     * @return ResultSet $events
+     * @return array $events
      */
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
@@ -303,7 +347,7 @@ class EventsTable extends Table
      * getMonthEvents method
      *
      * @param string $yearMonth of events
-     * @return ResultSet $events
+     * @return array $events
      */
     public function getMonthEvents($yearMonth)
     {
@@ -323,7 +367,7 @@ class EventsTable extends Table
      *
      * @param string $nextStartDate to begin
      * @param string $endDate to end
-     * @return ResultSet $events
+     * @return array $events
      */
     public function getRangeEvents($nextStartDate, $endDate)
     {
@@ -381,7 +425,7 @@ class EventsTable extends Table
     /**
      * getUpcomingEvents method
      *
-     * @return ResultSet $events
+     * @return array $events
      */
     public function getUpcomingEvents()
     {
@@ -460,6 +504,7 @@ class EventsTable extends Table
             ->where(['date >=' => date('Y-m-d')])
             ->group(['location'])
             ->toArray();
+        $retval = [];
         foreach ($locations as $location) {
             $retval[] = $location->location;
         }
@@ -478,6 +523,8 @@ class EventsTable extends Table
         $locations
             ->select(['location', 'address'])
             ->where(['date <' => date('Y-m-d')]);
+        $adds = [];
+        $locs = [];
         foreach ($locations as $location) {
             $locs[] = $location->location;
             $adds[] = $location->address;
@@ -607,6 +654,7 @@ class EventsTable extends Table
             ->where(['Events.date >=' => date('Y-m-d')])
             ->toArray();
         $events = [];
+        $evDates = [];
         foreach ($results as $result) {
             $events[] = $result->date;
         }
@@ -621,12 +669,11 @@ class EventsTable extends Table
      * getIdsFromTag method
      *
      * @param int $tagId id of tag-in-question
-     * @return ResultSet $eventId
+     * @return array $eventId
      */
     public function getIdsFromTag($tagId)
     {
-        $eventId = $this->EventsTags->find();
-        $eventId
+        $eventId = $this->EventsTags->find()
             ->select('event_id')
             ->where(['tag_id' => $tagId])
             ->toArray();
@@ -663,7 +710,7 @@ class EventsTable extends Table
         // Apply optional filters
         if ($filters) {
             $startDate = null;
-            $findParams = $this->applyFiltersToFindParams($findParams, $filters, $startDate);
+            $findParams = $this->applyFiltersToFindParams($findParams, $filters);
         }
 
         $dateResults = $this->find('all', $findParams)->toArray();
@@ -731,7 +778,7 @@ class EventsTable extends Table
         if (isset($filters['category_id'])) {
             sort($filters['category_id']);
             $allCategoryIds = [];
-            $categories = $this->Categories->getAll();
+            $categories = $this->Events->Categories->getAll();
             foreach ($categories as $category) {
                 $allCategoryIds[] .= $category->id;
             }

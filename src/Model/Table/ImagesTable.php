@@ -1,7 +1,6 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -103,7 +102,7 @@ class ImagesTable extends Table
     /**
      * get next ID of an image
      *
-     * @return ResultSet
+     * @return array
      */
     public function getNextId()
     {
@@ -136,6 +135,8 @@ class ImagesTable extends Table
             return true;
         }
 
+        $newWidth = '';
+        $newHeight = '';
         // Make longest side fit inside the maximum dimensions
         if ($width >= $height) {
             $newWidth = $this->maxWidth;
@@ -165,6 +166,8 @@ class ImagesTable extends Table
         $destinationFile = $path . $filename;
         list($width, $height) = getimagesize($sourceFile);
 
+        $newWidth = '';
+        $newHeight = '';
         // Make the shortest side fit inside the maximum dimensions
         if ($width >= $height) {
             $newWidth = 0; // Automatically determined in ResizeBehavior::resize()
@@ -248,7 +251,7 @@ class ImagesTable extends Table
         $ext = $imageParams[2];
         switch ($ext) {
             case IMAGETYPE_GIF:
-                $return = $this->resizeGifPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
+                $return = $this->resizeGifPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height);
                 break;
             case IMAGETYPE_JPEG:
                 $return = $this->resizeJpegPr($sourceFile, $newFilename, $scaledWidth, $scaledHeight, $width, $height, $quality);
@@ -510,6 +513,7 @@ class ImagesTable extends Table
         // clean up
         imagedestroy($src);
         imagedestroy($canvas);
+        file_exists($newImg);
 
         return file_exists($destinationFile);
     }

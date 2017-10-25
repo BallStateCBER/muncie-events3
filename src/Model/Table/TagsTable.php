@@ -1,11 +1,10 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use Cake\Network\Exception\InternalErrorException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -26,6 +25,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  * @mixin \Cake\ORM\Behavior\TreeBehavior
+ * @mixin \Search\Model\Behavior\SearchBehavior
  */
 class TagsTable extends Table
 {
@@ -129,7 +129,7 @@ class TagsTable extends Table
      * get all tags with event counts
      *
      * @param array $conditions for which tags
-     * @return ResultSet $tags
+     * @return array $tags
      */
     public function getAllWithCounts($conditions)
     {
@@ -166,10 +166,11 @@ class TagsTable extends Table
      */
     public function getCategoriesWithTags($direction = 'future')
     {
+        $eventIds = [];
         if ($direction == 'future') {
-            $eventIds = $this->Events->getFutureEventIds();
+            $eventIds = $this->Tags->Events->getFutureEventIds();
         } elseif ($direction == 'past') {
-            $eventIds = $this->Events->getPastEventIds();
+            $eventIds = $this->Tags->Events->getPastEventIds();
         }
         $taggedEventIds = $this->EventsTags->find();
         $taggedEventIds
@@ -244,9 +245,9 @@ class TagsTable extends Table
     {
         $conditions = [];
         if ($direction == 'future') {
-            $conditions['event_id'] = $this->Events->getFutureEventIds();
+            $conditions['event_id'] = $this->Tags->Events->getFutureEventIds();
         } elseif ($direction == 'past') {
-            $conditions['event_id'] = $this->Events->getPastEventIds();
+            $conditions['event_id'] = $this->Tags->Events->getPastEventIds();
         }
         $results = $this->EventsTags->find()
             ->select('tag_id')
@@ -284,7 +285,7 @@ class TagsTable extends Table
      * find the id of parent tag
      *
      * @param string $parentName for parent tag
-     * @return int
+     * @return array
      */
     public function getParentIdFromName($parentName)
     {
@@ -300,7 +301,7 @@ class TagsTable extends Table
      * look up a tag entity with the tag id
      *
      * @param int $tagId of tag
-     * @return \App\Model\Entity\Tag|bool $result of tag ID
+     * @return mixed
      */
     public function getTagFromId($tagId)
     {

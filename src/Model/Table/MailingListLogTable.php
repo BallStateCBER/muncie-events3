@@ -1,10 +1,7 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 
 class MailingListLogTable extends Table
 {
@@ -36,13 +33,17 @@ class MailingListLogTable extends Table
      * @param string $result of log
      * @param string $flavor of log
      * @param bool $testing y/n
-     * @return this->save
+     * @return array
      */
     public function addLogEntry($recipientId, $result, $flavor, $testing = false)
     {
-        $this->create();
+        $log = $this->newEntity();
+        $log->recipient_id = $recipientId;
+        $log->flavor = $flavor;
+        $log->result = $result;
         $testing = $testing ? 1 : 0;
+        $log->testing = $testing;
 
-        return $this->save(compact('recipientId', 'result', 'flavor', 'testing'));
+        return $this->save($log);
     }
 }

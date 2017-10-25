@@ -1,8 +1,6 @@
 <?php
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -78,7 +76,7 @@ class CategoriesTable extends Table
     /**
      * getAll
      *
-     * @return string
+     * @return string|array
      */
     public function getAll()
     {
@@ -108,6 +106,6 @@ class CategoriesTable extends Table
             return false;
         }
 
-        return $result->name;
+        return $result['name'];
     }
 }
