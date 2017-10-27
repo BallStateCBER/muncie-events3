@@ -5,8 +5,6 @@ use Cake\ORM\TableRegistry;
 
 /**
  * Tags Controller
- *
- * @property \App\Model\Table\TagsTable $Tags
  */
 class TagsController extends AppController
 {
@@ -39,7 +37,7 @@ class TagsController extends AppController
                 return true;
 
                 // Some actions are admin-only
-            } elseif (in_array($this->request->action, $this->adminActions)) {
+            } elseif (in_array($this->request->getParam('action'), $this->adminActions)) {
                 return false;
             }
 
@@ -539,13 +537,13 @@ class TagsController extends AppController
                 }
 
                 // associations?
-                $events = $this->Tags->EventsTags->find()
+                $events = $this->EventsTags->find()
                     ->where(['tag_id' => $tagId])
                     ->toArray();
 
                 foreach ($events as $event) {
                     $event->tag_id = $firstTag;
-                    $this->Tags->EventsTags->save($event);
+                    $this->EventsTags->save($event);
                 }
             }
 

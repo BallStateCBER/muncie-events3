@@ -5,8 +5,6 @@ use Cake\I18n\Time;
 
 /**
  * EventSeries Controller
- *
- * @property \App\Model\Table\EventSeriesTable $EventSeries
  */
 class EventSeriesController extends AppController
 {
@@ -50,7 +48,7 @@ class EventSeriesController extends AppController
             // Grant access only if this user is the event/series's author
             $entityId = $this->request->getParam('pass')[0];
             $entity = ($action == 'edit')
-                ? $this->EventSeries->Event->get($entityId)
+                ? $this->EventSeries->Events->get($entityId)
                 : $this->EventSeries->get($entityId);
 
             return $entity->user_id === $user['id'];

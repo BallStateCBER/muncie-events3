@@ -598,7 +598,7 @@ class WidgetsController extends AppController
 
         $this->indexEvents($events);
 
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'feed');
+        $this->viewBuilder()->setLayout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'feed');
         $this->processCustomStyles($options);
 
         // filter_input(INPUT_SERVER, 'QUERY_STRING') includes the base url in AJAX requests for some reason
@@ -689,11 +689,11 @@ class WidgetsController extends AppController
             'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 1,
             'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('month', $queryString)),
-            'categories' => $this->Events->Categories->getAll(),
+            'categories' => $this->Categories->getAll(),
             'customStyles' => $this->customStyles
         ]);
         $this->set(compact('month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'monthName', 'eventsForJson', 'filters', 'options'));
-        $this->viewBuilder()->layout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
+        $this->viewBuilder()->setLayout($this->request->is('ajax') ? 'Widgets' . DS . 'ajax' : 'Widgets' . DS . 'month');
     }
 
     /**
@@ -711,7 +711,7 @@ class WidgetsController extends AppController
         $day = str_pad($day, 2, '0', STR_PAD_LEFT);
         $options = $_GET;
         $filters = $this->Events->getValidFilters($options);
-        $events = $this->Events->getFilteredEventsOnDates("$year-$month-$day", $filters, true);
+        $events = $this->Events->getEventsOnDay($year, $month, $day, $filters);
         $this->set([
             'titleForLayout' => 'Events on ' . date('F jS, Y', mktime(0, 0, 0, $month, $day, $year)),
             'events' => $events
@@ -862,7 +862,7 @@ class WidgetsController extends AppController
             'titleForLayout' => 'Customize Feed Widget',
             'type' => 'feed'
         ]);
-        $this->viewBuilder()->layout('no_sidebar');
+        $this->viewBuilder()->setLayout('no_sidebar');
         $this->render('customize');
     }
 
@@ -878,7 +878,7 @@ class WidgetsController extends AppController
             'titleForLayout' => 'Customize Month Widget',
             'type' => 'month'
         ]);
-        $this->viewBuilder()->layout('no_sidebar');
+        $this->viewBuilder()->setLayout('no_sidebar');
         $this->render('customize');
     }
 }

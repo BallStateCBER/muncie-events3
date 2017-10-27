@@ -5,8 +5,6 @@ use Cake\ORM\TableRegistry;
 
 /**
  * MailingList Controller
- *
- * @property \App\Model\Table\MailingListTable $MailingList
  */
 class MailingListController extends AppController
 {
@@ -26,13 +24,13 @@ class MailingListController extends AppController
     }
 
     /**
-     * sendDailyEmailPr method
+     * sendDailyEmail method
      *
-     * @param \App\Model\Entity\Event $events Event entities
-     * @param string $recipient mailing list recipient
+     * @param \App\Model\Entity\Event[] $events Event entities
+     * @param array $recipient mailing list recipient
      * @return $result
      */
-    private function sendDailyEmailPr($events, $recipient)
+    private function sendDailyEmail($events, $recipient)
     {
         list($result, $message) = $this->MailingList->sendDaily($recipient, $events);
         if ($result) {
@@ -49,7 +47,7 @@ class MailingListController extends AppController
      * sendWeeklyEmailPr method
      *
      * @param \App\Model\Entity\Event $events Event entities
-     * @param string $recipient mailing list recipient
+     * @param array $recipient mailing list recipient
      * @return $result
      */
     private function sendWeeklyEmailPr($events, $recipient)
@@ -94,7 +92,7 @@ class MailingListController extends AppController
         $emailAddresses = [];
         $recipientArray = [];
         foreach ($recipients as $recipient) {
-            $this->sendDailyEmailPr($events, $recipient);
+            $this->sendDailyEmail($events, $recipient);
             $emailAddresses[] = $recipient['MailingList']['email'];
             $recipientArray[] = $recipient;
         }
@@ -127,7 +125,7 @@ class MailingListController extends AppController
 
         // Make sure there are events to report
         list($year, $mon, $day) = $this->MailingList->getTodayYMD();
-        $events = $this->Event->getEventsUpcomingWeek($year, $mon, $day, true);
+        $events = $this->Events->getEventsUpcomingWeek($year, $mon, $day, true);
         if (empty($events)) {
             $this->MailingList->setAllWeeklyAsProcessed($recipients);
             $this->Flash->success('No events to informa anyone about this week.');

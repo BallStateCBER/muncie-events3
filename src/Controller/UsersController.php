@@ -7,8 +7,6 @@ use Cake\Routing\Router;
 
 /**
  * Users Controller
- *
- * @property \App\Model\Table\UsersTable $Users
  */
 class UsersController extends AppController
 {
@@ -122,7 +120,7 @@ class UsersController extends AppController
 
         $this->set([
             'eventCount' => $eventCount,
-            'titleForLayout' => $user->name,
+            'titleForLayout' => $user['name'],
             'user' => $user
         ]);
         $this->set('_serialize', ['user']);
@@ -295,7 +293,7 @@ class UsersController extends AppController
     public function resetPassword($userId, $resetPasswordHash)
     {
         $user = $this->Users->get($userId);
-        $email = $user->email;
+        $email = $user['email'];
 
         $this->set([
             'titleForLayout' => 'Reset Password',

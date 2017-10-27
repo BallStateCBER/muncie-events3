@@ -439,8 +439,8 @@ class MailingListTable extends Table
      * filterEvents method.
      *
      * @param array $recipient settings for recipient
-     * @param \App\Model\Entity\Event $events which need filtered
-     * @return \App\Model\Entity\Event $events
+     * @param \App\Model\Entity\Event[] $events which need filtered
+     * @return \App\Model\Entity\Event[] $events
      */
     public function filterEvents($recipient, $events)
     {
@@ -565,7 +565,7 @@ class MailingListTable extends Table
      * Sends the daily version of the event email.
      *
      * @param array $recipient settings
-     * @param \App\Model\Entity\Event $events for the day
+     * @param \App\Model\Entity\Event[] $events for the day
      * @return mixed
      */
     public function sendDaily($recipient, $events)

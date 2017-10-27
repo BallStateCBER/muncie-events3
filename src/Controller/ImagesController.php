@@ -6,8 +6,6 @@ use Cake\ORM\TableRegistry;
 
 /**
  * Images Controller
- *
- * @property \App\Model\Table\ImagesTable $Images
  */
 class ImagesController extends AppController
 {
@@ -39,24 +37,24 @@ class ImagesController extends AppController
                             $newImage->filename = $filename;
                             $this->Images->save($newImage);
                             if (!$this->Images->save($newImage)) {
-                                $this->response->statusCode(500);
+                                $this->response->withStatus(500);
                                 echo 'Error saving image';
                                 debug($newImage);
                             }
                             echo $newImage->id;
                         } else {
-                            $this->response->statusCode(500);
+                            $this->response->withStatus(500);
                             echo 'Error creating thumbnail';
                             if (! empty($this->Images->errors)) {
                                 echo ': ' . implode('; ', $this->Images->errors);
                             }
                         }
                     } else {
-                        $this->response->statusCode(500);
+                        $this->response->withStatus(500);
                         echo 'Could not save file.';
                     }
                 } else {
-                    $this->response->statusCode(500);
+                    $this->response->withStatus(500);
                     echo 'Error resizing image';
                     if (! empty($this->Images->errors)) {
                         echo ': ' . implode('; ', $this->Images->errors);
@@ -66,7 +64,7 @@ class ImagesController extends AppController
                 echo 'Invalid file type.';
             }
         } else {
-            $this->response->statusCode(500);
+            $this->response->withStatus(500);
             echo 'Security code incorrect';
         }
         $this->viewbuilder()->setLayout('blank');
@@ -88,7 +86,7 @@ class ImagesController extends AppController
      * newest method.
      *
      * @param int $userId of the user whose images we need
-     * @return void
+     * @return null
      */
     public function newest($userId)
     {
@@ -98,13 +96,12 @@ class ImagesController extends AppController
             'contain' => false,
             'fields' => ['id', 'filename']
         ]);
-        if ($result) {
-        }
+        $this->viewbuilder()->setLayout('blank');
+        $this->render('/Pages/blank');
         if (!$result) {
             echo 0;
         }
-        $this->viewbuilder()->setLayout('blank');
-        $this->render('/Pages/blank');
+        return null;
     }
 
     /**
@@ -116,7 +113,6 @@ class ImagesController extends AppController
     public function filename($imageId)
     {
         $image = $this->Images->get($imageId);
-        $imageId = $image->id;
         $filename = $image->filename;
         echo $filename ? $filename : 0;
         $this->viewbuilder()->setLayout('blank');
@@ -133,7 +129,7 @@ class ImagesController extends AppController
     {
         $this->viewbuilder()->setLayout('ajax');
         $this->set([
-            'images' => $this->Images->Users->getImagesList($userId)
+            'images' => $this->Users->getImagesList($userId)
         ]);
     }
 }

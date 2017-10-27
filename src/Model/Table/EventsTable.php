@@ -17,14 +17,6 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\BelongsToMany $Images
  * @property \Cake\ORM\Association\BelongsToMany $Tags
  *
- * @method \App\Model\Entity\Event get($primaryKey, $options = [])
- * @method \App\Model\Entity\Event newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Event[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Event|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Event patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Event[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Event findOrCreate($search, callable $callback = null, $options = [])
- *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  * @mixin \Search\Model\Behavior\SearchBehavior
  */
@@ -238,14 +230,18 @@ class EventsTable extends Table
      * @param string $year of Events
      * @param string $month of Events
      * @param string $day of Events
+     * @param array $filters of Events
      * @return Event[] $events
      */
-    public function getEventsOnDay($year, $month, $day)
+    public function getEventsOnDay($year, $month, $day, $filters = null)
     {
         $date = "$year-$month-$day";
         $events = $this
             ->find('all', [
-            'conditions' => ['date' => $date],
+            'conditions' => [
+                'date' => $date,
+                $filters
+            ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['date' => 'DESC']
             ])
@@ -679,8 +675,12 @@ class EventsTable extends Table
             ->select('event_id')
             ->where(['tag_id' => $tagId])
             ->toArray();
+        $retval = [];
+        foreach ($eventId as $id) {
+            $retval[] = $id->event_id;
+        }
 
-        return $eventId;
+        return $retval;
     }
 
     /**

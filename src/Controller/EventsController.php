@@ -12,8 +12,6 @@ use Cake\Routing\Router;
 
 /**
  * Events Controller
- *
- * @property \App\Model\Table\EventsTable $Events
  */
 class EventsController extends AppController
 {
@@ -157,12 +155,12 @@ class EventsController extends AppController
     private function setDatePicker($event)
     {
         // Prepare date picker
-        if ($this->request->action == 'add') {
+        if ($this->request->getParam('action') == 'add') {
             $dateFieldValues = [];
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
-        if ($this->request->action == 'editSeries') {
+        if ($this->request->getParam('action') == 'editseries') {
             $dateFieldValues = [];
             foreach ($event->date as $date) {
                 list($year, $month, $day) = explode('-', $date);
@@ -203,10 +201,10 @@ class EventsController extends AppController
             ->order(['name' => 'ASC'])
             ->toArray();
         $this->set(compact('availableTags'));
-        if ($this->request->action == 'add' || $this->request->action == 'editSeries') {
+        if ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'editSeries') {
             $hasSeries = count($event['date']) > 1;
             $hasEndTime = isset($event['time_end']);
-        } elseif ($this->request->action == 'edit') {
+        } elseif ($this->request->getParam('action') == 'edit') {
             $hasSeries = isset($event['series_id']);
             $hasEndTime = isset($event['time_end']) && $event['time_end'];
         }
@@ -230,7 +228,7 @@ class EventsController extends AppController
         if (!$event['time_start']) {
             $event['time_start'] = '00:00:00';
         }
-        if ($this->has['end_time'] && !$event['time_end']) {
+        if ($hasEndTime && !$event['time_end']) {
             $event['time_end'] = '00:00:00';
         }
         // Fixes bug that prevents CakePHP from deleting all tags
@@ -823,7 +821,7 @@ class EventsController extends AppController
      */
     public function search()
     {
-        $filter = $this->request->query;
+        $filter = $this->request->getQuery();
         // Determine the direction (past or future)
         $direction = $filter['direction'];
         $dateQuery = ($direction == 'future') ? 'date >=' : 'date <';
@@ -906,7 +904,7 @@ class EventsController extends AppController
                 break;
             }
             $newLimit = $limit - count($tags);
-            $results = $this->Events->tags->find()
+            $results = $this->Tags->find()
                 ->limit($newLimit)
                 ->where(['name LIKE' => $like])
                 ->andWhere(['listed' => 1])
@@ -947,8 +945,7 @@ class EventsController extends AppController
         $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
         $oppDate = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
-        // Get tag
-        $this->loadModel('Tags');
+
         $tagId = $this->Tags->getIdFromSlug($slug);
 
     /** @var Tag $tag */
@@ -963,30 +960,25 @@ class EventsController extends AppController
             return;
         }
         $eventId = $this->Events->getIdsFromTag($tagId);
-        $listing = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $dir]
-            ])
-            ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.date $date" => date('Y-m-d')]);
-        $listing = $this->paginate($listing)->toArray();
-        $this->indexEvents($listing);
-        $count = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $dir]
-            ])
+        $listing = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
             ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
+            ->order(['date' => $dir]);
+        $listing = $this->paginate($listing)->toArray();
+
+        $this->indexEvents($listing);
+        $count = $this->Events->find()
+            ->where(['Events.id IN' => $eventId])
+            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
+            ->order(['date' => $dir])
             ->count();
-        $oppCount = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $oppDir]
-            ])
+        $oppCount = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
             ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
+            ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
+            ->order(['date' => $oppDir])
             ->count();
         $this->set(compact('count', 'direction', 'eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([

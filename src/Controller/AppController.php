@@ -24,6 +24,16 @@ use Cake\Routing\Router;
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
  *
+ * @property \App\Model\Table\CategoriesTable $Categories
+ * @property \App\Model\Table\EventsTable $Events
+ * @property \Cake\ORM\Association\BelongsToMany $EventsImages
+ * @property \Cake\ORM\Association\BelongsToMany $EventsTags
+ * @property \App\Model\Table\EventSeriesTable $EventSeries
+ * @property \App\Model\Table\ImagesTable $Images
+ * @property \App\Model\Table\MailingListTable $MailingList
+ * @property \App\Model\Table\TagsTable $Tags
+ * @property \App\Model\Table\UsersTable $Users
+ *
  * @link http://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller
@@ -102,7 +112,7 @@ class AppController extends Controller
                 'authorize' => 'Controller'
             ]
         );
-        if (!in_array($this->request->action, $this->autoComplete)) {
+        if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
             $this->loadComponent('AkkaFacebook.Graph', [
                 'app_id' => '496726620385625',
                 'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
@@ -111,6 +121,10 @@ class AppController extends Controller
                 'post_login_redirect' => '/', //ie. Router::url(['controller' => 'Users', 'action' => 'account'], TRUE)
             ]);
         }
+
+        $this->loadModel('EventsTags');
+        $this->loadModel('Tags');
+        $this->loadModel('Users');
     }
 
     /**
@@ -146,7 +160,7 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
-        if (!in_array($this->request->action, $this->autoComplete)) {
+        if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
             $this->set([
                 'headerVars' => [
                     'categories' => $categories,
@@ -234,7 +248,7 @@ class AppController extends Controller
     {
         $timestamp = strtotime($daysEvents->time_start->i18nFormat('yyyyMMddHHmmss'));
         $displayedTime = date('g:ia', $timestamp);
-        $daysEvents->displayed_time = $displayedTime;
+        $daysEvents['displayed_time'] = $displayedTime;
         $eventsForJson[$date]['events'][] = [
             'id' => $daysEvents->id,
             'title' => $daysEvents->title,
