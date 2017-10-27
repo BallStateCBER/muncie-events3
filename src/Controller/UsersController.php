@@ -51,7 +51,7 @@ class UsersController extends AppController
                 // do they have an old sha1 password?
                 if ($this->Auth->authenticationProvider()->needsPasswordRehash()) {
                     $user = $this->Users->get($this->Auth->user('id'));
-                    $user->password = $this->request->getData('password');
+                    $user['password'] = $this->request->getData('password');
                     $this->Users->save($user);
                 }
 

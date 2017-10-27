@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Mailer\Email;
+use Cake\Validation\Validator;
 
 /**
  * Static content controller
@@ -58,24 +59,19 @@ class PagesController extends AppController
     public function contact()
     {
         $this->set('titleForLayout', 'Contact Us');
-        $this->validate = [
-             'name' => [
-                 'rule' => 'notEmpty',
-                 'message' => 'Please tell us who you are.'
-             ],
-             'email' => [
-                 'rule' => 'email',
-                 'message' => 'Please provide a valid email address. Otherwise, we can\'t respond back.'
-             ],
-             'body' => [
-                 'rule' => 'notEmpty',
-                 'message' => 'This field cannot be left blank.'
-             ]
-         ];
+        $validator = new Validator();
+        $validator
+            ->requirePresence('name')
+            ->notEmpty('name', 'Please tell us who you are.')
+            ->requirePresence('email')
+            ->notEmpty('email', 'Please provide a valid email address. Otherwise, we can\'t respond back.')
+            ->requirePresence('body')
+            ->notEmpty('body', 'Don\'t forget to write a message.');
         if ($this->request->is('post')) {
             $this->set($this->request->getData());
 
-            if ($this->validate) {
+            $errors = $validator->errors($this->request->getData());
+            if (empty($errors)) {
                 $email = new Email('contact_form');
                 $email->setFrom([$this->request->getData('email') => $this->request->getData('name')])
                      ->setTo(Configure::read('admin_email'))

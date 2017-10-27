@@ -248,6 +248,31 @@ class EventsTable extends Table
     }
 
     /**
+     * getEventsUpcomingWeek method
+     *
+     * @param int $y year
+     * @param int $m month
+     * @param int $d day
+     * @param bool $onlyApproved
+     * @return array
+     */
+    function getEventsUpcomingWeek($y, $m, $d, $onlyApproved = false) {
+        $events = [];
+        for ($n = 0; $n < 7; $n++) {
+            $timestamp = mktime(0, 0, 0, $m, ($d + $n), $y);
+            $thisY = date('Y', $timestamp);
+            $thisM = date('m', $timestamp);
+            $thisD = date('d', $timestamp);
+            $daysEvents = $this->getEventsOnDay($thisY, $thisM, $thisD, $onlyApproved);
+            if (! empty($daysEvents)) {
+                $events[$timestamp] = $daysEvents;
+            }
+        }
+
+        return $events;
+    }
+
+    /**
      * getFilteredEvents method
      *
      * @param string $nextStartDate to begin

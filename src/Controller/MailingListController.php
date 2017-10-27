@@ -46,7 +46,7 @@ class MailingListController extends AppController
     /**
      * sendWeeklyEmailPr method
      *
-     * @param \App\Model\Entity\Event $events Event entities
+     * @param \App\Model\Entity\Event[] $events Event entities
      * @param array $recipient mailing list recipient
      * @return $result
      */
@@ -109,7 +109,7 @@ class MailingListController extends AppController
     public function sendWeekly()
     {
         // Make sure that today is the correct day
-        if (! $this->MailingList->testing_mode && ! $this->MailingList->getWeeklyDeliveryDay()) {
+        if (! $this->MailingList['testing_mode'] && ! $this->MailingList->getWeeklyDeliveryDay()) {
             $this->Flash->success('Today is not the day of the week designated for delivering weekly emails.');
 
             return null;
@@ -127,7 +127,7 @@ class MailingListController extends AppController
         list($year, $mon, $day) = $this->MailingList->getTodayYMD();
         $events = $this->Events->getEventsUpcomingWeek($year, $mon, $day, true);
         if (empty($events)) {
-            $this->MailingList->setAllWeeklyAsProcessed($recipients);
+            $this->MailingList->setAllWeeklyAsProcessed($recipients, 1);
             $this->Flash->success('No events to informa anyone about this week.');
 
             return null;
@@ -152,7 +152,7 @@ class MailingListController extends AppController
     /**
      * readFormDataPr method
      *
-     * @param \App\Model\Entity\MailingList $mailingList mailingList entity
+     * @param \App\Model\Entity\MailingList|\Cake\Datasource\EntityInterface|null $mailingList mailingList entity
      * @return \App\Model\Entity\MailingList $mailingList mailingList entity
      */
     private function readFormDataPr($mailingList)
@@ -176,7 +176,7 @@ class MailingListController extends AppController
         // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
         $allCatSelected = ($mailingList['event_categories'] == 'all');
         if (!$allCatSelected) {
-            $selectedCatCount = count($mailingList->selected_categories);
+            $selectedCatCount = count($mailingList['selected_categories']);
             $allCatCount = $this->Categories->find()->count();
             if ($selectedCatCount == $allCatCount) {
                 $mailingList->all_categories = 1;
@@ -229,7 +229,7 @@ class MailingListController extends AppController
         // All event types
         // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
         if (!$mailingList->all_categories) {
-            $selectedCatCount = count($mailingList->selected_categories);
+            $selectedCatCount = count($mailingList['selected_categories']);
             $allCatCount = count($allCategories);
             if ($selectedCatCount == $allCatCount) {
                 foreach ($allCategories as $catId => $catName) {
@@ -347,19 +347,7 @@ class MailingListController extends AppController
                     $this->Flash->error("Error adding $address.");
                 }
             }
-            $this->request->data['email_addresses'] = implode("\n", $retainedAddresses);
         }
-    }
-
-    /**
-     * set default mailing list values
-     *
-     * @param string|null $recipient for values
-     * @return void
-     */
-    private function setDefaultValuesPr($recipient = null)
-    {
-        $this->request->data = $this->MailingList->getDefaultFormValues($recipient);
     }
 
     /**
@@ -382,7 +370,7 @@ class MailingListController extends AppController
 
             return null;
         }
-        $this->Flash->error('There was an error removing you from the mailing list. Please <a href="/contact">contact support</a> for assistance.');
+        $this->Flash->error('There was an error removing you from the mailing list. Please contact support for assistance.');
 
         return null;
     }
@@ -393,53 +381,53 @@ class MailingListController extends AppController
      * @param int|null $recipientId for validating the form
      * @return bool
      */
-    private function validateFormPr($recipientId = null)
+    private function validateMailingListForm($recipientId = null)
     {
-        $errorFound = false;
+        $noErrors = true;
 
         // If updating an existing subscription
         if ($recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->data['email']])
+                ->where(['email' => $this->request->getData('email')])
                 ->andWhere(['id NOT' => $recipientId])
                 ->count();
             if ($emailInUse) {
-                $errorFound = true;
-                $this->MailingList->validationErrors['email'] = 'Cannot change to that email address because another subscriber is currently signed up with it.';
+                $noErrors = false;
+                $this->Flash->error('Cannot change to that email address because another subscriber is currently signed up with it.');
             }
         }
 
         // If creating a new subscription
         if (!$recipientId) {
             $emailInUse = $this->MailingList->find()
-                ->where(['email' => $this->request->data['email']])
+                ->where(['email' => $this->request->getData('email')])
                 ->count();
             if ($emailInUse) {
-                $errorFound = true;
-                $this->MailingList->validationErrors['email'] = 'That address is already subscribed to the mailing list.';
+                $noErrors = false;
+                $this->Flash->error('That address is already subscribed to the mailing list.');
             }
         }
         $allCategories = ($this->request->getData('event_categories') == 'all');
         $noCategories = empty($this->request->getData('event_categories'));
         if (!$allCategories && $noCategories) {
-            $errorFound = true;
+            $noErrors = false;
             $this->set('categories_error', 'At least one category must be selected.');
         }
         $frequency = $this->request->getData('frequency');
-        $weekly = $this->request->data['weekly'];
+        $weekly = $this->request->getData('weekly');
         if ($frequency == 'custom' && ! $weekly) {
             $selectedDaysCount = 0;
             $days = $this->MailingList->getDays();
             foreach ($days as $code => $day) {
-                $selectedDaysCount += $this->request->data["daily_$code"];
+                $selectedDaysCount += $this->request->getData("daily_$code");
             }
             if (! $selectedDaysCount) {
-                $errorFound = true;
+                $noErrors = false;
                 $this->set('frequency_error', 'You\'ll need to pick either the weekly email or at least one daily email to receive.');
             }
         }
 
-        return ($this->MailingList->validates() && !$errorFound);
+        return $noErrors;
     }
 
     /**
@@ -458,14 +446,14 @@ class MailingListController extends AppController
         ]);
 
         if ($this->request->is('ajax')) {
-            $this->layout = 'ajax';
+            $this->viewBuilder()->setLayout('ajax');
         }
 
         // Make sure link is valid
         if (!$recipientId || $hash != $this->MailingList->getHash($recipientId)) {
             $this->Flash->error('It appears that you clicked on a broken link. If you copied and
                     pasted a URL to get here, you may not have copied the whole address.
-                    Please <a href="/contact">contact support</a> if you need assistance.');
+                    Please contact support if you need assistance.');
 
             return null;
         }
@@ -474,39 +462,39 @@ class MailingListController extends AppController
         $recipient = $this->MailingList->get($recipientId);
         if (!$recipient) {
             $this->Flash->error('It looks like you\'re trying to change settings for a user who is no longer
-                    on our mailing list. Please <a href="/contact">contact support</a> if you need assistance.');
+                    on our mailing list. Please contact support if you need assistance.');
 
             return null;
         }
 
         if ($this->request->is('post')) {
             // Unsubscribe
-            if ($this->request->data['unsubscribe']) {
+            if ($this->request->getData('unsubscribe')) {
                 return $this->unsubscribePr($recipientId);
             }
 
-            $this->readFormDataPr();
+            $this->readFormDataPr($recipient);
 
             // If there's an associated user, update its email too
-            // $userId = $this->MailingList->getAssociatedUserId();
-            // if ($userId) {
-            //    $this->User->id = $userId;
-            //    $this->User->saveField('email', $this->request->data['MailingList']['email']);
-            // }
+            $userId = $this->Users->getIdFromEmail($recipient->email);
+            if ($userId) {
+                $user = $this->Users->get($userId);
+                $user->email = $recipient->email;
+                $this->Users->save($user);
+            }
 
             // Update settings
-            if ($this->validateFormPr($recipientId)) {
+            if ($this->validateMailingListForm($recipientId)) {
                 if ($this->MailingList->save($recipient)) {
                     $this->Flash->success('Your mailing list settings have been updated.');
 
                     return null;
                 }
-                $this->Flash->error('Please try again, or <a href="/contact">contact support</a> for assistance.');
+                $this->Flash->error('Please try again, or contact support for assistance.');
 
                 return null;
             }
         }
-        $this->setDefaultValuesPr($recipient);
         $this->set(compact('recipient', 'recipientId', 'hash'));
 
         return null;

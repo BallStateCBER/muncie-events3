@@ -25,6 +25,7 @@ use Cake\Routing\Router;
  * will inherit them.
  *
  * @property \App\Model\Table\CategoriesTable $Categories
+ * @property \Cake\ORM\Association\BelongsToMany $CategoriesMailingList
  * @property \App\Model\Table\EventsTable $Events
  * @property \Cake\ORM\Association\BelongsToMany $EventsImages
  * @property \Cake\ORM\Association\BelongsToMany $EventsTags

@@ -88,7 +88,7 @@ class EventsController extends AppController
     /**
      * Processes custom tag input and populates $this->request->data['data']['Tags']
      *
-     * @param Event $event Event entity
+     * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
     private function setCustomTags($event)
@@ -149,7 +149,7 @@ class EventsController extends AppController
     /**
      * Sends the variables $dateFieldValues, $defaultDate, and $preselectedDates to the view
      *
-     * @param Event $event Event entity
+     * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
     private function setDatePicker($event)
@@ -185,7 +185,7 @@ class EventsController extends AppController
     /**
      * Sets various variables used in the event form
      *
-     * @param \Cake\Datasource\EntityInterface $event Event entity
+     * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
     private function setEventForm($event)
@@ -239,7 +239,7 @@ class EventsController extends AppController
     /**
      * Creates and/or removes associations between this event and its new/deleted images
      *
-     * @param \App\Model\Entity\Event $event Event entity
+     * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
     private function setImageData($event)
@@ -250,7 +250,7 @@ class EventsController extends AppController
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
     /** @var Image $newImage */
-                $newImage = $this->Events->Images->get($imageId);
+                $newImage = $this->Images->get($imageId);
                 $delete = $this->request->getData("delete.$imageId");
                 if ($delete == 1) {
                     $this->Events->Images->unlink($event, [$newImage]);
@@ -268,8 +268,8 @@ class EventsController extends AppController
         $imageData = $this->request->getData('Image');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-                $newImage = $this->Events->Images->get($imageId);
-                $newImage->_joinData = $this->Events->EventsImages->newEntity();
+                $newImage = $this->Images->get($imageId);
+                $newImage->_joinData = $this->EventsImages->newEntity();
                 $newImage->_joinData->weight = $weight;
                 $newImage->_joinData->caption = $caption;
                 $newImage->_joinData->created = $newImage->created;

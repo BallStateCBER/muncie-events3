@@ -48,7 +48,7 @@ class EventSeriesController extends AppController
             // Grant access only if this user is the event/series's author
             $entityId = $this->request->getParam('pass')[0];
             $entity = ($action == 'edit')
-                ? $this->EventSeries->Events->get($entityId)
+                ? $this->Events->get($entityId)
                 : $this->EventSeries->get($entityId);
 
             return $entity->user_id === $user['id'];
@@ -79,11 +79,11 @@ class EventSeriesController extends AppController
                 ]
             ]
         ]);
-        $eventIds = $this->EventSeries->Events->find('list');
+        $eventIds = $this->Events->find('list');
         $eventIds
             ->select('id')
             ->where(['series_id' => $id]);
-        $users = $this->EventSeries->Users->find('list', ['limit' => 200]);
+        $users = $this->Users->find('list', ['limit' => 200]);
         $this->set(compact('eventIds', 'events', 'eventSeries', 'users'));
         $this->set('_serialize', ['eventSeries']);
         $this->set(['titleForLayout' => 'Edit Series: ' . $eventSeries->title]);
@@ -91,10 +91,10 @@ class EventSeriesController extends AppController
             if ($this->request->getData('delete') == 1) {
                 if ($this->EventSeries->delete($eventSeries)) {
                     $this->Flash->success(__('The event series has been deleted.'));
-                    $events = $this->EventSeries->Events->find()
+                    $events = $this->Events->find()
                         ->where(['series_id' => $id]);
                     foreach ($events as $event) {
-                        $this->EventSeries->Events->delete($event);
+                        $this->Events->delete($event);
                     }
 
                     return $this->redirect(['controller' => 'events', 'action' => 'index']);
@@ -109,14 +109,14 @@ class EventSeriesController extends AppController
                     continue;
                 }
                 if ($event['delete'] == 1) {
-                    if ($this->EventSeries->Events->delete($eventSeries->events[$x])) {
+                    if ($this->Events->delete($eventSeries->events[$x])) {
                         $this->Flash->success(__('Event deleted: ' . $event['id'] . '.'));
                     }
                     $x = $x + 1;
                     continue;
                 }
 
-                $eventSeries->events[$x] = $this->EventSeries->Events->get($event['id']);
+                $eventSeries->events[$x] = $this->Events->get($event['id']);
                 $eventSeries->events[$x]->date = new Time(implode('-', $event['date']));
                 $eventSeries->events[$x]->time_start = new Time(
                     date(
@@ -126,7 +126,7 @@ class EventSeriesController extends AppController
                 );
                 $eventSeries->events[$x]->title = $event['title'] ?: $eventSeries->events[$x]->title;
 
-                if ($this->EventSeries->Events->save($eventSeries->events[$x])) {
+                if ($this->Events->save($eventSeries->events[$x])) {
                     $this->Flash->success(__('Event #' . $event['id'] . ' has been saved.'));
                     $x = $x + 1;
                     continue;
