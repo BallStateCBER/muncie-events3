@@ -567,7 +567,7 @@ class WidgetsController extends AppController
             'defaults' => $this->getDefaults(),
             'iframeStyles' => $iframeStyles,
             'codeUrl' => str_replace('0=', '', urldecode($codeUrl)),
-            'categories' => $this->Events->Categories->getAll(),
+            'categories' => $this->Categories->getAll(),
             'options' => $options,
             'iframeQueryString' => $iframeQueryString
         ]);

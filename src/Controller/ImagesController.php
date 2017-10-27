@@ -101,6 +101,7 @@ class ImagesController extends AppController
         if (!$result) {
             echo 0;
         }
+
         return null;
     }
 

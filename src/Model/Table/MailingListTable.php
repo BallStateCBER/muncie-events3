@@ -14,14 +14,6 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\HasMany $Users
  * @property \Cake\ORM\Association\BelongsToMany $Categories
  *
- * @method \App\Model\Entity\MailingList get($primaryKey, $options = [])
- * @method \App\Model\Entity\MailingList newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\MailingList[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\MailingList|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\MailingList patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\MailingList[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\MailingList findOrCreate($search, callable $callback = null, $options = [])
- *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class MailingListTable extends Table
@@ -191,7 +183,7 @@ class MailingListTable extends Table
     /**
      * gives the day that the weekly mailing list is sent out.
      *
-     * @return $string
+     * @return bool
      */
     public function getWeeklyDeliveryDay()
     {

@@ -387,29 +387,29 @@ class EventsTable extends Table
      * @param string $nextStartDate of range
      * @param string $endDate of range
      * @param array $options in case of filter
-     * @return ResultSet $events
+     * @return array $events
      */
     public function getStartEndEvents($nextStartDate, $endDate, $options = null)
     {
         $events = $this->getRangeEvents($nextStartDate, $endDate);
         if (empty($events)) {
             $endDate = strtotime($nextStartDate . ' + 4 weeks');
-            $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+            $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
             if (empty($events)) {
                 $endDate = strtotime($nextStartDate . ' + 8 weeks');
-                $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                 if (empty($events)) {
                     $endDate = strtotime($nextStartDate . ' + 16 weeks');
-                    $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                    $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                     if (empty($events)) {
                         $endDate = strtotime($nextStartDate . ' + 32 weeks');
-                        $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                        $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                         if (empty($events)) {
                             $endDate = strtotime($nextStartDate . ' + 64 weeks');
-                            $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                            $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                             if (empty($events)) {
                                 $endDate = strtotime($nextStartDate . ' + 128 weeks');
-                                $events = $options ? $this->Events->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+                                $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                             }
                         }
                     }

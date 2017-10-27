@@ -122,6 +122,7 @@ class AppController extends Controller
             ]);
         }
 
+        $this->loadModel('Categories');
         $this->loadModel('EventsTags');
         $this->loadModel('Tags');
         $this->loadModel('Users');

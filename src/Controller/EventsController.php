@@ -185,7 +185,7 @@ class EventsController extends AppController
     /**
      * Sets various variables used in the event form
      *
-     * @param Event $event Event entity
+     * @param \Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
     private function setEventForm($event)
@@ -239,7 +239,7 @@ class EventsController extends AppController
     /**
      * Creates and/or removes associations between this event and its new/deleted images
      *
-     * @param Event $event Event entity
+     * @param \App\Model\Entity\Event $event Event entity
      * @return void
      */
     private function setImageData($event)
