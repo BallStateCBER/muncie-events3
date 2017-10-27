@@ -8,7 +8,19 @@ use Cake\ORM\TableRegistry;
  */
 class TagsController extends AppController
 {
-    public $adminActions = ['getName', 'getnodes', 'groupUnlisted', 'manage', 'recover', 'remove', 'reorder', 'reparent', 'trace', 'edit', 'merge'];
+    public $adminActions = [
+        'getName',
+        'getNodes',
+        'groupUnlisted',
+        'manage',
+        'recover',
+        'remove',
+        'reorder',
+        'reparent',
+        'trace',
+        'edit',
+        'merge'
+    ];
 
     /**
      * Initialize hook method.
@@ -231,7 +243,7 @@ class TagsController extends AppController
      *
      * @return void
      */
-    public function getnodes()
+    public function getNodes()
     {
         $this->loadModel('EventsTags');
         $node = filter_input(INPUT_POST, 'node');

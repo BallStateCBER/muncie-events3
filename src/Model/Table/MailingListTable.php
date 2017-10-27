@@ -184,7 +184,10 @@ class MailingListTable extends Table
      */
     public function getWeeklyDeliveryDay()
     {
-        return date('l') == 'Thursday';
+        if (date('l') == 'Thursday') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -249,16 +252,14 @@ class MailingListTable extends Table
             }
             if ($recipient['weekly'] && $daysSelected == 0) {
                 $data['frequency'] = 'weekly';
-            } elseif (! $recipient['weekly'] && $daysSelected == 7) {
+            }
+            if (! $recipient['weekly'] && $daysSelected == 7) {
                 $data['frequency'] = 'daily';
-            } else {
+            }
+            if (! $recipient['weekly'] && $daysSelected != 0 || $daysSelected != 7) {
                 $data['frequency'] = 'custom';
             }
-            if ($recipient['all_categories']) {
-                $data['event_categories'] = 'all';
-            } else {
-                $data['event_categories'] = 'custom';
-            }
+            $data['event_categories'] = $recipient['all_categories'] ? 'all' : 'custom';
             $categories = $this->CategoriesMailingList->find()
                 ->where(['mailing_list_id' => $recipient['id']]);
             if ($categories) {
@@ -274,9 +275,9 @@ class MailingListTable extends Table
             if (isset(filter_input_array(INPUT_GET)['unsubscribe'])) {
                 $data['unsubscribe'] = 1;
             }
-
+        }
         // Join page: No recipient data
-        } else {
+        if (!$recipient) {
             $data['frequency'] = 'weekly';
             $data['event_categories'] = 'all';
             foreach ($days as $code => $day) {

@@ -253,10 +253,11 @@ class EventsTable extends Table
      * @param int $y year
      * @param int $m month
      * @param int $d day
-     * @param bool $onlyApproved
+     * @param bool $onlyApproved or not
      * @return array
      */
-    function getEventsUpcomingWeek($y, $m, $d, $onlyApproved = false) {
+    public function getEventsUpcomingWeek($y, $m, $d, $onlyApproved)
+    {
         $events = [];
         for ($n = 0; $n < 7; $n++) {
             $timestamp = mktime(0, 0, 0, $m, ($d + $n), $y);
@@ -733,7 +734,6 @@ class EventsTable extends Table
 
         // Apply optional filters
         if ($filters) {
-            $startDate = null;
             $findParams = $this->applyFiltersToFindParams($findParams, $filters);
         }
 

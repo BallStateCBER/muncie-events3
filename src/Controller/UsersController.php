@@ -17,12 +17,7 @@ class UsersController extends AppController
      */
     public function initialize()
     {
-        parent::initialize();
-        // we should probably allow people to register & change their passwords
-        // I *guess*.
-        $this->Auth->allow([
-            'register', 'forgotPassword', 'resetPassword', 'view'
-        ]);
+        parent::initialize();;
     }
 
     /**
@@ -33,6 +28,18 @@ class UsersController extends AppController
     public function isAuthorized()
     {
         return true;
+    }
+
+
+    /**
+     * beforeFilter
+     *
+     * @param  Event  $event beforeFilter
+     * @return void
+     */
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
     }
 
     /**
@@ -75,17 +82,6 @@ class UsersController extends AppController
         }
 
         return null;
-    }
-
-    /**
-     * beforeFilter
-     *
-     * @param  Event  $event beforeFilter
-     * @return void
-     */
-    public function beforeFilter(Event $event)
-    {
-        parent::beforeFilter($event);
     }
 
     /**

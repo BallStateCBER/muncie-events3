@@ -499,9 +499,9 @@ class EventsController extends AppController
         $this->setEventForm($event);
         $this->setImageData($event);
         $this->setDatePicker($event);
-        $users = $this->Events->Users->find('list');
-        $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
+        $users = $this->Users->find('list');
+        $categories = $this->Categories->find('list');
+        $eventseries = $this->EventSeries->find('list');
         $this->set(compact('event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Edit Event');
@@ -532,18 +532,15 @@ class EventsController extends AppController
      */
     public function editSeries($seriesId)
     {
-        // Get information about series
-        $eventSeries = $this->Events->EventSeries->get($seriesId);
+        $eventSeries = $this->EventSeries->get($seriesId);
         if (!$eventSeries) {
-            $msg = 'Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.';
-            $this->Flash->error($msg);
+            $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
 
             return;
         }
-        $events = $this->Events->find('all', [
-            'conditions' => ['series_id' => $seriesId],
-            'contain' => ['EventSeries']
-        ])
+        $events = $this->Events->find()
+            ->where(['series_id' => $seriesId])
+            ->contain(['EventSeries'])
             ->order(['date' => 'ASC'])
             ->toArray();
         $dates = [];
@@ -551,7 +548,6 @@ class EventsController extends AppController
             $dateString = date_format($event->date, 'Y-m-d');
             $dates[] = $dateString;
         }
-        // Pick the first event in the series
         $eventId = $events[0]->id;
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
@@ -560,14 +556,13 @@ class EventsController extends AppController
         $this->setEventForm($event);
         $this->setDatePicker($event);
         $this->Flash->error('Warning: all events in this series will be overwritten.');
-        $categories = $this->Events->Categories->find('list');
+        $categories = $this->Categories->find('list');
         $this->set([
             'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
         ]);
         $this->set(compact('categories', 'dates', 'event', 'events', 'eventSeries'));
         $this->render('/Element/events/form');
         if ($this->request->is('put') || $this->request->is('post')) {
-            // Save every event
             $newDates = explode(',', $this->request->getData('date'));
             foreach ($dates as $date) {
                 $oldDate = date('m/d/Y', strtotime($date));
@@ -613,8 +608,7 @@ class EventsController extends AppController
                 $event->title = $this->request->getData('title');
                 $this->setCustomTags($event);
                 if ($this->Events->save($event, [
-                    'associated' => ['EventSeries', 'Images', 'Tags']
-                ])) {
+                    'associated' => ['EventSeries', 'Images', 'Tags']])) {
                     $this->Flash->success(__("Event '$event->title' has been saved."));
                     continue;
                 }
@@ -622,15 +616,15 @@ class EventsController extends AppController
                     $this->Flash->error(__("The event '$event->title' (#$event->id) could not be saved."));
                 }
             }
-            $series = $this->Events->EventSeries->get($seriesId);
-            $series = $this->Events->EventSeries->patchEntity($series, $this->request->getData());
+            $series = $this->EventSeries->get($seriesId);
+            $series = $this->EventSeries->patchEntity($series, $this->request->getData());
             $series->title = $this->request->getData('event_series.title');
-            if ($this->Events->EventSeries->save($series)) {
+            if ($this->EventSeries->save($series)) {
                 $this->Flash->success(__("The event series '$series->title' was saved."));
 
                 return;
             }
-            if (!$this->Events->EventSeries->save($series)) {
+            if (!$this->EventSeries->save($series)) {
                 $this->Flash->error(__("The event series '$series->title' was not saved."));
 
                 return;
@@ -647,23 +641,6 @@ class EventsController extends AppController
     {
         $this->viewBuilder()->setLayout('blank');
         $this->set('address', $this->Events->getAddress($location));
-    }
-    /**
-     * Gets events on the selected date and runs indexEvents()
-     *
-     * @param string $date date object
-     * @return void
-     */
-    public function getFilteredEventsOnDates($date)
-    {
-        $events = $this->Events
-            ->find('all', [
-                'conditions' => ['date' => $date],
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'DESC']
-            ])
-            ->toArray();
-        $this->indexEvents($events);
     }
     /**
      * Shows a page of events
