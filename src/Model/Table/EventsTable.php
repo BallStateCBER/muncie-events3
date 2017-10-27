@@ -2,10 +2,8 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
-use Cake\ORM\ResultSet;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -14,6 +12,7 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Categories
  * @property \Cake\ORM\Association\BelongsTo $EventSeries
+ * @property \Cake\ORM\Association\BelongsToMany $EventsTags
  * @property \Cake\ORM\Association\BelongsToMany $Images
  * @property \Cake\ORM\Association\BelongsToMany $Tags
  *
@@ -79,8 +78,6 @@ class EventsTable extends Table
                 'field' => ['title', 'description', 'location']
             ])
             ->add('foo', 'Search.Callback');
-
-        $this->EventsTags = TableRegistry::get('EventsTags');
     }
 
     /**
@@ -780,7 +777,7 @@ class EventsTable extends Table
         if (isset($filters['category_id'])) {
             sort($filters['category_id']);
             $allCategoryIds = [];
-            $categories = $this->Events->Categories->getAll();
+            $categories = $this->Categories->find('list')->toArray();
             foreach ($categories as $category) {
                 $allCategoryIds[] .= $category->id;
             }

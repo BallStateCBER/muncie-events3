@@ -66,23 +66,6 @@ class CategoriesTable extends Table
     }
 
     /**
-     * getAll
-     *
-     * @return string|array
-     */
-    public function getAll()
-    {
-        $result = $this->find('all')
-            ->order(['weight'])
-            ->toArray();
-        if (empty($result)) {
-            return "No categories found";
-        } else {
-            return $result;
-        }
-    }
-
-    /**
      * getName
      *
      * @param int $id of user whose name we want

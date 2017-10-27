@@ -100,7 +100,7 @@ class TagsController extends AppController
         ));
         $this->loadModel('Categories');
         $this->set([
-            'categories' => $this->Categories->getAll(),
+            'categories' => $this->Categories->find('list')->toArray(),
             'categoriesWithTags' => $this->Tags->getCategoriesWithTags($direction)
         ]);
     }

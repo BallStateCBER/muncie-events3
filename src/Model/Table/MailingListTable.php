@@ -4,7 +4,6 @@ namespace App\Model\Table;
 use Cake\Mailer\Email;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Validation\Validator;
 
@@ -12,7 +11,9 @@ use Cake\Validation\Validator;
  * MailingList Model
  *
  * @property \Cake\ORM\Association\HasMany $Users
+ * @property \Cake\ORM\Association\BelongsTo $MailingListLogTable
  * @property \Cake\ORM\Association\BelongsToMany $Categories
+ * @property \Cake\ORM\Association\BelongsToMany $CategoriesMailingList
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -44,10 +45,6 @@ class MailingListTable extends Table
             'joinTable' => 'categories_mailing_list',
             'propertyName' => 'categories'
         ]);
-
-        $this->Categories = TableRegistry::get('Categories');
-        $this->MailingListLogTable = TableRegistry::get('MailingListLog');
-        $this->CategoriesMailingList = TableRegistry::get('CategoriesMailingList');
     }
 
     /**
@@ -285,7 +282,7 @@ class MailingListTable extends Table
             foreach ($days as $code => $day) {
                 $data["daily_$code"] = true;
             }
-            $categories = $this->MailingList->Categories->getList();
+            $categories = $this->Categories->find('list')->toArray();
             foreach ($categories as $categoryId => $categoryName) {
                 $data['selected_categories'][$categoryId] = true;
             }
@@ -637,18 +634,14 @@ class MailingListTable extends Table
      * Sends the weekly version of the event email.
      *
      * @param array $recipient settings
-     * @param \App\Model\Entity\Event $events for the day
+     * @param \App\Model\Entity\Event[] $events for the day
      * @return mixed
      */
     public function sendWeekly($recipient, $events)
     {
         $recipientId = $recipient['id'];
 
-        // Make sure there are events to begin with
-        $eventsCount = 0;
-        foreach ($events as $dEvents) {
-            $eventsCount += count($dEvents);
-        }
+        $eventsCount = count($events);
         if (!$eventsCount) {
             $this->setWeeklyAsProcessed($recipientId, 2);
 

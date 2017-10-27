@@ -123,7 +123,11 @@ class AppController extends Controller
         }
 
         $this->loadModel('Categories');
+        $this->loadModel('CategoriesMailingList');
+        $this->loadModel('Events');
+        $this->loadModel('EventsImages');
         $this->loadModel('EventsTags');
+        $this->loadModel('MailingList');
         $this->loadModel('Tags');
         $this->loadModel('Users');
     }
@@ -142,11 +146,9 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
 
-        $this->loadModel('Categories');
-        $this->loadModel('Events');
-        $this->loadModel('Tags');
-
-        $categories = $this->Categories->getAll();
+        $categories = $this->Categories->find('all', [
+           'order' => ['weight' => 'ASC']
+        ])->toArray();
 
         $results = $this->Events->getFutureEvents();
         $populatedDates = [];

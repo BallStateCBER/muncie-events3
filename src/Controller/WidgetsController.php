@@ -27,7 +27,6 @@ class WidgetsController extends AppController
         $this->Auth->allow([
             'customizeFeed', 'customizeMonth', 'day', 'demoFeed', 'demoMonth', 'event', 'feed', 'index', 'month', 'venue'
         ]);
-        $this->loadModel('Events');
     }
 
     /**
@@ -567,7 +566,7 @@ class WidgetsController extends AppController
             'defaults' => $this->getDefaults(),
             'iframeStyles' => $iframeStyles,
             'codeUrl' => str_replace('0=', '', urldecode($codeUrl)),
-            'categories' => $this->Categories->getAll(),
+            'categories' => $this->Categories->find('list')->toArray(),
             'options' => $options,
             'iframeQueryString' => $iframeQueryString
         ]);
@@ -654,7 +653,7 @@ class WidgetsController extends AppController
         }
         $filters = $this->Events->getValidFilters($options);
 
-        $events = isset($options) ? $this->Events->getFilteredEvents($yearMonth, $nextMonth, $options) : $this->Events->getMonthEvents($yearMonth);
+        $events = !empty($options) ? $this->Events->getFilteredEvents($yearMonth, $nextMonth, $options) : $this->Events->getMonthEvents($yearMonth);
         $this->indexEvents($events);
 
         $this->processCustomStyles($options);
@@ -689,7 +688,7 @@ class WidgetsController extends AppController
             'titleForLayout' => "$monthName $year",
             'eventsDisplayedPerDay' => 1,
             'all_events_url' => str_replace(['%3D', '%25', '0='], ['=', '%', ''], $this->getAllEventsUrlPr('month', $queryString)),
-            'categories' => $this->Categories->getAll(),
+            'categories' => $this->Categories->find('list')->toArray(),
             'customStyles' => $this->customStyles
         ]);
         $this->set(compact('month', 'year', 'timestamp', 'preSpacer', 'lastDay', 'prevYear', 'prevMonth', 'nextYear', 'nextMonth', 'today', 'monthName', 'eventsForJson', 'filters', 'options'));

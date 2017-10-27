@@ -157,9 +157,6 @@ class MailingListController extends AppController
      */
     private function readFormDataPr($mailingList)
     {
-        $this->loadModel('Categories');
-        $this->loadModel('CategoriesMailingList');
-        $allCategories = $this->Categories->getAll();
         $mailingList->email = strtolower(trim($mailingList->email));
 
         // Is this person new?
@@ -180,7 +177,7 @@ class MailingListController extends AppController
         $allCatSelected = ($mailingList['event_categories'] == 'all');
         if (!$allCatSelected) {
             $selectedCatCount = count($mailingList->selected_categories);
-            $allCatCount = count($allCategories);
+            $allCatCount = $this->Categories->find()->count();
             if ($selectedCatCount == $allCatCount) {
                 $mailingList->all_categories = 1;
             }
@@ -213,7 +210,7 @@ class MailingListController extends AppController
     {
         $this->loadModel('Categories');
         $this->loadModel('CategoriesMailingList');
-        $allCategories = $this->Categories->getAll();
+        $allCategories = $this->Categories->find('list')->toArray();
 
         // If joining for the first time with default settings
         if (isset($mailingList['settings'])) {
@@ -235,10 +232,10 @@ class MailingListController extends AppController
             $selectedCatCount = count($mailingList->selected_categories);
             $allCatCount = count($allCategories);
             if ($selectedCatCount == $allCatCount) {
-                foreach ($allCategories as $cat) {
+                foreach ($allCategories as $catId => $catName) {
                     $newJoin = $this->CategoriesMailingList->newEntity();
                     $newJoin->mailing_list_id = $mailingList->id;
-                    $newJoin->category_id = $cat->id;
+                    $newJoin->category_id = $catId;
                     $this->CategoriesMailingList->save($newJoin);
                 }
             }
@@ -457,7 +454,7 @@ class MailingListController extends AppController
         $this->set([
             'titleForLayout' => 'Update Mailing List Settings',
             'days' => $this->MailingList->getDays(),
-            'categories' => $this->Categories->getAll()
+            'categories' => $this->Categories->find('list')->toArray()
         ]);
 
         if ($this->request->is('ajax')) {
@@ -499,7 +496,7 @@ class MailingListController extends AppController
 
             // Update settings
             if ($this->validateFormPr($recipientId)) {
-                if ($this->MailingList->save()) {
+                if ($this->MailingList->save($recipient)) {
                     $this->Flash->success('Your mailing list settings have been updated.');
 
                     return null;

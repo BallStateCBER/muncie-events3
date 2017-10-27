@@ -30,28 +30,4 @@ class Category extends Entity
         '*' => true,
         'id' => false
     ];
-
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @return ResultSet
-     */
-    public function getAll()
-    {
-        $result = $this->find('all', [
-            'contain' => false,
-            'order' => ['weight' => 'ASC']
-            ]);
-        if (empty($result)) {
-            throw new InternalErrorException("No categories found");
-        } else {
-            Cache::write($cacheKey, $result);
-
-            return $result;
-        }
-    }
 }
