@@ -13,7 +13,6 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \Cake\ORM\Association\BelongsTo $MailingLists
- * @property \Cake\ORM\Association\BelongsTo $Facebooks
  * @property \Cake\ORM\Association\HasMany $EventSeries
  * @property \Cake\ORM\Association\HasMany $Events
  * @property \Cake\ORM\Association\HasMany $Images

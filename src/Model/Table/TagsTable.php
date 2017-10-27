@@ -10,10 +10,11 @@ use Cake\Validation\Validator;
 /**
  * Tags Model
  *
+ * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\BelongsToMany $Events
  * @property \Cake\ORM\Association\BelongsTo $ParentTags
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\HasMany $ChildTags
- * @property \Cake\ORM\Association\BelongsToMany $Events
+ * @property \Cake\ORM\Association\BelongsToMany $EventsTags
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  * @mixin \Cake\ORM\Behavior\TreeBehavior
@@ -71,6 +72,7 @@ class TagsTable extends Table
             ])
             ->add('foo', 'Search.Callback');
 
+        $this->Events = TableRegistry::get('Events');
         $this->EventsTags = TableRegistry::get('EventsTags');
     }
 
@@ -160,9 +162,9 @@ class TagsTable extends Table
     {
         $eventIds = [];
         if ($direction == 'future') {
-            $eventIds = $this->Tags->Events->getFutureEventIds();
+            $eventIds = $this->Events->getFutureEventIds();
         } elseif ($direction == 'past') {
-            $eventIds = $this->Tags->Events->getPastEventIds();
+            $eventIds = $this->Events->getPastEventIds();
         }
         $taggedEventIds = $this->EventsTags->find();
         $taggedEventIds
@@ -237,9 +239,9 @@ class TagsTable extends Table
     {
         $conditions = [];
         if ($direction == 'future') {
-            $conditions['event_id'] = $this->Tags->Events->getFutureEventIds();
+            $conditions['event_id'] = $this->Events->getFutureEventIds();
         } elseif ($direction == 'past') {
-            $conditions['event_id'] = $this->Tags->Events->getPastEventIds();
+            $conditions['event_id'] = $this->Events->getPastEventIds();
         }
         $results = $this->EventsTags->find()
             ->select('tag_id')
@@ -409,10 +411,10 @@ class TagsTable extends Table
     public function isUnderUnlistedGroup($id = null)
     {
         if (!$id) {
-            if (!$this->id) {
+            if (!$this['id']) {
                 throw new InternalErrorException('Required tag ID not supplied to Tag::isUnderUnlistedGroup().');
             }
-            $id = $this->id;
+            $id = $this['id'];
         }
         $unlistedGroupId = $this->getUnlistedGroupId();
 
