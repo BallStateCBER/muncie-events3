@@ -187,6 +187,7 @@ class MailingListTable extends Table
         if (date('l') == 'Thursday') {
             return true;
         }
+
         return false;
     }
 

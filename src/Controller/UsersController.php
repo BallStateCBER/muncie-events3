@@ -17,7 +17,7 @@ class UsersController extends AppController
      */
     public function initialize()
     {
-        parent::initialize();;
+        parent::initialize();
     }
 
     /**
@@ -29,7 +29,6 @@ class UsersController extends AppController
     {
         return true;
     }
-
 
     /**
      * beforeFilter
