@@ -9,7 +9,20 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class CategoriesMailingListFixture extends TestFixture
 {
-
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
+        $this->records = [
+            [
+                'id' => 1,
+                'mailing_list_id' => 1,
+                'category_id' => 1
+            ]
+        ];
+    }
     /**
      * Table name
      *
@@ -22,7 +35,6 @@ class CategoriesMailingListFixture extends TestFixture
      *
      * @var array
      */
-    // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'mailing_list_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
@@ -33,20 +45,6 @@ class CategoriesMailingListFixture extends TestFixture
         '_options' => [
             'engine' => 'InnoDB',
             'collation' => 'utf8_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'mailing_list_id' => 1,
-            'category_id' => 1
-        ],
+        ]
     ];
 }

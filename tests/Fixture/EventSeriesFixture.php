@@ -9,13 +9,28 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class EventSeriesFixture extends TestFixture
 {
-
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
+        $this->records = [
+            [
+                'id' => 1,
+                'title' => 'Placeholder Event Series',
+                'user_id' => 1,
+                'published' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ]
+        ];
+    }
     /**
      * Fields
      *
      * @var array
      */
-    // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'title' => ['type' => 'string', 'length' => 200, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -29,23 +44,6 @@ class EventSeriesFixture extends TestFixture
         '_options' => [
             'engine' => 'MyISAM',
             'collation' => 'utf8_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'title' => 'Placeholder Event Series',
-            'user_id' => 1,
-            'published' => 1,
-            'created' => '2017-10-30 11:24:13',
-            'modified' => '2017-10-30 11:24:13'
-        ],
+        ]
     ];
 }

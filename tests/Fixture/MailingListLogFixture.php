@@ -53,6 +53,6 @@ class MailingListLogFixture extends TestFixture
             'result' => 1,
             'testing' => 1,
             'created' => '2017-10-30 11:24:37'
-        ],
+        ]
     ];
 }

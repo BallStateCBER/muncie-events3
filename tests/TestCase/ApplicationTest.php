@@ -2,13 +2,7 @@
 namespace App\Test\TestCase;
 
 use App\Application;
-use App\Controller\CategoriesController;
-use App\Controller\EventsController;
-use App\Controller\EventSeriesController;
-use App\Controller\ImagesController;
-use App\Controller\MailingListController;
-use App\Controller\PagesController;
-use App\Controller\TagsController;
+use App\Test\Fixture\UsersFixture;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\ORM\TableRegistry;
@@ -18,13 +12,42 @@ use Cake\TestSuite\IntegrationTestCase;
 
 /**
  * App\Controller\EventsController Test Case
+ *
+ * @property \App\Model\Table\CategoriesTable $Categories
+ * @property \Cake\ORM\Association\BelongsToMany $CategoriesMailingList
+ * @property \App\Model\Table\EventsTable $Events
+ * @property \Cake\ORM\Association\BelongsToMany $EventsImages
+ * @property \Cake\ORM\Association\BelongsToMany $EventsTags
+ * @property \App\Model\Table\EventSeriesTable $EventSeries
+ * @property \App\Model\Table\ImagesTable $Images
+ * @property \App\Model\Table\MailingListTable $MailingList
+ * @property \App\Model\Table\TagsTable $Tags
+ * @property \App\Model\Table\UsersTable $Users
  */
 class ApplicationTest extends IntegrationTestCase
 {
+    /**
+     * Fixtures
+     *
+     * @var array
+     */
+    public $fixtures = [
+        'app.categories',
+        'app.categories_mailing_list',
+        'app.event_series',
+        'app.events',
+        'app.events_images',
+        'app.events_tags',
+        'app.images',
+        'app.mailing_list',
+        'app.mailing_list_log',
+        'app.tags',
+        'app.users'
+    ];
+
     public $objects = ['Categories', 'CategoriesMailingList', 'Events', 'EventsImages', 'EventSeries', 'EventsTags', 'Images', 'MailingList', 'Tags', 'Users'];
     public $adminUser;
     public $commoner;
-    public $plebian;
     /**
      * setUp method
      *
@@ -37,30 +60,23 @@ class ApplicationTest extends IntegrationTestCase
             $this->$object = TableRegistry::get($object);
         }
 
+        $usersFixture = new UsersFixture();
+
         $this->adminUser = [
             'Auth' => [
-                'User' => [
-                    'id' => 1,
-                    'role' => 'admin'
-                ]
+                'User' => $usersFixture->records[0]
             ]
         ];
 
         $this->commoner = [
             'Auth' => [
-                'User' => [
-                    'id' => 74,
-                    'role' => 'user'
-                ]
+                'User' => $usersFixture->records[1]
             ]
         ];
 
         $this->plebian = [
             'Auth' => [
-                'User' => [
-                    'id' => 75,
-                    'role' => 'user'
-                ]
+                'User' => $usersFixture->records[2]
             ]
         ];
     }

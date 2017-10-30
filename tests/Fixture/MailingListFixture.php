@@ -9,7 +9,45 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class MailingListFixture extends TestFixture
 {
-
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
+        $this->records = [
+            [
+                'email' => 'adminplaceholder@bsu.edu',
+                'all_categories' => 0,
+                'weekly' => 1,
+                'daily_sun' => 1,
+                'daily_mon' => 1,
+                'daily_tue' => 1,
+                'daily_wed' => 1,
+                'daily_thu' => 1,
+                'daily_fri' => 1,
+                'daily_sat' => 1,
+                'new_subscriber' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'email' => 'userplaceholder@bsu.edu',
+                'all_categories' => 1,
+                'weekly' => 0,
+                'daily_sun' => 0,
+                'daily_mon' => 1,
+                'daily_tue' => 1,
+                'daily_wed' => 1,
+                'daily_thu' => 1,
+                'daily_fri' => 1,
+                'daily_sat' => 1,
+                'new_subscriber' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ]
+        ];
+    }
     /**
      * Table name
      *
@@ -22,7 +60,6 @@ class MailingListFixture extends TestFixture
      *
      * @var array
      */
-    // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'email' => ['type' => 'string', 'length' => 200, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -47,34 +84,6 @@ class MailingListFixture extends TestFixture
         '_options' => [
             'engine' => 'MyISAM',
             'collation' => 'utf8_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'email' => 'Lorem ipsum dolor sit amet',
-            'all_categories' => 1,
-            'categories' => 'Lorem ipsum dolor sit amet',
-            'weekly' => 1,
-            'daily_sun' => 1,
-            'daily_mon' => 1,
-            'daily_tue' => 1,
-            'daily_wed' => 1,
-            'daily_thu' => 1,
-            'daily_fri' => 1,
-            'daily_sat' => 1,
-            'new_subscriber' => 1,
-            'created' => '2017-10-30 11:24:32',
-            'modified' => '2017-10-30 11:24:32',
-            'processed_daily' => '2017-10-30 11:24:32',
-            'processed_weekly' => '2017-10-30 11:24:32'
-        ],
+        ]
     ];
 }

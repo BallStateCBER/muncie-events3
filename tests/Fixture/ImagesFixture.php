@@ -9,13 +9,28 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class ImagesFixture extends TestFixture
 {
-
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
+        $this->records = [
+            [
+                'id' => 1,
+                'filename' => 'placeholder.jpg',
+                'is_flyer' => 1,
+                'user_id' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ]
+        ];
+    }
     /**
      * Fields
      *
      * @var array
      */
-    // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'filename' => ['type' => 'string', 'length' => 50, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -29,23 +44,6 @@ class ImagesFixture extends TestFixture
         '_options' => [
             'engine' => 'InnoDB',
             'collation' => 'utf8_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'filename' => 'Lorem ipsum dolor sit amet',
-            'is_flyer' => 1,
-            'user_id' => 1,
-            'created' => '2017-10-30 11:24:28',
-            'modified' => '2017-10-30 11:24:28'
-        ],
+        ]
     ];
 }

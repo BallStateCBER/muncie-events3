@@ -9,7 +9,46 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class UsersFixture extends TestFixture
 {
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
 
+        // password is "placeholder"
+        $this->records = [
+            [
+                'name' => 'Ash Admin',
+                'role' => 'admin',
+                'bio' => 'I am the admin and I do admin things.',
+                'email' => 'adminplaceholder@bsu.edu',
+                'password' => '$2y$10$89BFsNtHA/AcAfjom896Ouhw5KFtPsll5Oox0LWjilYCCxizqg.Jy',
+                'mailing_list_id' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'name' => 'Stevie User',
+                'role' => 'user',
+                'bio' => 'I sit around listening to witch house and not doing anything.',
+                'email' => 'userplaceholder@bsu.edu',
+                'password' => '$2y$10$MpeYbiU6QU0CYnEgzX.igO1z8V8oOfMqe6tzjP7kvrVQ5H8dnWpsm',
+                'mailing_list_id' => 2,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'name' => 'Paulie Placeholder',
+                'role' => 'user',
+                'bio' => 'I am yet another placeholder.',
+                'email' => 'userplaceholder2@bsu.edu',
+                'password' => '$2y$10$5UBkDk5/XUBtvdYm5iM6Vu7lje0Uv9LqBXRf8BMXnk/qUsVVTFSnW',
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ]
+        ];
+    }
     /**
      * Fields
      *
@@ -33,27 +72,6 @@ class UsersFixture extends TestFixture
         '_options' => [
             'engine' => 'MyISAM',
             'collation' => 'utf8_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'name' => 'Lorem ipsum dolor sit amet',
-            'role' => 'Lorem ipsum dolor ',
-            'bio' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'email' => 'Lorem ipsum dolor sit amet',
-            'password' => 'Lorem ipsum dolor sit amet',
-            'mailing_list_id' => 1,
-            'facebook_id' => 1,
-            'created' => '2017-10-30 11:24:44',
-            'modified' => '2017-10-30 11:24:44'
-        ],
+        ]
     ];
 }

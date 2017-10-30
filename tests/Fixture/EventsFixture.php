@@ -9,13 +9,68 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class EventsFixture extends TestFixture
 {
-
+    /**
+     * initialize fixture method
+     */
+    public function init()
+    {
+        parent::init();
+        $this->records = [
+            [
+                'title' => 'Placeholder Event Series',
+                'description' => 'Lots of events in this placeholder series. Come on out!',
+                'location' => 'Be Here Now',
+                'address' => '505 N. Dill St.',
+                'user_id' => 1,
+                'category_id' => 2,
+                'series_id' => 1,
+                'date' => date('Y-m-d', strtotime('Today')),
+                'time_start' => '11:24:09',
+                'time_end' => '11:24:09',
+                'published' => 1,
+                'approved_by' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'title' => 'Placeholder Event Series',
+                'description' => 'Lots of events in this placeholder series. Come on out!',
+                'location' => 'Be Here Now',
+                'address' => '505 N. Dill St.',
+                'user_id' => 1,
+                'category_id' => 2,
+                'series_id' => 1,
+                'date' => date('Y-m-d', strtotime('+1 day')),
+                'time_start' => '11:24:09',
+                'time_end' => '11:24:09',
+                'published' => 1,
+                'approved_by' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'title' => 'Placeholder Event Series',
+                'description' => 'Lots of events in this placeholder series. Come on out!',
+                'location' => 'Be Here Now',
+                'address' => '505 N. Dill St.',
+                'user_id' => 1,
+                'category_id' => 2,
+                'series_id' => 1,
+                'date' => date('Y-m-d', strtotime('+1 week')),
+                'time_start' => '11:24:09',
+                'time_end' => '11:24:09',
+                'published' => 1,
+                'approved_by' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ],
+        ];
+    }
     /**
      * Fields
      *
      * @var array
      */
-    // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'title' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -46,66 +101,6 @@ class EventsFixture extends TestFixture
         '_options' => [
             'engine' => 'MyISAM',
             'collation' => 'latin1_general_ci'
-        ],
-    ];
-    // @codingStandardsIgnoreEnd
-
-    /**
-     * Records
-     *
-     * @var array
-     */
-    public $records = [
-        [
-            'id' => 1,
-            'title' => 'Placeholder Event Series',
-            'description' => 'Lots of events in this placeholder series. Come on out!',
-            'location' => 'Be Here Now',
-            'address' => '505 N. Dill St.',
-            'user_id' => 1,
-            'category_id' => 2,
-            'series_id' => 1,
-            'date' => '2018-10-30',
-            'time_start' => '11:24:09',
-            'time_end' => '11:24:09',
-            'published' => 1,
-            'approved_by' => 1,
-            'created' => '2017-10-30 11:24:09',
-            'modified' => '2017-10-30 11:24:09'
-        ],
-        [
-            'id' => 2,
-            'title' => 'Placeholder Event Series',
-            'description' => 'Lots of events in this placeholder series. Come on out!',
-            'location' => 'Be Here Now',
-            'address' => '505 N. Dill St.',
-            'user_id' => 1,
-            'category_id' => 2,
-            'series_id' => 1,
-            'date' => '2018-10-31',
-            'time_start' => '11:24:09',
-            'time_end' => '11:24:09',
-            'published' => 1,
-            'approved_by' => 1,
-            'created' => '2017-10-30 11:24:09',
-            'modified' => '2017-10-30 11:24:09'
-        ],
-        [
-            'id' => 3,
-            'title' => 'Placeholder Event Series',
-            'description' => 'Lots of events in this placeholder series. Come on out!',
-            'location' => 'Be Here Now',
-            'address' => '505 N. Dill St.',
-            'user_id' => 1,
-            'category_id' => 2,
-            'series_id' => 1,
-            'date' => '2018-10-30',
-            'time_start' => '11:24:09',
-            'time_end' => '11:24:09',
-            'published' => 1,
-            'approved_by' => 1,
-            'created' => '2017-10-30 11:24:09',
-            'modified' => '2017-10-30 11:24:09'
-        ],
+        ]
     ];
 }

@@ -15,11 +15,15 @@ matrix:
     - php: 7.0
       env: PHPCS=1
 
+services:
+    - mysql
+
 before_script:
   - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:~2.1; fi
   - if [[ $PHPCS != 1 ]]; then composer install; fi
   - if [[ $PHPCS != 1 ]]; then composer require phpunit/phpunit:"^5.7|^6.0"; fi
   - if [[ $PHPCS != 1 ]]; then composer run-script post-install-cmd --no-interaction; fi
+  - sh -c "mysql -e 'CREATE DATABASE IF NOT EXISTS okbvtfr_testing;'"
 
 script:
   - if [[ $PHPCS != 1 ]]; then vendor/bin/phpunit; fi
