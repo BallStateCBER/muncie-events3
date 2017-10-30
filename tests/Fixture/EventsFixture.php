@@ -72,7 +72,8 @@ class EventsFixture extends TestFixture
             'approved_by' => 1,
             'created' => '2017-10-30 11:24:09',
             'modified' => '2017-10-30 11:24:09'
-        ],        [
+        ],
+        [
             'id' => 2,
             'title' => 'Placeholder Event Series',
             'description' => 'Lots of events in this placeholder series. Come on out!',
@@ -88,7 +89,8 @@ class EventsFixture extends TestFixture
             'approved_by' => 1,
             'created' => '2017-10-30 11:24:09',
             'modified' => '2017-10-30 11:24:09'
-        ],        [
+        ],
+        [
             'id' => 3,
             'title' => 'Placeholder Event Series',
             'description' => 'Lots of events in this placeholder series. Come on out!',
