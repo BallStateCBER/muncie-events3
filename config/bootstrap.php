@@ -207,7 +207,7 @@ if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
 Plugin::load('CakeJs');
-Plugin::load('AkkaCKEditor', ['bootstrap' => false, 'routes' => true]);
+#Plugin::load('AkkaCKEditor', ['bootstrap' => false, 'routes' => true]);
 Plugin::load('AkkaFacebook', ['bootstrap' => false, 'routes' => true]);
 Plugin::load('Josegonzalez/Upload');
 Plugin::load('Search');

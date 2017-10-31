@@ -13,12 +13,12 @@ $userId = $this->request->session()->read('Auth.User.id');
     ], true);
 ?>
 <div class="actions">
-    <?= $this->Facebook->likeButton([
+    <!--?= $this->Facebook->likeButton([
         'href' => $eventUrl,
         'show_faces' => false,
         'layout' => 'button_count',
         'app_id' => '496726620385625'
-    ]); ?>
+    ]); ?-->
     <div class="export_options_container">
         <?php echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',

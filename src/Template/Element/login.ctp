@@ -30,12 +30,12 @@
 </div>
 
 <div>
-    <?= $this->Facebook->loginLink([
+    <!--?= $this->Facebook->loginLink([
         'label' => "<img src='img/fb_login.png' />",
         'show-faces' => false,
         'perms' => 'email,user_events,create_event,rsvp_event',
         'redirect' => "/users/confirm_facebook_login"
-    ]); ?>
+    ]); ?-->
 </div>
 <div>
     Don't have an account yet?
