@@ -138,7 +138,7 @@ class UsersController extends AppController
 
         $this->set([
             'eventCount' => $eventCount,
-            'loggedIn' => (bool) $this->Auth->user('id'),
+            'loggedIn' => (bool)$this->Auth->user('id'),
             'titleForLayout' => $user['name'],
             'user' => $user,
             'userRole' => $this->Auth->user('role')
