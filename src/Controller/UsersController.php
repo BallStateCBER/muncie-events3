@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Model\Entity\User;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Routing\Router;
@@ -28,6 +29,7 @@ class UsersController extends AppController
     /**
      * Determines whether or not the user is authorized to make the current request
      *
+     * @param User|null $user User entity
      * @return bool
      */
     public function isAuthorized($user)
@@ -40,10 +42,9 @@ class UsersController extends AppController
                 return true;
             }
         }
-        $actions = ['forgotPassword'. 'register', 'resetPassword'];
+        $actions = ['forgotPassword', 'register', 'resetPassword'];
         foreach ($actions as $action) {
             if ($this->request->getParam('action') == $action) {
-                dd($action);
                 return true;
             }
         }
