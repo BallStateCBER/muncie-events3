@@ -16,17 +16,17 @@ use Cake\Utility\Inflector;
                 <?php
                     $eventId = $event->id;
                     $created = $event->created;
-                    $modified = $event->modified;
+                    $modified = date('Y-m-d', strtotime($event->modified));
                     $published = $event->published;
                     $isSeries = isset($event->series_id);
 
                     if ($isSeries) {
                         $series_id = $event->series_id;
-                        $count = count($identicalSeriesMembers[$series_id][$modified]);
+                        $count = count($identicalSeries[$series_id][$modified]);
 
                         // If events in a series have been modified, they are separated out
-                        $countSeriesParts = count($identicalSeriesMembers[$series_id]);
-                        $seriesPartEventIds = $identicalSeriesMembers[$series_id][$modified];
+                        $countSeriesParts = count($identicalSeries[$series_id]);
+                        $seriesPartEventIds = $identicalSeries[$series_id][$modified];
                     }
                 ?>
                 <li>

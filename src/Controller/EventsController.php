@@ -300,21 +300,26 @@ class EventsController extends AppController
                 $this->Flash->error('Cannot approve. Event with ID# ' . $id . ' not found.');
                 continue;
             }
-            $event = $this->Events->get($id);
+            $event = $this->Events->get($id, [
+                'contain' => 'EventSeries'
+            ]);
             if ($event['event_series']['id']) {
                 $seriesId = $event['event_series']['id'];
                 $seriesToApprove[$seriesId] = true;
             }
             // Approve & publish it
-            $event['approved_by'] = $this->request->session()->read('Auth.User.id');
+            $event['approved_by'] = $this->Auth->user('id');
             $event['published'] = 1;
-            $url = Router::url([
-                'controller' => 'events',
-                'action' => 'view',
-                'id' => $id
-            ]);
+
             if ($this->Events->save($event)) {
-                $this->Flash->success("Event #$id approved <a href=\"$url\">Go to event page</a>");
+                $this->Flash->success("Event #$id approved.");
+            }
+        }
+        foreach ($seriesToApprove as $seriesId => $flag) {
+            $series = $this->EventSeries->get($seriesId);
+            $series['published'] = 1;
+            if ($this->EventSeries->save($series)) {
+                $this->Flash->success("Event Series #$seriesId approved.");
             }
         }
 
@@ -723,12 +728,12 @@ class EventsController extends AppController
          * and remove all but the first */
         $identicalSeries = [];
         foreach ($unapproved as $k => $event) {
-            if (empty($event['EventsSeries'])) {
+            if (!isset($event->series_id)) {
                 continue;
             }
-            $eventId = $event['Events']['id'];
-            $seriesId = $event['EventSeries']['id'];
-            $modified = $event['Events']['modified'];
+            $eventId = $event->id;
+            $seriesId = $event->event_series['id'];
+            $modified = date('Y-m-d', strtotime($event->modified));
             if (isset($identicalSeries[$seriesId][$modified])) {
                 unset($unapproved[$k]);
             }

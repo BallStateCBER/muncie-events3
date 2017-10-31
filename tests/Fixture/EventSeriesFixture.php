@@ -20,7 +20,7 @@ class EventSeriesFixture extends TestFixture
                 'id' => 1,
                 'title' => 'Placeholder Event Series',
                 'user_id' => 1,
-                'published' => 1,
+                'published' => 0,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ]

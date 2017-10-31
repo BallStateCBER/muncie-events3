@@ -10,7 +10,7 @@ services:
 
 before_script:
   - sh -c "mysql -e 'CREATE DATABASE IF NOT EXISTS okbvtfr_testing;'"
-  - sh -c "composer require 'cakephp/cakephp-codesniffer:dev-master'"
+  - sh -c "composer require 'cakephp/cakephp-codesniffer:2.*"
   - phpenv rehash
 
 script:

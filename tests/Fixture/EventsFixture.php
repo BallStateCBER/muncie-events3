@@ -27,8 +27,8 @@ class EventsFixture extends TestFixture
                 'date' => date('Y-m-d', strtotime('Today')),
                 'time_start' => '11:24:09',
                 'time_end' => '11:24:09',
-                'published' => 1,
-                'approved_by' => 1,
+                'published' => null,
+                'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
@@ -43,8 +43,8 @@ class EventsFixture extends TestFixture
                 'date' => date('Y-m-d', strtotime('+1 day')),
                 'time_start' => '11:24:09',
                 'time_end' => '11:24:09',
-                'published' => 1,
-                'approved_by' => 1,
+                'published' => null,
+                'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
@@ -59,8 +59,8 @@ class EventsFixture extends TestFixture
                 'date' => date('Y-m-d', strtotime('+1 week')),
                 'time_start' => '11:24:09',
                 'time_end' => '11:24:09',
-                'published' => 1,
-                'approved_by' => 1,
+                'published' => null,
+                'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],

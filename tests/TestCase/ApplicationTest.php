@@ -2,6 +2,7 @@
 namespace App\Test\TestCase;
 
 use App\Application;
+use App\Test\Fixture\EventsFixture;
 use App\Test\Fixture\UsersFixture;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
@@ -47,6 +48,12 @@ class ApplicationTest extends IntegrationTestCase
 
     public $objects = ['Categories', 'CategoriesMailingList', 'Events', 'EventsImages', 'EventSeries', 'EventsTags', 'Images', 'MailingList', 'Tags', 'Users'];
 
+    // events fixtures
+    public $eventInSeries1;
+    public $eventInSeries2;
+    public $eventInSeries3;
+
+    // users fixtures
     public $admin;
     public $commoner;
 
@@ -63,6 +70,13 @@ class ApplicationTest extends IntegrationTestCase
             $this->$object = TableRegistry::get($object);
         }
 
+        $eventsFixture = new EventsFixture();
+
+        $this->eventInSeries1 = $eventsFixture->records[0];
+        $this->eventInSeries2 = $eventsFixture->records[1];
+        $this->eventInSeries3 = $eventsFixture->records[2];
+
+        // set up the users fixtures
         $usersFixture = new UsersFixture();
 
         $this->admin = [

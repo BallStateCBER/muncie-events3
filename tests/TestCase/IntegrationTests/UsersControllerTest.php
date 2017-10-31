@@ -118,8 +118,6 @@ class UsersControllerTest extends ApplicationTest
 
         $this->post('/login', $newCreds);
         $this->assertSession(1, 'Auth.User.id');
-
-        $this->assertResponseContains('screwing my tests up on purpose to make sure travis is running them right');
     }
     /**
      * Test entire life cycle of user account
