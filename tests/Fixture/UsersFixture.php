@@ -16,7 +16,7 @@ class UsersFixture extends TestFixture
     {
         parent::init();
 
-        // password is "placeholder"
+        // password is "placeholder" for all these users
         $this->records = [
             [
                 'name' => 'Ash Admin',
@@ -29,21 +29,13 @@ class UsersFixture extends TestFixture
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
             [
+                // this fixture uses a legacy password to test the rehasher
                 'name' => 'Stevie User',
                 'role' => 'user',
                 'bio' => 'I sit around listening to witch house and not doing anything.',
                 'email' => 'userplaceholder@bsu.edu',
-                'password' => '$2y$10$MpeYbiU6QU0CYnEgzX.igO1z8V8oOfMqe6tzjP7kvrVQ5H8dnWpsm',
+                'password' => '3435280c125fe3d44b2cd7c6be92b8573334a27c',
                 'mailing_list_id' => 2,
-                'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
-            ],
-            [
-                'name' => 'Paulie Placeholder',
-                'role' => 'user',
-                'bio' => 'I am yet another placeholder.',
-                'email' => 'userplaceholder2@bsu.edu',
-                'password' => '$2y$10$5UBkDk5/XUBtvdYm5iM6Vu7lje0Uv9LqBXRf8BMXnk/qUsVVTFSnW',
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ]

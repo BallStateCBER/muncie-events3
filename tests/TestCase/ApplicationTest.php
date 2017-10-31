@@ -46,8 +46,11 @@ class ApplicationTest extends IntegrationTestCase
     ];
 
     public $objects = ['Categories', 'CategoriesMailingList', 'Events', 'EventsImages', 'EventSeries', 'EventsTags', 'Images', 'MailingList', 'Tags', 'Users'];
-    public $adminUser;
+
+    public $admin;
     public $commoner;
+
+    public $denied = 'You are not authorized to view this page';
     /**
      * setUp method
      *
@@ -62,7 +65,7 @@ class ApplicationTest extends IntegrationTestCase
 
         $usersFixture = new UsersFixture();
 
-        $this->adminUser = [
+        $this->admin = [
             'Auth' => [
                 'User' => $usersFixture->records[0]
             ]
@@ -71,12 +74,6 @@ class ApplicationTest extends IntegrationTestCase
         $this->commoner = [
             'Auth' => [
                 'User' => $usersFixture->records[1]
-            ]
-        ];
-
-        $this->plebian = [
-            'Auth' => [
-                'User' => $usersFixture->records[2]
             ]
         ];
     }

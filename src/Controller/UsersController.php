@@ -18,7 +18,11 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['forgotPassword', 'register']);
+        $this->Auth->allow([
+            'forgotPassword',
+            'register',
+            'resetPassword'
+        ]);
     }
 
     /**
@@ -26,9 +30,25 @@ class UsersController extends AppController
      *
      * @return bool
      */
-    public function isAuthorized()
+    public function isAuthorized($user)
     {
-        return true;
+        if (isset($user)) {
+            if ($user['role'] == 'admin') {
+                return true;
+            }
+            if ($this->request->getParam('action') != 'delete') {
+                return true;
+            }
+        }
+        $actions = ['forgotPassword'. 'register', 'resetPassword'];
+        foreach ($actions as $action) {
+            if ($this->request->getParam('action') == $action) {
+                dd($action);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
