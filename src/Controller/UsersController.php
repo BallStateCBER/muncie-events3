@@ -22,7 +22,8 @@ class UsersController extends AppController
         $this->Auth->allow([
             'forgotPassword',
             'register',
-            'resetPassword'
+            'resetPassword',
+            'view'
         ]);
     }
 
@@ -137,8 +138,10 @@ class UsersController extends AppController
 
         $this->set([
             'eventCount' => $eventCount,
+            'loggedIn' => (bool) $this->Auth->user('id'),
             'titleForLayout' => $user['name'],
-            'user' => $user
+            'user' => $user,
+            'userRole' => $this->Auth->user('role')
         ]);
         $this->set('_serialize', ['user']);
     }

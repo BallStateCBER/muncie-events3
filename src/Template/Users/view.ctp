@@ -1,6 +1,4 @@
 <?php
-    $logged_in = (boolean) $this->request->session()->read('Auth.User.id');
-    $user_role = $this->request->session()->read('Auth.User.role');
     $this->Paginator->options([
         'url' => [
             'controller' => 'users',
@@ -16,7 +14,7 @@
         <?= $user->name ?>
     </h1>
     <span class="email">
-        <?php if ($logged_in): ?>
+        <?php if ($loggedIn): ?>
             <a href="mailto:<?= $user->email ?>">
                 <?= $user->email ?>
             </a>
