@@ -88,8 +88,8 @@ class EventsController extends AppController
     /**
      * Processes custom tag input
      *
-     * @param array
-     * @param Event
+     * @param array $customTags to process
+     * @param Event $event in question
      * @return null
      */
     private function setCustomTags($customTags, $event)
