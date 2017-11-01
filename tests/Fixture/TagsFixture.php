@@ -26,6 +26,28 @@ class TagsFixture extends TestFixture
                 'selectable' => 1,
                 'user_id' => 1,
                 'created' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+            'id' => 1012,
+            'parent_id' => 1,
+            'lft' => 1,
+            'rght' => 1,
+            'name' => 'unlisted',
+            'listed' => 1,
+            'selectable' => 1,
+            'user_id' => 1,
+            'created' => date('Y-m-d', strtotime('Today'))
+            ],
+            [
+                'id' => 1013,
+                'parent_id' => 1,
+                'lft' => 1,
+                'rght' => 1,
+                'name' => 'delete',
+                'listed' => 1,
+                'selectable' => 1,
+                'user_id' => 1,
+                'created' => date('Y-m-d', strtotime('Today'))
             ]
         ];
     }

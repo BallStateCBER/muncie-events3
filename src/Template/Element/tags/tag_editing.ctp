@@ -5,9 +5,6 @@
 if (! isset($availableTags)) {
     $availableTags = isset($availableTags) ? $availableTags : [];
 }
-if (! isset($selectedTags)) {
-    $selectedTags = isset($selectedTags) ? $selectedTags : [];
-}
 
 if (!isset($hideLabel)) {
     $hideLabel = false;
@@ -100,4 +97,4 @@ echo $this->Html->script('tag_manager.js');
 <?php endif ?>
 </div>
 
-<?= $this->Tag->setup($availableTags, 'available_tags', $event, $selectedTags); ?>
+<?= $this->Tag->setup($availableTags, 'available_tags', $event); ?>

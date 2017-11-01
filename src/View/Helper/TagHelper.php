@@ -120,12 +120,11 @@ class TagHelper extends Helper
      * @param array $availableTags to be selected
      * @param string $containerId of the tag menu
      * @param ResultSet $event that is being tagged
-     * @param array|null $selectedTags which are selected
      * @return void
      */
-    public function setup($availableTags, $containerId, $event, $selectedTags = [])
+    public function setup($availableTags, $containerId, $event)
     {
-        $newTags = $this->request->getData('Tags') == null ? [] : $this->request->getData('data')['Tags'];
+        $newTags = $this->request->getData('data')['Tags'] != null ? $this->request->getData('data')['Tags'] : [];
         $selectedTags = $this->formatSelectedTagsPr($newTags, $event);
 
         $this->Js->buffer("

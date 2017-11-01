@@ -243,7 +243,6 @@
                     <div class="form-group col-lg-8 col-xs-12">
                         <?= $this->element('tags/tag_editing', [
                             'availableTags' => $availableTags,
-                            'selectedTags' => isset($event->tags) ? $event->tags : [],
                             'event' => $event,
                             'hide_label' => true
                         ]); ?>
