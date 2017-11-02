@@ -75,6 +75,7 @@ class ApplicationTest extends IntegrationTestCase
         $this->eventInSeries1 = $eventsFixture->records[0];
         $this->eventInSeries2 = $eventsFixture->records[1];
         $this->eventInSeries3 = $eventsFixture->records[2];
+        $this->regularEvent = $eventsFixture->records[3];
 
         // set up the users fixtures
         $usersFixture = new UsersFixture();

@@ -218,4 +218,125 @@ class EventsControllerTest extends ApplicationTest
             ->first();
         $this->assertEquals(null, $deleted);
     }
+
+    /**
+     * test editing the events
+     *
+     * @return void
+     */
+    public function testEditingEvents()
+    {
+        $event = $this->Events->find()->first();
+
+        // first, as just anybody
+        $this->get("/events/edit/$event->id");
+        $this->assertRedirect("/login?redirect=%2Fevents%2Fedit%2F$event->id");
+
+        // how about a non-owner?
+        $this->session($this->commoner);
+        $this->get("/events/edit/$event->id");
+        $this->assertRedirect('/');
+
+        $this->session($this->admin);
+        $this->get("/events/edit/$event->id");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Edit Event');
+
+        $formData = [
+            'title' => 'Placeholder Event Series Special Edition',
+            'description' => 'This event is crazy special for some reason!',
+            'location' => 'Be Here Now',
+            'address' => '505 N. Dill St.',
+            'user_id' => 1,
+            'category_id' => 2,
+            'series_id' => 1,
+            'date' => date('Y-m-d', strtotime('+1 day')),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ]
+        ];
+
+        $this->post("/events/edit/$event->id", $formData);
+        $this->assertResponseSuccess();
+
+        $newEvent = $this->Events->find()
+            ->where(['title' => $formData['title']])
+            ->firstOrFail();
+
+        $this->assertEquals($newEvent->id, $event->id);
+    }
+
+    /**
+     * test editing the event series
+     *
+     * @return void
+     */
+    public function testEditingSeries()
+    {
+        $series = $this->EventSeries->find()->first();
+
+        // first, as just anybody
+        $this->get("/events/edit-series/$series->id");
+        $this->assertRedirect("/login?redirect=%2Fevents%2Fedit-series%2F$series->id");
+
+        // how about a non-owner?
+        $this->session($this->commoner);
+        $this->get("/events/edit-series/$series->id");
+        $this->assertRedirect('/');
+
+        $this->session($this->admin);
+        $this->get("/events/edit-series/$series->id");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Edit Event Series:');
+
+        $formData = [
+            'title' => 'Regular Placeholder Event Series',
+            'description' => 'We are a regular event series we are uniform!',
+            'series_title' => 'Totally Normal Placeholder Series',
+            'location' => 'Be Here Now',
+            'address' => '505 N. Dill St.',
+            'user_id' => 1,
+            'category_id' => 2,
+            'series_id' => 1,
+            'date' => date('Y-m-d', strtotime('+1 day')),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ]
+        ];
+
+        $this->post("/events/edit-series/$series->id", $formData);
+        $this->assertResponseSuccess();
+
+        $newSeries = $this->EventSeries->find()
+            ->where(['title' => $formData['series_title']])
+            ->firstOrFail();
+
+        $this->assertEquals($newSeries->id, $series->id);
+    }
+
+    /**
+     * test getting events for ajax
+     *
+     * @return void
+     */
+    public function testGettingEvents()
+    {
+        $this->get('/events/get-address/be%20here%20now');
+        $this->assertResponseOk();
+        $this->assertResponseContains('505 N. Dill St.');
+    }
 }

@@ -115,7 +115,7 @@
                     <th>Series Name</th>
                     <td>
                         <div class="form-group col-lg-8 col-xs-12">
-                            <?= $this->Form->input('event_series.title', [
+                            <?= $this->Form->input('series_title', [
                                 'label' => false,
                                 'class' => 'form-control',
                                 'id' => 'EventSeriesTitle'

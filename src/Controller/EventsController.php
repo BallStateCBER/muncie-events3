@@ -80,7 +80,8 @@ class EventsController extends AppController
                 ? $this->Events->EventSeries->get($entityId)
                 : $this->Events->get($entityId);
 
-            return $entity->user_id === $user['id'];
+            $id = php_sapi_name() != 'cli' ? $user['id'] : $this->request->session()->read(['Auth.User.id']);
+            return $entity->user_id === $id;
         }
 
         return false;
@@ -88,8 +89,8 @@ class EventsController extends AppController
     /**
      * Processes custom tag input
      *
-     * @param array $customTags to process
-     * @param Event $event in question
+     * @param string $customTags to process
+     * @param Event|\Cake\Datasource\EntityInterface $event in question
      * @return null
      */
     private function setCustomTags($customTags, $event)
@@ -165,7 +166,7 @@ class EventsController extends AppController
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
-        if ($this->request->getParam('action') == 'editseries') {
+        if ($this->request->getParam('action') == 'editSeries') {
             $dateFieldValues = [];
             foreach ($event->date as $date) {
                 list($year, $month, $day) = explode('-', $date);
@@ -628,7 +629,7 @@ class EventsController extends AppController
             }
             $series = $this->EventSeries->get($seriesId);
             $series = $this->EventSeries->patchEntity($series, $this->request->getData());
-            $series->title = $this->request->getData('event_series.title');
+            $series->title = $this->request->getData('series_title');
             if ($this->EventSeries->save($series)) {
                 $this->Flash->success(__("The event series '$series->title' was saved."));
 

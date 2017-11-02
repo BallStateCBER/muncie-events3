@@ -64,6 +64,22 @@ class EventsFixture extends TestFixture
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
+            [
+                'title' => 'Placeholder Event Regular',
+                'description' => 'Just one event for this bad boy!!!!',
+                'location' => 'Be Here Now',
+                'address' => '505 N. Dill St.',
+                'user_id' => 1,
+                'category_id' => 2,
+                'series_id' => 1,
+                'date' => date('Y-m-d', strtotime('+2 weeks')),
+                'time_start' => '11:24:09',
+                'time_end' => '11:24:09',
+                'published' => 1,
+                'approved_by' => 1,
+                'created' => date('Y-m-d', strtotime('Today')),
+                'modified' => date('Y-m-d', strtotime('Today'))
+            ]
         ];
     }
     /**
