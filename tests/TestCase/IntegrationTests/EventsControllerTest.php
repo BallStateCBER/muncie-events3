@@ -196,7 +196,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testDelete()
     {
-        $event = $this->Events->find()->first();
+        $event = $this->Events->find()->firstOrFail();
 
         // first, as just anybody
         $this->get("/events/delete/$event->id");
@@ -227,7 +227,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testEditingEvents()
     {
-        $event = $this->Events->find()->first();
+        $event = $this->Events->find()->firstOrFail();
 
         // first, as just anybody
         $this->get("/events/edit/$event->id");
@@ -281,7 +281,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testEditingSeries()
     {
-        $series = $this->EventSeries->find()->first();
+        $series = $this->EventSeries->find()->firstOrFail();
 
         // first, as just anybody
         $this->get("/events/edit-series/$series->id");
@@ -348,7 +348,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testEventsIndex()
     {
-        $event = $this->Events->find()->first();
+        $event = $this->Events->find()->firstOrFail();
         $this->get('/');
         $this->assertResponseOk();
         $this->assertResponseContains('Today');
@@ -380,7 +380,7 @@ class EventsControllerTest extends ApplicationTest
     public function testMonthsIndex()
     {
         $month = date('m/Y');
-        $event = $this->Events->find()->first();
+        $event = $this->Events->find()->firstOrFail();
         $this->get("/events/month/$month");
         $this->assertResponseOk();
         $this->assertResponseContains('Today');
@@ -431,7 +431,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testTagIndex()
     {
-        $tag = $this->Tags->find()->first();
+        $tag = $this->Tags->find()->firstOrFail();
         $slug = $tag['id'].'_'.Text::slug($tag['name']);
         $this->get("/tag/$slug/upcoming");
         $this->assertResponseOk();
@@ -464,7 +464,7 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testEventView()
     {
-        $event = $this->Events->find()->first();
+        $event = $this->Events->find()->firstOrFail();
         $this->get("/event/" . $event['id']);
         $this->assertResponseOk();
         $this->assertResponseContains($event['title']);

@@ -51,7 +51,9 @@ class EventSeriesController extends AppController
                 ? $this->Events->get($entityId)
                 : $this->EventSeries->get($entityId);
 
-            return $entity->user_id === $user['id'];
+            $id = php_sapi_name() != 'cli' ? $user['id'] : $this->request->session()->read(['Auth.User.id']);
+
+            return $entity->user_id === $id;
         }
 
         return false;
@@ -66,7 +68,7 @@ class EventSeriesController extends AppController
     public function edit($id = null)
     {
         $eventSeries = $this->EventSeries->find('all', [
-            'conditions' => ['id' => $id]
+            'conditions' => ['id' => $id],
         ])->first();
         if ($eventSeries == null) {
             $this->Flash->error(__('Sorry, we can\'t find that event series.'));
@@ -104,6 +106,7 @@ class EventSeriesController extends AppController
 
             $x = 0;
             foreach ($this->request->getData('events') as $event) {
+
                 if ($event['edited'] != 1) {
                     $x = $x + 1;
                     continue;
