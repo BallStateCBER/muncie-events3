@@ -1,9 +1,8 @@
 <?php
 namespace App\Test\TestCase\Controller;
+
 use App\Test\TestCase\ApplicationTest;
-/**
- * App\Controller\TagsController Test Case
- */
+
 class TagsControllerTest extends ApplicationTest
 {
     /**
