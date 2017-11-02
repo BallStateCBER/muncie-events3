@@ -146,7 +146,76 @@ class EventsControllerTest extends ApplicationTest
             ->contain(['Tags'])
             ->firstOrFail();
 
-        $x = count($event['tags']);
-        $this->assertEquals($x, 2);
+        $this->assertEquals(count($event['tags']), 2);
+    }
+
+    /**
+     * test the category index
+     *
+     * @return void
+     */
+    public function testCategoryIndex()
+    {
+        $category = $this->Categories->get(1);
+        $this->get("/$category->slug");
+        $this->assertResponseOk();
+        $this->assertResponseContains($category->name);
+    }
+
+    /**
+     * test the datepicker
+     *
+     * @return void
+     */
+    public function testDatepickerFunctionWorks()
+    {
+        $this->get('/events/datepicker-populated-dates');
+        $this->assertResponseContains('Yep');
+    }
+
+    /**
+     * test day index
+     *
+     * @return void
+     */
+    public function testDayIndex()
+    {
+        $date = date('m-d-Y');
+        $date = explode('-', $date);
+        $this->get("/events/day/$date[0]/$date[1]/$date[2]");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Events on ');
+        $this->assertResponseContains($this->eventInSeries1['title']);
+    }
+
+    /**
+     * test delete
+     *
+     * @return void
+     */
+    public function testDelete()
+    {
+        $event = $this->Events->find()->first();
+
+        // first, as just anybody
+        $this->get("/events/delete/$event->id");
+        $this->assertRedirect('/login?redirect=%2Fevents%2Fdelete%2F1');
+
+        // can't do it can you? what if we register?
+        $this->session($this->commoner);
+        $this->get("/events/delete/$event->id");
+        $this->assertRedirect('/');
+        $deleted = $this->Events->find()
+            ->where(['id' => $event->id])
+            ->first();
+        $this->assertEquals($event->id, $deleted->id);
+
+        // nope! we must be an admin!
+        $this->session($this->admin);
+        $this->get("/events/delete/$event->id");
+        $deleted = $this->Events->find()
+            ->where(['id' => $event->id])
+            ->first();
+        $this->assertEquals(null, $deleted);
     }
 }

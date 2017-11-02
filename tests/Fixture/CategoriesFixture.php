@@ -18,14 +18,14 @@ class CategoriesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'name' => 'Terrible Events',
-                'slug' => 'terrible_events',
-                'weight' => 2
+                'name' => 'General Events',
+                'slug' => 'general',
+                'weight' => -1
             ],
             [
                 'id' => 2,
-                'name' => 'Decent Events',
-                'slug' => 'decent_events',
+                'name' => 'Art',
+                'slug' => 'art',
                 'weight' => 1
             ]
         ];

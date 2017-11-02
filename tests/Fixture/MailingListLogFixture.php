@@ -49,7 +49,7 @@ class MailingListLogFixture extends TestFixture
         [
             'id' => 1,
             'recipient_id' => 1,
-            'flavor' => 'Lorem ipsum dolor sit ame',
+            'flavor' => 'd',
             'result' => 1,
             'testing' => 1,
             'created' => '2017-10-30 11:24:37'
