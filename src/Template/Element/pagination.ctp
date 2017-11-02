@@ -1,4 +1,7 @@
 <?php
+if ($this->request->action) {
+    $slug = '';
+}
 $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
     $currentPage = $this->Paginator->counter(['format' => '{{page}}']);
     $paginatorUrl = urldecode($this->Url->build([

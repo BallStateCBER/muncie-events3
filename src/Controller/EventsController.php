@@ -40,6 +40,7 @@ class EventsController extends AppController
             'index',
             'location',
             'month',
+            'pastLocations',
             'search',
             'searchAutoComplete',
             'tag',
@@ -81,6 +82,7 @@ class EventsController extends AppController
                 : $this->Events->get($entityId);
 
             $id = php_sapi_name() != 'cli' ? $user['id'] : $this->request->session()->read(['Auth.User.id']);
+
             return $entity->user_id === $id;
         }
 

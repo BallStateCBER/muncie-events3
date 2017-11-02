@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Test\TestCase\ApplicationTest;
+use Cake\Utility\Text;
 
 class EventsControllerTest extends ApplicationTest
 {
@@ -329,14 +330,144 @@ class EventsControllerTest extends ApplicationTest
     }
 
     /**
-     * test getting events for ajax
+     * test getting events addresses for ajax
      *
      * @return void
      */
-    public function testGettingEvents()
+    public function testGettingEventsAddresses()
     {
-        $this->get('/events/get-address/be%20here%20now');
+        $this->get('/events/get-address/placeholder%20place');
         $this->assertResponseOk();
-        $this->assertResponseContains('505 N. Dill St.');
+        $this->assertResponseContains('505 N. Bill St.');
+    }
+
+    /**
+     * test events index
+     *
+     * @return void
+     */
+    public function testEventsIndex()
+    {
+        $event = $this->Events->find()->first();
+        $this->get('/');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Today');
+        $this->assertResponseContains('Tomorrow');
+        $this->assertResponseContains($event['title']);
+    }
+
+    /**
+     * test locations index
+     *
+     * @return void
+     */
+    public function testLocationsIndex()
+    {
+        $event = $this->Events->find()
+            ->where(['location' => 'Placeholder Place'])
+            ->first();
+        $this->get('/location/Placeholder%20Place');
+        $this->assertResponseOk();
+        $this->assertResponseContains($event['title']);
+        $this->assertResponseContains('Placeholder Place');
+    }
+
+    /**
+     * test months index
+     *
+     * @return void
+     */
+    public function testMonthsIndex()
+    {
+        $month = date('m/Y');
+        $event = $this->Events->find()->first();
+        $this->get("/events/month/$month");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Today');
+        $this->assertResponseContains($event['title']);
+    }
+
+    /**
+     * test index of past locations
+     *
+     * @return void
+     */
+    public function testPastLocations()
+    {
+        $this->get("/events/past-locations");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Placeholder Place');
+    }
+
+    /**
+     * test search function
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        $this->get("/search?filter=be+here+now&direction=future");
+        $this->assertResponseOk();
+        $this->assertResponseContains('Today');
+        $this->assertResponseContains('Be Here Now');
+    }
+
+    /**
+     * test search autocomplete populate for ajax
+     *
+     * @return void
+     */
+    public function testSearchAutocomplete()
+    {
+        $this->get("/events/search_auto_complete/all?term=holding");
+        $this->assertResponseOk();
+        $this->assertResponseContains('{"1":"holding places"');
+    }
+
+    /**
+     * test tag index
+     *
+     * @return void
+     */
+    public function testTagIndex()
+    {
+        $tag = $this->Tags->find()->first();
+        $slug = $tag['id'].'_'.Text::slug($tag['name']);
+        $this->get("/tag/$slug/upcoming");
+        $this->assertResponseOk();
+        $name = ucwords($tag['name']);
+        $this->assertResponseContains("with Tag: $name");
+    }
+
+    /**
+     * test the today & tomorrow redirects
+     *
+     * @return void
+     */
+    public function testTodayAndTomorrow()
+    {
+       $todayString = date('m/d/Y');
+       $tomorrowString = date('m/d/Y', strtotime('+1 day'));
+
+       $this->get('/events/today');
+       $this->assertRedirect("/events/day/$todayString");
+
+       $this->get('/events/tomorrow');
+       $this->assertRedirect("/events/day/$tomorrowString");
+    }
+
+    /**
+     * let's end on an easy one.
+     * test individual event views
+     *
+     * @return void
+     */
+    public function testEventView()
+    {
+        $event = $this->Events->find()->first();
+        $this->get("/event/" . $event['id']);
+        $this->assertResponseOk();
+        $this->assertResponseContains($event['title']);
+        $this->assertResponseContains($event['description']);
     }
 }
