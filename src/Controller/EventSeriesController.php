@@ -105,6 +105,7 @@ class EventSeriesController extends AppController
             }
 
             $x = 0;
+
             foreach ($this->request->getData('events') as $event) {
 
                 if ($event['edited'] != 1) {

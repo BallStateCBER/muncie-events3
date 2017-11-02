@@ -8,7 +8,7 @@
                 <img id="" src="/img/loading_small.gif" /> Loading...
             </div>
             <div id="load_more_events_wrapper">
-                <button class="btn" href="#" id="load_more_events">More events...</a>
+                <button class="btn" href="#" id="load_more_events">More events...</button>
             </div>
             <?php $this->Js->buffer("
                 $('#load_more_events').button().click(function(event) {

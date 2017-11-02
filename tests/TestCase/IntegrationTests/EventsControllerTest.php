@@ -432,7 +432,7 @@ class EventsControllerTest extends ApplicationTest
     public function testTagIndex()
     {
         $tag = $this->Tags->find()->firstOrFail();
-        $slug = $tag['id'].'_'.Text::slug($tag['name']);
+        $slug = $tag['id'] . '_' . Text::slug($tag['name']);
         $this->get("/tag/$slug/upcoming");
         $this->assertResponseOk();
         $name = ucwords($tag['name']);
@@ -446,14 +446,14 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testTodayAndTomorrow()
     {
-       $todayString = date('m/d/Y');
-       $tomorrowString = date('m/d/Y', strtotime('+1 day'));
+        $todayString = date('m/d/Y');
+        $tomorrowString = date('m/d/Y', strtotime('+1 day'));
 
-       $this->get('/events/today');
-       $this->assertRedirect("/events/day/$todayString");
+        $this->get('/events/today');
+        $this->assertRedirect("/events/day/$todayString");
 
-       $this->get('/events/tomorrow');
-       $this->assertRedirect("/events/day/$tomorrowString");
+        $this->get('/events/tomorrow');
+        $this->assertRedirect("/events/day/$tomorrowString");
     }
 
     /**
