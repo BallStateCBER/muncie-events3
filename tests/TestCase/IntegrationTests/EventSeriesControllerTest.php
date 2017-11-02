@@ -105,7 +105,6 @@ class EventSeriesControllerTest extends ApplicationTest
             'delete' => 0
         ];
         $this->post("/event-series/edit/$series->id", $edits);
-        $events = $this->Events->find()->toArray();
         $newEvent = $this->Events->find()
             ->where(['title' => 'Placeholder Party Series'])
             ->firstOrFail();
