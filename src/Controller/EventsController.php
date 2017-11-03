@@ -89,17 +89,19 @@ class EventsController extends AppController
         return false;
     }
     /**
-     * Processes custom tag input
+     * setCustomTags method
      *
-     * @param string $customTags to process
-     * @param Event|\Cake\Datasource\EntityInterface $event in question
-     * @return null
+     * @param Event|\Cake\Datasource\EntityInterface $event Event entity
+     * @return void
      */
-    private function setCustomTags($customTags, $event)
+    private function setCustomTags($event)
     {
-        $customTags = trim($customTags);
+        if (!isset($event->customTags)) {
+            return;
+        }
+        $customTags = trim($event->customTags);
         if (empty($customTags)) {
-            return null;
+            return;
         }
         $customTags = explode(',', $customTags);
         // Force lowercase and remove leading/trailing whitespace
@@ -109,50 +111,41 @@ class EventsController extends AppController
         unset($ct);
         // Remove duplicates
         $customTags = array_unique($customTags);
-        $tagIds = [];
         foreach ($customTags as $ct) {
             // Skip over blank tags
             if ($ct == '') {
                 continue;
             }
             // Get ID of existing tag, if it exists
-            $oldTag = $this->Events->Tags->find()
+            $tagId = $this->Events->Tags->find()
+                ->select('id')
                 ->where(['name' => $ct])
                 ->first();
             // Include this tag if it exists and is selectable
-            if ($oldTag) {
+            if ($tagId) {
                 $selectable = $this->Events->Tags->find()
                     ->select('selectable')
-                    ->where(['id' => $oldTag->id])
+                    ->where(['id' => $tagId->id])
                     ->toArray();
                 if (!$selectable) {
                     continue;
                 }
-                $tagIds[] = $oldTag;
+                $this->request->data['data']['Tags'][] = $tagId;
             }
             // Create the custom tag if it does not already exist
-            if (!$oldTag) {
-                $newTag = $this->Tags->newEntity();
+            if (!$tagId) {
+                $newTag = $this->Events->Tags->newEntity();
                 $newTag->name = $ct;
-                $newTag->user_id = $event->user_id;
-                $newTag->parent_id = $this->Tags->getUnlistedGroupId(); // 'Unlisted' group
+                $newTag->user_id = $this->Auth->user('id');
+                $newTag->parent_id = 1012; // 'Unlisted' group
                 $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
-                if ($this->Tags->save($newTag)) {
-                    $tagIds[] = $newTag;
-                }
-            }
-            foreach ($tagIds as $tag) {
-                $tag->_joinData = $this->EventsTags->newEntity();
-                $tag->_joinData->tag_id = $tag->id;
-                $tag->_joinData->event_id = $event->id;
-                $tag->_joinData->created = $tag->created;
-                $tag->_joinData->modified = $tag->modified;
-                $this->Events->Tags->link($event, [$tag]);
+                $this->Events->Tags->save($newTag);
+                $this->request->data['data']['Tags'][] = $newTag->id;
             }
         }
-
-        return null;
+        $this->request->data['data']['Tags'] = array_unique($this->request->data['data']['Tags']);
+        $event->customTags = '';
     }
     /**
      * Sends the variables $dateFieldValues, $defaultDate, and $preselectedDates to the view
@@ -358,12 +351,12 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
+                $this->setCustomTags($event);
                 $event->date = new Date($this->request->getData('date'));
                 $event->series_id = null;
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
                 ])) {
-                    $this->setCustomTags($this->request->getData('customTags'), $event);
                     $this->Flash->success(__('The event has been saved.'));
 
                     return;
@@ -386,12 +379,12 @@ class EventsController extends AppController
                     $newDate = new Date($date);
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $this->setCustomTags($event);
                     $event->date = $newDate;
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
                         'associated' => ['EventSeries', 'Images', 'Tags']
                     ]);
-                    $this->setCustomTags($this->request->getData('customTags'), $event);
                 }
                 $this->Flash->success(__('The event series has been saved.'));
 
@@ -523,11 +516,11 @@ class EventsController extends AppController
             $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->date = strtotime($this->request->getData('date'));
+            $this->setCustomTags($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->getData('date');
-                $this->setCustomTags($this->request->getData('customTags'), $event);
                 $this->Flash->success(__('The event has been saved.'));
 
                 return;
@@ -619,10 +612,10 @@ class EventsController extends AppController
                 $time = date('H:i:s', strtotime($timeString));
                 $event->time_start = new Time($time);
                 $event->title = $this->request->getData('title');
+                $this->setCustomTags($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']])) {
                     $this->Flash->success(__("Event '$event->title' has been saved."));
-                    $this->setCustomTags($this->request->getData('customTags'), $event);
                     continue;
                 }
                 if (!$this->Events->save($event)) {

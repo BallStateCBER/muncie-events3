@@ -56,8 +56,7 @@ class UsersControllerTest extends ApplicationTest
         $this->post('/login', $data);
 
         $id = $this->Users->getIdFromEmail('userplaceholder@bsu.edu');
-        $this->assertSession($id, 'Auth.User.id');
-        $this->session(['Auth.User.id' => 1]);
+        $this->session(['Auth.User.id' => $id]);
 
         $this->get('/user/1');
         $this->assertResponseContains('adminplaceholder@bsu.edu');
