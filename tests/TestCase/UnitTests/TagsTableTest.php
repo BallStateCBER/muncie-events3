@@ -144,7 +144,6 @@ class TagsTableTest extends ApplicationTest
             ->where(['date >=' => date('Y-m-d')])
             ->toArray();
         foreach ($events as $event) {
-            dd($event);
             if (isset($event['tags'])) {
                 foreach ($event['tags'] as $tag) {
                     $upcoming = $tag->name;

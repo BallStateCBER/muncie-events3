@@ -157,10 +157,12 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testCategoryIndex()
     {
-        $category = $this->Categories->get(1);
-        $this->get("/$category->slug");
-        $this->assertResponseOk();
-        $this->assertResponseContains($category->name);
+        $categories = $this->Categories->find();
+        foreach ($categories as $category) {
+            $this->get("/$category->slug");
+            $this->assertResponseOk();
+            $this->assertResponseContains($category->name);
+        }
     }
 
     /**
