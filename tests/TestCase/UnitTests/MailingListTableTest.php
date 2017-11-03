@@ -227,6 +227,7 @@ class MailingListTableTest extends ApplicationTest
         $list = $this->MailingList->toList($categoryList);
         if (!is_array($list)) {
             $this->assertEquals('General Events, Music, Art, and Religion', $list);
+
             return;
         }
     }

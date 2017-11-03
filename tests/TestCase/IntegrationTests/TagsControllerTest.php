@@ -72,6 +72,7 @@ class TagsControllerTest extends ApplicationTest
             ->count();
         if ($tags == 2) {
             $this->assertResponseSuccess();
+
             return;
         }
         $this->assertResponseError();
@@ -136,6 +137,7 @@ class TagsControllerTest extends ApplicationTest
             $this->assertResponseSuccess();
             $this->get("/tags/remove/nobody%20loves%20me");
             $this->assertResponseSuccess();
+
             return;
         }
         $this->assertResponseError();
@@ -170,6 +172,7 @@ class TagsControllerTest extends ApplicationTest
                 $tag->parent_id = null;
                 $this->Tags->save($tag);
             }
+
             return;
         }
         $this->assertResponseError();

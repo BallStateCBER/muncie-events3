@@ -150,6 +150,7 @@ class TagsTableTest extends ApplicationTest
                     $upcoming = $tag->name;
                     $this->assertContains($upcoming, $counts);
                 }
+
                 return;
             }
             $this->assertEquals($counts, null);
@@ -188,6 +189,7 @@ class TagsTableTest extends ApplicationTest
                     $upcoming = $tag->name;
                     $this->assertContains($upcoming, $counts);
                 }
+
                 return;
             }
             $this->assertEquals($counts, null);
