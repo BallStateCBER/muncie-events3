@@ -9,17 +9,18 @@ use Cake\ORM\TableRegistry;
 class TagsController extends AppController
 {
     public $adminActions = [
+        'add',
+        'edit',
         'getName',
         'getNodes',
         'groupUnlisted',
         'manage',
+        'merge',
         'recover',
         'remove',
         'reorder',
         'reparent',
-        'trace',
-        'edit',
-        'merge'
+        'trace'
     ];
 
     /**
@@ -881,7 +882,7 @@ class TagsController extends AppController
             // Add tag to database
             $newTag = $this->Tags->newEntity();
             $newTag->name = $name;
-            $newTag->user_id = $this->request->session()->read('Auth.User.id');
+            $newTag->user_id = php_sapi_name() != 'cli' ? $this->Auth->user('id') : 1;
             $newTag->parent_id = isset($parentId) ? $parentId : null;
             $newTag->listed = 0;
             $newTag->selectable = 1;

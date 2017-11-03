@@ -24,25 +24,26 @@ class TagsControllerTest extends ApplicationTest
         parent::tearDown();
     }
     /**
-     * Test adding tags
+     * Test adding, editing, and deleting tags
      *
      * @return void
      */
-    public function testAddingTags()
+    public function testTagLifecycle()
     {
         $this->session($this->admin);
+        $this->session(['Auth.User.id' => 1]);
         $this->get('/tags/manage');
         $this->assertResponseOk();
         $this->assertResponseContains('Manage Tags');
         $newTag = [
             'name' => "Lourdes\n-Soothsayer Lies",
-            'parent_name' => 'intelligent dance music'
+            'parent_name' => 'holding places'
         ];
         $this->post('/tags/add', $newTag);
         $this->assertResponseSuccess();
         $newTag = $this->Tags->find()
             ->where(['name' => 'lourdes'])
-            ->andWhere(['parent_id' => 697])
+            ->andWhere(['parent_id' => 1])
             ->firstOrFail();
         $newChild = $this->Tags->find()
             ->where(['name' => 'soothsayer lies'])
@@ -52,21 +53,17 @@ class TagsControllerTest extends ApplicationTest
             return;
         }
         $this->assertResponseError();
-    }
+
     /**
      * Test adding a tag that already exists
-     *
-     * @return void
      */
-    public function testAddingExistingTag()
-    {
-        $this->session($this->admin);
+
         $this->get('/tags/manage');
         $this->assertResponseOk();
         $this->assertResponseContains('Manage Tags');
         $newTag = [
             'name' => "Lourdes\n-Soothsayer Lies",
-            'parent_name' => 'intelligent dance music'
+            'parent_name' => 'holding places'
         ];
         $this->post('/tags/add', $newTag);
         $tags = $this->Tags->find()
@@ -78,38 +75,30 @@ class TagsControllerTest extends ApplicationTest
             return;
         }
         $this->assertResponseError();
-    }
+
     /**
      * Test editing tags
-     *
-     * @return void
      */
-    public function testEditingTags()
-    {
+
         $oldTag = $this->Tags->find()
             ->where(['name' => 'lourdes'])
             ->first();
-        $this->session($this->admin);
         $this->get("/tags/edit/lourdes");
         $this->assertResponseSuccess();
         $edits = [
             'name' => 'We the Heathens',
             'listed' => 1,
             'selectable' => 1,
-            'parent_id' => 697,
+            'parent_id' => 1,
             'id' => $oldTag->id
         ];
         $this->post('/tags/edit/lourdes', $edits);
         $this->assertResponseSuccess();
-    }
+
     /**
      * Test merging tags
-     *
-     * @return void
      */
-    public function testMergingTags()
-    {
-        $this->session($this->admin);
+
         $oldTag = $this->Tags->find()
             ->where(['name' => 'soothsayer lies'])
             ->first();
@@ -117,22 +106,43 @@ class TagsControllerTest extends ApplicationTest
             ->where(['name' => 'we the heathens'])
             ->first();
         $decoyJoin = $this->EventsTags->newEntity();
-        $decoyJoin->event_id = 6;
+        $decoyJoin->event_id = 1;
         $decoyJoin->tag_id = $oldTag->id;
         if ($this->EventsTags->save($decoyJoin)) {
-            $this->post("/tags/merge/$oldTag->name/$newTag->name");
+            $oldName = $oldTag['name'];
+            $newName = $newTag['name'];
+            $this->post("/tags/merge/$oldName/$newName");
         };
         $newJoin = $this->EventsTags->find()
-            ->where(['event_id' => 6])
+            ->where(['event_id' => 1])
             ->andWhere(['tag_id' => $newTag->id])
             ->firstOrFail();
         if (isset($newJoin)) {
             $this->assertResponseSuccess();
             $this->EventsTags->delete($newJoin);
         }
-    }
+
     /**
-     * Test regrouping rogue/unlisted tags
+     * Test deleting tags
+     */
+
+        $this->get("/tags/remove/we%20the%20heathens");
+        $this->assertResponseSuccess();
+        $newTag = $this->Tags->find()
+            ->where(['name' => 'we the heathens'])
+            ->orWhere(['name' => 'soothsayer lies'])
+            ->first();
+        if (!isset($newTag->name)) {
+            $this->assertResponseSuccess();
+            $this->get("/tags/remove/nobody%20loves%20me");
+            $this->assertResponseSuccess();
+            return;
+        }
+        $this->assertResponseError();
+    }
+
+    /**
+     * Test tag fixing functions
      *
      * @return void
      */
@@ -163,26 +173,18 @@ class TagsControllerTest extends ApplicationTest
             return;
         }
         $this->assertResponseError();
-    }
+
     /**
      * Test recovering tag tree structure
-     *
-     * @return void
      */
-    public function testTagTreeRecovery()
-    {
-        $this->session($this->admin);
+
         $this->get('/tags/recover');
         $this->assertResponseOk();
-    }
+
     /**
      * Test the removeUnlistedUnused() action
-     *
-     * @return void
      */
-    public function testRemovingUnusedTags()
-    {
-        $this->session($this->admin);
+
         $this->get('/tags/remove-unlisted-unused');
         $this->assertResponseOk();
         $deadTag = $this->Tags->find()
@@ -192,15 +194,11 @@ class TagsControllerTest extends ApplicationTest
         if (isset($deadTag)) {
             $this->assertResponseError();
         }
-    }
+
     /**
      * Test merging duplicates
-     *
-     * @return void
      */
-    public function testDealingWithDuplicates()
-    {
-        $this->session($this->admin);
+
         for ($x = 0; $x <= 10; $x++) {
             $duplicate = $this->Tags->newEntity([
                 'name' => 'nobody loves me',
@@ -218,15 +216,11 @@ class TagsControllerTest extends ApplicationTest
         if ($duplicates != 1) {
             $this->assertResponseError();
         }
-    }
+
     /**
      * Test removing broken associations
-     *
-     * @return void
      */
-    public function testRemovingBrokenAssociations()
-    {
-        $this->session($this->admin);
+
         $broken = $this->EventsTags->newEntity();
         $broken->event_id = 99999;
         $broken->tag_id = 99999;
@@ -240,27 +234,5 @@ class TagsControllerTest extends ApplicationTest
         if ($broken > 0) {
             $this->assertResponseError();
         }
-    }
-    /**
-     * Test deleting tags
-     *
-     * @return void
-     */
-    public function testDeletingTags()
-    {
-        $this->session($this->admin);
-        $this->get("/tags/remove/we%20the%20heathens");
-        $this->assertResponseSuccess();
-        $newTag = $this->Tags->find()
-            ->where(['name' => 'we the heathens'])
-            ->orWhere(['name' => 'soothsayer lies'])
-            ->first();
-        if (!isset($newTag->name)) {
-            $this->assertResponseSuccess();
-            $this->get("/tags/remove/nobody%20loves%20me");
-            $this->assertResponseSuccess();
-            return;
-        }
-        $this->assertResponseError();
     }
 }

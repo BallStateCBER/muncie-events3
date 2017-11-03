@@ -41,5 +41,10 @@ class EventsTagsFixture extends TestFixture
             'event_id' => 1,
             'tag_id' => 1
         ],
+        [
+            'id' => 2,
+            'event_id' => 5,
+            'tag_id' => 1
+        ]
     ];
 }

@@ -288,7 +288,7 @@ class TagsTable extends Table
             ->where(['name' => $parentName])
             ->first();
 
-        return $id;
+        return $id->id;
     }
 
     /**

@@ -46,12 +46,13 @@ class ApplicationTest extends IntegrationTestCase
         'app.users'
     ];
 
-    public $objects = ['Categories', 'CategoriesMailingList', 'Events', 'EventsImages', 'EventSeries', 'EventsTags', 'Images', 'MailingList', 'Tags', 'Users'];
+    public $objects = ['Categories', 'CategoriesMailingList', 'Events', 'EventsImages', 'EventSeries', 'EventsTags', 'Images', 'MailingList', 'MailingListLog', 'Tags', 'Users'];
 
     // events fixtures
     public $eventInSeries1;
     public $eventInSeries2;
     public $eventInSeries3;
+    public $regularEvent;
 
     // users fixtures
     public $admin;

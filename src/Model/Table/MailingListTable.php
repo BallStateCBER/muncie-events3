@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use Cake\Mailer\Email;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Validation\Validator;
 
@@ -11,7 +12,7 @@ use Cake\Validation\Validator;
  * MailingList Model
  *
  * @property \Cake\ORM\Association\HasMany $Users
- * @property \Cake\ORM\Association\BelongsTo $MailingListLogTable
+ * @property \Cake\ORM\Association\BelongsTo $MailingListLog
  * @property \Cake\ORM\Association\BelongsToMany $Categories
  * @property \Cake\ORM\Association\BelongsToMany $CategoriesMailingList
  *
@@ -45,6 +46,9 @@ class MailingListTable extends Table
             'joinTable' => 'categories_mailing_list',
             'propertyName' => 'categories'
         ]);
+
+        $this->CategoriesMailingList = TableRegistry::get('CategoriesMailingList');
+        $this->MailingListLog = TableRegistry::get('MailingListLog');
     }
 
     /**
@@ -341,7 +345,7 @@ class MailingListTable extends Table
      */
     public function setDailyAsProcessed($recipientId, $result)
     {
-        $processed = $this->MailingListLogTable->newEntity();
+        $processed = $this->MailingListLog->newEntity();
         $processed->recipient_id = $recipientId;
         $processed->result = $result;
         $processed->is_daily = 1;
@@ -349,7 +353,7 @@ class MailingListTable extends Table
         if (php_sapi_name() == 'cli') {
             $processed->testing = 1;
         }
-        $this->MailingListLogTable->save($processed);
+        $this->MailingListLog->save($processed);
 
         $recipient = $this->get($recipientId);
         $recipient->processed_daily = date('Y-m-d H:i:s');
@@ -369,7 +373,7 @@ class MailingListTable extends Table
      */
     public function setWeeklyAsProcessed($recipientId, $result)
     {
-        $processed = $this->MailingListLogTable->newEntity();
+        $processed = $this->MailingListLog->newEntity();
         $processed->recipient_id = $recipientId;
         $processed->result = $result;
         $processed->is_weekly = 1;
@@ -377,7 +381,7 @@ class MailingListTable extends Table
         if (php_sapi_name() == 'cli') {
             $processed->testing = 1;
         }
-        $this->MailingListLogTable->save($processed);
+        $this->MailingListLog->save($processed);
 
         $recipient = $this->get($recipientId);
         $recipient->processed_weekly = date('Y-m-d H:i:s');
@@ -460,10 +464,10 @@ class MailingListTable extends Table
      * @param string $separator a comma for the array to implode with
      * @return string
      */
-    public function toList($list, $and = 'and', $separator = ', ')
+    public function toList($list, $and = 'and ', $separator = ', ')
     {
         if (count($list) > 1) {
-            $and .= count($list) > 2 ? (', ') : (' ');
+            $and = count($list) > 2 ? ', ' . $and : ' ' . $and;
             $retval = implode($separator, array_slice($list, null, -1));
             $retval .= $and;
             $retval .= array_pop($list);
@@ -508,20 +512,14 @@ class MailingListTable extends Table
             }
         }
         $dayCount = count($selectedDays);
-        if ($dayCount == 7) {
-            $frequency = 'Daily';
-            if ($recipient['weekly']) {
-                $frequency .= ' and weekly';
-            }
+        if ($dayCount == 7 || $dayCount == 0) {
+            $frequency = $recipient['weekly'] ? 'Weekly' : '?';
         }
-        if ($dayCount > 0) {
+        if ($dayCount > 0 && $dayCount < 7) {
             $frequency = 'Daily on ' . $this->toList($selectedDays);
             if ($recipient['weekly']) {
                 $frequency .= ' and weekly';
             }
-        }
-        if ($dayCount == 0) {
-            $frequency = $recipient['weekly'] ? 'Weekly' : '?';
         }
 
         return compact('eventTypes', 'frequency');

@@ -4,6 +4,7 @@ namespace App\Model\Table;
 use App\Model\Entity\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -78,6 +79,8 @@ class EventsTable extends Table
                 'field' => ['title', 'description', 'location']
             ])
             ->add('foo', 'Search.Callback');
+
+        $this->EventsTags = TableRegistry::get('EventsTags');
     }
 
     /**
