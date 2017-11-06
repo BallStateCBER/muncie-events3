@@ -31,7 +31,7 @@
 
 <div>
     <!--?= $this->Facebook->loginLink([
-        'label' => "<img src='img/fb_login.png' />",
+        'label' => "<img src='<!?= $fullBaseUrl ?>img/fb_login.png' />",
         'show-faces' => false,
         'perms' => 'email,user_events,create_event,rsvp_event',
         'redirect' => "/users/confirm_facebook_login"

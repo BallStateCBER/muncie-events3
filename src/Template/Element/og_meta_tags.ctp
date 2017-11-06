@@ -8,7 +8,7 @@ $titleForLayout = "Muncie Events";
     $default_og_meta_tags = [
         'og:title' => $titleForLayout,
         'og:type' => 'website', // was muncieevents:website
-        'og:image' => 'http://muncieevents.com/img/facebook_logo.png',
+        'og:image' => $fullBaseUrl . 'img/facebook_logo.png',
         'og:site_name' => 'Muncie Events',
         'fb:admins' => [
             '20721049', // Graham Watson

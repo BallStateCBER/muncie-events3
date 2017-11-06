@@ -57,7 +57,7 @@
     </div>
     <div class="detailed_info_col">
         <div id="loading_event" style="display: none;">
-            <img src="/img/loading.gif" />
+            <img src="<?= $fullBaseUrl ?>img/loading.gif" />
         </div>
         <div id="load_event">
             <div id="event_info_placeholder">

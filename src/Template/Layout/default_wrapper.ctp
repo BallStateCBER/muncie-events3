@@ -18,8 +18,8 @@
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
         echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css');
-        echo $this->Html->css('/magnific-popup/magnific-popup.css');
-        echo $this->Html->css('/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css');
+        echo $this->Html->css($fullBaseUrl . '/magnific-popup/magnific-popup.css');
+        echo $this->Html->css($fullBaseUrl . '/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css');
         echo $this->Html->css('style');
         echo $this->fetch('css');
     ?>
@@ -63,7 +63,7 @@
     </noscript>
 
     <script src="/js/jquery-migrate-3.0.0.min.js"></script>
-    <script src="/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
+    <script src="<?= $fullBaseUrl ?>/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
     <script src="/js/jquery.watermark.min.js"></script>
 
     <!-- bootstrap css local fallback -->

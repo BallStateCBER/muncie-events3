@@ -3,8 +3,8 @@
 </style>
 
 <h1>
-    <a href="http://muncieevents.com">
-        <img src="http://muncieevents.com/img/email_logo.png" alt="Muncie Events" />
+    <a href="<? $fullBaseUrl ?>">
+        <img src="<? $fullBaseUrl ?>img/email_logo.png" alt="Muncie Events" />
     </a>
 </h1>
 
@@ -54,7 +54,7 @@
 
 <p class="footnote">
     This email was sent to <?= $recipient_email; ?>
-    on behalf of <a href="http://muncieevents.com">MuncieEvents.com</a>
+    on behalf of <a href="<? $fullBaseUrl ?>">MuncieEvents.com</a>
     <br />
     <?= $this->Html->link(
         'Add Event',

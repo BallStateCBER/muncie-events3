@@ -59,7 +59,7 @@ use Cake\Routing\Router;
         <td colspan="0" id="controls">
             <a href="#" id="more_events">More events...</a>
             <p id="more_events_error" style="display: none;">Error loading more events.</p>
-            <img id="more_events_loading" src="/img/loading.gif" style="display: none;"/>
+            <img id="more_events_loading" src="<? $fullBaseUrl ?>/img/loading.gif" style="display: none;"/>
         </td>
     </tr>
     <?php

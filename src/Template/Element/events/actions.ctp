@@ -21,7 +21,7 @@ $userId = $this->request->session()->read('Auth.User.id');
     ]); ?-->
     <div class="export_options_container">
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/calendar--arrow.png').'Export',
+            $this->Html->image($fullBaseUrl . '/img/icons/calendar--arrow.png').'Export',
             "#" . $event['id'] . "_options",
             [
                 'escape' => false,
@@ -122,7 +122,7 @@ $userId = $this->request->session()->read('Auth.User.id');
     </div>
     <?php if ($userRole == 'admin' && !$event['approved_by']): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/tick.png').'Approve',
+            $this->Html->image($fullBaseUrl . 'img/icons/tick.png').'Approve',
             [
                 'controller' => 'events',
                 'action' => 'approve',
@@ -133,7 +133,7 @@ $userId = $this->request->session()->read('Auth.User.id');
     <?php endif; ?>
     <?php if ($canEdit): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/pencil.png').'Edit',
+            $this->Html->image($fullBaseUrl . 'img/icons/pencil.png').'Edit',
             [
                 'controller' => 'events',
                 'action' => 'edit',
@@ -142,7 +142,7 @@ $userId = $this->request->session()->read('Auth.User.id');
             ['escape' => false]
         ); ?>
         <?php echo $this->Form->postLink(
-            $this->Html->image('/img/icons/cross.png').'Delete',
+            $this->Html->image($fullBaseUrl . 'img/icons/cross.png').'Delete',
             [
                 'controller' => 'events',
                 'action' => 'delete',

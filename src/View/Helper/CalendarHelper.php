@@ -256,7 +256,7 @@ class CalendarHelper extends Helper
         }
 
         // Reduced image
-        $image = "<img src='/img/events/$type/$filename' class='$class' />";
+        $image = "<img src='http://muncieevents.com/img/events/$type/$filename' class='$class' />";
 
         if (!file_exists($fullPath)) {
             return $image;
@@ -267,7 +267,7 @@ class CalendarHelper extends Helper
         if (isset($params['group'])) {
             $rel .= '[' . $params['group'] . ']';
         }
-        $link = "<a href='/img/events/full/$filename' rel='$rel' class='$class' alt='$filename'";
+        $link = "<a href='http://muncieevents.com/img/events/full/$filename' rel='$rel' class='$class' alt='$filename'";
         if (isset($params['caption']) && !empty($params['caption'])) {
             $link .= ' title="' . $params['caption'] . '"';
         }

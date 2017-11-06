@@ -110,24 +110,7 @@ if ($isCli) {
     require __DIR__ . '/bootstrap_cli.php';
 }
 
-/*
- * Set the full base URL.
- * This URL is used as the base of all absolute links.
- *
- * If you define fullBaseUrl in your config file you can remove this.
- */
-if (!Configure::read('App.fullBaseUrl')) {
-    $s = null;
-    if (env('HTTPS')) {
-        $s = 's';
-    }
-
-    $httpHost = env('HTTP_HOST');
-    if (isset($httpHost)) {
-        Configure::write('App.fullBaseUrl', 'http' . $s . '://' . $httpHost);
-    }
-    unset($httpHost, $s);
-}
+Configure::write('App.fullBaseUrl', 'http://muncieevents.com/');
 
 Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));

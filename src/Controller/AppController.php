@@ -15,6 +15,7 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Routing\Router;
 
@@ -168,6 +169,8 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
+        $fullBaseUrl = Configure::read('App.fullBaseUrl');
+
         if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
             $this->set([
                 'headerVars' => [
@@ -182,6 +185,7 @@ class AppController extends Controller
                 ],
                 'unapprovedCount' => $this->Events->getUnapproved()
             ]);
+            $this->set(compact('fullBaseUrl'));
         }
     }
 
