@@ -35,6 +35,7 @@ class EventsController extends AppController
             'category',
             'datepickerPopulatedDates',
             'day',
+            'exportFor14Eleven',
             'getAddress',
             'ics',
             'index',
@@ -1023,5 +1024,75 @@ class EventsController extends AppController
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', $event['title']);
+    }
+
+    /**
+     * Outputs to the screen a JSON array for all events taking place on or after today
+     *
+     * Intended to be used temporarily in place of a proper API for delivering data to 14Eleven Development
+     *
+     * @return void
+     */
+    public function exportFor14Eleven()
+    {
+        $this->loadModel('Events');
+        $results = $this->Events->find()
+            ->where(
+                function ($exp, $q) {
+                    return $exp->gte('date', date('Y-m-d'));
+                }
+            )
+            ->contain([
+                'Users' => function ($q) {
+                    return $q->select(['id', 'name']);
+                },
+                'EventSeries' => function ($q) {
+                    return $q->select(['id', 'title']);
+                },
+                'Tags' => function ($q) {
+                    return $q->select(['id', 'name']);
+                },
+                'Categories' => function ($q) {
+                    return $q->select(['id', 'name']);
+                },
+                'Images' => function ($q) {
+                    return $q->select(['id', 'filename']);
+                }
+            ])
+            ->order(['Events.date' => 'ASC'])
+            ->enableHydration(false)
+            ->toArray();
+
+        $formattedResults = [];
+        foreach ($results as $result) {
+            $formatted = $result;
+            foreach ($formatted['tags'] as &$tag) {
+                unset($tag['_joinData']);
+            }
+            foreach ($formatted['images'] as &$image) {
+                $image['caption'] = $image['_joinData']['caption'];
+                $image['thumb_url'] = 'http://muncieevents.com/img/events/tiny/' . $image['filename'];
+                $image['full_url'] = 'http://muncieevents.com/img/events/full/' . $image['filename'];
+                foreach (['_joinData', 'filename', 'id'] as $field) {
+                    unset($image[$field]);
+                }
+            }
+            $formatted['date'] = $formatted['date']->format('Y-m-d');
+            $formatted['time_start'] = $formatted['time_start']->format('H:i:s');
+            if ($formatted['time_end']) {
+                $formatted['time_end'] = $formatted['time_end']->format('H:i:s');
+            }
+            $formatted['created'] = $formatted['created']->format('Y-m-d H:i:s');
+            $formatted['modified'] = $formatted['modified']->format('Y-m-d H:i:s');
+
+            foreach (['user_id', 'series_id', 'category_id'] as $field) {
+                unset($formatted[$field]);
+            }
+
+            $formattedResults[] = $formatted;
+        }
+
+        echo json_encode($formattedResults);
+        exit();
     }
 }
