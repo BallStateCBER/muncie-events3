@@ -51,7 +51,7 @@
                     Event
                 </th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('title', [
                             'class' => 'form-control',
                             'label' => false
@@ -64,7 +64,7 @@
                     Category
                 </th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('category_id', [
                             'class' => 'form-control',
                             'label' => false,
@@ -114,7 +114,7 @@
                 <tr id="series_row">
                     <th>Series Name</th>
                     <td>
-                        <div class="form-group col-lg-8 col-xs-12">
+                        <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                             <?= $this->Form->input('series_title', [
                                 'label' => false,
                                 'class' => 'form-control',
@@ -187,7 +187,7 @@
                     Location
                 </th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('location', [
                             'class' => 'form-control',
                             'label' => false
@@ -206,7 +206,7 @@
                     Address
                 </th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('address', [
                             'class' => 'form-control',
                             'label' => false,
@@ -221,7 +221,7 @@
                 </th>
                 <td>
                     <script src="/emojione/lib/js/emojione.min.js"></script>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->CKEditor->loadJs(); ?>
                         <?= $this->Form->control('description', [
                             'label' => false,
@@ -240,7 +240,7 @@
                     Tags
                 </th>
                 <td id="eventform_tags">
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->element('tags/tag_editing', [
                             'availableTags' => $availableTags,
                             'event' => $event,
@@ -272,7 +272,7 @@
             <tr id="eventform_hascost"<?= (!$has['cost']) ? ' style="display: none;"' : ''; ?>>
                 <th>Cost</th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('cost', [
                             'maxLength' => 200,
                             'label' => false,
@@ -295,7 +295,7 @@
             <tr id="eventform_hasages"<?= (!$has['ages']) ? ' style="display: none;"' : ''; ?>>
                 <th>Age Restriction</th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('age_restriction', [
                             'label' => false,
                             'class' => 'form-control',
@@ -318,7 +318,7 @@
             <tr id="eventform_hassource"<?= (!$has['source']) ? ' style="display: none;"' : ''; ?>>
                 <th>Source</th>
                 <td>
-                    <div class="form-group col-lg-8 col-xs-12">
+                    <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('source', [
                             'label' => false,
                             'class' => 'form-control',
