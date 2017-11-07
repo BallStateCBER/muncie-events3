@@ -2,7 +2,8 @@
 /vendor/*
 /tmp/*
 /logs/*
-/webroot/img/*
+/webroot/img/events/*
+/webroot/img/users/*
 /webroot/emojione/*
 /webroot/jquery_ui/*
 /webroot/test.php
