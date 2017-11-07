@@ -784,6 +784,12 @@ label[for=event-categories-custom] {
 
 
 /* FORMS */
+#datepicker_text {
+    width: 80%;
+    @media @x-large {
+        width: 100%;
+    }
+}
 form {
     > div {
         margin-bottom: 1em;
@@ -876,6 +882,20 @@ input {
 div.checkbox label {
     display: inline;
 }
+#event_captcha {
+    @media @large
+    {
+        left: -100px;
+        position: relative;
+        top: 50px;
+    }
+    @media @medium
+    {
+        left: -100px;
+        position: relative;
+        top: 50px;
+    }
+}
 #recaptcha_widget_div {
     margin-bottom: 0;
     padding: 0;
@@ -883,8 +903,12 @@ div.checkbox label {
 #recaptcha_area td {
     display: inline-block;
 }
-
-
+.footnote {
+    visibility: hidden;
+    @media @x-large {
+        visibility: visible;
+    }
+}
 
 /* LOGIN / REGISTER */
 #login,

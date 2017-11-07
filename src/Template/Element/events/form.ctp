@@ -78,7 +78,7 @@
                     Date(s)
                 </th>
                 <td>
-                    <div class="col-xs-12 col-lg-8">
+                    <div class="col-xs-12 col-lg-8 col-md-10">
                         <div id="datepicker" class='<?= $multipleDatesAllowed ? 'multi' : 'single'; ?>'></div>
                         <?php
                         if ($multipleDatesAllowed) {
@@ -100,7 +100,7 @@
                         ]);
                         ?>
                         <?php if ($multipleDatesAllowed): ?>
-                            <div class="text-muted">
+                            <div class="text-muted" id="datepicker_text">
                                 Select more than one date to create multiple events connected by a series.
                             </div>
                             <?= $this->Form->input('series_id', [
