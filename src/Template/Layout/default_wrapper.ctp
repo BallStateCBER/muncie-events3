@@ -14,12 +14,12 @@
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 
     <?= $this->element('og_meta_tags'); ?>
-    <link rel="stylesheet" href="/magnific-popup/magnific-popup.css" />
-    <link rel="stylesheet" href="/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css" />
     <?php
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
         echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css');
+        echo $this->Html->css('/magnific-popup/magnific-popup.css');
+        echo $this->Html->css('/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css');
         echo $this->Html->css('style');
         echo $this->fetch('css');
     ?>
