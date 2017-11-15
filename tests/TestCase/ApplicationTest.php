@@ -79,6 +79,9 @@ class ApplicationTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
+        $this->configRequest([
+            'environment' => ['HTTPS' => 'on']
+        ]);
         foreach ($this->objects as $object) {
             $this->$object = TableRegistry::get($object);
         }
