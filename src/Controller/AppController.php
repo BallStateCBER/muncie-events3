@@ -141,6 +141,17 @@ class AppController extends Controller
     }
 
     /**
+     * beforeFilter event
+     *
+     * @param Event $event Event object
+     * @return void
+     */
+    public function beforeFilter(Event $event)
+    {
+        $this->Security->requireSecure();
+    }
+
+    /**
      * Before render callback.
      *
      * @param \Cake\Event\Event $event The beforeRender event.
