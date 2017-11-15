@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US" xmlns:fb="https://www.facebook.com/2008/fbml">
 <head prefix="og: http://ogp.me/ns# muncieevents: http://ogp.me/ns/apps/muncieevents#">
-    <link rel="dns-prefetch" href="//ajax.googleapis.com" />
+    <link rel="dns-prefetch" href="https://ajax.googleapis.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= $this->Html->charset(); ?>
     <title>
@@ -14,12 +14,12 @@
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 
     <?= $this->element('og_meta_tags'); ?>
+    <link rel="stylesheet" href="/magnific-popup/magnific-popup.css" />
+    <link rel="stylesheet" href="/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css" />
     <?php
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
         echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css');
-        echo $this->Html->css($fullBaseUrl . '/magnific-popup/magnific-popup.css');
-        echo $this->Html->css($fullBaseUrl . '/jquery_ui/css/smoothness/jquery-ui-1.10.2.custom.min.css');
         echo $this->Html->css('style');
         echo $this->fetch('css');
     ?>
@@ -63,7 +63,7 @@
     </noscript>
 
     <script src="/js/jquery-migrate-3.0.0.min.js"></script>
-    <script src="<?= $fullBaseUrl ?>/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
+    <script src="/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
     <script src="/js/jquery.watermark.min.js"></script>
 
     <!-- bootstrap css local fallback -->
