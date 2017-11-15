@@ -28,7 +28,7 @@
                     <td>
                         <?php echo $this->Html->link(
                             $this->Html->image(
-                                $fullBaseUrl . '/img/icons/fugue/icons/magnifier.png',
+                                '/img/icons/fugue/icons/magnifier.png',
                                 ['title' => 'View', 'alt' => 'View']
                             ).' View',
                             ['controller' => 'event_series', 'action' => 'view', 'id' => $id],
@@ -38,7 +38,7 @@
                     <td>
                         <?php echo $this->Html->link(
                             $this->Html->image(
-                                $fullBaseUrl . '/img/icons/fugue/icons/pencil.png',
+                                '/img/icons/fugue/icons/pencil.png',
                                 ['title' => 'Edit', 'alt' => 'Edit']
                             ).' Edit',
                             ['controller' => 'event_series', 'action' => 'edit', 'id' => $id],
@@ -48,7 +48,7 @@
                     <td>
                         <?php echo $this->Html->link(
                             $this->Html->image(
-                                $fullBaseUrl . '/img/icons/fugue/icons/cross.png',
+                                '/img/icons/fugue/icons/cross.png',
                                 ['title' => 'Delete', 'alt' => 'Delete']
                             ).' Delete',
                             ['controller' => 'event_series', 'action' => 'delete', 'id' => $id],
@@ -59,7 +59,7 @@
                 </tr>
                 <tr id="myeventseries_<?php echo $id; ?>_events" style="display: none;">
                     <td class="expanded">
-                        <?php echo $this->Html->image($fullBaseUrl . '/img/icons/arrow-turn-000-left.png'); ?>
+                        <?php echo $this->Html->image('/img/icons/arrow-turn-000-left.png'); ?>
                     </td>
                     <td colspan="4" class="myeventseries_events">
                         <?php echo $this->element('events/my_events', ['events' => $a_series['Event']]); ?>

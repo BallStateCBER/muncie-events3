@@ -11,7 +11,7 @@
             'url' => array_merge(['controller' => 'events', 'action' => 'search'], $this->request->params['pass'])
         ]);
     ?>
-    <img src="<?= $fullBaseUrl ?>img/loading_small_dark.gif" id="search_autocomplete_loading" />
+    <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" />
     <?= $this->Form->input('filter', [
         'label' => false,
         'class' => 'form-control',

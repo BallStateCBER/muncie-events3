@@ -12,9 +12,9 @@ $model_lower_plural = strtolower($model_plural);
 		<div class="flyers">
 			<?php foreach ($tagged_items as $id => $flyer): ?>
 				<div class="flyer_thumbnail">
-					<a href="<? $fullBaseUrl ?>/img/flyers/<?php echo $flyer['full_filename']; ?>" rel="shadowbox" class="flyer_thumbnail">
+					<a href="/img/flyers/<?php echo $flyer['full_filename']; ?>" rel="shadowbox" class="flyer_thumbnail">
 						<img
-							src="/<? $fullBaseUrl ?>img/flyers/<?php echo $flyer['thumbnail_filename']; ?>"
+							src="/img/flyers/<?php echo $flyer['thumbnail_filename']; ?>"
 							class="flyer_thumbnail"
 							title="Click to view full-sized"
 						/>

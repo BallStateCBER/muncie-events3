@@ -36,7 +36,7 @@
     <label for="WidgetFilterToggler_tag_include">Must have one of these tags...</label>
     <div id="WidgetFilter_tag_include" style="display: none;">
         <input type="text" id="WidgetFilter_tag_include_input" class="ui-autocomplete-input form-control" autocomplete="off" />
-        <img src="<?= $fullBaseUrl ?>img/loading_small.gif" class="loading" />
+        <img src="/img/loading_small.gif" class="loading" />
         <p class="text-muted">
             Write out tags, separated by commas
         </p>
@@ -50,7 +50,7 @@
     <label for="WidgetFilterToggler_tag_exclude">Must NOT have these tags...</label>
     <div id="WidgetFilter_tag_exclude" style="display: none;">
         <input type="text" id="WidgetFilter_tag_exclude_input" class="ui-autocomplete-input form-control" autocomplete="off" />
-        <img src="<?= $fullBaseUrl ?>img/loading_small.gif" class="loading" />
+        <img src="/img/loading_small.gif" class="loading" />
         <p class="text-muted">
             Write out tags, separated by commas
         </p>

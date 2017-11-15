@@ -49,7 +49,7 @@ $helpers = ['Html'];
                       $filename = $eventImage['filename'];
                   ?>
                   <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
-                      <img src="<?= $fullBaseUrl ?>img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
+                      <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
                       <label class="remove" for="delete[<?= $id ?>]">
                           Delete?
                       </label>
@@ -95,10 +95,10 @@ $helpers = ['Html'];
                           The first image will be displayed as the event's main image.
                       </li>
                       <li>
-                          Click on the <img src="<?= $fullBaseUrl ?>img/icons/arrow-move.png" alt="Move" title="Move" /> icon to drag images up or down and resort them.
+                          Click on the <img src="/img/icons/arrow-move.png" alt="Move" title="Move" /> icon to drag images up or down and resort them.
                       </li>
                       <li>
-                          Click on the <img src="<?= $fullBaseUrl ?>img/icons/cross.png" class="remove" alt="Remove" title="Remove" /> icon to unselect an image.
+                          Click on the <img src="/img/icons/cross.png" class="remove" alt="Remove" title="Remove" /> icon to unselect an image.
                       </li>
                   </ul>
           </div>
@@ -110,8 +110,8 @@ $helpers = ['Html'];
 </div>
 
 <?php
-    echo $this->Html->script($fullBaseUrl . '/uploadifive/jquery.uploadifive.min.js', ['inline' => false]);
-    echo $this->Html->css($fullBaseUrl . '/uploadifive/uploadifive.css', ['inline' => false]);
+    echo $this->Html->script('/uploadifive/jquery.uploadifive.min.js', ['inline' => false]);
+    echo $this->Html->css('/uploadifive/uploadifive.css', ['inline' => false]);
     $this->Js->buffer("
         ImageManager.setupUpload({
             token: '".md5(Configure::read('upload_verify_token').time())."',
