@@ -119,7 +119,6 @@ class AppController extends Controller
 
         if (php_sapi_name() != 'cli') {
             $this->loadComponent('Captcha.Captcha');
-            
             /*if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
                 $this->loadComponent('AkkaFacebook.Graph', [
                     'app_id' => '496726620385625',
