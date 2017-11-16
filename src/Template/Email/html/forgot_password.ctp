@@ -1,6 +1,6 @@
 <h1>
-	<a href="http://muncieevents.com">
-		<img src="http://muncieevents.com/img/email_logo.png" alt="Muncie Events" />
+	<a href="https://muncieevents.com">
+		<img src="https://muncieevents.com/img/email_logo.png" alt="Muncie Events" />
 	</a>
 </h1>
 
@@ -36,5 +36,5 @@
 <p>
 	Love,
 	<br />
-	<a href="http://MuncieEvents.com">Muncie Events</a>
+	<a href="https://MuncieEvents.com">Muncie Events</a>
 </p>

@@ -1064,6 +1064,7 @@ class EventsController extends AppController
             ->toArray();
 
         $formattedResults = [];
+        $fullBaseUrl = Configure::read('App.fullBaseUrl');
         foreach ($results as $result) {
             $formatted = $result;
             foreach ($formatted['tags'] as &$tag) {
@@ -1071,8 +1072,8 @@ class EventsController extends AppController
             }
             foreach ($formatted['images'] as &$image) {
                 $image['caption'] = $image['_joinData']['caption'];
-                $image['thumb_url'] = 'http://muncieevents.com/img/events/tiny/' . $image['filename'];
-                $image['full_url'] = 'http://muncieevents.com/img/events/full/' . $image['filename'];
+                $image['thumb_url'] = $fullBaseUrl . 'img/events/tiny/' . $image['filename'];
+                $image['full_url'] = $fullBaseUrl . 'img/events/full/' . $image['filename'];
                 foreach (['_joinData', 'filename', 'id'] as $field) {
                     unset($image[$field]);
                 }

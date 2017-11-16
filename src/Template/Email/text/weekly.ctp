@@ -1,5 +1,5 @@
 Upcoming Events
-brought to you by http://MuncieEvents.com
+brought to you by https://MuncieEvents.com
 
 <?php if ($welcome_message) {
     echo "$welcome_message\n\n";
@@ -42,7 +42,7 @@ Frequency: <?= $settings_display['frequency']; ?>
 Events: <?= $settings_display['event_types']; ?>
 
 
-This email was sent to <?= $recipient_email; ?> on behalf of http://MuncieEvents.com
+This email was sent to <?= $recipient_email; ?> on behalf of https://MuncieEvents.com
 
 Add Event: <?= Router::url([
     'controller' => 'events',

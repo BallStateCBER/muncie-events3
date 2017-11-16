@@ -7,7 +7,7 @@ it's stored in a one-way encrypted format, we actually have no way to figure out
 Anyway, just click on this link and you'll be prompted to enter in a new password to overwrite
 your old one.
 
-http://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>
+https://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>
 
 NOTE: That link will only work for the rest of <?php echo date('F Y'); ?>.
 If you need to reset your password in <?php echo date('F', strtotime('+1 month')); ?>, you'll need
@@ -17,4 +17,4 @@ email as soon as you've reset your password.
 
 Love,
 Muncie Events
-http://MuncieEvents.com
+https://MuncieEvents.com

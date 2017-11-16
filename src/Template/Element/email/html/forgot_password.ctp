@@ -17,8 +17,8 @@
         </p>
 
         <p>
-            <a href="http://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>">
-                http://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>
+            <a href="https://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>">
+                https://MuncieEvents.com/reset_password/<?php echo $userId; ?>/<?php echo $resetPasswordHash; ?>
             </a>
         </p>
 
@@ -33,7 +33,7 @@
         <p>
             Love,
             <br />
-            <a href="http://MuncieEvents.com">Muncie Events</a>
+            <a href="https://MuncieEvents.com">Muncie Events</a>
         </p>
     </body>
 </html>

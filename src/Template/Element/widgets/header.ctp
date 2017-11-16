@@ -1,6 +1,6 @@
 <ul class="header">
     <li>
-        <a href="http://muncieevents.com"><i class="icon icon-me-logo"></i>MuncieEvents.com</a>
+        <a href="https://muncieevents.com"><i class="icon icon-me-logo"></i>MuncieEvents.com</a>
     </li>
     <?php if (!empty($filters)): ?>
         <li>

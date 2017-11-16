@@ -18,4 +18,4 @@ idea to delete this email as soon as you've reset your password.
 
 Love,
 Muncie Events
-http://MuncieEvents.com
+https://MuncieEvents.com

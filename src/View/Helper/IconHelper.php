@@ -17,7 +17,7 @@ class IconHelper extends Helper
     {
         switch ($mode) {
             case 'email':
-                $dir = 'http://muncieevents.com/img/icons/categories/';
+                $dir = 'https://muncieevents.com/img/icons/categories/';
                 $filename = 'meicon_' . strtolower(str_replace(' ', '_', $categoryName)) . '_32x32.png';
 
                 return "<img src='$dir" . "$filename' title='$categoryName' class='category' />";
