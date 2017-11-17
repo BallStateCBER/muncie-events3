@@ -110,7 +110,7 @@ if ($isCli) {
     require __DIR__ . '/bootstrap_cli.php';
 }
 
-Configure::write('App.fullBaseUrl', 'https://muncieevents.com/');
+Configure::write('App.fullBaseUrl', env('FULL_BASE_URL'));
 
 Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
