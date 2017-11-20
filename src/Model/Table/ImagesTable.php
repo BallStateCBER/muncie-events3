@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -153,7 +154,7 @@ class ImagesTable extends Table
      */
     public function createTiny($sourceFile)
     {
-        $path = WWW_ROOT . 'img' . DS . 'events' . DS . 'tiny' . DS;
+        $path = Configure::read('App.eventImagePath') . DS . 'tiny' . DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
         $destinationFile = $path . $filename;
         list($width, $height) = getimagesize($sourceFile);
@@ -189,7 +190,7 @@ class ImagesTable extends Table
      */
     public function createSmall($sourceFile)
     {
-        $path = WWW_ROOT . 'img' . DS . 'events' . DS . 'small' . DS;
+        $path = Configure::read('App.eventImagePath') . DS . 'small' . DS;
         $filename = substr($sourceFile, strrpos($sourceFile, DS) + 1);
         $destinationFile = $path . $filename;
 

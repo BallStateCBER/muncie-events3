@@ -6,6 +6,7 @@ use App\Model\Entity\Event;
 use App\Model\Entity\Image;
 use App\Model\Entity\Tag;
 use App\Model\Entity\User;
+use Cake\Core\Configure;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
 
@@ -1064,7 +1065,7 @@ class EventsController extends AppController
             ->toArray();
 
         $formattedResults = [];
-        $fullBaseUrl = Configure::read('App.fullBaseUrl');
+        $eventImgBaseUrl = Configure::read('App.eventImageBaseUrl');
         foreach ($results as $result) {
             $formatted = $result;
             foreach ($formatted['tags'] as &$tag) {
@@ -1072,8 +1073,8 @@ class EventsController extends AppController
             }
             foreach ($formatted['images'] as &$image) {
                 $image['caption'] = $image['_joinData']['caption'];
-                $image['thumb_url'] = $fullBaseUrl . 'img/events/tiny/' . $image['filename'];
-                $image['full_url'] = $fullBaseUrl . 'img/events/full/' . $image['filename'];
+                $image['thumb_url'] = $eventImgBaseUrl . 'tiny/' . $image['filename'];
+                $image['full_url'] = $eventImgBaseUrl . 'full/' . $image['filename'];
                 foreach (['_joinData', 'filename', 'id'] as $field) {
                     unset($image[$field]);
                 }

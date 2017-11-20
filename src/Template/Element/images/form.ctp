@@ -118,7 +118,8 @@ $helpers = ['Html'];
             user_id: '".$this->request->session()->read('Auth.User.id')."',
             event_id: ".(isset($event_id) ? $event_id : 'null').",
             filesize_limit: '{$manual_filesize_limit}B',
-            timestamp: ".time()."
+            timestamp: ".time().",
+            event_img_base_url: '" . Configure::read('App.eventImageBaseUrl') . "'
         });
         ImageManager.setupManager();
     ");

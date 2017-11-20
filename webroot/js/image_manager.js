@@ -1,5 +1,6 @@
 var ImageManager = {
 	user_id: null,
+    event_img_base_url: '',
 
 	setupManager: function() {
 		$('#selected_images').sortable({
@@ -23,7 +24,9 @@ var ImageManager = {
 	},
 
 	getLinkedImage: function(image_id, filename) {
-		return $('<a href="/img/events/full/'+filename+'" rel="popup" id="thumbnail_link_'+image_id+'"><img src="/img/events/tiny/'+filename+'" class="selected_image" /></a>');
+        var fullUrl = this.event_img_base_url + '/full/' + filename;
+        var tinyUrl = this.event_img_base_url + '/tiny/' + filename;
+		return $('<a href="' + fullUrl + '" rel="popup" id="thumbnail_link_'+image_id+'"><img src="' + tinyUrl + '" class="selected_image" /></a>');
 	},
 
 	getCaptionFieldLabel: function(image_id) {
@@ -46,7 +49,8 @@ var ImageManager = {
 
 	addHiddenListedImage: function(image_id, filename) {
 		var link = $('<a href="#" id="listed_image_'+image_id+'" data-image-id="'+image_id+'" data-image-filename="'+filename+'"></a>');
-		link.html('<img src="/img/events/tiny/'+filename+'" />');
+        var url = this.event_img_base_url + '/tiny/' + filename;
+        link.html('<img src="' + url + '" />');
 		link.click(function (event) {
 			event.preventDefault();
 			var image_id = $(this).data('imageId');
@@ -166,6 +170,8 @@ var ImageManager = {
 	},
 
 	setupUpload: function(params) {
+        this.event_img_base_url = params.event_img_base_url;
+
 		$('#image_upload_button').uploadifive({
 			'uploadScript': '/images/upload',
 			'checkScript': '/images/file_exists',
@@ -290,7 +296,8 @@ var ImageManager = {
 			}
 
 			var linked_image = $('<a href="#" id="listed_image_'+image_id+'" data-image-id="'+image_id+'" data-image-filename="'+filename+'">');
-			linked_image.html('<img src="/img/events/tiny/'+filename+'" />');
+            var url = this.event_img_base_url + '/tiny/' + filename;
+            linked_image.html('<img src="' + url + '" />');
 			linked_image.hide();
 			container.append(linked_image);
 		});

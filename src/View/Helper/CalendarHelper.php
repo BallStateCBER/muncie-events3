@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Helper;
 
+use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use Cake\View\Helper;
 
@@ -245,18 +246,19 @@ class CalendarHelper extends Helper
             return '';
         }
         $filename = $params['filename'];
-        $reducedPath = WWW_ROOT . 'img' . DS . 'events' . DS . $type . DS . $filename;
+        $reducedPath = Configure::read('App.eventImagePath') . DS . $type . DS . $filename;
         if (!file_exists($reducedPath)) {
             return '';
         }
-        $fullPath = WWW_ROOT . 'img' . DS . 'events' . DS . 'full' . DS . $filename;
+        $fullPath = Configure::read('App.eventImagePath') . DS . 'full' . DS . $filename;
         $class = "thumbnail tn_$type";
         if (isset($params['class'])) {
             $class .= ' ' . $params['class'];
         }
 
         // Reduced image
-        $image = "<img src='https://muncieevents.com/img/events/$type/$filename' class='$class' />";
+        $url = Configure::read('App.eventImageBaseUrl') . $type . '/' . $filename;
+        $image = '<img src="' . $url . '" class="' . $class . '" />';
 
         if (!file_exists($fullPath)) {
             return $image;
@@ -267,7 +269,8 @@ class CalendarHelper extends Helper
         if (isset($params['group'])) {
             $rel .= '[' . $params['group'] . ']';
         }
-        $link = "<a href='https://muncieevents.com/img/events/full/$filename' rel='$rel' class='$class' alt='$filename'";
+        $url = Configure::read('App.eventImageBaseUrl') . 'full/' . $filename;
+        $link = '<a href="' . $url . '" rel="$rel" class="$class" alt="$filename"';
         if (isset($params['caption']) && !empty($params['caption'])) {
             $link .= ' title="' . $params['caption'] . '"';
         }
