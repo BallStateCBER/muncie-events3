@@ -115,7 +115,7 @@ class AppController extends Controller
             ]
         );
 
-   #     $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
+        $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
 
         if (php_sapi_name() != 'cli') {
             $this->loadComponent('Captcha.Captcha');
@@ -149,7 +149,7 @@ class AppController extends Controller
      */
     public function beforeFilter(Event $event)
     {
-#        $this->Security->requireSecure();
+        $this->Security->requireSecure();
     }
 
     /**
