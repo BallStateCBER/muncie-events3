@@ -30,21 +30,48 @@ class CreateUtcTimes extends AbstractMigration
     public function change()
     {
         $table = $this->table('events');
-        $table->addColumn('start', 'string', ['limit' => 19])
-            ->addColumn('end', 'string', ['limit' => 19, 'null' => true])
-            ->save();
+        $table->addColumn('start', 'datetime', ['limit' => 18])
+            ->addColumn('end', 'datetime', ['limit' => 18, 'null' => true])
+            ->update();
 
         $stmt = $this->query("SELECT * FROM events");
         $events = $stmt->fetchAll();
 
         foreach ($events as $event) {
             $id = $event['id'];
-            $start = date('Y-m-d', strtotime($event['date'])) . 'T' . date('H:i:s', strtotime($event['time_start']));
-            $end = isset($event['time_end']) ? date('Y-m-d', strtotime($event['date'])) . 'T' . date('H:i:s', strtotime($event['time_end'])) : null;
 
-            $stmt = $this->query("UPDATE events SET start='$start', end='$end' WHERE id='$id'");
+            if (date('I', strtotime($event['date'])) == 1) {
+                $dst = ' - 4 hours';
+            }
+            if (date('I', strtotime($event['date'])) == 0) {
+                $dst = ' - 5 hours';
+            }
 
-            print_r("Event $id has been updated");
+            $start =
+                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_start'] . $dst))
+                . ' ' .
+                date('H:i:s', strtotime($event['date'] . ' ' . $event['time_start'] . $dst));
+            $endVal =
+                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst))
+                . ' ' .
+                date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst));
+
+            $end = '';
+            if ($endVal == '0000-00-00 00:00:00') {
+                $end == null;
+            }  elseif ($endVal < $start) {
+                $end = date('Y-m-d H:i:s', strtotime($end, ' +1 day'));
+            }
+
+            $this->execute("UPDATE events SET start='$start', end='$end' WHERE id='$id'");
+
+            print_r("|");
         }
+
+        // need to move the cols...
+        /*$this->execute("ALTER TABLE events CHANGE COLUMN start AFTER time_end,
+                                CHANGE COLUMN end AFTER start");*/
+
+        print_r(" All events have been updated!");
     }
 }
