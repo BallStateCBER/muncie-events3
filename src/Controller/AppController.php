@@ -42,15 +42,16 @@ class AppController extends Controller
 {
     public $autoComplete = ['searchAutoComplete', 'searchAutocomplete', 'autoComplete'];
 
-    public $helpers = ['AkkaCKEditor.CKEditor' =>
-        ['distribution' => 'basic',
-        'local_plugin' => [
-            'emojione' => [
-                'location' => WWW_ROOT . 'js',
-                'file' => 'emojione.js'
+    public $helpers = [
+        'AkkaCKEditor.CKEditor' => [
+            'distribution' => 'basic',
+            'local_plugin' => [
+                'emojione' => [
+                    'location' => WWW_ROOT . 'js',
+                    'file' => 'emojione.js'
                 ]
             ],
-        'version' => '4.5.0'
+            'version' => '4.5.0'
         ],
         'CakeJs.Js',
         'Flash',
