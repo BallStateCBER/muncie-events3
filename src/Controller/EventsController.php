@@ -189,8 +189,8 @@ class EventsController extends AppController
     /**
      * setDatesAndTimes method
      *
-     * @param $event
-     * @return $event
+     * @param Event|\Cake\Datasource\EntityInterface $event to set
+     * @return Event|\Cake\Datasource\EntityInterface
      */
     private function setDatesAndTimes($event)
     {
