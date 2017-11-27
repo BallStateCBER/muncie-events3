@@ -227,12 +227,8 @@ class AppController extends Controller
     {
         $this->loadModel('Events');
         foreach ($events as $event) {
-            $evDates[] = str_replace(' 00:00:00.000000', '', get_object_vars($event->date));
-        }
-        if (isset($evDates)) {
-            foreach ($evDates as $evDate) {
-                $dates[] = $evDate['date'];
-            }
+            $dates[] = $event['start']->format('Y-m-d');
+            $event = $this->Events->setEasternTimes($event);
         }
         // are there multiple events happening on a certain date?
         $multipleDates = false;

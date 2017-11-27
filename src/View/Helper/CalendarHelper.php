@@ -68,14 +68,14 @@ class CalendarHelper extends Helper
      */
     public function eventTime($event)
     {
-        $startStamp = $event->time_start;
+        $startStamp = $event['start'];
         if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
             $retval = date('ga', strtotime($startStamp));
         } else {
             $retval = date('g:ia', strtotime($startStamp));
         }
-        if ($event['time_end']) {
-            $endStamp = $event->time_end;
+        if ($event['end']) {
+            $endStamp = $event['end'];
             if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
                 $retval .= ' to ' . date('ga', strtotime($endStamp));
             }
@@ -132,9 +132,9 @@ class CalendarHelper extends Helper
      */
     public function time($event)
     {
-        $retval = date('g:ia', strtotime($event->time_start));
-        if ($event->time_end) {
-            $retval .= ' to ' . date('g:ia', strtotime($event->time_end));
+        $retval = date('g:ia', strtotime($event['start']));
+        if ($event['end']) {
+            $retval .= ' to ' . date('g:ia', strtotime($event['end']));
         }
 
         return $retval;

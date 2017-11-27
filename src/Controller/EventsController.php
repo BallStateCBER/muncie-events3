@@ -1032,6 +1032,7 @@ class EventsController extends AppController
         $event = $this->Events->get($id, [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
         ]);
+        $event = $this->Events->setEasternTimes($event);
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', $event['title']);

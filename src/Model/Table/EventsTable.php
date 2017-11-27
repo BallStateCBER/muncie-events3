@@ -2,6 +2,7 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
+use Cake\I18n\Time;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -640,10 +641,10 @@ class EventsTable extends Table
     {
         $dst = '';
         if (date('I', strtotime($date)) == 1) {
-            $dst = ' - 4 hours';
+            $dst = ' + 4 hours';
         }
         if (date('I', strtotime($date)) == 0) {
-            $dst = ' - 5 hours';
+            $dst = ' + 5 hours';
         }
 
         return $dst;
@@ -851,6 +852,45 @@ class EventsTable extends Table
         }
 
         return $filters;
+    }
+
+    /**
+     * getDaylightSavings method
+     *
+     * @param string $date date
+     * @return string $dst
+     */
+    public function setDaylightSavings($date)
+    {
+        $dst = '';
+        if (date('I', strtotime($date)) == 1) {
+            $dst = ' - 4 hours';
+        }
+        if (date('I', strtotime($date)) == 0) {
+            $dst = ' - 5 hours';
+        }
+
+        return $dst;
+    }
+
+    /**
+     * setEasternTimes method
+     *
+     * @param \Cake\Datasource\EntityInterface $event to convert
+     * @return \Cake\Datasource\EntityInterface
+     */
+    public function setEasternTimes($event)
+    {
+        $start = $event->start->format('Y-m-d H:i:s');
+        $dst = $this->setDaylightSavings($start);
+        $event->start = new Time(date('Y-m-d H:i:s', strtotime($start . ' ' . $dst)));
+        if ($event->end) {
+            $end = $event->end->format('Y-m-d H:i:s');
+            $dst = $this->setDaylightSavings($end);
+            $event->end = new Time(date('Y-m-d H:i:s', strtotime($end . ' ' . $dst)));
+        }
+
+        return $event;
     }
 
     /**

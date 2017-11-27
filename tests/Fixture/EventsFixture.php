@@ -1,7 +1,7 @@
 <?php
 namespace App\Test\Fixture;
 
-use FriendsOfCake\Fixturize\TestSuite\Fixture\ChecksumTestFixture as TestFixture;
+use Cake\TestSuite\Fixture\TestFixture;
 
 /**
  * EventsFixture
@@ -30,7 +30,9 @@ class EventsFixture extends TestFixture
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
+                'modified' => date('Y-m-d', strtotime('Today')),
+                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -46,7 +48,9 @@ class EventsFixture extends TestFixture
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
+                'modified' => date('Y-m-d', strtotime('Today')),
+                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -62,7 +66,9 @@ class EventsFixture extends TestFixture
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
+                'modified' => date('Y-m-d', strtotime('Today')),
+                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
             ],
             [
                 'title' => 'Placeholder Event Regular',
@@ -78,7 +84,9 @@ class EventsFixture extends TestFixture
                 'published' => 1,
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
+                'modified' => date('Y-m-d', strtotime('Today')),
+                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
             ],
             [
                 'title' => 'Placeholder Event From Long Ago',
@@ -94,7 +102,9 @@ class EventsFixture extends TestFixture
                 'published' => 1,
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
-                'modified' => date('Y-m-d', strtotime('Today'))
+                'modified' => date('Y-m-d', strtotime('Today')),
+                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
             ]
         ];
     }
@@ -108,21 +118,23 @@ class EventsFixture extends TestFixture
         'title' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'description' => ['type' => 'text', 'length' => null, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null],
         'location' => ['type' => 'string', 'length' => 50, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'location_details' => ['type' => 'string', 'length' => 100, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'location_details' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'address' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'user_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'category_id' => ['type' => 'integer', 'length' => 6, 'unsigned' => false, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'series_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
-        'date' => ['type' => 'date', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'date' => ['type' => 'date', 'length' => null, 'null' => false, 'default' => '0000-00-00', 'comment' => '', 'precision' => null],
         'time_start' => ['type' => 'time', 'length' => null, 'null' => false, 'default' => '00:00:00', 'comment' => '', 'precision' => null],
         'time_end' => ['type' => 'time', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'age_restriction' => ['type' => 'string', 'length' => 30, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'cost' => ['type' => 'string', 'length' => 200, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'source' => ['type' => 'string', 'length' => 200, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'published' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null],
-        'approved_by' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'approved_by' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'start' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'end' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_indexes' => [
             'person_id' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
             'category_id' => ['type' => 'index', 'columns' => ['category_id'], 'length' => []],
@@ -133,6 +145,6 @@ class EventsFixture extends TestFixture
         '_options' => [
             'engine' => 'MyISAM',
             'collation' => 'latin1_general_ci'
-        ]
+        ],
     ];
 }
