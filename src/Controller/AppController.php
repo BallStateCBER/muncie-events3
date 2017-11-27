@@ -42,10 +42,6 @@ class AppController extends Controller
 {
     public $autoComplete = ['searchAutoComplete', 'searchAutocomplete', 'autoComplete'];
 
-    public $components = [
-        'Auth'
-    ];
-
     public $helpers = ['AkkaCKEditor.CKEditor' =>
         ['distribution' => 'basic',
         'local_plugin' => [
