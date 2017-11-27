@@ -636,6 +636,25 @@ class EventsTable extends Table
     }
 
     /**
+     * getDaylightSavings method
+     *
+     * @param string $date date
+     * @return string $dst
+     */
+    public function getDaylightSavings($date)
+    {
+        $dst = '';
+        if (date('I', strtotime($date)) == 1) {
+            $dst = ' - 4 hours';
+        }
+        if (date('I', strtotime($date)) == 0) {
+            $dst = ' - 5 hours';
+        }
+
+        return $dst;
+    }
+
+    /**
      * getPastEventIds method
      *
      * @return array $retval
@@ -837,5 +856,49 @@ class EventsTable extends Table
         }
 
         return $filters;
+    }
+
+    /**
+     * setEndUtc method
+     *
+     * @param string $date to set
+     * @param string $end to set
+     * @param string $start to compare
+     * @return string $retval
+     */
+    public function setEndUtc($date, $end, $start)
+    {
+        $end = implode(' ', $end);
+        $end = date('H:i:s', strtotime($end));
+        $date = date('Y-m-d', strtotime($date));
+        $retval = date('Y-m-d H:i:s', strtotime($date . ' ' . $end));
+
+        if ($retval < $start) {
+
+        }
+
+        return $retval;
+    }
+
+    /**
+     * setStartUtc method
+     *
+     * @param string $date to set
+     * @param array $start to set
+     * @return string $retval
+     */
+    public function setStartUtc($date, $start)
+    {
+        $date = date('d F Y', strtotime($date));
+        $start = implode($start);
+        $dst = $this->getDaylightSavings($date);
+        dd(date('H:i:s', strtotime($date . ' ' . $start . $dst)));
+        $retval =
+            date('Y-m-d', strtotime($date . ' ' . $start . $dst))
+            . ' ' .
+            date('H:i:s', strtotime($date . ' ' . $start . $dst));
+        dd($retval);
+
+        return $retval;
     }
 }

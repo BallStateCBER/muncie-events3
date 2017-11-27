@@ -42,7 +42,7 @@ class ElementsTest extends ApplicationTest
     {
         $this->get('/');
         // test the datepicker
-        $this->assertResponseContains('/events/day/' . date('m'));
+        $this->assertResponseContains('/events/day/');
     }
     /*
      * test header links when logged out

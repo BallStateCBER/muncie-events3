@@ -114,9 +114,9 @@ class AppController extends Controller
                 'authorize' => 'Controller'
             ]
         );
-        $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
 
         if (php_sapi_name() != 'cli') {
+            $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
             $this->loadComponent('Captcha.Captcha');
             /*if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
                 $this->loadComponent('AkkaFacebook.Graph', [
@@ -148,12 +148,16 @@ class AppController extends Controller
      */
     public function beforeFilter(Event $event)
     {
-        $this->Security->requireSecure();
+        if (php_sapi_name() != 'cli') {
+            $this->Security->requireSecure();
+        }
     }
 
     public function forceSSL()
     {
-        return $this->redirect(env('FULL_BASE_URL') . $this->request->getRequestTarget());
+        if (php_sapi_name() != 'cli') {
+            return $this->redirect(env('FULL_BASE_URL') . $this->request->getRequestTarget());
+        }
     }
 
     /**

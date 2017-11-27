@@ -354,7 +354,9 @@ class EventsController extends AppController
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
                 $this->setCustomTags($event);
-                $event->date = new Date($this->request->getData('date'));
+                $event->date = new Date($event['date']);
+                $event->time_start = new Time($event['time_start']);
+                $event->time_end = new Time($event['time_end']);
                 $event->series_id = null;
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
@@ -383,6 +385,8 @@ class EventsController extends AppController
                     $event = $this->Events->patchEntity($event, $this->request->getData());
                     $this->setCustomTags($event);
                     $event->date = $newDate;
+                    $event->time_start = new Time($event['time_start']);
+                    $event->time_end = new Time($event['time_end']);
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
                         'associated' => ['EventSeries', 'Images', 'Tags']
@@ -517,7 +521,9 @@ class EventsController extends AppController
             // Make sure the end time stays null if it needs to
             $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = strtotime($this->request->getData('date'));
+            $event->date = new Date($event['date']);
+            $event->time_start = new Time($event['time_start']);
+            $event->time_end = new Time($event['time_end']);
             $this->setCustomTags($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
