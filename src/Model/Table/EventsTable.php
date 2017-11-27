@@ -873,9 +873,9 @@ class EventsTable extends Table
         $date = date('Y-m-d', strtotime($date));
         $retval = date('Y-m-d H:i:s', strtotime($date . ' ' . $end));
 
-        if ($retval < $start) {
-
-        }
+        #if ($retval < $start) {
+        #
+        #}
 
         return $retval;
     }
@@ -894,9 +894,7 @@ class EventsTable extends Table
         $dst = $this->getDaylightSavings($date);
         dd(date('H:i:s', strtotime($date . ' ' . $start . $dst)));
         $retval =
-            date('Y-m-d', strtotime($date . ' ' . $start . $dst))
-            . ' ' .
-            date('H:i:s', strtotime($date . ' ' . $start . $dst));
+            date('Y-m-d', strtotime($date . ' ' . $start . $dst)) . ' ' . date('H:i:s', strtotime($date . ' ' . $start . $dst));
         dd($retval);
 
         return $retval;

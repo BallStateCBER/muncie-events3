@@ -48,22 +48,16 @@ class CreateUtcTimes extends AbstractMigration
             }
 
             $start =
-                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_start'] . $dst))
-                . ' ' .
-                date('H:i:s', strtotime($event['date'] . ' ' . $event['time_start'] . $dst));
+                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_start'] . $dst)) . ' ' . date('H:i:s', strtotime($event['date'] . ' ' . $event['time_start'] . $dst));
             $endVal =
-                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst))
-                . ' ' .
-                date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst));
+                date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst)) . ' ' . date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst));
 
             $end = '';
             if ($endVal == '0000-00-00 00:00:00' || $endVal == null || $event['time_end'] == null) {
                 $this->execute("UPDATE events SET start='$start', end=null WHERE id='$id'");
-            }  elseif ($endVal < $start) {
+            } elseif ($endVal < $start) {
                 $end =
-                    date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst . '+1 day'))
-                    . ' ' .
-                    date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst . '+1 day'));
+                    date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst . '+1 day')) . ' ' . date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst . '+1 day'));
 
                 $this->execute("UPDATE events SET start='$start', end='$end' WHERE id='$id'");
             } else {

@@ -153,6 +153,11 @@ class AppController extends Controller
         }
     }
 
+    /**
+     * forceSSL function
+     *
+     * @return \Cake\Http\Response|null
+     */
     public function forceSSL()
     {
         if (php_sapi_name() != 'cli') {
