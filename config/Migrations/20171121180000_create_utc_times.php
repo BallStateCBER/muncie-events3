@@ -1,8 +1,10 @@
 <?php
+//@codingStandardsIgnoreStart
 
 use Phinx\Migration\AbstractMigration;
 
 class CreateUtcTimes extends AbstractMigration
+//@CodingStandardsIgnoreEnd
 {
     /**
      * Change Method.
