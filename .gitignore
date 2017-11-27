@@ -12,7 +12,6 @@
 /config/.env
 /config/.env.production
 /config/.env.dev
-/config/Migrations/*
 
 # PhpStorm
 /.idea/*
