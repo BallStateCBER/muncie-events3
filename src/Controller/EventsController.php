@@ -185,6 +185,29 @@ class EventsController extends AppController
         }
         $this->set(compact('dateFieldValues', 'defaultDate', 'preselectedDates'));
     }
+
+    /**
+     * setDatesAndTimes method
+     *
+     * @param $event
+     * @return $event
+     */
+    private function setDatesAndTimes($event)
+    {
+        $event->date = new Date($event['date']);
+        $event->time_start = new Time($event['time_start']);
+        $event->series_id = null;
+        $event->start = $this->Events->setStartUtc($event['date'], $event['time_start']);
+        if (isset($event['time_end'])) {
+            $event->time_end = new Time($event['time_end']);
+            $event->end = $this->Events->setEndUtc($event['date'], $event['time_end'], $event->start);
+        } else {
+            $event->time_end = null;
+            $event->end = null;
+        }
+
+        return $event;
+    }
     /**
      * Sets various variables used in the event form
      *
@@ -354,10 +377,7 @@ class EventsController extends AppController
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
                 $this->setCustomTags($event);
-                $event->date = new Date($event['date']);
-                $event->time_start = new Time($event['time_start']);
-                $event->time_end = new Time($event['time_end']);
-                $event->series_id = null;
+                $event = $this->setDatesAndTimes($event);
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
                 ])) {
@@ -380,13 +400,11 @@ class EventsController extends AppController
                 // now save every event
                 $dates = explode(',', $this->request->getData('date'));
                 foreach ($dates as $date) {
-                    $newDate = new Date($date);
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $event['date'] = $date;
                     $this->setCustomTags($event);
-                    $event->date = $newDate;
-                    $event->time_start = new Time($event['time_start']);
-                    $event->time_end = new Time($event['time_end']);
+                    $event = $this->setDatesAndTimes($event);
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
                         'associated' => ['EventSeries', 'Images', 'Tags']
@@ -521,10 +539,8 @@ class EventsController extends AppController
             // Make sure the end time stays null if it needs to
             $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
-            $event->date = new Date($event['date']);
-            $event->time_start = new Time($event['time_start']);
-            $event->time_end = new Time($event['time_end']);
             $this->setCustomTags($event);
+            $event = $this->setDatesAndTimes($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
@@ -588,7 +604,6 @@ class EventsController extends AppController
                 }
             }
             foreach ($newDates as $date) {
-                $date = date('Y-m-d', strtotime($date));
                 $oldEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                 if (isset($oldEvent->id)) {
                     $event = $this->Events->get($oldEvent->id);
@@ -597,30 +612,19 @@ class EventsController extends AppController
                     $event = $this->Events->newEntity();
                 }
                 $event->category_id = $this->request->getData('category_id');
-                $newDate = new Date($date);
-                $event->date = $newDate;
                 $event->description = $this->request->getData('description');
                 $event->location = $this->request->getData('location');
-                $optional = ['time_end', 'age_restriction', 'cost', 'source', 'address', 'location_details'];
+                $optional = ['age_restriction', 'cost', 'source', 'address', 'location_details'];
                 foreach ($optional as $option) {
                     if ($this->request->getData($option)) {
-                        if ($option = 'time_end') {
-                            $time = $this->request->getData('time_end');
-                            $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
-                            $time = date('H:i:s', strtotime($timeString));
-                            $event->time_end = new Time($time);
-                            continue;
-                        }
                         $event->$option = $this->request->getData($option);
                     }
                 }
                 $event->series_id = $seriesId;
-                $time = $this->request->getData('time_start');
-                $timeString = $time['hour'] . ':' . $time['minute'] . ' ' . $time['meridian'];
-                $time = date('H:i:s', strtotime($timeString));
-                $event->time_start = new Time($time);
                 $event->title = $this->request->getData('title');
                 $this->setCustomTags($event);
+                $event['date'] = $date;
+                $event = $this->setDatesAndTimes($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']])) {
                     $this->Flash->success(__("Event '$event->title' has been saved."));

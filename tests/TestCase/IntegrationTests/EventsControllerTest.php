@@ -116,12 +116,12 @@ class EventsControllerTest extends ApplicationTest
             'time_start' => [
                 'hour' => '12',
                 'minute' => '00',
-                'meridian' => 'am'
+                'meridian' => 'pm'
             ],
             'time_end' => [
                 'hour' => '01',
                 'minute' => '00',
-                'meridian' => 'am'
+                'meridian' => 'pm'
             ],
             'has_end_time' => 1,
             'location' => 'Mr. Placeholder\'s Place',

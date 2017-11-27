@@ -96,15 +96,10 @@ class EventsTable extends Table
             ->notEmpty('title');
 
         $validator
-            ->dateTime('date')
             ->requirePresence('date', 'create')
             ->notEmpty('date');
 
         $validator
-            ->dateTime('time_start');
-
-        $validator
-            ->dateTime('time_end')
             ->allowEmpty('time_end');
 
         $validator
@@ -868,14 +863,11 @@ class EventsTable extends Table
      */
     public function setEndUtc($date, $end, $start)
     {
-        $end = implode(' ', $end);
-        $end = date('H:i:s', strtotime($end));
-        $date = date('Y-m-d', strtotime($date));
-        $retval = date('Y-m-d H:i:s', strtotime($date . ' ' . $end));
-
-        #if ($retval < $start) {
-        #
-        #}
+        $dst = $this->getDaylightSavings($date);
+        $retval = date('Y-m-d H:i:s', strtotime($end . $dst));
+        if ($retval < $start) {
+            $retval = date('Y-m-d H:i:s', strtotime($end . $dst . "+1 day"));
+        }
 
         return $retval;
     }
@@ -889,13 +881,8 @@ class EventsTable extends Table
      */
     public function setStartUtc($date, $start)
     {
-        $date = date('d F Y', strtotime($date));
-        $start = implode($start);
         $dst = $this->getDaylightSavings($date);
-        dd(date('H:i:s', strtotime($date . ' ' . $start . $dst)));
-        $retval =
-            date('Y-m-d', strtotime($date . ' ' . $start . $dst)) . ' ' . date('H:i:s', strtotime($date . ' ' . $start . $dst));
-        dd($retval);
+        $retval = date('Y-m-d H:i:s', strtotime($start . $dst));
 
         return $retval;
     }
