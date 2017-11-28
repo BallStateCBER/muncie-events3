@@ -95,7 +95,7 @@ class EventsControllerTest extends ApplicationTest
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
-            ->where(['title' => $newData['title']])
+            ->where(['start' => date('Y-m-d H:i:s', strtotime('Today 12:00:00'))])
             ->contain(['Tags'])
             ->firstOrFail();
 
