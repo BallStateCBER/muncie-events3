@@ -910,9 +910,11 @@ class EventsTable extends Table
     public function setEndUtc($date, $end, $start)
     {
         $dst = $this->getDaylightSavings($date);
-        $retval = date('Y-m-d H:i:s', strtotime($end . $dst));
-        if ($retval < $start) {
-            $retval = date('Y-m-d H:i:s', strtotime($end . $dst . "+1 day"));
+        $dateStr = $date . ' ' . $end['hour'] . ':'. $end['minute'] . ' ' . $end['meridian'] . $dst;
+        $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
+
+        if ($end < $start) {
+            $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr . "+1 day")));
         }
 
         return $retval;
@@ -928,7 +930,8 @@ class EventsTable extends Table
     public function setStartUtc($date, $start)
     {
         $dst = $this->getDaylightSavings($date);
-        $retval = date('Y-m-d H:i:s', strtotime($start . $dst));
+        $dateStr = $date . ' ' . $start['hour'] . ':'. $start['minute'] . ' ' . $start['meridian'] . $dst;
+        $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
         return $retval;
     }

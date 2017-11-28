@@ -163,6 +163,13 @@ class EventsController extends AppController
             $preselectedDates = '[]';
             $defaultDate = 0; // Today
         }
+        if ($this->request->getParam('action') == 'edit') {
+            $today = $event->start->format('Y-m-d H:i:s');
+            $dst = $this->Events->setDaylightSavings($today);
+            $event->date = date('m/d/Y', strtotime($today . $dst));
+            $start = date('h:i a', strtotime($event->start->format('h:i a') . $dst));
+            $event->time_start = $start;
+        }
         if ($this->request->getParam('action') == 'editSeries') {
             $dateFieldValues = [];
             foreach ($event->start as $date) {
@@ -194,15 +201,11 @@ class EventsController extends AppController
      */
     private function setDatesAndTimes($event)
     {
-        $event->date = new Date($event['date']);
-        $event->time_start = new Time($event['time_start']);
         $event->series_id = null;
         $event->start = $this->Events->setStartUtc($event['date'], $event['time_start']);
         if (isset($event['time_end'])) {
-            $event->time_end = new Time($event['time_end']);
             $event->end = $this->Events->setEndUtc($event['date'], $event['time_end'], $event->start);
         } else {
-            $event->time_end = null;
             $event->end = null;
         }
 
@@ -541,6 +544,7 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $this->setCustomTags($event);
             $event = $this->setDatesAndTimes($event);
+
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
@@ -582,6 +586,9 @@ class EventsController extends AppController
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
+        $dst = $this->Events->setDaylightSavings($dateString);
+        $timeStart = date_format($event->start, 'H:i:s');
+        $event->time_start = date('h:i a', strtotime($timeStart . $dst));
         $event->start = $dates;
         $this->setEventForm($event);
         $this->setDatePicker($event);
