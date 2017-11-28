@@ -239,15 +239,18 @@ class EventsTable extends Table
      */
     public function getEventsOnDay($year, $month, $day, $filters = null)
     {
-        $date = "$year-$month-$day";
+        $dst = $this->getDaylightSavings(date('Y-m-d'));
+        $today = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst"));
+        $tomorrow = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst + 1 day"));
         $events = $this
             ->find('all', [
             'conditions' => [
-                'date' => $date,
+                'start >' => $today,
+                'start <' => $tomorrow,
                 $filters
             ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+            'order' => ['start' => 'DESC']
             ])
             ->toArray();
 
@@ -460,9 +463,9 @@ class EventsTable extends Table
         $events = $this
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+            'order' => ['start' => 'ASC']
             ])
-            ->where(['date >=' => date('Y-m-d')])
+            ->where(['start >=' => date('Y-m-d H:i:s')])
             ->toArray();
 
         return $events;
@@ -550,7 +553,7 @@ class EventsTable extends Table
         $locations = $this->find();
         $locations
             ->select(['location', 'address'])
-            ->where(['date <' => date('Y-m-d')]);
+            ->where(['start <' => date('Y-m-d H:i:s')]);
         $adds = [];
         $locs = [];
         foreach ($locations as $location) {

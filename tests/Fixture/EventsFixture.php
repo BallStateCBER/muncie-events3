@@ -24,15 +24,15 @@ class EventsFixture extends TestFixture
                 'user_id' => 1,
                 'category_id' => 2,
                 'series_id' => 1,
-                'date' => date('Y-m-d', strtotime('Today')),
-                'time_start' => '11:24:09',
-                'time_end' => '11:24:09',
+                #'date' => date('Y-m-d', strtotime('Today')),
+                #'time_start' => '23:59:59',
+                #'time_end' => '23:59:59',
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
+                'start' => date('Y-m-d H:i:s', strtotime('Today 23:59:59')),
+                'end' => date('Y-m-d H:i:s', strtotime('Today 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -42,15 +42,15 @@ class EventsFixture extends TestFixture
                 'user_id' => 1,
                 'category_id' => 2,
                 'series_id' => 1,
-                'date' => date('Y-m-d', strtotime('+1 day')),
-                'time_start' => '11:24:09',
-                'time_end' => '11:24:09',
+                #'date' => date('Y-m-d', strtotime('+1 day')),
+                #'time_start' => '23:59:59',
+                #'time_end' => '23:59:59',
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
+                'start' => date('Y-m-d H:i:s', strtotime('+1 day 23:59:59')),
+                'end' => date('Y-m-d H:i:s', strtotime('+1 day 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -60,15 +60,15 @@ class EventsFixture extends TestFixture
                 'user_id' => 1,
                 'category_id' => 2,
                 'series_id' => 1,
-                'date' => date('Y-m-d', strtotime('+1 week')),
-                'time_start' => '11:24:09',
-                'time_end' => '11:24:09',
+               # 'date' => date('Y-m-d', strtotime('+1 week')),
+               # 'time_start' => '23:59:59',
+               # 'time_end' => '23:59:59',
                 'published' => 0,
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
+                'start' => date('Y-m-d H:i:s', strtotime('+1 week 23:59:59')),
+                'end' => date('Y-m-d H:i:s', strtotime('+1 week 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Regular',
@@ -78,15 +78,15 @@ class EventsFixture extends TestFixture
                 'user_id' => 1,
                 'category_id' => 2,
                 'series_id' => 1,
-                'date' => date('Y-m-d', strtotime('+2 weeks')),
-                'time_start' => '11:24:09',
-                'time_end' => '11:24:09',
+               # 'date' => date('Y-m-d', strtotime('+2 weeks')),
+                #'time_start' => '23:59:59',
+                #'time_end' => '23:59:59',
                 'published' => 1,
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
+                'start' => date('Y-m-d H:i:s', strtotime('+2 weeks 23:59:59')),
+                'end' => date('Y-m-d H:i:s', strtotime('+2 weeks 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event From Long Ago',
@@ -96,15 +96,15 @@ class EventsFixture extends TestFixture
                 'user_id' => 1,
                 'category_id' => 2,
                 'series_id' => 1,
-                'date' => date('Y-m-d', strtotime('-2 weeks')),
-                'time_start' => '11:24:09',
-                'time_end' => '11:24:09',
+               # 'date' => date('Y-m-d', strtotime('-2 weeks')),
+               # 'time_start' => '23:59:59',
+               # 'time_end' => '23:59:59',
                 'published' => 1,
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 11:24:09')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 11:24:09'))
+                'start' => date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59')),
+                'end' => date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59'))
             ]
         ];
     }

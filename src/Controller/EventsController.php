@@ -571,18 +571,18 @@ class EventsController extends AppController
         $events = $this->Events->find()
             ->where(['series_id' => $seriesId])
             ->contain(['EventSeries'])
-            ->order(['date' => 'ASC'])
+            ->order(['start' => 'ASC'])
             ->toArray();
         $dates = [];
         foreach ($events as $event) {
-            $dateString = date_format($event->date, 'Y-m-d');
+            $dateString = date_format($event->start, 'Y-m-d');
             $dates[] = $dateString;
         }
         $eventId = $events[0]->id;
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
-        $event->date = $dates;
+        $event->start = $dates;
         $this->setEventForm($event);
         $this->setDatePicker($event);
         $this->Flash->error('Warning: all events in this series will be overwritten.');
@@ -693,28 +693,28 @@ class EventsController extends AppController
             ->find('all', [
                 'conditions' => [
                     'location' => $location,
-                    "date $date" => date('Y-m-d')
+                    "start $date" => date('Y-m-d H:i:s')
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $dir]
+                'order' => ['start' => $dir]
             ]);
         $listing = $this->paginate($listing)->toArray();
         $this->indexEvents($listing);
         $count = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $dir]
+                'order' => ['start' => $dir]
             ])
             ->where(['location' => $location])
-            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->andWhere(["Events.start $date" => date('Y-m-d H:i:s')])
             ->count();
         $oppCount = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => $oppDir]
+                'order' => ['start' => $oppDir]
             ])
             ->where(['location' => $location])
-            ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
+            ->andWhere(["Events.start $oppDate" => date('Y-m-d H:i:s')])
             ->count();
         $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
@@ -775,11 +775,11 @@ class EventsController extends AppController
         $events = $this->Events
             ->find('all', [
                 'conditions' => [
-                    'MONTH(date)' => $month,
-                    'YEAR(date)' => $year
+                    'MONTH(start)' => $month,
+                    'YEAR(start)' => $year
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'asc']
+                'order' => ['start' => 'asc']
             ])
             ->toArray();
         if ($events) {
@@ -819,18 +819,18 @@ class EventsController extends AppController
         $filter = $this->request->getQuery();
         // Determine the direction (past or future)
         $direction = $filter['direction'];
-        $dateQuery = ($direction == 'future') ? 'date >=' : 'date <';
+        $dateQuery = ($direction == 'future') ? 'start >=' : 'start <';
         if ($direction == 'all') {
-            $dateQuery = 'date !=';
+            $dateQuery = 'start !=';
         };
         $dir = ($direction == 'future') ? 'ASC' : 'DESC';
-        $dateWhen = ($direction == 'all') ? '1900-01-01' : date('Y-m-d');
+        $dateWhen = ($direction == 'all') ? '1900-01-01 00:00:00' : date('Y-m-d H:i:s');
         $events = $this->Events->find('search', [
             'search' => $filter,
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
         ])
             ->where([$dateQuery => $dateWhen])
-            ->order(['date' => $dir]);
+            ->order(['start' => $dir]);
         $events = $this->paginate($events)->toArray();
         if ($events) {
             $this->indexEvents($events);
@@ -850,9 +850,9 @@ class EventsController extends AppController
         }
         // Determine if there are events in the opposite direction
         if ($direction == 'past' || $direction = 'future') {
-            $whereKey = ($direction == 'future') ? 'date <' : 'date >=';
+            $whereKey = ($direction == 'future') ? 'start <' : 'start >=';
             $oppositeCount = $this->Events->find('search', ['search' => $filter])
-                ->where([$whereKey => date('Y-m-d')])
+                ->where([$whereKey => date('Y-m-d H:i:s')])
                 ->count();
             $this->set('oppositeEvents', $oppositeCount);
         }

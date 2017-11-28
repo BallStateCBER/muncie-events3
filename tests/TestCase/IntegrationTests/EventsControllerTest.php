@@ -385,7 +385,7 @@ class EventsControllerTest extends ApplicationTest
         $event = $this->Events->find()->firstOrFail();
         $this->get("/events/month/$month");
         $this->assertResponseOk();
-        $this->assertResponseContains('Today');
+        $this->assertResponseContains(date('l'));
         $this->assertResponseContains($event['title']);
     }
 
@@ -410,7 +410,7 @@ class EventsControllerTest extends ApplicationTest
     {
         $this->get("/search?filter=be+here+now&direction=future");
         $this->assertResponseOk();
-        $this->assertResponseContains('Today');
+        $this->assertResponseContains(date('l'));
         $this->assertResponseContains('Be Here Now');
     }
 

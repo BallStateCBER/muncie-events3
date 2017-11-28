@@ -52,8 +52,8 @@ $userId = $this->request->session()->read('Auth.User.id');
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
                 $start = date('Ymd', $date).'T'.date('His', $date).'Z';
 
-                $endStamp = $startTime;
-                if ($event->time_end) {
+                $endStamp = $date;
+                if ($event->end) {
                     $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss'));
                     $endStamp = $endTime;
                 }

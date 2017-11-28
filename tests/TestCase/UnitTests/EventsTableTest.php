@@ -32,10 +32,10 @@ class EventsTableTest extends ApplicationTest
     }
     public function testGetEventsOnDay()
     {
-        $date = new Date(date('Y-m-d'));
+        $date = date('Y-m-d H:i:s', strtotime('Today 23:59:59'));
         $events = $this->Events->getEventsOnDay(date('Y'), date('m'), date('d'));
         foreach ($events as $event) {
-            $this->assertEquals($event->date, $date);
+            $this->assertEquals($event->start->format('Y-m-d H:i:s'), $date);
         }
     }
     /**
@@ -45,11 +45,12 @@ class EventsTableTest extends ApplicationTest
      */
     public function testGetUpcomingEvents()
     {
+        $date = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
         $event = $this->Events->newEntity();
         $event->title = 'Anonymous';
         $event->category_id = 1;
-        $event->date = date('Y-m-d');
-        $event->time_start = strtotime('Now');
+        $event->start = $date;
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -59,9 +60,8 @@ class EventsTableTest extends ApplicationTest
         $joinData->tag_id = 1;
         $this->EventsTags->save($joinData);
 
-        $date = new Date(date('Y-m-d'));
         $events = $this->Events->getUpcomingEvents();
-        $this->assertEquals($date, $events[0]->date);
+        $this->assertEquals($date, $events[0]->start->format('Y-m-d H:i:s'));
         $this->Events->delete($event);
     }
     /**
@@ -75,8 +75,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '2020-01-01';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-01'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -90,8 +89,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 2;
-        $event->date = '2020-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -105,8 +103,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '2020-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
         $event->location = 'Placeholder parce';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -120,8 +117,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '2020-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -135,8 +131,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '2020-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -147,7 +142,7 @@ class EventsTableTest extends ApplicationTest
         $this->EventsTags->save($joinData);
 
         // the only event that meets these criteria should be on this date, specifically
-        $date = new Date('2020-01-01');
+        $date = date('Y-m-d H:i:s', strtotime('2020-01-01'));
         $options = [
             'category' => 1,
             'location' => 'Placeholder palace',
@@ -158,7 +153,7 @@ class EventsTableTest extends ApplicationTest
         $nextStartDate = $date;
         $endDate = strtotime('2020-01-28');
         $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-        $this->assertEquals($date, $events[0]->date);
+        $this->assertEquals($date, $events[0]->start->format('Y-m-d H:i:s'));
     }
     public function testGetUnapproved()
     {
@@ -199,8 +194,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '1992-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('1992-01-28'));
         $event->location = 'Placeholder palace';
         $event->address = '1234 Counting St';
         $event->description = 'Unit testing sure is boring';
@@ -219,7 +213,7 @@ class EventsTableTest extends ApplicationTest
         $events = $this->Events->getAllUpcomingEventCounts();
         $artsyEvents = $this->Events->find()
             ->where(['category_id' => 2])
-            ->andWhere(['date >=' => date('Y-m-d')])
+            ->andWhere(['start >=' => date('Y-m-d H:i:s')])
             ->count();
         $this->assertEquals($artsyEvents, $events[2]);
     }
@@ -228,8 +222,7 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->date = '2019-01-28';
-        $event->time_start = strtotime('Now');
+        $event->start = date('Y-m-d H:i:s', strtotime('2019-01-28'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -255,20 +248,20 @@ class EventsTableTest extends ApplicationTest
     }
     public function testGetPastEventIds()
     {
-        $myBirthday = new Date(date('Y-m-d', strtotime('-2 weeks')));
+        $myBirthday = date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59'));
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Event From Long Ago'])
-            ->andWhere(['date' => $myBirthday])
+            ->andWhere(['start' => $myBirthday])
             ->first();
         $eventIds = $this->Events->getPastEventIds();
         $this->assertContains($event->id, $eventIds);
     }
     public function testGetFutureEventIdsAndGetFutureEvents()
     {
-        $theFuture = new Date(date('Y-m-d', strtotime('+2 weeks')));
+        $theFuture = date('Y-m-d H:i:s', strtotime('+2 weeks 23:59:59'));
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Event Regular'])
-            ->andWhere(['date' => $theFuture])
+            ->andWhere(['start' => $theFuture])
             ->first();
         $eventIds = $this->Events->getFutureEventIds();
         $this->assertContains($event->id, $eventIds);

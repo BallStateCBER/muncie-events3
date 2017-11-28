@@ -75,7 +75,7 @@ class ElementsTest extends ApplicationTest
         $this->assertEquals('market', $filter['filter']);
         $this->assertEquals('future', $filter['direction']);
         // dateQuery & directionAdjective are constant with $filter->direction
-        $this->assertEquals('date >=', $this->viewVariable('dateQuery'));
+        $this->assertEquals('start >=', $this->viewVariable('dateQuery'));
         $this->assertEquals('upcoming', $this->viewVariable('directionAdjective'));
     }
 }

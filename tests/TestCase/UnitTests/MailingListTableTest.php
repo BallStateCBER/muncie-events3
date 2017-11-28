@@ -281,7 +281,7 @@ class MailingListTableTest extends ApplicationTest
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['date =' => date('Y-m-d')])
+            ->where(['start =' => date('Y-m-d H:i:s')])
             ->toArray();
         $sendDaily = $this->MailingList->sendDaily($mailingListDaily, $events);
         if (!$events) {
@@ -304,8 +304,8 @@ class MailingListTableTest extends ApplicationTest
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['date >=' => date('Y-m-d')])
-            ->andWhere(['date <=' => date('Y-m-d', strtotime('+1 week'))])
+            ->where(['start >=' => date('Y-m-d H:i:s')])
+            ->andWhere(['start <=' => date('Y-m-d H:i:s', strtotime('+1 week'))])
             ->toArray();
         $sendWeekly = $this->MailingList->sendWeekly($mailingListWeekly, $events);
         $this->assertEquals($sendWeekly[0], true);
