@@ -220,8 +220,11 @@ class EventsTable extends Table
     public function getEventsByDateAndSeries($date, $seriesId)
     {
     /** @var Event $event */
+        $start = date('Y-m-d H:i:s', strtotime("$date 00:00:00"));
+        $end = date('Y-m-d H:i:s', strtotime("$date 24:00:00"));
         $event = $this->find()
-            ->where(['date' => $date])
+            ->where(['start >=' => $start])
+            ->andWhere(['start <=' => $end])
             ->andWhere(['series_id' => $seriesId])
             ->first();
 
@@ -294,8 +297,8 @@ class EventsTable extends Table
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
         $params = [];
-        $params[] = ['date >=' => date('Y-m-d', strtotime($nextStartDate))];
-        $params[] = ['date <' => date('Y-m-d', $endDate)];
+        $params[] = ['start >=' => date('Y-m-d', strtotime($nextStartDate))];
+        $params[] = ['start <' => date('Y-m-d', $endDate)];
         foreach ($options as $param => $value) {
             $categories = '';
             if ($param == 'category') {
@@ -369,7 +372,7 @@ class EventsTable extends Table
         $events = $this->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'conditions' => $params
-        ])->order(['date' => 'ASC'])->toArray();
+        ])->order(['start' => 'ASC'])->toArray();
 
         return $events;
     }
