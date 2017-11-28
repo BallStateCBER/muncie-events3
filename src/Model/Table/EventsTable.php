@@ -773,7 +773,7 @@ class EventsTable extends Table
         $dates = [];
         foreach ($dateResults as $result) {
             if (isset($result['DISTINCT Events']['start'])) {
-                $dates[] = $result['DISTINCT Events']['start'];
+                $dates[] = substr($result['DISTINCT Events']['start'], 0, -9);
             }
         }
 
