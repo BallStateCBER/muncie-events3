@@ -665,10 +665,10 @@ class WidgetsController extends AppController
         // manually set $eventsForJson just for debugging purposes...
         $eventsForJson = [];
         foreach ($events as $event) {
-            $thisMonth = date('m', strtotime($event->date));
-            $thisYear = date('Y', strtotime($event->date));
+            $thisMonth = date('m', strtotime($event->start));
+            $thisYear = date('Y', strtotime($event->start));
             if ($thisMonth == $month && $thisYear == $year) {
-                $date = date('Y-m-d', strtotime($event->date));
+                $date = date('Y-m-d', strtotime($event->start));
                 $eventsForJson[$date] = [
                     'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
                     'events' => []
