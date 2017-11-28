@@ -165,7 +165,7 @@ class EventsController extends AppController
         }
         if ($this->request->getParam('action') == 'editSeries') {
             $dateFieldValues = [];
-            foreach ($event->date as $date) {
+            foreach ($event->start as $date) {
                 list($year, $month, $day) = explode('-', $date);
                 if (!isset($defaultDate)) {
                     $defaultDate = "$month/$day/$year";

@@ -47,20 +47,17 @@ $userId = $this->request->session()->read('Auth.User.id');
                 ]
             ); ?>
             <?php
-                $date = strtotime($event->date->i18nFormat('yyyyMMddHHmmss'));
-                $startTime = strtotime($event->time_start->i18nFormat('yyyyMMddHHmmss'));
+                $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss'));
 
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
-                $start_est = date('Ymd', $date).'T'.date('His', $startTime);
-                $start_utc = gmdate('Ymd', $date).'T'.gmdate('His', $startTime).'Z';
+                $start = date('Ymd', $date).'T'.date('His', $date).'Z';
 
                 $endStamp = $startTime;
                 if ($event->time_end) {
-                    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
+                    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss'));
                     $endStamp = $endTime;
                 }
-                $end_est = date('Ymd', $date).'T'.date('His', $endStamp);
-                $end_utc = gmdate('Ymd', $date).'T'.gmdate('His', $endStamp).'Z';
+                $end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
 
                 // Clean up and truncate description
                 $description = $event['description'];
@@ -92,7 +89,7 @@ $userId = $this->request->session()->read('Auth.User.id');
 
                 $google_cal_url = 'http://www.google.com/calendar/event?action=TEMPLATE';
                 $google_cal_url .= '&text='.urlencode($event['title']);
-                $google_cal_url .= '&dates='.$start_utc.'/'.$end_utc;
+                $google_cal_url .= '&dates='.$start.'/'.$end;
                 $google_cal_url .= '&details='.urlencode($description);
                 $google_cal_url .= '&location='.urlencode($location);
                 $google_cal_url .= '&trp=false';

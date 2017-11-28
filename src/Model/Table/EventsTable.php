@@ -382,9 +382,9 @@ class EventsTable extends Table
         $events = $this
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+            'order' => ['start' => 'ASC']
             ])
-            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
+            ->where(['start >=' => date('Y-m-d H:i:s', strtotime($yearMonth))])
             ->toArray();
 
         return $events;
@@ -402,10 +402,10 @@ class EventsTable extends Table
         $events = $this
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'ASC']
+            'order' => ['start' => 'ASC']
             ])
-            ->where(['date >=' => $nextStartDate])
-            ->andwhere(['date <=' => $endDate])
+            ->where(['start >=' => $nextStartDate])
+            ->andwhere(['start <=' => $endDate])
             ->toArray();
 
         return $events;
@@ -529,7 +529,7 @@ class EventsTable extends Table
         $locations = $this->find();
         $locations
             ->select(['location'])
-            ->where(['date >=' => date('Y-m-d')])
+            ->where(['start >=' => date('Y-m-d')])
             ->group(['location'])
             ->toArray();
         $retval = [];
@@ -574,7 +574,7 @@ class EventsTable extends Table
         $results
             ->select(['category_id'])
             ->select(['count' => $results->func()->count('id')])
-            ->where(['date >=' => date('Y-m-d')])
+            ->where(['start >=' => date('Y-m-d H:i:s')])
             ->group(['category_id']);
 
         $retval = [];
@@ -678,7 +678,7 @@ class EventsTable extends Table
     {
         $results = $this->find()
             ->select('id')
-            ->where(['Events.date >=' => date('Y-m-d')])
+            ->where(['Events.start >=' => date('Y-m-d H:i:s')])
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
@@ -696,14 +696,14 @@ class EventsTable extends Table
     public function getFutureEvents()
     {
         $results = $this->find()
-            ->select('Events.date')
-            ->distinct('Events.date')
-            ->where(['Events.date >=' => date('Y-m-d')])
+            ->select('Events.start')
+            ->distinct('Events.start')
+            ->where(['Events.start >=' => date('Y-m-d H:i:s')])
             ->toArray();
         $events = [];
         $evDates = [];
         foreach ($results as $result) {
-            $events[] = $result->date;
+            $events[] = $result->start;
         }
         foreach ($events as $event) {
             $evDates[] = [$event->format('l'), $event->format('M'), $event->format('m'), $event->format('d'), $event->format('Y')];
@@ -744,18 +744,18 @@ class EventsTable extends Table
     {
         $findParams = [
             'conditions' => ['published' => 1],
-            'fields' => ['DISTINCT Events.date'],
+            'fields' => ['DISTINCT Events.start'],
             'contain' => [],
-            'order' => ['date ASC']
+            'order' => ['start ASC']
         ];
 
         // Apply optional month/year limits
         if ($month && $year) {
             $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-            $findParams['conditions']['Events.date LIKE'] = "$year-$month-%";
+            $findParams['conditions']['Events.start LIKE'] = "$year-$month-%";
             $findParams['limit'] = 31;
         } elseif ($year) {
-            $findParams['conditions']['Events.date LIKE'] = "$year-%";
+            $findParams['conditions']['Events.start LIKE'] = "$year-%";
         }
 
         // Apply optional filters
@@ -766,8 +766,8 @@ class EventsTable extends Table
         $dateResults = $this->find('all', $findParams)->toArray();
         $dates = [];
         foreach ($dateResults as $result) {
-            if (isset($result['DISTINCT Events']['date'])) {
-                $dates[] = $result['DISTINCT Events']['date'];
+            if (isset($result['DISTINCT Events']['start'])) {
+                $dates[] = $result['DISTINCT Events']['start'];
             }
         }
 

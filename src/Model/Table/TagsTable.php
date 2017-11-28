@@ -369,9 +369,9 @@ class TagsTable extends Table
         // Apply filters and find tags
         $conditions = ['Events.published' => 1];
         if ($filter['direction'] == 'future') {
-            $conditions['Events.date >='] = date('Y-m-d');
+            $conditions['Events.start >='] = date('Y-m-d H:i:s');
         } elseif ($filter['direction'] == 'past') {
-            $conditions['Events.date <'] = date('Y-m-d');
+            $conditions['Events.start <'] = date('Y-m-d H:i:s');
         }
         if (isset($filter['categories'])) {
             $conditions['Events.category_id'] = $filter['categories'];
