@@ -3,7 +3,6 @@ namespace App\Test\TestCase\Controller;
 
 use App\Test\TestCase\ApplicationTest;
 use Cake\Utility\Text;
-use Cake\I18n\Time;
 
 class EventsControllerTest extends ApplicationTest
 {
