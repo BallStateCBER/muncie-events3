@@ -253,7 +253,7 @@ class EventsTable extends Table
                 $filters
             ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'DESC']
+            'order' => ['start' => 'ASC']
             ])
             ->toArray();
 
@@ -297,11 +297,11 @@ class EventsTable extends Table
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
         $params = [];
-        $params[] = ['start >=' => date('Y-m-d', strtotime($nextStartDate))];
-        $params[] = ['start <' => date('Y-m-d', $endDate)];
+        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate))];
+        $params[] = ['start <' => date('Y-m-d H:i:s', $endDate)];
         foreach ($options as $param => $value) {
             $categories = '';
-            if ($param == 'category') {
+            if ($param == 'category' || $param == 'category_id') {
                 $cats = explode(',', $value);
                 foreach ($cats as $cat) {
                     $categories .= "category_id = $cat OR ";
@@ -405,13 +405,18 @@ class EventsTable extends Table
      */
     public function getRangeEvents($nextStartDate, $endDate)
     {
+        $dst = $this->getDaylightSavings($nextStartDate);
+        $start = date('Y-m-d H:i:s', strtotime($nextStartDate . $dst));
+        $newEnd = date('Y-m-d H:i:s', $endDate);
+        $end = date('Y-m-d H:i:s', strtotime($newEnd . $dst));
+
         $events = $this
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['start' => 'ASC']
             ])
-            ->where(['start >=' => $nextStartDate])
-            ->andwhere(['start <=' => $endDate])
+            ->where(['start >=' => $start])
+            ->andwhere(['start <=' => $end])
             ->toArray();
 
         return $events;
@@ -427,7 +432,7 @@ class EventsTable extends Table
      */
     public function getStartEndEvents($nextStartDate, $endDate, $options = null)
     {
-        $events = $this->getRangeEvents($nextStartDate, $endDate);
+        $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
         if (empty($events)) {
             $endDate = strtotime($nextStartDate . ' + 4 weeks');
             $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
@@ -498,7 +503,7 @@ class EventsTable extends Table
      * @return string $lastDate
      */
     public function getNextStartDate($dates)
-    {
+    {;
         $lastDate = end($dates);
         $lastDate = strtotime($lastDate . ' +1 day');
         $lastDate = date('Y-m-d', $lastDate);

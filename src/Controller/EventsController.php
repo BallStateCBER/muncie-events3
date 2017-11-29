@@ -434,7 +434,7 @@ class EventsController extends AppController
     public function category($slug, $nextStartDate = null)
     {
         if ($nextStartDate == null) {
-            $nextStartDate = date('Y-m-d');
+            $nextStartDate = date('Y-m-d H:i:s');
         }
     /** @var Category $category */
         $category = $this->Events->Categories->find('all', [
@@ -675,7 +675,7 @@ class EventsController extends AppController
     public function index($nextStartDate = null)
     {
         if ($nextStartDate == null) {
-            $nextStartDate = date('Y-m-d');
+            $nextStartDate = date('Y-m-d H:i:s');
         }
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
         $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);

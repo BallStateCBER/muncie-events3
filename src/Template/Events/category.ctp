@@ -5,7 +5,7 @@
 
 <?php
     $this->Js->buffer("
-        muncieEvents.requestEventFilters.category = {$category->id};
+        muncieEvents.requestEventFilters.category = '$category->slug';
     ");
     echo $this->element('events/accordion_wrapper');
 ?>
