@@ -34,8 +34,16 @@ class WidgetsControllerTest extends ApplicationTest
             'title' => 'Widget!',
             'category_id' => 1,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
             'location' => 'PlaceholderTown',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',
@@ -55,8 +63,16 @@ class WidgetsControllerTest extends ApplicationTest
             'title' => 'Twidget!',
             'category_id' => 2,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
             'location' => 'PlaceholderTown',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',
@@ -76,8 +92,16 @@ class WidgetsControllerTest extends ApplicationTest
             'title' => 'Twidget!',
             'category_id' => 1,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
             'location' => 'PlaceholderTown',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',
@@ -97,8 +121,16 @@ class WidgetsControllerTest extends ApplicationTest
             'title' => 'Twidget!',
             'category_id' => 2,
             'date' => date('m/d/Y'),
-            'time_start' => date('Y-m-d'),
-            'time_end' => strtotime('+1 hour'),
+            'time_start' => [
+                'hour' => '12',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
+            'time_end' => [
+                'hour' => '01',
+                'minute' => '00',
+                'meridian' => 'am'
+            ],
             'location' => 'Mr. Placeholder\'s Casa',
             'location_details' => 'Room 6',
             'address' => '666 Placeholder Place',

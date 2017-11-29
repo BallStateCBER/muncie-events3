@@ -201,7 +201,6 @@ class EventsController extends AppController
      */
     private function setDatesAndTimes($event)
     {
-        $event->series_id = null;
         $event->start = $this->Events->setStartUtc($event['date'], $event['time_start']);
         if (isset($event['time_end'])) {
             $event->end = $this->Events->setEndUtc($event['date'], $event['time_end'], $event->start);
@@ -739,7 +738,7 @@ class EventsController extends AppController
         $unapproved = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['date' => 'ASC']
+                'order' => ['start' => 'ASC']
             ])
             ->where(['Events.approved_by' => null])
             ->orWhere(['Events.published' => '0'])
@@ -964,23 +963,23 @@ class EventsController extends AppController
         $eventId = $this->Events->getIdsFromTag($tagId);
         $listing = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->andWhere(["Events.start $date" => date('Y-m-d')])
             ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['date' => $dir]);
+            ->order(['start' => $dir]);
         $listing = $this->paginate($listing)->toArray();
 
         $this->indexEvents($listing);
         $count = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.date $date" => date('Y-m-d')])
+            ->andWhere(["Events.start $date" => date('Y-m-d')])
             ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['date' => $dir])
+            ->order(['start' => $dir])
             ->count();
         $oppCount = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.date $oppDate" => date('Y-m-d')])
+            ->andWhere(["Events.start $oppDate" => date('Y-m-d')])
             ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['date' => $oppDir])
+            ->order(['start' => $oppDir])
             ->count();
         $this->set(compact('count', 'direction', 'eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([

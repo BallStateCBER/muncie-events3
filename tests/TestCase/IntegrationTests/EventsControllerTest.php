@@ -3,6 +3,7 @@ namespace App\Test\TestCase\Controller;
 
 use App\Test\TestCase\ApplicationTest;
 use Cake\Utility\Text;
+use Cake\I18n\Time;
 
 class EventsControllerTest extends ApplicationTest
 {
@@ -95,11 +96,13 @@ class EventsControllerTest extends ApplicationTest
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
-            ->where(['start' => date('Y-m-d H:i:s', strtotime('Today 12:00:00'))])
+            ->where(['title' => $newData['title']])
             ->contain(['Tags'])
             ->firstOrFail();
 
         $this->assertEquals(0, $event['published']);
+        $dst = $this->Events->getDaylightSavings(date('Y-m-d'));
+        $this->assertEquals($event['start']->format('Y-m-d H:i:s'), date('Y-m-d H:i:s', strtotime("Today 00:00:00$dst")));
         foreach ($event['tags'] as $tag) {
             $this->assertEquals(1, $tag['id']);
         }

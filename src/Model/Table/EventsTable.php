@@ -665,7 +665,7 @@ class EventsTable extends Table
     {
         $results = $this->find()
             ->select('id')
-            ->where(['Events.date <' => date('Y-m-d')])
+            ->where(['Events.start <' => date('Y-m-d H:i:s')])
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
@@ -910,7 +910,7 @@ class EventsTable extends Table
     public function setEndUtc($date, $end, $start)
     {
         $dst = $this->getDaylightSavings($date);
-        $dateStr = $date . ' ' . $end['hour'] . ':'. $end['minute'] . ' ' . $end['meridian'] . $dst;
+        $dateStr = $date . ' ' . $end['hour'] . ':' . $end['minute'] . ' ' . $end['meridian'] . $dst;
         $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
         if ($end < $start) {
@@ -930,7 +930,7 @@ class EventsTable extends Table
     public function setStartUtc($date, $start)
     {
         $dst = $this->getDaylightSavings($date);
-        $dateStr = $date . ' ' . $start['hour'] . ':'. $start['minute'] . ' ' . $start['meridian'] . $dst;
+        $dateStr = $date . ' ' . $start['hour'] . ':' . $start['minute'] . ' ' . $start['meridian'] . $dst;
         $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
         return $retval;

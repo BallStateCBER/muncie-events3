@@ -203,8 +203,8 @@ class MailingListTableTest extends ApplicationTest
         $this->CategoriesMailingList->save($link);
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['date >=' => date('Y-m-d')])
-            ->andWhere(['date <=' => date('Y-m-d', strtotime('+1 week'))])
+            ->where(['start >=' => date('Y-m-d H:i:s')])
+            ->andWhere(['start <=' => date('Y-m-d H:i:s', strtotime('+1 week'))])
             ->toArray();
         $events = $this->MailingList->filterEvents($mailingListWeekly, $events);
         foreach ($events as $event) {

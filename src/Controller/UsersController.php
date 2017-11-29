@@ -127,7 +127,7 @@ class UsersController extends AppController
         $events = $this->Users->Events
             ->find('all', [
             'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['date' => 'DESC']
+            'order' => ['start' => 'DESC']
             ])
             ->where([
                 'Events.user_id =' => $id
