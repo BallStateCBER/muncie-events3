@@ -1,21 +1,25 @@
 <?php
+use App\Model\Table\EventsTable;
 use Cake\Utility\Inflector;
 use Eluceo\iCal;
 
-$date = strtotime($event->date->i18nFormat('yyyyMMddHHmmss'));
-$startTime = strtotime($event->time_start->i18nFormat('yyyyMMddHHmmss'));
-if ($event->time_end) {
-    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
+$this->Events = new EventsTable();
+$dst = $this->Events->getDaylightSavings($event->start->format('Y-m-d'));
+
+$date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
+$startTime = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
+if ($event->end) {
+    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
 }
 
-$start = gmdate('Ymd', $date).'T'.gmdate('His', $startTime).'Z';
+$start = date('Ymd', $date).'T'.date('His', $startTime).'Z';
 
 $endStamp = $startTime;
-if ($event->time_end) {
-    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss'));
+if ($event->end) {
+    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
     $endStamp = $endTime;
 }
-$end = gmdate('Ymd', $date).'T'.gmdate('His', $endStamp).'Z';
+$end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
 
 $vCalendar = new \Eluceo\iCal\Component\Calendar('www.muncieevents.com');
 

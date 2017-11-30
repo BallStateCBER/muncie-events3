@@ -503,7 +503,7 @@ class EventsTable extends Table
      * @return string $lastDate
      */
     public function getNextStartDate($dates)
-    {;
+    {
         $lastDate = end($dates);
         $lastDate = strtotime($lastDate . ' +1 day');
         $lastDate = date('Y-m-d', $lastDate);

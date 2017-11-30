@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\Table\EventsTable;
 use Cake\Routing\Router;
 
 $userId = $this->request->session()->read('Auth.User.id');
@@ -11,6 +12,8 @@ $userId = $this->request->session()->read('Auth.User.id');
         'action' => 'view',
         'id' => $event['id']
     ], true);
+
+    $this->Events = new EventsTable();
 ?>
 <div class="actions">
     <!--?= $this->Facebook->likeButton([
@@ -47,14 +50,15 @@ $userId = $this->request->session()->read('Auth.User.id');
                 ]
             ); ?>
             <?php
-                $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss'));
+                $dst = $this->Events->getDaylightSavings($event->start->format('Y-m-d'));
+                $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
 
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
                 $start = date('Ymd', $date).'T'.date('His', $date).'Z';
 
                 $endStamp = $date;
                 if ($event->end) {
-                    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss'));
+                    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
                     $endStamp = $endTime;
                 }
                 $end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
@@ -145,8 +149,10 @@ $userId = $this->request->session()->read('Auth.User.id');
                 'action' => 'delete',
                 'id' => $event['id']
             ],
-            ['escape' => false],
-            'Are you sure that you want to delete this event?'
+            [
+                    'confirm' => 'Are you sure you want to delete this event?',
+                    'escape' => false
+            ]
         ); ?>
     <?php endif; ?>
 </div>
