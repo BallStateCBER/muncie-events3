@@ -12,7 +12,7 @@ use Cake\Routing\Router;
             <tr>
                 <th>When</th>
                 <td>
-                    <?= $this->Calendar->date($event->date); ?>
+                    <?= $this->Calendar->date($event->start); ?>
                     <br />
                     <?= $this->Calendar->eventTime($event); ?>
                 </td>

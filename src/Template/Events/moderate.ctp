@@ -145,7 +145,7 @@ use Cake\Utility\Inflector;
                                 Date
                             </th>
                             <td>
-                                <?= date('M j, Y', strtotime($event->date)); ?>
+                                <?= date('M j, Y', strtotime($event->start)); ?>
                                 <?= $this->Calendar->eventTime($event); ?>
                             </td>
                         </tr>

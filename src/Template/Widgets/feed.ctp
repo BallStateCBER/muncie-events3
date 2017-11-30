@@ -52,7 +52,7 @@ use Cake\Routing\Router;
                             <?= $event->title; ?>
                         </div>
                         <div class="when_where">
-                            <?= date('g:ia', strtotime($event->time_start)); ?>
+                            <?= date('g:ia', strtotime($event->start)); ?>
                             @
                             <?= $event->location ? $event->location : '&nbsp;'; ?>
                         </div>
@@ -97,7 +97,7 @@ use Cake\Routing\Router;
                             <?= $daysEvents->title; ?>
                         </div>
                         <div class="when_where">
-                            <?= date('g:ia', strtotime($daysEvents->time_start)); ?>
+                            <?= date('g:ia', strtotime($daysEvents->start)); ?>
                             @
                             <?= $daysEvents->location ? $daysEvents->location : '&nbsp;'; ?>
                         </div>

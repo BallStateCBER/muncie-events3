@@ -1,4 +1,8 @@
 <?php
+use App\Model\Table\EventsTable;
+
+$this->Events = new EventsTable();
+
     $userId = $this->request->session()->read('Auth.User.id');
     $userRole = $this->request->session()->read('Auth.User.role');
     $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id']);
@@ -22,7 +26,7 @@
     <?php
         $dividedEvents = ['upcoming' => [], 'past' => []];
         foreach ($eventSeries->events as $key => $event) {
-            if (date('Y-m-d', strtotime($event->date)) < date('Y-m-d')) {
+            if (date('Y-m-d', strtotime($event->start)) < date('Y-m-d')) {
                 $dividedEvents['past'][] = $event;
             } else {
                 $dividedEvents['upcoming'][] = $event;
@@ -40,12 +44,15 @@
         <table>
             <tbody>
                 <?php foreach ($events as $key => $event): ?>
+                    <?php
+                        $dst = $this->Events->setDaylightSavings($event->start->format('Y-m-d'));
+                    ?>
                     <tr>
                         <td>
-                            <?= date('M j, Y', strtotime($event->date)); ?>
+                            <?= date('M j, Y', strtotime($event->start . $dst)); ?>
                         </td>
                         <td>
-                            <?= date('g:ia', strtotime($event['time_start'])); ?>
+                            <?= date('g:ia', strtotime($event->start . $dst)); ?>
                         </td>
                         <td>
                             <?= $this->Html->link($event['title'],

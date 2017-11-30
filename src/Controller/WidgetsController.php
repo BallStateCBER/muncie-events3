@@ -662,8 +662,10 @@ class WidgetsController extends AppController
         $baseUrl = Router::url(['controller' => 'widgets', 'action' => 'month'], true);
         $queryString = str_replace($baseUrl, '', filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING));
 
-        // manually set $eventsForJson just for debugging purposes...
         $eventsForJson = [];
+        $randomArray = [];
+        $datesForJson = [];
+
         foreach ($events as $event) {
             $thisMonth = date('m', strtotime($event->start));
             $thisYear = date('Y', strtotime($event->start));
@@ -673,14 +675,25 @@ class WidgetsController extends AppController
                     'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
                     'events' => []
                 ];
-                $eventsForJson[$date]['events'][] = [
+                $randomArray[] = [
                     'id' => $event->id,
                     'title' => $event->title,
                     'category_name' => $event->category['name'],
                     'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
                     'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
-                    'time' => date('h:ia')
+                    'date' => $event->start->format('Y-m-d'),
+                    'time' => $event->start->format('g:ia')
                 ];
+                $datesForJson[] = $event->start->format('Y-m-d');
+            }
+        }
+        $datesForJson = array_unique($datesForJson);
+
+        foreach ($datesForJson as $date) {
+            foreach ($randomArray as $event) {
+                if ($event['date'] == $date) {
+                    $eventsForJson[$date]['events'][] = $event;
+                }
             }
         }
 

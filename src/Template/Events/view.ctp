@@ -17,7 +17,7 @@ use Cake\Utility\Inflector;
             <tr>
                 <th>When</th>
                 <td>
-                    <?= $this->Calendar->date($event->date); ?>
+                    <?= $this->Calendar->date($event->start); ?>
                     <br />
                     <?= $this->Calendar->time($event); ?>
                 </td>

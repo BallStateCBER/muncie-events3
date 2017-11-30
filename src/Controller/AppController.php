@@ -183,7 +183,9 @@ class AppController extends Controller
         $results = $this->Events->getFutureEvents();
         $populatedDates = [];
         foreach ($results as $result) {
-            $populatedDates[] = $result;
+            if (!in_array($result, $populatedDates)) {
+                $populatedDates[] = $result;
+            }
         }
 
         $results = $this->Events->getPopulatedDates();

@@ -1,5 +1,5 @@
 <?php
-namespace Migration\AbstractMigration;
+// @codingStandardsIgnoreFile
 
 use Phinx\Migration\AbstractMigration;
 
@@ -68,6 +68,11 @@ class CreateUtcTimes extends AbstractMigration
 
             print_r("|");
         }
+
+        $table->removeColumn('date')
+            ->removeColumn('time_start')
+            ->removeColumn('time_end')
+            ->update();
 
         // need to move the cols...
         /*$this->execute("ALTER TABLE events CHANGE COLUMN start AFTER time_end,

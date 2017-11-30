@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Helper;
 
+use App\Model\Table\EventsTable;
 use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use Cake\View\Helper;
@@ -68,16 +69,18 @@ class CalendarHelper extends Helper
      */
     public function eventTime($event)
     {
+        $this->Events = new EventsTable();
+        $dst = $this->Events->setDaylightSavings($event['start']);
         $startStamp = $event['start'];
         if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
-            $retval = date('ga', strtotime($startStamp));
+            $retval = date('ga', strtotime($startStamp . $dst));
         } else {
-            $retval = date('g:ia', strtotime($startStamp));
+            $retval = date('g:ia', strtotime($startStamp . $dst));
         }
         if ($event['end']) {
             $endStamp = $event['end'];
             if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
-                $retval .= ' to ' . date('ga', strtotime($endStamp));
+                $retval .= ' to ' . date('ga', strtotime($endStamp . $dst));
             }
         }
 
@@ -270,7 +273,7 @@ class CalendarHelper extends Helper
             $rel .= '[' . $params['group'] . ']';
         }
         $url = Configure::read('App.eventImageBaseUrl') . 'full/' . $filename;
-        $link = '<a href="' . $url . '" rel="$rel" class="$class" alt="$filename"';
+        $link = "<a href='$url' rel='$rel' class='$class' alt='$filename'";
         if (isset($params['caption']) && !empty($params['caption'])) {
             $link .= ' title="' . $params['caption'] . '"';
         }
