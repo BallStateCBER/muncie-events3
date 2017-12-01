@@ -778,6 +778,7 @@ class WidgetsController extends AppController
 
             return null;
         }
+        $event = $this->Events->setEasternTimes($event);
         $this->viewBuilder()->setLayout('Widgets' . DS . 'feed');
         $this->set([
             'event' => $event
