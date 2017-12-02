@@ -169,6 +169,10 @@ class EventsController extends AppController
             $event->date = date('m/d/Y', strtotime($today . $dst));
             $start = date('h:i a', strtotime($event->start->format('h:i a') . $dst));
             $event->time_start = $start;
+            if ($event->end) {
+                $end = date('h:i a', strtotime($event->end->format('h:i a') . $dst));
+                $event->time_end = $end;
+            }
         }
         if ($this->request->getParam('action') == 'editSeries') {
             $dateFieldValues = [];
@@ -234,7 +238,7 @@ class EventsController extends AppController
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->getParam('action') == 'edit') {
             $hasSeries = isset($event['series_id']);
-            $hasEndTime = isset($event['time_end']) && $event['time_end'];
+            $hasEndTime = isset($event['time_end']) && $event['end'];
         }
         if (!isset($hasSeries)) {
             $hasSeries = false;
@@ -362,9 +366,9 @@ class EventsController extends AppController
     {
         $event = $this->Events->newEntity();
         // Prepare form
+        $this->setDatePicker($event);
         $this->setEventForm($event);
         $this->setImageData($event);
-        $this->setDatePicker($event);
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
@@ -528,9 +532,9 @@ class EventsController extends AppController
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
         // Prepare form
+        $this->setDatePicker($event);
         $this->setEventForm($event);
         $this->setImageData($event);
-        $this->setDatePicker($event);
         $users = $this->Users->find('list');
         $categories = $this->Categories->find('list');
         $eventseries = $this->EventSeries->find('list');
@@ -695,6 +699,8 @@ class EventsController extends AppController
         $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
         $oppDate = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
+        $direction = ucwords($direction);
+
         $listing = $this->Events
             ->find('all', [
                 'conditions' => [
@@ -946,6 +952,7 @@ class EventsController extends AppController
         $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
         $oppDate = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
+        $direction = ucwords($direction);
 
         $tagId = $this->Tags->getIdFromSlug($slug);
 

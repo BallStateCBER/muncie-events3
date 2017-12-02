@@ -45,7 +45,7 @@ class EventsTableTest extends ApplicationTest
      */
     public function testGetUpcomingEvents()
     {
-        $date = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        $date = date('Y-m-d H:i:s');
 
         $event = $this->Events->newEntity();
         $event->title = 'Anonymous';

@@ -159,7 +159,7 @@
                                     ? '24:00:00'    // Fixes bug where midnight is represented as noon
                                     : $event['time_end'];
                             }
-                            echo $this->Form->input('time_end', [
+                            echo $this->Form->time('time_end', [
                                 'label' => false,
                                 'interval' => 5,
                                 'timeFormat' => '12',
@@ -262,7 +262,6 @@
                 </tr>
             <?php endif; ?>
             <tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : ''; ?>>
-                <td></td>
                 <td>
                     <a href="#" id="event_add_cost">
                         Add cost
@@ -285,7 +284,6 @@
                 </td>
             </tr>
             <tr id="eventform_noages"<?= ($has['ages']) ? ' style="display: none;"' : ''; ?>>
-                <td></td>
                 <td>
                     <a href="#" id="event_add_age_restriction">
                         Add age restriction
@@ -308,7 +306,6 @@
                 </td>
             </tr>
             <tr id="eventform_nosource"<?= ($has['source']) ? ' style="display: none;"' : ''; ?>>
-                <td></td>
                 <td>
                     <a href="#" id="event_add_source">
                         Add info source
@@ -337,9 +334,14 @@
                     </td>
                 </tr>
             <?php endif; ?>
+            <tr>
+                <th></th>
+                <td>
+                    <?= $this->Form->submit('Submit', ['class'=>'btn btn-secondary']) ?>
+                </td>
+            </tr>
         </tbody>
     </table>
-<?= $this->Form->button(__('Submit', ['class'=>'btn btn-secondary'])) ?>
 <?= $this->Form->end() ?>
 <?php
     $previous_locations_for_autocomplete = [];

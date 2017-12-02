@@ -2,11 +2,12 @@
     use Cake\Utility\Inflector;
 
 $s = $oppCount == 1 ? '' : 's';
+$z = $count == 1 ? '' : 's';
 
 ?>
 
 <h1 class="page_title">
-    <?= "$count $direction Events with $titleForLayout" ?>
+    <?= "$count $direction Event$z with $titleForLayout" ?>
 </h1>
 
 <?= $this->Html->link(

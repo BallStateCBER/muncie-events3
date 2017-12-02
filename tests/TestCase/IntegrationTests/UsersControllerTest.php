@@ -45,6 +45,9 @@ class UsersControllerTest extends ApplicationTest
 
         $this->assertResponseContains('We could not log you in.');
 
+        $this->assertResponseNotContains("I'm just typing this in to see if wakatime is actually recording shit I'm programming?");
+        $this->assertResponseNotContains("So, how does this work? Is this showing up as anything really?");
+
         $this->get('/login');
         $this->assertResponseOk();
 

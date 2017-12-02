@@ -2,9 +2,10 @@
     use Cake\Utility\Inflector;
 
 $s = $oppCount == 1 ? '' : 's';
+$z = $count == 1 ? '' : 's';
 
 ?>
-<h1><?= "$count $direction events at $location" ?></h1>
+<h1><?= "$count $direction event$z at $location" ?></h1>
 <?= $this->Html->link(
     "$oppCount $opposite event$s",
     [

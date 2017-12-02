@@ -331,7 +331,7 @@ function setupEventAccordion() {
 function loadMoreEvents() {
     var more_events_url = '/events/index/'+muncieEventsFeed.nextStartDate+'/';
     if (muncieEvents.requestEventFilters.category) {
-        more_events_url += '/'+muncieEvents.requestEventFilters.category+'/'+muncieEventsFeed.nextStartDate;
+        more_events_url = '/'+muncieEvents.requestEventFilters.category+'/'+muncieEventsFeed.nextStartDate;
     } else if (muncieEvents.requestEventFilters.tag) {
         more_events_url += '/tag/'+muncieEvents.requestEventFilters.tag;
     }
