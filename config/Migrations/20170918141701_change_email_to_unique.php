@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 
 use Phinx\Migration\AbstractMigration;
 
@@ -32,9 +33,9 @@ class ChangeEmailToUnique extends AbstractMigration
         /**
          *
          */
-        $table = $this->table('users');
-        $rows = $this->fetchAll('DELETE FROM users WHERE id = 476');
-        $table->changeColumn('email', 'varchar', ['limit' => 100, 'unique' => true])
-            ->save();
+        #$table = $this->table('users');
+        #$rows = $this->fetchAll('DELETE FROM users WHERE id = 476');
+        #$table->changeColumn('email', 'varchar', ['limit' => 100, 'unique' => true])
+        #    ->save();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 
 use Phinx\Migration\AbstractMigration;
 
@@ -36,7 +37,7 @@ class RemoveCategoriesFromMailingList extends AbstractMigration
          * HAVE YET TO FIGURE OUT
          *
          */
-        $table = $this->table('mailing_list');
+        /*$table = $this->table('mailing_list');
         $joinTable = $this->table('categories_mailing_list');
         $table->renameColumn('categories', 'selected_categories');
 
@@ -60,6 +61,6 @@ class RemoveCategoriesFromMailingList extends AbstractMigration
         }
 
         $table->removeColumn('selected_categories')
-            ->save();
+            ->save();*/
     }
 }

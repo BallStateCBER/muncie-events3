@@ -31,7 +31,8 @@ class CreateUtcTimes extends AbstractMigration
     public function change()
     {
         $table = $this->table('events');
-        $table->addColumn('start', 'datetime', ['limit' => 18])
+        $table->changeColumn('date', 'datetime', ['limit' => 10, 'default' => '1969-12-31'])
+            ->addColumn('start', 'datetime', ['limit' => 18, 'default' => '1969-12-31 00:00:00'])
             ->addColumn('end', 'datetime', ['limit' => 18, 'null' => true])
             ->update();
 
