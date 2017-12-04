@@ -6,61 +6,39 @@ use Phinx\Migration\AbstractMigration;
 class RemoveCategoriesFromMailingList extends AbstractMigration
 {
     /**
-     * Change Method.
-     *
-     * Write your reversible migrations using this method.
-     *
-     * More information on writing migrations is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
-     *
-     * The following commands can be used in this method and Phinx will
-     * automatically reverse them when rolling back:
-     *
-     *    createTable
-     *    renameTable
-     *    addColumn
-     *    renameColumn
-     *    addIndex
-     *    addForeignKey
-     *
-     * Remember to call "create()" or "update()" and NOT "save()" when working
-     * with the Table class.
+     * migrate up
      *
      * @return void
      */
-    public function change()
+    public function up()
     {
-        /**
-         *
-         * WARNING: THIS MIGRATION SHOULD NOT BE RUN IN A PRODUCTION SETTING
-         * IT WILL JUST DUPLICATE DATA AND RUIN YOUR SCHEMA FOR REASONS I
-         * HAVE YET TO FIGURE OUT
-         *
-         */
-        /*$table = $this->table('mailing_list');
-        $joinTable = $this->table('categories_mailing_list');
-        $table->renameColumn('categories', 'selected_categories');
+        $table = $this->table('mailing_list');
+        $table->removeColumn('categories')
+            ->save();
+    }
 
-        $rows = $this->fetchAll('SELECT * FROM mailing_list WHERE selected_categories is NOT NULL');
+    /**
+     * migrate down
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $this->execute('ALTER TABLE mailing_list ADD COLUMN categories VARCHAR(50) NULL DEFAULT NULL AFTER all_categories');
 
+        $masterArray = [];
+
+        $rows = $this->fetchAll('SELECT * FROM categories_mailing_list ORDER BY mailing_list_id ASC');
         foreach ($rows as $row) {
-            $selectedCategories = explode(',', $row['selected_categories']);
-            $user = $row['id'];
-            print_r('New user:' . $user);
-
-            foreach ($selectedCategories as $category) {
-                $joinData = [
-                    'mailing_list_id' => $user,
-                    'category_id' => $category
-                ];
-
-                $joinTable->insert($joinData);
-                $joinTable->saveData();
-                print_r('Category ' . $category . ' added to user ' . $user);
+            if (!isset($masterArray[$row['mailing_list_id']])) {
+                $masterArray[$row['mailing_list_id']] = [];
             }
+            $masterArray[$row['mailing_list_id']][] += $row['category_id'];
         }
 
-        $table->removeColumn('selected_categories')
-            ->save();*/
+        foreach ($masterArray as $key => $val) {
+            $string = implode(', ', $val);
+            $this->execute("UPDATE mailing_list SET categories='$string' WHERE id='$key'");
+        }
     }
 }

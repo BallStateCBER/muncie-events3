@@ -6,34 +6,16 @@ use Phinx\Migration\AbstractMigration;
 class CreateUtcTimes extends AbstractMigration
 {
     /**
-     * Change Method.
-     *
-     * Write your reversible migrations using this method.
-     *
-     * More information on writing migrations is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
-     *
-     * The following commands can be used in this method and Phinx will
-     * automatically reverse them when rolling back:
-     *
-     *    createTable
-     *    renameTable
-     *    addColumn
-     *    renameColumn
-     *    addIndex
-     *    addForeignKey
-     *
-     * Remember to call "create()" or "update()" and NOT "save()" when working
-     * with the Table class.
+     * migrate up
      *
      * @return void
      */
-    public function change()
+    public function up()
     {
         $table = $this->table('events');
-        $table->changeColumn('date', 'datetime', ['limit' => 10, 'default' => '1969-12-31'])
-            ->addColumn('start', 'datetime', ['limit' => 18, 'default' => '1969-12-31 00:00:00'])
-            ->addColumn('end', 'datetime', ['limit' => 18, 'null' => true])
+        $table->changeColumn('date', 'date', ['limit' => 10, 'default' => '1969-12-31'])
+            ->addColumn('start', 'datetime', ['after' => 'date', 'limit' => 18, 'default' => '1969-12-31 00:00:00'])
+            ->addColumn('end', 'datetime', ['after' => 'start', 'limit' => 18, 'null' => true])
             ->update();
 
         $stmt = $this->query("SELECT * FROM events");
@@ -78,6 +60,53 @@ class CreateUtcTimes extends AbstractMigration
         // need to move the cols...
         /*$this->execute("ALTER TABLE events CHANGE COLUMN start AFTER time_end,
                                 CHANGE COLUMN end AFTER start");*/
+
+        print_r(" All events have been updated!");
+    }
+
+    /**
+     * migrate down
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $table = $this->table('events');
+        $table
+            ->addColumn('date', 'date', ['after' => 'series_id', 'default' => '1969-12-31'])
+            ->addColumn('time_start', 'time', ['after' => 'date', 'default' => '00:00:00'])
+            ->addColumn('time_end', 'time', ['after' => 'time_start', 'default' => '00:00:00'])
+            ->save();
+
+        $stmt = $this->query("SELECT * FROM events");
+        $events = $stmt->fetchAll();
+
+        foreach ($events as $event) {
+            $id = $event['id'];
+            if (date('I', strtotime($event['start'])) == 1) {
+                $dst = ' - 4 hours';
+            }
+            if (date('I', strtotime($event['start'])) == 0) {
+                $dst = ' - 5 hours';
+            }
+            $date = date('Y-m-d', strtotime($event['start'] . $dst));
+            $start = date('H:i:s', strtotime($event['start'] . $dst));
+            if (date('I', strtotime($event['end'])) == 1) {
+                $dst = ' - 4 hours';
+            }
+            if (date('I', strtotime($event['end'])) == 0) {
+                $dst = ' - 5 hours';
+            }
+            $end = date('H:i:s', strtotime($event['end'] . $dst));
+
+            $this->execute("UPDATE events SET date='$date', time_start='$start', time_end='$end' WHERE id='$id'");
+
+            print_r("|");
+        }
+
+        $table->removeColumn('start')
+            ->removeColumn('end')
+            ->update();
 
         print_r(" All events have been updated!");
     }
