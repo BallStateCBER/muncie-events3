@@ -13,12 +13,12 @@ $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
 <div class="paginator">
     <ul class="pagination">
         <?php
-            $first = $this->Paginator->first("&laquo; First", ['escape' => false, 'class' => 'page-link']);
-            echo $first ? $first : "<a class='page-link'>&laquo; First</a>";
+            $first = $this->Paginator->first("&laquo; First", ["escape" => false, "class" => "page-link"]);
+            echo $first ? $first : "<span class='page-link'>&laquo; First</span>";
         ?>
         <?php
-            $prev = $this->Paginator->prev("&lsaquo; Prev", ['escape' => false, 'class' => 'page-link']);
-            echo $prev ? $prev : "<a class='page-link'>&lsaquo; Prev</a>";
+            $prev = $this->Paginator->prev("&lsaquo; Prev", ["escape" => false, "class" => "page-link"]);
+            echo $prev ? $prev : "<span class='page-link'>&lsaquo; Prev</span>";
         ?>
         <select class="paginator_select custom-select" data-url="<?= $paginatorUrl; ?>">
             <?php for ($p = 1; $p <= $totalPages; $p++): ?>
@@ -29,12 +29,12 @@ $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
         </select>
         <?php $this->Js->buffer("setupPagination();"); ?>
         <?php
-            $next = $this->Paginator->next("Next &rsaquo;", ['escape' => false, 'class' => 'page-link']);
-            echo $next ? $next : "<a class='page-link'>Next &rsaquo;</a>";
+            $next = $this->Paginator->next("Next &rsaquo;", ["escape" => false, "class" => "page-link"]);
+            echo $next ? $next : "<span class='page-link'>Next &rsaquo;</span>";
         ?>
         <?php
-            $last = $this->Paginator->last("Last &raquo;", ['escape' => false, 'class' => 'page-link']);
-            echo $last ? $last : "<a class='page-link'>Last &raquo;</a>";
+            $last = $this->Paginator->last("Last &raquo;", ["escape" => false, "class" => "page-link"]);
+            echo $last ? $last : "<span class='page-link'>Last &raquo;</span>";
         ?>
     </ul>
     <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
