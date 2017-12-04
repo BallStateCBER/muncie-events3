@@ -1,6 +1,9 @@
 <?php
     $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'editSeries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
+    $this->Form->setTemplates([
+        'inputContainer' => '{{content}}'
+    ]);
 ?>
 
 <h1 class="page_title">
