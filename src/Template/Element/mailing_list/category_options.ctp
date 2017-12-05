@@ -7,17 +7,15 @@
         $this->Form->setTemplates($formTemplate);
     ?>
     <div class="form-control mailing-options">
-        <?= $this->Form->input(
+        <?= $this->Form->radio(
             'event_categories',
             [
-                'type' => 'radio',
-                'options' => [
-                    'all' => 'All Events',
-                    'custom' => 'Custom'
-                ],
+                ['value' => 'all', 'text' => 'All Events'],
+                ['value' => 'custom', 'text' => 'Custom']
+            ],
+            [
                 'class' => 'category_options',
-                'legend' => false,
-                'label' => false
+                'value' => 'all'
             ]
         ); ?>
     </div>
@@ -35,7 +33,8 @@
                     [
                         'type' => 'checkbox',
                         'label' => $category,
-                        'hiddenField' => false
+                        'hiddenField' => false,
+                        'checked' => true
                     ]
                 ); ?>
             </div>

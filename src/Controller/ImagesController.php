@@ -10,6 +10,22 @@ use Cake\ORM\TableRegistry;
 class ImagesController extends AppController
 {
     /**
+     * Determines whether or not the user is authorized to make the current request
+     *
+     * @param User|null $user User entity
+     * @return bool
+     */
+    public function isAuthorized($user = null)
+    {
+        if (isset($user)) {
+            if ($user['role'] == 'admin') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /**
      * upload method.
      *
      * @return void
