@@ -6,9 +6,9 @@ if (empty($images)) {
     echo 'No uploaded images to select.';
 } else {
     $eventImgBaseUrl = Configure::read('App.eventImageBaseUrl');
-    foreach ($images as $image_id => $filename) {
-        echo '<a href="#" id="listed_image_'.$image_id.'" data-image-id="'.$image_id.'" data-image-filename="'.$filename.'">';
-        echo '<img src="' . $eventImgBaseUrl . 'tiny/' . $filename . '" />';
+    foreach ($images as $image) {
+        echo '<a href="#" id="listed_image_'.$image['id'].'" data-image-id="'.$image['id'].'" data-image-filename="'.$image['filename'].'">';
+        echo '<img src="' . $eventImgBaseUrl . 'tiny/' . $image['filename'] . '" />';
         echo '</a>';
     }
 }

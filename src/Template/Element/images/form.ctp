@@ -121,6 +121,7 @@ $helpers = ['Html'];
             timestamp: ".time().",
             event_img_base_url: '" . Configure::read('App.eventImageBaseUrl') . "'
         });
+		ImageManager.user_id = $userId;
         ImageManager.setupManager();
     ");
 ?>

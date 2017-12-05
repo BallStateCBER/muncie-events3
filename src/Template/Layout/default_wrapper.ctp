@@ -31,6 +31,7 @@
     crossorigin="anonymous">
     </script>
     <script>window.jQuery || document.write('<script src="js/jquery-3.1.1.min.js">\x3C/script>')</script>
+    <script src="/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
 </head>
 <body class="layout_<?= $this->layout; ?>">
     <!--?= $this->Facebook->initJsSDK(); ?-->
@@ -63,7 +64,6 @@
     </noscript>
 
     <script src="/js/jquery-migrate-3.0.0.min.js"></script>
-    <script src="/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
     <script src="/js/jquery.watermark.min.js"></script>
 
     <!-- bootstrap css local fallback -->
