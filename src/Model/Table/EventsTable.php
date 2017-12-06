@@ -297,8 +297,14 @@ class EventsTable extends Table
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
         $params = [];
-        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate))];
-        $params[] = ['start <' => date('Y-m-d H:i:s', $endDate)];
+        $dst = $this->getDaylightSavings($nextStartDate);
+        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
+
+        $newEnd = date('Y-m-d H:i:s', $endDate);
+        $dst = $this->getDaylightSavings($newEnd);
+        $newEnd = date('Y-m-d H:i:s', strtotime($newEnd . $dst));
+        $params[] = ['start <' => $newEnd];
+
         foreach ($options as $param => $value) {
             $categories = '';
             if ($param == 'category' || $param == 'category_id') {
