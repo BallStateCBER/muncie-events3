@@ -142,7 +142,7 @@ class EventsTableTest extends ApplicationTest
         $this->EventsTags->save($joinData);
 
         // the only event that meets these criteria should be on this date, specifically
-        $date = date('Y-m-d H:i:s', strtotime('2020-01-01'));
+        $date = date('Y-m-d H:i:s', strtotime('2019-12-31'));
         $options = [
             'category' => 1,
             'location' => 'Placeholder palace',
@@ -153,7 +153,7 @@ class EventsTableTest extends ApplicationTest
         $nextStartDate = $date;
         $endDate = strtotime('2020-01-28');
         $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-        $this->assertEquals($date, $events[0]->start->format('Y-m-d H:i:s'));
+        $this->assertEquals(date('Y-m-d H:i:s', strtotime('2020-01-01')), $events[0]->start->format('Y-m-d H:i:s'));
     }
     public function testGetUnapproved()
     {
