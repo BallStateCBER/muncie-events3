@@ -114,9 +114,9 @@ $helpers = ['Html'];
     echo $this->Html->css('/uploadifive/uploadifive.css', ['inline' => false]);
     $this->Js->buffer("
         ImageManager.setupUpload({
-            token: '".md5(Configure::read('upload_verify_token').time())."',
-            user_id: '".$this->request->session()->read('Auth.User.id')."',
-            event_id: ".(isset($event_id) ? $event_id : 'null').",
+            token: '".md5(Configure::read('App.upload_verify_token').time())."',
+            user_id: '".$userId."',
+            event_id: ".(isset($event->id) ? $event->id : 'null').",
             filesize_limit: '{$manual_filesize_limit}B',
             timestamp: ".time().",
             event_img_base_url: '" . Configure::read('App.eventImageBaseUrl') . "'

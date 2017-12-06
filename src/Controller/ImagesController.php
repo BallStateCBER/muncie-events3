@@ -22,6 +22,9 @@ class ImagesController extends AppController
                 return true;
             }
         }
+        if ($this->request->getParam('action') == 'upload') {
+            return true;
+        }
 
         return false;
     }
@@ -34,7 +37,7 @@ class ImagesController extends AppController
     {
         $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $verifyToken = md5(Configure::read('upload_verify_token') . $_POST['timestamp']);
+        $verifyToken = md5(Configure::read('App.upload_verify_token') . $_POST['timestamp']);
         if (! empty($_FILES) && $_POST['token'] == $verifyToken) {
             $tempFile = $_FILES['Filedata']['tmp_name'];
             $imageId = $this->Images->getNextId();
