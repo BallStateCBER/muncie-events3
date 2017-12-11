@@ -112,8 +112,6 @@ class AppController extends Controller
             ]
         );
 
-        dd($this->Auth->redirectUrl());
-
         if (php_sapi_name() != 'cli') {
             $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
             $this->loadComponent('Captcha.Captcha');
