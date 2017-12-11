@@ -1,5 +1,5 @@
 <div id="login">
-    <?= $this->Form->create('User', ['url' => ['controller' => 'Users', 'action' => 'login']]); ?>
+    <?= $this->Form->create('User'); ?>
     <div class='form-group col-lg-4 col-xs-12'>
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
