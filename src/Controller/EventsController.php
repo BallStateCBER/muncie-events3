@@ -284,7 +284,7 @@ class EventsController extends AppController
     /** @var Image $newImage */
                 $newImage = $this->Images->get($imageId);
                 $delete = $this->request->getData("delete.$imageId");
-                if ($delete == 1) {
+                if ($delete == '1') {
                     $this->Events->Images->unlink($event, [$newImage]);
                 }
                 if ($delete == 0) {
