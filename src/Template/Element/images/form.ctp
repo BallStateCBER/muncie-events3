@@ -112,16 +112,16 @@ $helpers = ['Html'];
 <?php
     echo $this->Html->script('/uploadifive/jquery.uploadifive.min.js', ['inline' => false]);
     echo $this->Html->css('/uploadifive/uploadifive.css', ['inline' => false]);
-    $this->Js->buffer("
-        ImageManager.setupUpload({
-            token: '".md5(Configure::read('App.upload_verify_token').time())."',
-            user_id: '".$userId."',
-            event_id: ".(isset($event->id) ? $event->id : 'null').",
-            filesize_limit: '{$manual_filesize_limit}B',
-            timestamp: ".time().",
-            event_img_base_url: '" . Configure::read('App.eventImageBaseUrl') . "'
-        });
-		ImageManager.user_id = $userId;
-        ImageManager.setupManager();
-    ");
 ?>
+<script>
+    ImageManager.setupUpload({
+        token: '<?= md5(Configure::read('App.upload_verify_token').time()) ?>',
+        user_id: '<?= $userId ?>',
+        event_id: "<?= (isset($event->id) ? $event->id : 'null') ?>",
+        filesize_limit: '<?= $manual_filesize_limit ?>B',
+        timestamp: "<?= time() ?>",
+        event_img_base_url: '<?= Configure::read('App.eventImageBaseUrl') ?>'
+    });
+    ImageManager.user_id = <?= $userId ?>;
+    ImageManager.setupManager();
+</script>

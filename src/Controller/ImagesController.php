@@ -37,9 +37,9 @@ class ImagesController extends AppController
     {
         $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $verifyToken = md5(Configure::read('App.upload_verify_token') . filter_input(INPUT_POST, 'timestamp'));
-        debug($verifyToken . ' ' . filter_input(INPUT_POST, 'token'));
-        if (isset($_FILES) && filter_input(INPUT_POST, 'token') == $verifyToken) {
+        $vars = $this->request->getData();
+        $verifyToken = md5(Configure::read('App.upload_verify_token') . $vars['timestamp']);
+        if (isset($_FILES) && $vars['token'] == $verifyToken) {
             $tempFile = $_FILES['Filedata']['tmp_name'];
             $imageId = $this->Images->getNextId();
             $userId = $this->request->session()->read('Auth.User.id');

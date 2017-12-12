@@ -186,6 +186,7 @@ var ImageManager = {
 			},
 			'onUploadComplete': function(file, data) {
 				console.log(file);
+				console.log(params);
 				console.log(data);
 
 				var intRegex = /^\d+$/;
