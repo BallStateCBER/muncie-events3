@@ -72,7 +72,7 @@ class CreateUtcTimes extends AbstractMigration
     public function down()
     {
         $table = $this->table('events');
-        $table
+        /*$table
             ->addColumn('date', 'date', ['after' => 'series_id', 'default' => '1969-12-31'])
             ->addColumn('time_start', 'time', ['after' => 'date', 'default' => '00:00:00'])
             ->addColumn('time_end', 'time', ['after' => 'time_start', 'default' => '00:00:00'])
@@ -102,7 +102,7 @@ class CreateUtcTimes extends AbstractMigration
             $this->execute("UPDATE events SET date='$date', time_start='$start', time_end='$end' WHERE id='$id'");
 
             print_r("|");
-        }
+        }*/
 
         $table->removeColumn('start')
             ->removeColumn('end')
