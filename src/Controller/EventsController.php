@@ -297,7 +297,7 @@ class EventsController extends AppController
                 $place++;
             }
         }
-        $imageData = $this->request->getData('Image');
+        $imageData = $this->request->getData('data.Image');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Images->get($imageId);

@@ -132,6 +132,7 @@ class AppController extends Controller
         $this->loadModel('EventSeries');
         $this->loadModel('EventsImages');
         $this->loadModel('EventsTags');
+        $this->loadModel('Images');
         $this->loadModel('MailingList');
         $this->loadModel('Tags');
         $this->loadModel('Users');

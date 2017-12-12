@@ -35,6 +35,8 @@ class ImagesController extends AppController
      */
     public function upload()
     {
+        $this->viewbuilder()->setLayout('blank');
+        $this->render('/Pages/blank');
         $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
         $vars = $this->request->getData();
@@ -60,8 +62,10 @@ class ImagesController extends AppController
                                 $this->response->withStatus(500);
                                 echo 'Error saving image';
                                 debug($newImage);
+                            } else {
+                                echo $newImage->id;
+                                dd($vars);
                             }
-                            echo $newImage->id;
                         } else {
                             $this->response->withStatus(500);
                             echo 'Error creating thumbnail';
@@ -87,8 +91,6 @@ class ImagesController extends AppController
             $this->response->withStatus(500);
             echo 'Security code incorrect';
         }
-        $this->viewbuilder()->setLayout('blank');
-        $this->render('/Pages/blank');
     }
 
     /**
