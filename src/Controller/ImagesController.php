@@ -35,62 +35,69 @@ class ImagesController extends AppController
      */
     public function upload()
     {
-        $this->viewbuilder()->setLayout('blank');
-        $this->render('/Pages/blank');
-        $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
-        $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $vars = $this->request->getData();
-        $verifyToken = md5(Configure::read('App.upload_verify_token') . $vars['timestamp']);
-        if (isset($_FILES) && $vars['token'] == $verifyToken) {
-            $tempFile = $_FILES['Filedata']['tmp_name'];
-            $imageId = $this->Images->getNextId();
-            $userId = $this->request->session()->read('Auth.User.id');
-            $fileParts = pathinfo($_FILES['Filedata']['name']);
-            $filename = $imageId . '.' . strtolower($fileParts['extension']);
-            $targetFile = $uploadDir . $filename;
-            if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
-                if ($this->Images->autoResize($tempFile)) {
-                    if (move_uploaded_file($tempFile, $targetFile)) {
-                        if ($this->Images->createTiny($targetFile) && $this->Images->createSmall($targetFile)) {
-                            // Create DB entry for the image
-                            $newImage = TableRegistry::get('Images');
-                            $newImage = $newImage->newEntity();
-                            $newImage->user_id = $userId;
-                            $newImage->filename = $filename;
-                            $this->Images->save($newImage);
-                            if (!$this->Images->save($newImage)) {
-                                $this->response->withStatus(500);
-                                echo 'Error saving image';
-                                debug($newImage);
+                $this->viewbuilder()->setLayout('blank');
+                $this->render('/Pages/blank');
+                $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
+                $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
+                $vars = $this->request->getData();
+                $verifyToken = md5(Configure::read('App.upload_verify_token') . $vars['timestamp']);
+                if (isset($_FILES) && $vars['token'] == $verifyToken) {
+                    $tempFile = $_FILES['Filedata']['tmp_name'];
+                    $imageId = $this->Images->getNextId();
+                    $userId = $this->request->session()->read('Auth.User.id');
+                    $fileParts = pathinfo($_FILES['Filedata']['name']);
+                    $filename = $imageId . '.' . strtolower($fileParts['extension']);
+                    $targetFile = $uploadDir . $filename;
+                    if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
+                        if ($this->Images->autoResize($tempFile)) {
+                            if (move_uploaded_file($tempFile, $targetFile)) {
+                                if ($this->Images->createTiny($targetFile) && $this->Images->createSmall($targetFile)) {
+                                    // Create DB entry for the image
+                                    $newImage = TableRegistry::get('Images');
+                                    $newImage = $newImage->newEntity();
+                                    $newImage->user_id = $userId;
+                                    $newImage->filename = $filename;
+                                    $this->Images->save($newImage);
+                                    if (!$this->Images->save($newImage)) {
+                                        $this->response->withStatus(500);
+                                        echo 'Error saving image';
+                                        debug($newImage);
+                                    } else {
+                                        if (isset($_POST['event_id']) && is_int($_POST['event_id'])) {
+                                            $ass = $this->EventsImages->newEntity();
+                                            $ass->image_id = $imageId;
+                                            $ass->event_id = $_POST['event_id'];
+                                            if ($this->EventsImages->save($ass)) {
+                                            }
+                                        }
+                                        dd($vars);
+                                        echo $newImage->id;
+                                    }
+                                } else {
+                                    $this->response->withStatus(500);
+                                    echo 'Error creating thumbnail';
+                                    if (! empty($this->Images->errors)) {
+                                        echo ': ' . implode('; ', $this->Images->errors);
+                                    }
+                                }
                             } else {
-                                echo $newImage->id;
-                                dd($vars);
+                                $this->response->withStatus(500);
+                                echo 'Could not save file.';
                             }
                         } else {
                             $this->response->withStatus(500);
-                            echo 'Error creating thumbnail';
+                            echo 'Error resizing image';
                             if (! empty($this->Images->errors)) {
                                 echo ': ' . implode('; ', $this->Images->errors);
                             }
                         }
                     } else {
-                        $this->response->withStatus(500);
-                        echo 'Could not save file.';
+                        echo 'Invalid file type.';
                     }
                 } else {
                     $this->response->withStatus(500);
-                    echo 'Error resizing image';
-                    if (! empty($this->Images->errors)) {
-                        echo ': ' . implode('; ', $this->Images->errors);
-                    }
+                    echo 'Security code incorrect';
                 }
-            } else {
-                echo 'Invalid file type.';
-            }
-        } else {
-            $this->response->withStatus(500);
-            echo 'Security code incorrect';
-        }
     }
 
     /**
