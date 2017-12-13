@@ -75,6 +75,7 @@ class ImagesController extends AppController
                                         }
                                     }
                                 }
+                                echo $imageId;
                             } else {
                                 $this->response->withStatus(500);
                                 echo 'Error saving image';
