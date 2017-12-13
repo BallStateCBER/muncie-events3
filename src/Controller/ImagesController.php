@@ -10,6 +10,16 @@ use Cake\ORM\TableRegistry;
 class ImagesController extends AppController
 {
     /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->deny('upload');
+    }
+    /**
      * Determines whether or not the user is authorized to make the current request
      *
      * @param User|null $user User entity
@@ -21,9 +31,9 @@ class ImagesController extends AppController
             if ($user['role'] == 'admin') {
                 return true;
             }
-        }
-        if ($this->request->getParam('action') == 'upload') {
-            return true;
+            if ($this->request->getParam('action') == 'upload') {
+                return true;
+            }
         }
 
         return false;
@@ -37,9 +47,9 @@ class ImagesController extends AppController
     {
         $this->viewbuilder()->setLayout('blank');
         $this->render('/Pages/blank');
-        $uploadDir = Configure::read('App.eventImagePath') . DS . 'full' . DS;
+        $uploadDir = Configure::read('App.eventImagePath') . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $verifyToken = md5(Configure::read('upload_verify_token') . $_POST['timestamp']);
+        $verifyToken = md5(Configure::read('App.upload_verify_token') . $_POST['timestamp']);
         if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
             $tempFile = $_FILES['Filedata']['tmp_name'];
             $imageId = $this->Images->getNextId();

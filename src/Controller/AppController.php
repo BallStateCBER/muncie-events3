@@ -113,7 +113,10 @@ class AppController extends Controller
         );
 
         if (php_sapi_name() != 'cli') {
-            $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
+            $this->loadComponent('Security', [
+                'blackHoleCallback' => 'forceSSL',
+                'validatePost' => false
+            ]);
             $this->loadComponent('Captcha.Captcha');
             /*if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
                 $this->loadComponent('AkkaFacebook.Graph', [
