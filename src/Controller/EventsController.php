@@ -276,41 +276,42 @@ class EventsController extends AppController
      */
     private function setImageData($event)
     {
-        $weight = 1;
         $place = 0;
-        $imageData = $this->request->getData('newImages');
+        $imageData = $this->request->getData('data.Image');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
     /** @var Image $newImage */
                 $newImage = $this->Images->get($imageId);
+                $this->Events->Images->unlink($event, [$newImage]);
                 $delete = $this->request->getData("delete.$imageId");
                 if ($delete == '1') {
-                    $this->Events->Images->unlink($event, [$newImage]);
+                    continue;
                 }
                 if ($delete == 0) {
-                    $event->images[$place]->_joinData->weight = $weight;
-                    $event->images[$place]->_joinData->caption = $caption;
-                    $event->images[$place]->_joinData->created = $newImage->created;
-                    $event->images[$place]->_joinData->modified = $newImage->modified;
+                    $event->images[$place] = $newImage;
+                    $newImage->_joinData = $this->EventsImages->newEntity();
+                    $newImage->_joinData->weight = $place + 1;
+                    $newImage->_joinData->caption = $caption;
+                    $newImage->_joinData->created = $newImage->created;
+                    $newImage->_joinData->modified = $newImage->modified;
+                    $this->Events->Images->link($event, [$newImage]);
                 }
-                $weight++;
                 $place++;
             }
         }
-        $imageData = $this->request->getData('data.Image');
+        /*$imageData = $this->request->getData('data.Image');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
                 $newImage = $this->Images->get($imageId);
                 $newImage->_joinData = $this->EventsImages->newEntity();
-                $newImage->_joinData->weight = $weight;
+                $newImage->_joinData->weight = $place + 1;
                 $newImage->_joinData->caption = $caption;
                 $newImage->_joinData->created = $newImage->created;
                 $newImage->_joinData->modified = $newImage->modified;
                 $this->Events->Images->link($event, [$newImage]);
-                $weight++;
                 $place++;
             }
-        }
+        }*/
         $event->dirty('images', true);
     }
     /**
@@ -368,7 +369,6 @@ class EventsController extends AppController
         // Prepare form
         $this->setDatePicker($event);
         $this->setEventForm($event);
-        $this->setImageData($event);
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
@@ -411,6 +411,7 @@ class EventsController extends AppController
                     $event['date'] = $date;
                     $this->setCustomTags($event);
                     $event = $this->setDatesAndTimes($event);
+                    $this->setImageData($event);
                     $event->series_id = $eventSeries->id;
                     $this->Events->save($event, [
                         'associated' => ['EventSeries', 'Images', 'Tags']
@@ -524,7 +525,7 @@ class EventsController extends AppController
      * Edits an event
      *
      * @param int $id id for series
-     * @return void
+     * @return \Cake\Http\Response|null
      */
     public function edit($id = null)
     {
@@ -534,7 +535,6 @@ class EventsController extends AppController
         // Prepare form
         $this->setDatePicker($event);
         $this->setEventForm($event);
-        $this->setImageData($event);
         $users = $this->Users->find('list');
         $categories = $this->Categories->find('list');
         $eventseries = $this->EventSeries->find('list');
@@ -547,19 +547,21 @@ class EventsController extends AppController
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $this->setCustomTags($event);
             $event = $this->setDatesAndTimes($event);
-
+            $this->setImageData($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->getData('date');
                 $this->Flash->success(__('The event has been saved.'));
 
-                return;
+                return $this->redirect('/');
             }
             $this->Flash->error(__('The event could not be saved. Please, try again.'));
 
-            return;
+            return $this->redirect('/');
         }
+
+        return null;
     }
     /**
      * Edits the basic information about an event series

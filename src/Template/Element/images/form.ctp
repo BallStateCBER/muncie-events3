@@ -58,7 +58,7 @@ $helpers = ['Html'];
                           'filename' => $filename,
                           'class' => 'selected_image'
                       ]); ?>
-                      <?= $this->Form->input("newImages[$id]", [
+                      <?= $this->Form->input("data.Image.$id", [
                           'label' => 'Caption:',
                           'div' => false,
                           'type' => 'text',
