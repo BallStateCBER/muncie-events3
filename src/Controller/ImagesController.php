@@ -54,8 +54,8 @@ class ImagesController extends AppController
             $tempFile = $_FILES['Filedata']['tmp_name'];
             $imageId = $this->Images->getNextId();
             $fileParts = pathinfo($_FILES['Filedata']['name']);
-            $filename = $imageId.'.'.strtolower($fileParts['extension']);
-            $targetFile = $uploadDir.$filename;
+            $filename = $imageId . '.' . strtolower($fileParts['extension']);
+            $targetFile = $uploadDir . $filename;
             if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
                 if ($this->Images->autoResize($tempFile)) {
                     if (move_uploaded_file($tempFile, $targetFile)) {
@@ -83,7 +83,7 @@ class ImagesController extends AppController
                             $this->response->withStatus(500);
                             echo 'Error creating thumbnail';
                             if (! empty($this->Images->errors)) {
-                                echo ': '.implode('; ', $this->Images->errors);
+                                echo ': ' . implode('; ', $this->Images->errors);
                             }
                         }
                     } else {
@@ -94,7 +94,7 @@ class ImagesController extends AppController
                     $this->response->withStatus(500);
                     echo 'Error resizing image';
                     if (! empty($this->Images->errors)) {
-                        echo ': '.implode('; ', $this->Images->errors);
+                        echo ': ' . implode('; ', $this->Images->errors);
                     }
                 }
             } else {

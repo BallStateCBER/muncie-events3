@@ -194,6 +194,7 @@ var ImageManager = {
 				// If the image's ID is returned
 				if (intRegex.test(data)) {
 					var image_id = data;
+					console.log(data);
 					ImageManager.selectUnlistedImage(image_id);
 				}
 			},
