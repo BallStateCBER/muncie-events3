@@ -299,19 +299,6 @@ class EventsController extends AppController
                 $place++;
             }
         }
-        /*$imageData = $this->request->getData('data.Image');
-        if ($imageData) {
-            foreach ($imageData as $imageId => $caption) {
-                $newImage = $this->Images->get($imageId);
-                $newImage->_joinData = $this->EventsImages->newEntity();
-                $newImage->_joinData->weight = $place + 1;
-                $newImage->_joinData->caption = $caption;
-                $newImage->_joinData->created = $newImage->created;
-                $newImage->_joinData->modified = $newImage->modified;
-                $this->Events->Images->link($event, [$newImage]);
-                $place++;
-            }
-        }*/
         $event->dirty('images', true);
     }
     /**
