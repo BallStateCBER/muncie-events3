@@ -9,6 +9,25 @@ use Cake\ORM\TableRegistry;
 class MailingListController extends AppController
 {
     /**
+     * Determines whether or not the user is authorized to make the current request
+     *
+     * @param User|null $user User entity
+     * @return bool
+     */
+    public function isAuthorized($user = null)
+    {
+        if (isset($user)) {
+            if ($user['role'] == 'admin') {
+                return true;
+            }
+            if ($this->request->getParam('action') == 'join') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /**
      * Initialization hook method.
      *
      * @return void
@@ -20,7 +39,7 @@ class MailingListController extends AppController
         $this->Categories = TableRegistry::get('Categories');
         $this->Events = TableRegistry::get('Events');
 
-        $this->Auth->allow(['join']);
+        $this->Auth->deny();
     }
 
     /**
@@ -64,7 +83,7 @@ class MailingListController extends AppController
     }
 
     /**
-     * sendWeekly method
+     * sendDaily method
      *
      * @return null;
      */
