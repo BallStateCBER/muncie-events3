@@ -48,6 +48,5 @@ class MailingListControllerTest extends ApplicationTest
         $this->session($this->admin);
         $this->get('/mailing-list/send-weekly');
         $this->assertResponseOk();
-        dd($this->MailingListLog->find()->toArray());
     }
 }
