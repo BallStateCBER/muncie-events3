@@ -453,7 +453,6 @@ class EventsController extends AppController
     public function datepickerPopulatedDates()
     {
         $this->viewbuilder()->setLayout('blank');
-        $this->render('/Pages/blank');
         $results = $this->Events->getPopulatedDates();
         $calDates = [];
         foreach ($results as $result) {
