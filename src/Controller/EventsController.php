@@ -452,13 +452,15 @@ class EventsController extends AppController
      */
     public function datepickerPopulatedDates()
     {
+        $this->viewbuilder()->setLayout('blank');
+        $this->render('/Pages/blank');
         $results = $this->Events->getPopulatedDates();
-        $dates = [];
+        $calDates = [];
         foreach ($results as $result) {
             list($year, $month, $day) = explode('-', $result);
-            $dates["$month-$year"][] = $day;
+            $calDates["$month-$year"][] = $day;
         }
-        $this->set(compact('dates'));
+        $this->set(compact('calDates'));
     }
     /**
      * Shows the events taking place on the specified day

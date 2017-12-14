@@ -1,5 +1,5 @@
 <?php
-    foreach ($dates as $monthYear => $days) {
+    foreach ($calDates as $monthYear => $days) {
         $this->Js->buffer('muncieEvents.populatedDates['.$monthYear.'] = ['.implode(',', $days).'];');
     }
     if (php_sapi_name() == 'cli') {

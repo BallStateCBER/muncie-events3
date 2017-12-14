@@ -784,7 +784,8 @@ class EventsTable extends Table
         $dates = [];
         foreach ($dateResults as $result) {
             if (isset($result['DISTINCT Events']['start'])) {
-                $dates[] = substr($result['DISTINCT Events']['start'], 0, -9);
+                $dst = $this->setDaylightSavings($result['DISTINCT Events']['start']);
+                $dates[] = date('Y-m-d', strtotime($result['DISTINCT Events']['start'] . $dst));
             }
         }
 

@@ -40,6 +40,7 @@ function setupHeaderNav() {
 
 			if (muncieEvents.populatedDates.hasOwnProperty(month_year)) {
                 day = parseInt(day);
+                console.log(muncieEvents.populatedDates[month_year]);
 				var selectable = muncieEvents.populatedDates[month_year].indexOf(day) != -1;
 				var class_name = selectable ? 'has_events' : 'no_events';
 				var tooltip = selectable ? null : 'No events';
