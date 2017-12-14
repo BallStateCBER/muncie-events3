@@ -32,7 +32,7 @@ class MailingListFixture extends TestFixture
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
             [
-                'email' => 'edfox@bsu.edu',
+                'email' => 'ericadeefox@gmail.com',
                 'all_categories' => 1,
                 'weekly' => 0,
                 'daily_sun' => 0,
