@@ -17,7 +17,7 @@ class MailingListFixture extends TestFixture
         parent::init();
         $this->records = [
             [
-                'email' => 'adminplaceholder@bsu.edu',
+                'email' => 'edfox@bsu.edu',
                 'all_categories' => 0,
                 'weekly' => 1,
                 'daily_sun' => 1,
@@ -32,7 +32,7 @@ class MailingListFixture extends TestFixture
                 'modified' => date('Y-m-d', strtotime('Today'))
             ],
             [
-                'email' => 'userplaceholder@bsu.edu',
+                'email' => 'edfox@bsu.edu',
                 'all_categories' => 1,
                 'weekly' => 0,
                 'daily_sun' => 0,

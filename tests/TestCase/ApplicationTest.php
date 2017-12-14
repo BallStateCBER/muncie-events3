@@ -3,6 +3,7 @@ namespace App\Test\TestCase;
 
 use App\Application;
 use App\Test\Fixture\EventsFixture;
+use App\Test\Fixture\MailingListFixture;
 use App\Test\Fixture\UsersFixture;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
@@ -66,6 +67,10 @@ class ApplicationTest extends IntegrationTestCase
     public $eventInSeries3;
     public $regularEvent;
 
+    // mailing list fixtures
+    public $weeklyMailingList;
+    public $dailyMailingList;
+
     // users fixtures
     public $admin;
     public $commoner;
@@ -92,6 +97,10 @@ class ApplicationTest extends IntegrationTestCase
         $this->eventInSeries2 = $eventsFixture->records[1];
         $this->eventInSeries3 = $eventsFixture->records[2];
         $this->regularEvent = $eventsFixture->records[3];
+
+        $mailingListFixture = new MailingListFixture();
+        $this->weeklyMailingList = $mailingListFixture->records[0];
+        $this->dailyMailingList = $mailingListFixture->records[1];
 
         // set up the users fixtures
         $usersFixture = new UsersFixture();

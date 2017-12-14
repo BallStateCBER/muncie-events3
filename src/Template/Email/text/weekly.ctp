@@ -1,3 +1,7 @@
+<?php
+use Cake\Routing\Router;
+
+?>
 Upcoming Events
 brought to you by https://MuncieEvents.com
 

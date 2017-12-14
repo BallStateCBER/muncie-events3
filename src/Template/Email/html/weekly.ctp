@@ -1,3 +1,7 @@
+<?php
+use Cake\Routing\Router;
+
+?>
 <style>
     <?php include(WWW_ROOT.'css'.DS.'email.css'); ?>
 </style>

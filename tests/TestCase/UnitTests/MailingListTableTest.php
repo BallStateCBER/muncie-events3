@@ -124,7 +124,7 @@ class MailingListTableTest extends ApplicationTest
     public function testGetHash()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $hash = $this->MailingList->getHash($mailingListWeekly->id);
         $secondHash = md5('recipient' . $mailingListWeekly->id);
@@ -160,7 +160,7 @@ class MailingListTableTest extends ApplicationTest
     public function testSetWeeklyAsProcessed()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $processed = $this->MailingList->setWeeklyAsProcessed($mailingListWeekly->id, 0);
         $this->assertEquals($processed['new_subscriber'], 0);
@@ -193,7 +193,7 @@ class MailingListTableTest extends ApplicationTest
     public function testFilterEvents()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $mailingListWeekly['all_categories'] = 0;
         $this->MailingList->save($mailingListWeekly);
@@ -239,7 +239,7 @@ class MailingListTableTest extends ApplicationTest
     public function testGetSettingsDisplay()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $display = $this->MailingList->getSettingsDisplay($mailingListWeekly);
         $expected = [
@@ -260,7 +260,7 @@ class MailingListTableTest extends ApplicationTest
     public function testGetWelcomeMessage()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $newRecipient = $this->MailingList->getWelcomeMessage($mailingListWeekly->id);
         $this->assertContains('Thanks for signing up for the Muncie Events', $newRecipient);
@@ -277,7 +277,7 @@ class MailingListTableTest extends ApplicationTest
     public function testSendDaily()
     {
         $mailingListDaily = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
@@ -300,7 +300,7 @@ class MailingListTableTest extends ApplicationTest
     public function testSendWeekly()
     {
         $mailingListWeekly = $this->MailingList->find()
-            ->where(['email' => 'adminplaceholder@bsu.edu'])
+            ->where(['email' => 'edfox@bsu.edu'])
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])

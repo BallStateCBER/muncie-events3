@@ -128,7 +128,7 @@ class MailingListController extends AppController
     public function sendWeekly()
     {
         // Make sure that today is the correct day
-        if (! $this->MailingList['testing_mode'] && ! $this->MailingList->getWeeklyDeliveryDay()) {
+        if (!$this->MailingList->getWeeklyDeliveryDay()) {
             $this->Flash->success('Today is not the day of the week designated for delivering weekly emails.');
 
             return null;

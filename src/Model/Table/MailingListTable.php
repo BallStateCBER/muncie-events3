@@ -679,8 +679,8 @@ class MailingListTable extends Table
                 $eventCategories[] = $event->category_id;
             }
             $this->setWeeklyAsProcessed($recipientId, 3);
-            $message = 'No events to report, resulting from ' . $recipient['email'] . '\'s settings<br>';
-            $message .= 'Selected: ' . $cats . '<br>';
+            $message = 'No events to report, resulting from ' . $recipient['email'] . '\'s settings. ';
+            $message .= 'Selected: ' . print_r($cats) . ' ';
             $message .= 'Available: ' . (empty($eventCategories) ? 'None' : implode(',', $eventCategories));
 
             return [false, $message];
