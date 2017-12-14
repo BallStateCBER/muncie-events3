@@ -20,9 +20,10 @@ class MailingListController extends AppController
             if ($user['role'] == 'admin') {
                 return true;
             }
-            if ($this->request->getParam('action') == 'join') {
-                return true;
-            }
+        }
+        $actions = ['join', 'settings'];
+        if (in_array($this->request->getParam('action'), $actions)) {
+            return true;
         }
 
         return false;
@@ -39,7 +40,7 @@ class MailingListController extends AppController
         $this->Categories = TableRegistry::get('Categories');
         $this->Events = TableRegistry::get('Events');
 
-        $this->Auth->deny();
+        $this->Auth->allow(['join', 'settings']);
     }
 
     /**

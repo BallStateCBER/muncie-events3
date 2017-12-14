@@ -35,11 +35,10 @@ class MailingListControllerTest extends ApplicationTest
         $this->session($this->admin);
         $this->get('/mailing-list/send-daily');
         $this->assertResponseOk();
-    #    dd($this->MailingListLog->find()->toArray());
     }
 
     /**
-     * test sendDaily method
+     * test sendWeekly method
      *
      * @return void
      */
@@ -47,6 +46,54 @@ class MailingListControllerTest extends ApplicationTest
     {
         $this->session($this->admin);
         $this->get('/mailing-list/send-weekly');
+        $this->assertResponseOk();
+    }
+
+    /**
+     * test join method
+     *
+     * @return void
+     */
+    public function testJoin()
+    {
+        $this->get('/mailing-list/join');
+        $this->assertResponseOk();
+    }
+
+    /**
+     * test resetProcessedTime method
+     *
+     * @return void
+     */
+    public function testResetProcessedTime()
+    {
+        $this->session($this->admin);
+        $this->get('/mailing-list/reset-processed-time');
+        $this->assertResponseOk();
+    }
+
+    /**
+     * test bulkAdd method
+     *
+     * @return void
+     */
+    public function testBulkAdd()
+    {
+        $this->session($this->admin);
+        $this->get('/mailing-list/bulk-add');
+        $this->assertResponseOk();
+    }
+
+    /**
+     * test settings method
+     *
+     * @return void
+     */
+    public function testSettings()
+    {
+        $recipientId = $this->dailyMailingList['id'];
+        $hash = $this->MailingList->getHash($recipientId);
+        $this->get("/mailing-list/settings/$recipientId/$hash");
         $this->assertResponseOk();
     }
 }
