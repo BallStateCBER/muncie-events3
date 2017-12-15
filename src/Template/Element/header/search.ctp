@@ -11,7 +11,10 @@
             'url' => array_merge(['controller' => 'events', 'action' => 'search'], $this->request->params['pass'])
         ]);
     ?>
-    <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" />
+    <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" alt="Loading..." />
+    <label class="sr-only" for="filter">
+        Search events
+    </label>
     <?= $this->Form->input('filter', [
         'label' => false,
         'class' => 'form-control',
@@ -28,6 +31,9 @@
             </button>
             <div id="search_options" class="collapse" aria-labelledby="search_options_toggler">
                 <div>
+                    <label class="sr-only" for="direction">
+                        Direction of events
+                    </label>
                     <?= $this->Form->input('direction', [
                         'options' => [
                             'future' => 'Upcoming Events',

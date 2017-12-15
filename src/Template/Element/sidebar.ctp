@@ -117,9 +117,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
 
     <div id="sidebar_mailinglist">
         <h2>
-            <?= $this->Html->link('Mailing List', [
-                'controller' => 'mailing_list', 'action' => 'join', 'plugin' => false
-            ]); ?>
+            Mailing List
         </h2>
         <p>
             <?= $this->Html->link('Join the Mailing List', ['plugin' => false, 'controller' => 'mailing_list', 'action' => 'join']); ?>
@@ -130,9 +128,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
 
     <div id="sidebar_widget">
         <h2>
-            <?= $this->Html->link('Calendar Widgets', [
-                'controller' => 'widgets', 'action' => 'index', 'plugin' => false
-            ]); ?>
+            Calendar Widgets
         </h2>
         <p>
             Join our event promotion network by displaying a free

@@ -15,7 +15,8 @@ $url = Router::url([
                     echo $this->Calendar->thumbnail('tiny', [
                         'filename' => $image->filename,
                         'caption' => $image->caption,
-                        'group' => 'event'.$event->id.'_tiny_tn'
+                        'group' => 'event'.$event->id.'_tiny_tn',
+                        'alt' => $event->title
                     ]);
                 }
             ?>
@@ -57,7 +58,8 @@ $url = Router::url([
                         <?= $this->Calendar->thumbnail('small', [
                             'filename' => $image['filename'],
                             'caption' => $image->caption,
-                            'group' => 'event'.$event->id
+                            'group' => 'event'.$event->id,
+                            'alt' => $event->title
                         ]); ?>
                         <?php if ($image->caption): ?>
                             <span class="caption">
