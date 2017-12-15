@@ -73,7 +73,10 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
             </h2>
             <?php if (count($sidebarVars['locations']) > 0): ?>
                 <form id="sidebar_select_location">
-                    <select class='form-control'>
+                    <label class="sr-only" for="locations">
+                        Select a location
+                    </label>
+                    <select class='form-control' name="locations">
                         <option value="">
                             Select a location...
                         </option>
