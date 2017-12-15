@@ -51,6 +51,9 @@
             <div class="borders">
                 <?= $this->element('widgets/customize/borders'); ?>
                 <div class="form-control">
+                    <label class="sr-only" for="outerBorder">
+                        Border around widget
+                    </label>
                     <input type="checkbox" name="outerBorder" checked="checked" value="1" class="option" /> Border around widget
                 </div>
             </div>
