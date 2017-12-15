@@ -195,6 +195,10 @@ class MailingListController extends AppController
         // All event types
         // If the user did not select 'all events', but has each category individually selected, set 'all_categories' to true
         $allCatSelected = ($mailingList['event_categories'] == 'all');
+        if ($allCatSelected) {
+            $mailingList->all_categories = 1;
+        }
+
         if (!$allCatSelected) {
             $selectedCatCount = count($mailingList['selected_categories']);
             $allCatCount = $this->Categories->find()->count();
@@ -206,17 +210,28 @@ class MailingListController extends AppController
             }
         }
 
-        // Daily frequency
+        if ($mailingList['frequency'] == 'weekly') {
+            $mailingList->weekly = 1;
+        }
+
         $days = $this->MailingList->getDays();
-        foreach ($days as $code => $day) {
-            $dailyCode = 'daily_' . $code;
-            $value = $mailingList->$dailyCode;
-            $mailingList->$dailyCode = $value;
+        if ($mailingList['frequency'] == 'daily') {
+            foreach ($days as $code => $day) {
+                $dailyCode = 'daily_' . $code;
+                $mailingList->$dailyCode = 1;
+            }
+        }
+        if ($mailingList['frequency'] == 'custom') {
+            foreach ($days as $code => $day) {
+                $dailyCode = 'daily_' . $code;
+                $value = $mailingList->$dailyCode;
+                $mailingList->$dailyCode = $value;
+            }
         }
 
         $mailingList->new_subscriber = 1;
-
         return $mailingList;
+
     }
 
     /**
@@ -281,9 +296,12 @@ class MailingListController extends AppController
         // Finally, let's just say someone wants all events
         if ($mailingList->all_categories) {
             foreach ($allCategories as $cat) {
+                $fullCat = $this->Categories->find()
+                    ->where(['name' => $cat])
+                    ->first();
                 $newJoin = $this->CategoriesMailingList->newEntity();
                 $newJoin->mailing_list_id = $mailingList->id;
-                $newJoin->category_id = $cat->id;
+                $newJoin->category_id = $fullCat->id;
                 $this->CategoriesMailingList->save($newJoin);
             }
         }
@@ -497,8 +515,18 @@ class MailingListController extends AppController
         }
 
         if ($this->request->is('post')) {
+            //unset the recipient
+            $recipient->all_categories = null;
+            $recipient->weekly = null;
+            $days = $this->MailingList->getDays();
+            foreach ($days as $code => $day) {
+                $dailyCode = 'daily_' . $code;
+                $recipient->$dailyCode = null;
+            }
+            $recipient->modified = date('Y-m-d H:i:s');
+            $this->MailingList->save($recipient);
+
             // Unsubscribe
-            #dd($this->request->getData('unsubscribe'));
             if ($this->request->getData('unsubscribe') == 1) {
                 return $this->unsubscribePr($recipientId);
             }

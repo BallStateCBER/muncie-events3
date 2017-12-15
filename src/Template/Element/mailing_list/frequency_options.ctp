@@ -6,6 +6,55 @@
         ];
         $this->Form->setTemplates($formTemplate);
     ?>
+    <?php echo $this->Form->input(
+        'frequency',
+        [
+            'type' => 'radio',
+            'options' => [
+                'weekly' => 'Weekly (Thursday, next week\'s events)'
+            ],
+            'class' => 'frequency_options',
+            'div' => [
+                'class'=>'form-control mailing-options'
+            ],
+            'legend' => false,
+            'label' => false,
+            'hiddenField' => false,
+            'selected' => true
+        ]
+    ); ?>
+    <?php echo $this->Form->input(
+        'frequency',
+        [
+            'type' => 'radio',
+            'options' => [
+                'daily' => 'Daily (Every morning, today\'s events)'
+            ],
+            'class' => 'frequency_options',
+            'div' => [
+                'class'=>'form-control mailing-options'
+            ],
+            'legend' => false,
+            'hiddenField' => false,
+            'label' => false
+        ]
+    ); ?>
+    <?php echo $this->Form->input(
+        'frequency',
+        [
+            'type' => 'radio',
+            'options' => [
+                'custom' => 'Custom'
+            ],
+            'class' => 'frequency_options',
+            'div' => [
+                'class'=>'form-control mailing-options'
+            ],
+            'legend' => false,
+            'hiddenField' => false,
+            'label' => false
+        ]
+    ); ?>
     <div id="custom_frequency_options">
         <?php if (isset($frequency_error)): ?>
             <div class="error">

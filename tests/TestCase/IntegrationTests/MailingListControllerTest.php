@@ -156,14 +156,15 @@ class MailingListControllerTest extends ApplicationTest
 
         $formData = [
             'email' => 'americageepox@gmail.com',
-            'weekly' => 1,
+            'frequency' => 'weekly',
+            'weekly' => 0,
             'daily_sun' => 0,
             'daily_mon' => 0,
             'daily_tue' => 0,
             'daily_wed' => 0,
-            'daily_thu' => 1,
+            'daily_thu' => 0,
             'daily_fri' => 0,
-            'daily_sat' => 1,
+            'daily_sat' => 0,
             'event_categories' => 'custom',
             'selected_categories' => [
                 1 => 1
@@ -171,6 +172,11 @@ class MailingListControllerTest extends ApplicationTest
             'unsubscribe' => 0
         ];
         $this->post($url, $formData);
+
+        $this->MailingList->find()
+            ->where(['id' => $recipientId['id']])
+            ->andWhere(['weekly' => 1])
+            ->firstOrFail();
 
         // making sure the original joinData was unset
         $this->CategoriesMailingList->find()

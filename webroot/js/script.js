@@ -368,13 +368,13 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-/*function MailingListToggleFreqOptions() {
+function MailingListToggleFreqOptions() {
     if ($('#frequency-custom').is(':checked')) {
         $('#custom_frequency_options').slideDown(300);
     } else {
         $('#custom_frequency_options').slideUp(300);
     }
-}*/
+}
 
 function MailingListToggleEventTypeOptions() {
     if ($('#event-categories-custom').is(':checked')) {
@@ -396,9 +396,9 @@ function setupMailingListForm() {
 //    MailingListToggleFreqOptions();
     MailingListToggleEventTypeOptions();
     MailingListToggleBasicOptions();
-/*    $('.frequency_options').change(function(event) {
+    $('.frequency_options').change(function(event) {
         MailingListToggleFreqOptions();
-    }); */
+    });
     $('.category_options').change(function(event) {
         MailingListToggleEventTypeOptions();
     });
