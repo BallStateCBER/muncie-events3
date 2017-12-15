@@ -55,6 +55,9 @@
                 </th>
                 <td>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
+                        <label class="sr-only" for="title">
+                            Title
+                        </label>
                         <?= $this->Form->control('title', [
                             'class' => 'form-control',
                             'label' => false
@@ -68,6 +71,9 @@
                 </th>
                 <td>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
+                        <label class="sr-only" for="category_id">
+                            Category
+                        </label>
                         <?= $this->Form->control('category_id', [
                             'class' => 'form-control',
                             'label' => false,
@@ -116,6 +122,9 @@
             <?php if ($has['series']): ?>
                 <tr id="series_row">
                     <th>Series Name</th>
+                    <label class="sr-only" for="series_title">
+                        Series Name
+                    </label>
                     <td>
                         <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                             <?= $this->Form->input('series_title', [
@@ -135,6 +144,15 @@
                     Time
                 </th>
                 <td>
+                    <label class="sr-only" for="time_start.hour">
+                        Hour
+                    </label>
+                    <label class="sr-only" for="time_start.minute">
+                        Minute
+                    </label>
+                    <label class="sr-only" for="time_start.meridian">
+                        AM or PM
+                    </label>
                     <div id="eventform_timestart_div" class="form-group col-md-10 col-xs-12">
                         <?= $this->Form->time('time_start', [
                             'label' => false,
@@ -156,6 +174,15 @@
                         </span>
                     </div>
                     <div id="eventform_hasendtime" class="form-group col-md-10 col-xs-12" <?php if (!$has['end_time']): ?>style="display: none;"<?php endif; ?>>
+                        <label class="sr-only" for="time_end[hour]">
+                            Hour
+                        </label>
+                        <label class="sr-only" for="time_end.minute">
+                            Minute
+                        </label>
+                        <label class="sr-only" for="time_end.meridian">
+                            AM or PM
+                        </label>
                         <?php
                             if (isset($event['time_end'])) {
                                 $selected_end_time = ($event['time_end'] == '00:00:00')
@@ -163,11 +190,12 @@
                                     : $event['time_end'];
                             }
                             echo $this->Form->time('time_end', [
-                                'label' => false,
+                                #'label' => false,
                                 'interval' => 5,
                                 'timeFormat' => '12',
                                 'hour' => [
-                                    'class' => 'form-control event_time_form'
+                                    'class' => 'form-control event_time_form',
+                                    'label' => true
                                 ],
                                 'minute' => [
                                     'class' => 'form-control event_time_form'
@@ -190,6 +218,9 @@
                     Location
                 </th>
                 <td>
+                    <label class="sr-only" for="location">
+                        Location
+                    </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('location', [
                             'class' => 'form-control',
@@ -209,6 +240,9 @@
                     Address
                 </th>
                 <td>
+                    <label class="sr-only" for="address">
+                        Address
+                    </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->control('address', [
                             'class' => 'form-control',
@@ -223,6 +257,9 @@
                     Description
                 </th>
                 <td>
+                    <label class="sr-only" for="address">
+                        Description
+                    </label>
                     <script src="/emojione/lib/js/emojione.min.js"></script>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->CKEditor->loadJs(); ?>
@@ -274,6 +311,9 @@
             <tr id="eventform_hascost"<?= (!$has['cost']) ? ' style="display: none;"' : ''; ?>>
                 <th>Cost</th>
                 <td>
+                    <label class="sr-only" for="Cost">
+                        Cost
+                    </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('cost', [
                             'maxLength' => 200,
@@ -296,6 +336,9 @@
             <tr id="eventform_hasages"<?= (!$has['ages']) ? ' style="display: none;"' : ''; ?>>
                 <th>Age Restriction</th>
                 <td>
+                    <label class="sr-only" for="age_restriction">
+                        Age Restriction
+                    </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('age_restriction', [
                             'label' => false,
@@ -318,6 +361,9 @@
             <tr id="eventform_hassource"<?= (!$has['source']) ? ' style="display: none;"' : ''; ?>>
                 <th>Source</th>
                 <td>
+                    <label class="sr-only" for="source">
+                        Source
+                    </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->Form->input('source', [
                             'label' => false,
@@ -338,7 +384,11 @@
                 </tr>
             <?php endif; ?>
             <tr>
-                <th></th>
+                <th>
+                    <label class="sr-only" for="submit">
+                        Ready to Submit?
+                    </label>
+                </th>
                 <td>
                     <?= $this->Form->submit('Submit', ['class'=>'btn btn-secondary']) ?>
                 </td>
