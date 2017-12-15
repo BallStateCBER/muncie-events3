@@ -230,8 +230,8 @@ class MailingListController extends AppController
         }
 
         $mailingList->new_subscriber = 1;
-        return $mailingList;
 
+        return $mailingList;
     }
 
     /**
