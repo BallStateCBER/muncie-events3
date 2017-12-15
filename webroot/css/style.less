@@ -8,7 +8,7 @@
 @LayoutBorderWidth: 2px;
 @LayoutBorderRadius: 5px;
 @LayoutBoxShadow: -4px 4px 5px rgba(50, 50, 50, 0.5);
-@LayoutHighlightColor: #CD5128;        /* Orange */
+@LayoutHighlightColor: #C85028;        /* Orange */ // #C85028 for AA, #913A1D for AAA
 @HeaderTextShadow: -1px 1px 1px rgba(0, 0, 0, 0.25);
 @LinkColor: #0B54A6;
 @LinkColorHover: #BA3D1A;
@@ -1117,7 +1117,7 @@ ul.event_accordion {
 
         &:hover {
             .title {
-                color: @LinkColorHover;
+                color: @LayoutHighlightColor;
                 text-decoration: underline;
             }
             i.icon {
