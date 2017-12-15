@@ -56,7 +56,8 @@ class MailingListControllerTest extends ApplicationTest
      */
     public function testJoin()
     {
-        $this->get('/mailing-list/join');
+        $url = '/mailing-list/join';
+        $this->get($url);
         $this->assertResponseOk();
         $formData = [
             'email' => 'placeholder@bsu.edu',
@@ -75,7 +76,7 @@ class MailingListControllerTest extends ApplicationTest
                 2 => 1
             ]
         ];
-        $this->post('/mailing-list/join', $formData);
+        $this->post($url, $formData);
         $mailingList = $this->MailingList->find()
             ->where(['email' => $formData['email']])
             ->firstOrFail();
@@ -89,6 +90,29 @@ class MailingListControllerTest extends ApplicationTest
             ->count();
 
         $this->assertEquals(2, $joins);
+
+        // let's test all the other ways people can sign up that basically amount to the same thing
+        $formData['event_categories'] = 'custom';
+        $formData['selected_categories'] = [
+            1 => 1,
+            2 => 1
+        ];
+        $this->post($url, $formData);
+        $mailingList = $this->MailingList->find()
+            ->where(['email' => $formData['email']])
+            ->firstOrFail();
+        $this->assertTrue($mailingList['all_categories']);
+
+        $formData['event_categories'] = 'all';
+        $formData['selected_categories'] = [
+            1 => 0,
+            2 => 0
+        ];
+        $this->post($url, $formData);
+        $mailingList = $this->MailingList->find()
+            ->where(['email' => $formData['email']])
+            ->firstOrFail();
+        $this->assertTrue($mailingList['all_categories']);
     }
 
     /**
@@ -126,7 +150,52 @@ class MailingListControllerTest extends ApplicationTest
             ->where(['email' => 'ericadeefox@gmail.com'])
             ->firstOrFail();
         $hash = $this->MailingList->getHash($recipientId['id']);
-        $this->get("/mailing-list/settings/$recipientId/$hash");
-        #$this->assertResponseOk();
+        $url = "/mailing-list/settings/" . $recipientId['id'] . "/" . $hash;
+        $this->get($url);
+        $this->assertResponseOk();
+
+        $formData = [
+            'email' => 'americageepox@gmail.com',
+            'weekly' => 1,
+            'daily_sun' => 0,
+            'daily_mon' => 0,
+            'daily_tue' => 0,
+            'daily_wed' => 0,
+            'daily_thu' => 1,
+            'daily_fri' => 0,
+            'daily_sat' => 1,
+            'event_categories' => 'custom',
+            'selected_categories' => [
+                1 => 1
+            ],
+            'unsubscribe' => 0
+        ];
+        $this->post($url, $formData);
+
+        // making sure the original joinData was unset
+        $this->CategoriesMailingList->find()
+            ->where(['mailing_list_id' => $recipientId['id']])
+            ->andWhere(['category_id' => 1])
+            ->firstOrFail();
+
+        $delJoin = $this->CategoriesMailingList->find()
+            ->where(['mailing_list_id' => $recipientId['id']])
+            ->andWhere(['category_id' => 2])
+            ->first();
+        $this->assertNull($delJoin);
+
+        // actually what if you want to unsubscribe
+        $formData['unsubscribe'] = 1;
+        $this->post($url, $formData);
+
+        $delUser = $this->MailingList->find()
+            ->where(['id' => $recipientId['id']])
+            ->first();
+        $this->assertNull($delUser);
+
+        $delJoin = $this->CategoriesMailingList->find()
+            ->where(['mailing_list_id' => $recipientId['id']])
+            ->first();
+        $this->assertNull($delJoin);
     }
 }

@@ -20,7 +20,12 @@ class CategoriesMailingListFixture extends TestFixture
                 'id' => 1,
                 'mailing_list_id' => 1,
                 'category_id' => 1
-            ]
+            ],
+            [
+            'id' => 2,
+            'mailing_list_id' => 2,
+            'category_id' => 2
+        ]
         ];
     }
     /**

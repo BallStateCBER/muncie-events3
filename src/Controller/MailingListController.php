@@ -215,7 +215,6 @@ class MailingListController extends AppController
         }
 
         $mailingList->new_subscriber = 1;
-        $mailingList->all_categories = 1;
 
         return $mailingList;
     }
@@ -260,6 +259,14 @@ class MailingListController extends AppController
                 }
             }
             if ($selectedCatCount != $allCatCount) {
+                // unset the categories so that there's no duplicates
+                $cats = $this->CategoriesMailingList->find()
+                    ->where(['mailing_list_id' => $mailingList->id])
+                    ->toArray();
+                foreach ($cats as $cat) {
+                    $del = $this->CategoriesMailingList->get($cat->id);
+                    $this->CategoriesMailingList->delete($del);
+                }
                 foreach ($mailingList['selected_categories'] as $key => $scat) {
                     if ($scat) {
                         $newJoin = $this->CategoriesMailingList->newEntity();
@@ -380,12 +387,14 @@ class MailingListController extends AppController
     {
         $recipient = $this->MailingList->get($recipientId);
         if ($this->MailingList->delete($recipient)) {
-            // Un-associate associated User
-            // $userId = $this->User->field('id', array('mailing_list_id' => $recipientId));
-            // if ($userId) {
-            //    $this->User->id = $userId;
-            //    $this->User->saveField('mailing_list_id', null);
-            // }
+            // get rid of the cat joins as well
+            $joins = $this->CategoriesMailingList->find()
+                ->where(['mailing_list_id' => $recipientId])
+                ->toArray();
+            foreach ($joins as $join) {
+                $del = $this->CategoriesMailingList->get($join['id']);
+                $this->CategoriesMailingList->delete($del);
+            }
             $this->Flash->success('You have been removed from the mailing list.');
 
             return null;
@@ -409,7 +418,7 @@ class MailingListController extends AppController
         if ($recipientId) {
             $emailInUse = $this->MailingList->find()
                 ->where(['email' => $this->request->getData('email')])
-                ->andWhere(['id NOT' => $recipientId])
+                ->andWhere(['id IS NOT' => $recipientId])
                 ->count();
             if ($emailInUse) {
                 $noErrors = false;
@@ -489,11 +498,14 @@ class MailingListController extends AppController
 
         if ($this->request->is('post')) {
             // Unsubscribe
-            if ($this->request->getData('unsubscribe')) {
+            #dd($this->request->getData('unsubscribe'));
+            if ($this->request->getData('unsubscribe') == 1) {
                 return $this->unsubscribePr($recipientId);
             }
 
+            $recipient = $this->MailingList->patchEntity($recipient, $this->request->getData());
             $this->readFormDataPr($recipient);
+            $this->addCategoryJoins($recipient);
 
             // If there's an associated user, update its email too
             $userId = $this->Users->getIdFromEmail($recipient->email);

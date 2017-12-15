@@ -20,7 +20,9 @@
         <fieldset>
             <legend>Email Address</legend>
             <?= $this->Form->input('email', [
-                'label' => 'Email'
+                'label' => 'Email',
+                'value' => $recipient['email'],
+                'class' => 'form-control'
             ]); ?>
         </fieldset>
 
@@ -38,13 +40,8 @@
             ); ?>
         </fieldset>
 
-        <?= $this->Js->submit('Update', [
+        <?= $this->Form->submit('Update', [
             'class' => 'btn btn-secondary btn-sm',
-            'update' => '#mailing_list_settings',
-            'evalScripts' => true,
-            'before' => 'return mailingListFormValidate();'
         ]); ?>
     </div>
-
-    <?php $this->Js->buffer("setupMailingListForm();"); ?>
 <?php endif ?>
