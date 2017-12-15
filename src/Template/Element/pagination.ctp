@@ -2,6 +2,23 @@
 if ($this->request->action) {
     $slug = '';
 }
+
+$detail = '';
+$direction = strtolower($direction);
+$trait = '';
+if ($this->request->getParam('action') == 'location') {
+    $detail = $location;
+    $trait = 'at';
+}
+if ($this->request->getParam('action') == 'tag') {
+    $detail = '"' . $tag['name'] . '"';
+    $trait = 'tagged as';
+}
+
+$count = $this->Paginator->counter(['format' => __('{{current}}')]);
+$count = intval($count);
+$s = $count == 1 ? '' : 's';
+
 $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
     $currentPage = $this->Paginator->counter(['format' => '{{page}}']);
     $paginatorUrl = urldecode($this->Url->build([
@@ -14,11 +31,11 @@ $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
     <ul class="pagination">
         <?php
             $first = $this->Paginator->first("&laquo; First", ["escape" => false, "class" => "page-link"]);
-            echo $first ? $first : "<span class='page-link'>&laquo; First</span>";
+            echo $first ? $first : '<span class="page-link">&laquo; First</span>';
         ?>
         <?php
             $prev = $this->Paginator->prev("&lsaquo; Prev", ["escape" => false, "class" => "page-link"]);
-            echo $prev ? $prev : "<span class='page-link'>&lsaquo; Prev</span>";
+            echo $this->Paginator->hasPrev() ? $prev : '<span class="page-link">&lsaquo; Prev</span>';
         ?>
         <select class="paginator_select custom-select" data-url="<?= $paginatorUrl; ?>">
             <?php for ($p = 1; $p <= $totalPages; $p++): ?>
@@ -30,12 +47,12 @@ $totalPages = $this->Paginator->counter(['format' => '{{pages}}']);
         <?php $this->Js->buffer("setupPagination();"); ?>
         <?php
             $next = $this->Paginator->next("Next &rsaquo;", ["escape" => false, "class" => "page-link"]);
-            echo $next ? $next : "<span class='page-link'>Next &rsaquo;</span>";
+            echo $this->Paginator->hasNext() ? $next : '<span class="page-link">Next &rsaquo;</span>';
         ?>
         <?php
             $last = $this->Paginator->last("Last &raquo;", ["escape" => false, "class" => "page-link"]);
-            echo $last ? $last : "<span class='page-link'>Last &raquo;</span>";
+            echo $last ? $last : '<span class="page-link">Last &raquo;</span>';
         ?>
     </ul>
-    <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+    <p><?= $this->Paginator->counter(['format' => __("Showing $count $direction event$s $trait $detail")]) ?></p>
 </div>
