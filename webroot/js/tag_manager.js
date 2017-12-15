@@ -39,7 +39,7 @@ var TagManager = {
             // Bullet point
             if (has_children) {
                 var collapsed_icon = $('<a href="#" title="Click to expand/collapse"></a>');
-                collapsed_icon.append('<img src="/img/icons/menu-collapsed.png" class="expand_collapse" />');
+                collapsed_icon.append('<img src="/img/icons/menu-collapsed.png" class="expand_collapse" alt="Un-collapse this menu" />');
                 (function(children) {
                     collapsed_icon.click(function(event) {
                         event.preventDefault();
