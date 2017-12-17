@@ -252,6 +252,7 @@ class CalendarHelper extends Helper
         if (!file_exists($reducedPath)) {
             return '';
         }
+        $caption = isset($params['caption']) ?: $filename;
         $fullPath = Configure::read('App.eventImagePath') . DS . 'full' . DS . $filename;
         $class = "thumbnail tn_$type";
         if (isset($params['class'])) {
@@ -260,7 +261,7 @@ class CalendarHelper extends Helper
 
         // Reduced image
         $url = Configure::read('App.eventImageBaseUrl') . $type . '/' . $filename;
-        $image = '<img src="' . $url . '" class="' . $class . '" />';
+        $image = '<img src="' . $url . '" class="' . $class . '" alt="' . $caption . '"/>';
 
         if (!file_exists($fullPath)) {
             return $image;
