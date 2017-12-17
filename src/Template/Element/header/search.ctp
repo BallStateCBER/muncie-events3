@@ -12,7 +12,7 @@
         ]);
     ?>
     <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" alt="Loading..." />
-    <label class="sr-only" for="filter">
+    <label class="sr-only" for="EventFilter">
         Search events
     </label>
     <?= $this->Form->input('filter', [

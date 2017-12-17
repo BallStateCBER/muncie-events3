@@ -226,6 +226,9 @@
                             'class' => 'form-control',
                             'label' => false
                         ]); ?>
+                        <label class="sr-only" for="location_details">
+                            Location details
+                        </label>
                         <?= $this->Form->control('location_details', [
                             'class' => 'form-control',
                             'label' => false,

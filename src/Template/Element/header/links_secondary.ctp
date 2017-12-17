@@ -24,5 +24,5 @@
         <?= $this->Html->link(__('Contact'), ['controller' => 'Pages', 'action' => 'contact'], ['class' => 'nav-link']); ?>
     </li>
     <li class="<?= (($this->request->params['controller']=='Pages') && ($this->request->params['action']=='about'))?'active ' :'' ?>nav-item">
-        <?= $this->Html->link(__('About'), ['controller' => 'Pages', 'action' => 'about'], ['class' => 'nav-link']); ?>
+        <?= $this->Html->link(__('About Muncie Events'), ['controller' => 'Pages', 'action' => 'about'], ['class' => 'nav-link']); ?>
     </li>

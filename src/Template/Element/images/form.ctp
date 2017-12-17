@@ -17,11 +17,11 @@ $helpers = ['Html'];
     <div id="accordion" role="tablist" aria-multiselectable="true">
       <div class="card">
         <div class="card-header" role="tab" id="image_upload_heading">
-          <h5 class="mb-0">
+          <span class="mb-0">
             <a id="image_upload_toggler" data-toggle="collapse" data-parent="#accordion" href="#image_upload_container" aria-expanded="false" aria-controls="image_upload_container">
               Upload new image
             </a>
-          </h5>
+          </span>
         </div>
 
         <div id="image_upload_container" class="collapse" role="tabpanel" aria-labelledby="image_upload_heading">
@@ -32,11 +32,11 @@ $helpers = ['Html'];
       </div>
       <div class="card">
         <div class="card-header" role="tab" id="image_select_heading">
-          <h5 class="mb-0">
+          <span class="mb-0">
             <a id="image_select_toggler" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#image_select_container" aria-expanded="false" aria-controls="image_select_container">
               Select a previously uploaded image
             </a>
-          </h5>
+          </span>
         </div>
         <div id="image_select_container" class="collapse" role="tabpanel" aria-labelledby="image_select_heading">
         </div>
@@ -72,15 +72,15 @@ $helpers = ['Html'];
       </ul>
       <div class="card">
         <div class="card-header" role="tab" id="image_help_heading">
-          <h5 class="mb-0">
+          <span class="mb-0">
             <a id="image_help_toggler" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#image_help_container" aria-expanded="false" aria-controls="image_help_container">
               Help & rules
             </a>
-          </h5>
+          </span>
         </div>
         <div id="image_help_container" class="collapse" role="tabpanel" aria-labelledby="image_help_heading">
           <div class="card-block">
-            <h3>Uploading</h3>
+            <span>Uploading</span>
                   <ul class="footnote">
                       <li>Images must be .jpg, .jpeg, .gif, or .png.</li>
                       <li>Each file cannot exceed <?= $manual_filesize_limit; ?>B</li>
@@ -89,7 +89,7 @@ $helpers = ['Html'];
                       <li>Images must not include offensive language, nudity, or graphic violence</li>
                   </ul>
 
-                  <h3>After selecting images</h3>
+                  <span>After selecting images</span>
                   <ul class="footnote">
                       <li>
                           The first image will be displayed as the event's main image.
