@@ -125,34 +125,31 @@ $userId = $this->request->session()->read('Auth.User.id');
     </div>
     <?php if ($userRole == 'admin' && !$event['approved_by']): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/tick.png').'Approve',
+            $this->Html->image('/img/icons/tick.png', ['alt' => 'Approve this event']).'Approve',
             [
                 'controller' => 'events',
                 'action' => 'approve',
-                'id' => $event['id'],
-                'alt' => 'Approve this event'
+                'id' => $event['id']
             ],
             ['escape' => false]
         ); ?>
     <?php endif; ?>
     <?php if ($canEdit): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/pencil.png').'Edit',
+            $this->Html->image('/img/icons/pencil.png', ['alt' => 'Edit this event']).'Edit',
             [
                 'controller' => 'events',
                 'action' => 'edit',
-                'id' => $event['id'],
-                'alt' => 'Edit this event'
+                'id' => $event['id']
             ],
             ['escape' => false]
         ); ?>
         <?php echo $this->Form->postLink(
-            $this->Html->image('/img/icons/cross.png').'Delete',
+            $this->Html->image('/img/icons/cross.png', ['alt' => 'Delete this event']).'Delete',
             [
                 'controller' => 'events',
                 'action' => 'delete',
-                'id' => $event['id'],
-                'alt' => 'Delete this event'
+                'id' => $event['id']
             ],
             [
                     'confirm' => 'Are you sure you want to delete this event?',
