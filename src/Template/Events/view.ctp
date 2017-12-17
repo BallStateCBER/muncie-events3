@@ -101,7 +101,8 @@ use Cake\Utility\Inflector;
                     <?= $this->Calendar->thumbnail('small', [
                         'filename' => $image->filename,
                         'caption' => $image->caption,
-                        'group' => 'event'.$event->id
+                        'group' => 'event'.$event->id,
+                        'alt' => $image->caption
                     ]); ?>
                     <?php if ($image->caption): ?>
                         <span class="caption">

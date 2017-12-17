@@ -59,7 +59,7 @@ $url = Router::url([
                             'filename' => $image['filename'],
                             'caption' => $image->caption,
                             'group' => 'event'.$event->id,
-                            'alt' => $event->title
+                            'alt' => $image->caption
                         ]); ?>
                         <?php if ($image->caption): ?>
                             <span class="caption">

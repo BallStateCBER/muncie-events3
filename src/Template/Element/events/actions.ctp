@@ -23,12 +23,14 @@ $userId = $this->request->session()->read('Auth.User.id');
         'app_id' => '496726620385625'
     ]); ?-->
     <div class="export_options_container">
-        <?php echo $this->Html->link(
+        <?php $alt = 'Export to another calendar application';
+            echo $this->Html->link(
             $this->Html->image('/img/icons/calendar--arrow.png').'Export',
             "#" . $event['id'] . "_options",
             [
                 'escape' => false,
-                'title' => 'Export to another calendar application',
+                'title' => $alt,
+                'alt' => $alt,
                 'id' => 'export_event_'.$event['id'],
                 'class' => 'export_options_toggler',
                 'aria-expanded' => 'false',
@@ -127,7 +129,8 @@ $userId = $this->request->session()->read('Auth.User.id');
             [
                 'controller' => 'events',
                 'action' => 'approve',
-                'id' => $event['id']
+                'id' => $event['id'],
+                'alt' => 'Approve this event'
             ],
             ['escape' => false]
         ); ?>
@@ -138,7 +141,8 @@ $userId = $this->request->session()->read('Auth.User.id');
             [
                 'controller' => 'events',
                 'action' => 'edit',
-                'id' => $event['id']
+                'id' => $event['id'],
+                'alt' => 'Edit this event'
             ],
             ['escape' => false]
         ); ?>
@@ -147,7 +151,8 @@ $userId = $this->request->session()->read('Auth.User.id');
             [
                 'controller' => 'events',
                 'action' => 'delete',
-                'id' => $event['id']
+                'id' => $event['id'],
+                'alt' => 'Delete this event'
             ],
             [
                     'confirm' => 'Are you sure you want to delete this event?',
