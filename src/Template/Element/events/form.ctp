@@ -122,7 +122,7 @@
             <?php if ($has['series']): ?>
                 <tr id="series_row">
                     <th>Series Name</th>
-                    <label class="sr-only" for="series_title">
+                    <label class="sr-only" for="EventSeriesTitle">
                         Series Name
                     </label>
                     <td>
@@ -226,7 +226,7 @@
                             'class' => 'form-control',
                             'label' => false
                         ]); ?>
-                        <label class="sr-only" for="location_details">
+                        <label class="sr-only" for="location-details">
                             Location details
                         </label>
                         <?= $this->Form->control('location_details', [
@@ -243,7 +243,7 @@
                     Address
                 </th>
                 <td>
-                    <label class="sr-only" for="address">
+                    <label class="sr-only" for="EventAddress">
                         Address
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
@@ -260,7 +260,7 @@
                     Description
                 </th>
                 <td>
-                    <label class="sr-only" for="address">
+                    <label class="sr-only" for="EventDescription">
                         Description
                     </label>
                     <script src="/emojione/lib/js/emojione.min.js"></script>
@@ -314,7 +314,7 @@
             <tr id="eventform_hascost"<?= (!$has['cost']) ? ' style="display: none;"' : ''; ?>>
                 <th>Cost</th>
                 <td>
-                    <label class="sr-only" for="Cost">
+                    <label class="sr-only" for="EventCost">
                         Cost
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
@@ -339,7 +339,7 @@
             <tr id="eventform_hasages"<?= (!$has['ages']) ? ' style="display: none;"' : ''; ?>>
                 <th>Age Restriction</th>
                 <td>
-                    <label class="sr-only" for="age_restriction">
+                    <label class="sr-only" for="EventAgeRestriction">
                         Age Restriction
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
@@ -364,7 +364,7 @@
             <tr id="eventform_hassource"<?= (!$has['source']) ? ' style="display: none;"' : ''; ?>>
                 <th>Source</th>
                 <td>
-                    <label class="sr-only" for="source">
+                    <label class="sr-only" for="EventSource">
                         Source
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
