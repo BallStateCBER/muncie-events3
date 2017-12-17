@@ -20,7 +20,7 @@
     <div class="col-lg-6">
         <?= $this->Form->input('photo', [
             'type' => 'file',
-            'label' => false
+            'label' => 'User photo'
         ]); ?>
     </div>
     <div class="col-lg-6">

@@ -19,7 +19,7 @@
                 Tags that cannot be selected (selectable = false) are in <span style="color: blue;">blue</span>.
             </li>
             <li>
-                Tags with no associated events are in <span style="color: red;">red</span>.
+                Tags with no associated events are in <span style="color: #ee0000;">red</span>.
             </li>
             <li>
                 Do not move or edit the 'Delete' and 'Unlisted' groups. You may, however, move tags into and out of them.

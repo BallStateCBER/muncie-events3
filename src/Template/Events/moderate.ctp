@@ -40,7 +40,7 @@ use Cake\Utility\Inflector;
                                     $url[] = $eventId;
                                 }
                                 echo $this->Html->link(
-                                    $this->Html->image('icons/tick.png').'Approve'.($published ? '' : ' and publish'),
+                                    $this->Html->image('icons/tick.png', ['alt' => 'Approve']).'Approve'.($published ? '' : ' and publish'),
                                     $url,
                                     ['escape' => false]
                                 );
@@ -54,7 +54,7 @@ use Cake\Utility\Inflector;
                                     $confirm = false;
                                 }
                                 echo $this->Html->link(
-                                    $this->Html->image('icons/pencil.png').'Edit',
+                                    $this->Html->image('icons/pencil.png', ['alt' => 'Edit']).'Edit',
                                     [
                                         'controller' => 'events',
                                         'action' => 'edit',
@@ -80,7 +80,7 @@ use Cake\Utility\Inflector;
                                     $confirm = 'Are you sure?';
                                 }
                                 echo $this->Form->postLink(
-                                    $this->Html->image('icons/cross.png').'Delete',
+                                    $this->Html->image('icons/cross.png', ['alt' => 'Delete']).'Delete',
                                     $url,
                                     ['escape' => false, 'confirm' => $confirm],
                                     'Are you sure?'
@@ -192,7 +192,8 @@ use Cake\Utility\Inflector;
                                         <?= $this->Calendar->thumbnail('tiny', [
                                             'filename' => $image->filename,
                                             'caption' => $image->caption,
-                                            'group' => 'unapproved_event_'.$event->id
+                                            'group' => 'unapproved_event_'.$event->id,
+                                            'alt' => $image->caption
                                         ]); ?>
                                     <?php endforeach; ?>
                                 </td>

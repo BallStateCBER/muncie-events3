@@ -2,9 +2,9 @@
 	Web Site Terms and Conditions of Use
 </h1>
 
-<h6>
+<b><u>
 	1. Terms
-</h6>
+</b></u>
 
 <p>
 	By accessing this web site, you are agreeing to be bound by these
@@ -15,9 +15,9 @@
 	protected by applicable copyright and trade mark law.
 </p>
 
-<h6>
+<b><u>
 	2. Use License
-</h6>
+</b></u>
 
 <ol type="a">
 	<li>
@@ -39,9 +39,9 @@
 	</li>
 </ol>
 
-<h6>
+<b><u>
 	3. Disclaimer
-</h6>
+</b></u>
 
 <ol type="a">
 	<li>
@@ -49,41 +49,41 @@
 	</li>
 </ol>
 
-<h6>
+<b><u>
 	4. Limitations
-</h6>
+</b></u>
 
 <p>
 	In no event shall Muncie Events or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption,) arising out of the use or inability to use the materials on Muncie Events's Internet site, even if Muncie Events or a Muncie Events authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.
 </p>
 
-<h6>
+<b><u>
 	5. Revisions and Errata
-</h6>
+</b></u>
 
 <p>
 	The materials appearing on Muncie Events's web site could include technical, typographical, or photographic errors. Muncie Events does not warrant that any of the materials on its web site are accurate, complete, or current. Muncie Events may make changes to the materials contained on its web site at any time without notice. Muncie Events does not, however, make any commitment to update the materials.
 </p>
 
-<h6>
+<b><u>
 	6. Links
-</h6>
+</b></u>
 
 <p>
 	Muncie Events has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by Muncie Events of the site. Use of any such linked web site is at the user's own risk.
 </p>
 
-<h6>
+<b><u>
 	7. Site Terms of Use Modifications
-</h6>
+</b></u>
 
 <p>
 	Muncie Events may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.
 </p>
 
-<h6>
+<b><u>
 	8. Governing Law
-</h6>
+</b></u>
 
 <p>
 	Any claim relating to Muncie Events's web site shall be governed by the laws of the State of Indiana without regard to its conflict of law provisions.
