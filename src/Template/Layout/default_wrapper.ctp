@@ -49,10 +49,10 @@
             <?= $this->element('front_page_announcement'); ?>
             <?php endif; ?>
             <?= $this->fetch('content'); ?>
-            <div id="footer">
-                <?= $this->element('footer'); ?>
-            </div>
         </div>
+    </div>
+    <div id="footer">
+        <?= $this->element('footer'); ?>
     </div>
 
     <noscript>
