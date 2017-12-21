@@ -270,7 +270,7 @@ class WidgetsController extends AppController
         }
         $defaults = $this->getDefaults();
         foreach ($options as $var => $val) {
-            if (stripos($var, 'amp;') !== false) {
+            if (mb_stripos($var, 'amp;') !== false) {
                 $var = str_replace('amp;', '', $var);
             }
             $val = trim($val);

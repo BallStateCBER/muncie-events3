@@ -263,7 +263,7 @@ class TagsTable extends Table
     public function getIndentLevel($name)
     {
         $level = 0;
-        $len = strlen($name);
+        $len = mb_strlen($name);
         for ($i = 0; $i < $len; $i++) {
             if ($name[$i] == "\t" || $name[$i] == '-') {
                 $level++;

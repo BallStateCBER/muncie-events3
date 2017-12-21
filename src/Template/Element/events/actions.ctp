@@ -84,7 +84,7 @@ $userId = $this->request->session()->read('Auth.User.id');
                 $address = trim($event['address']);
                 if ($address == '') {
                     $address = 'Muncie, IN';
-                } elseif (stripos($address, 'Muncie') === false) {
+                } elseif (mb_stripos($address, 'Muncie') === false) {
                     $address .= ', Muncie, IN';
                 }
                 $location = $event['location'];

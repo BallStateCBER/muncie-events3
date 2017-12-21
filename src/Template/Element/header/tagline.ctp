@@ -14,7 +14,7 @@
     $phrase = $phrases[array_rand($phrases)];
     if (in_array(substr($phrase, -1), ['.', '?', '!'])) {
         $punct = substr($phrase, -1);
-        $phrase = substr($phrase, 0, (strlen($phrase) - 1));
+        $phrase = substr($phrase, 0, (mb_strlen($phrase) - 1));
         $phrase .= '<span class="punctuation">'.$punct.'</span>';
     } else {
         $phrase .= '<span class="punctuation">.</span>';

@@ -365,7 +365,7 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->uponFormSubmission();
             // count how many dates have been picked
-            $dateInput = strlen($this->request->getData('date'));
+            $dateInput = mb_strlen($this->request->getData('date'));
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());

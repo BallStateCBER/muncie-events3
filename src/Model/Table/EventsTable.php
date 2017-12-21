@@ -806,7 +806,7 @@ class EventsTable extends Table
             if (is_string($val)) {
                 $val = trim($val);
             }
-            if (stripos($var, 'amp;') === 0) {
+            if (mb_stripos($var, 'amp;') === 0) {
                 $var = str_replace('amp;', '', $var);
             }
 
