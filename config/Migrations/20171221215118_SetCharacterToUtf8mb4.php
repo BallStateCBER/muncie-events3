@@ -19,16 +19,18 @@ class SetCharacterToUtf8mb4 extends AbstractMigration
         $tables = [
             'categories',
             'categories_mailing_list',
+            'events',
             'event_series',
             'events_images',
             'events_tags',
             'images',
             'mailing_list',
             'mailing_list_log',
-            'tags'
+            'tags',
+            'users'
         ];
         foreach ($tables as $table) {
-            $this->table($table, ['collation' => 'utf8mb4_unicode_ci']);
+            $this->execute("ALTER TABLE $table CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         }
 
         $table = $this->table('events', ['collation' => 'utf8mb4_unicode_ci']);
