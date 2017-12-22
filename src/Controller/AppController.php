@@ -47,7 +47,7 @@ class AppController extends Controller
             'distribution' => 'basic',
             'local_plugin' => [
                 'emojione' => [
-                    'location' => WWW_ROOT . 'js',
+                    'location' => WWW_ROOT . 'emojione' . DS . 'lib' . DS . 'js',
                     'file' => 'emojione.js'
                 ]
             ],
