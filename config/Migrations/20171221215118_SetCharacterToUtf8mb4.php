@@ -33,13 +33,13 @@ class SetCharacterToUtf8mb4 extends AbstractMigration
             $this->execute("ALTER TABLE $table CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         }
 
-        $table = $this->table('events', ['collation' => 'utf8mb4_unicode_ci']);
+        $table = $this->table('events');
         $table->changeColumn('description', 'text', [
             'encoding' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci'
         ]);
 
-        $table = $this->table('users', ['collation' => 'utf8mb4_unicode_ci']);
+        $table = $this->table('users');
         $table->changeColumn('bio', 'text', [
             'encoding' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci'
