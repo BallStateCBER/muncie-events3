@@ -65,7 +65,7 @@ class EventsControllerTest extends ApplicationTest
         $newData = [
             'title' => 'Anonymous event!',
             'category_id' => 1,
-            'date' => date('m/d/Y') . ',' . date('m/d/Y', strtotime('+2 weeks')),
+            'date' => date('m/d/Y'),
             'time_start' => [
                 'hour' => '12',
                 'minute' => '00',
