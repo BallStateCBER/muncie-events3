@@ -937,7 +937,7 @@ class EventsController extends AppController
      *
      * @param string $type of event
      * @param int $id of event
-     * return null
+     * @return null
      */
     private function sendSlackNotification($type, $id)
     {
