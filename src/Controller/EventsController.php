@@ -392,7 +392,6 @@ class EventsController extends AppController
                 $eventSeries->created = date('Y-m-d');
                 $eventSeries->modified = date('Y-m-d');
                 $this->Events->EventSeries->save($eventSeries);
-                $this->sendSlackNotification('series', $eventSeries['id']);
                 // now save every event
                 $dates = explode(',', $this->request->getData('date'));
                 foreach ($dates as $date) {
@@ -408,6 +407,7 @@ class EventsController extends AppController
                     ]);
                 }
                 $this->Flash->success(__('The event series has been saved.'));
+                $this->sendSlackNotification('series', $eventSeries['id']);
 
                 return;
             }
@@ -946,7 +946,7 @@ class EventsController extends AppController
         if (in_array(date('D'), $grahamDays)) {
             $admin = '@graham';
         } else {
-            $admin = '@erica-dee-fox';
+            $admin = '#muncieevents';
         }
         $introMsg = ", a new $type has been posted to Muncie Events. The $type ";
         if ($type == 'series') {
@@ -960,7 +960,8 @@ class EventsController extends AppController
         } else {
             $user = 'anonymously';
         }
-        $msg = "$event->name has been posted $user.";
+        $page = $type == 'series' ? '-series' : '';
+        $msg = "$event->title has been posted $user: https://muncieevents.com/events/edit$page/$event->id";
         $this->Slack->addLine($admin . $introMsg . $msg);
         $this->Slack->send();
 
