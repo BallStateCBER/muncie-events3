@@ -944,7 +944,7 @@ class EventsController extends AppController
         $this->Slack = new Slack();
         $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
         if (in_array(date('D'), $grahamDays)) {
-            $admin = '@Graham';
+            $admin = '@graham';
         } else {
             $admin = '@erica-dee-fox';
         }
