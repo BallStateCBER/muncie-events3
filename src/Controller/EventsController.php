@@ -6,6 +6,7 @@ use App\Model\Entity\Event;
 use App\Model\Entity\Image;
 use App\Model\Entity\Tag;
 use App\Model\Entity\User;
+use App\Slack;
 use Cake\Core\Configure;
 use Cake\I18n\Date;
 use Cake\I18n\Time;
@@ -375,6 +376,7 @@ class EventsController extends AppController
                     'associated' => ['Images', 'Tags']
                 ])) {
                     $this->Flash->success(__('The event has been saved.'));
+                    $this->sendSlackNotification('event', $event['id']);
 
                     return;
                 }
@@ -390,6 +392,7 @@ class EventsController extends AppController
                 $eventSeries->created = date('Y-m-d');
                 $eventSeries->modified = date('Y-m-d');
                 $this->Events->EventSeries->save($eventSeries);
+                $this->sendSlackNotification('series', $eventSeries['id']);
                 // now save every event
                 $dates = explode(',', $this->request->getData('date'));
                 foreach ($dates as $date) {
@@ -927,6 +930,41 @@ class EventsController extends AppController
         }
         $this->set(compact('tags'));
         $this->viewBuilder()->setLayout('ajax');
+    }
+
+    /**
+     * sends Slack a notification for events to be moderated
+     *
+     * @param string $type of event
+     * @param int $id of event
+     * return null
+     */
+    private function sendSlackNotification($type, $id)
+    {
+        $this->Slack = new Slack();
+        $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
+        if (in_array(date('D'), $grahamDays)) {
+            $admin = '@Graham';
+        } else {
+            $admin = '@erica-dee-fox';
+        }
+        $introMsg = ", a new $type has been posted to Muncie Events. The $type ";
+        if ($type == 'series') {
+            $event = $this->EventSeries->get($id);
+        } elseif ($type == 'event') {
+            $event = $this->Events->get($id);
+        }
+        if ($event->user_id != null) {
+            $user = $this->Users->get($event->user_id);
+            $user = 'by ' . $user->name;
+        } else {
+            $user = 'anonymously';
+        }
+        $msg = "$event->name has been posted $user.";
+        $this->Slack->addLine($admin . $introMsg . $msg);
+        $this->Slack->send();
+
+        return null;
     }
     /**
      * Shows the events with a specified tag

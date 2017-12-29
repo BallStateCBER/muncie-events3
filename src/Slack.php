@@ -41,10 +41,10 @@ class Slack
     {
         $this->encodeContent();
         $data = 'payload=' . json_encode([
-                'channel' => '#server',
+                'channel' => '#muncieevents',
                 'text' => $this->content,
-                'icon_emoji' => ':phone:',
-                'username' => 'Commentaries Alerts'
+                'icon_emoji' => ':ticket:',
+                'username' => 'Muncie Events Alerts'
             ]);
         $url = include dirname(dirname(__FILE__)) . '/config/slack_webhook_url.php';
         $ch = curl_init($url);
