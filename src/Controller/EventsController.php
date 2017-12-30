@@ -8,8 +8,6 @@ use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Slack;
 use Cake\Core\Configure;
-use Cake\I18n\Date;
-use Cake\I18n\Time;
 
 /**
  * Events Controller
@@ -133,7 +131,7 @@ class EventsController extends AppController
                 if (!$selectable) {
                     continue;
                 }
-                $this->request->data['data']['Tags'][] = $tagId;
+                $this->request->withData('data.Tags[]', $tagId);
             }
             // Create the custom tag if it does not already exist
             if (!$tagId) {
