@@ -131,7 +131,7 @@ class EventsController extends AppController
                 if (!$selectable) {
                     continue;
                 }
-                $this->request->withData('data.Tags[]', $tagId);
+                $this->request = $this->request->withData('data.Tags[]', $tagId);
             }
             // Create the custom tag if it does not already exist
             if (!$tagId) {
@@ -142,10 +142,10 @@ class EventsController extends AppController
                 $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
                 $this->Events->Tags->save($newTag);
-                $this->request->data['data']['Tags'][] = $newTag->id;
+                $this->request = $this->request->withData('data.Tags[]', $newTag->id);
             }
         }
-        $this->request->data['data']['Tags'] = array_unique($this->request->data['data']['Tags']);
+        $this->request = $this->request->withData('data.Tags', array_unique($this->request->getData('data.Tags')));
         $event->customTags = '';
     }
     /**
@@ -572,6 +572,7 @@ class EventsController extends AppController
             ->order(['start' => 'ASC'])
             ->toArray();
         $dates = [];
+        $dateString = '';
         foreach ($events as $event) {
             $dateString = date_format($event->start, 'Y-m-d');
             $dates[] = $dateString;
@@ -950,6 +951,7 @@ class EventsController extends AppController
             $admin = 'Erica';
         }
         $introMsg = ", a new $type has been posted to Muncie Events. The $type ";
+        $event = '';
         if ($type == 'series') {
             $event = $this->EventSeries->get($id);
         } elseif ($type == 'event') {
