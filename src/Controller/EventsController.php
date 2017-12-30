@@ -138,6 +138,7 @@ class EventsController extends AppController
                 $newTag = $this->Events->Tags->newEntity();
                 $newTag->name = $ct;
                 $newTag->user_id = $this->Auth->user('id');
+                $newTag->user_id = $this->Auth->user('id');
                 $newTag->parent_id = 1012; // 'Unlisted' group
                 $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
