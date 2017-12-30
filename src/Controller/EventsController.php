@@ -943,10 +943,10 @@ class EventsController extends AppController
     {
         $this->Slack = new Slack();
         $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
-        if (in_array(date('D'), $grahamDays)) {
-            $admin = '@graham';
+        if (!in_array(date('D'), $grahamDays)) {
+            $admin = 'Graham';
         } else {
-            $admin = '#muncieevents';
+            $admin = 'Erica';
         }
         $introMsg = ", a new $type has been posted to Muncie Events. The $type ";
         if ($type == 'series') {

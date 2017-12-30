@@ -39,9 +39,11 @@ class Slack
      */
     public function send()
     {
+        $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
+        $channel = !in_array(date('D'), $grahamDays) ? '@graham' : '@erica-dee-fox';
         $this->encodeContent();
         $data = 'payload=' . json_encode([
-                'channel' => '#muncieevents',
+                'channel' => $channel,
                 'text' => $this->content,
                 'icon_emoji' => ':ticket:',
                 'username' => 'Muncie Events Alerts'
