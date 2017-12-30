@@ -941,6 +941,9 @@ class EventsController extends AppController
      */
     private function sendSlackNotification($type, $id)
     {
+        if (php_sapi_name() == 'cli') {
+            return null;
+        }
         $this->Slack = new Slack();
         $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
         if (in_array(date('D'), $grahamDays)) {
