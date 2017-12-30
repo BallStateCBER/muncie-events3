@@ -943,7 +943,7 @@ class EventsController extends AppController
     {
         $this->Slack = new Slack();
         $grahamDays = ['Sun', 'Tue', 'Thu', 'Sat'];
-        if (!in_array(date('D'), $grahamDays)) {
+        if (in_array(date('D'), $grahamDays)) {
             $admin = 'Graham';
         } else {
             $admin = 'Erica';
@@ -961,7 +961,7 @@ class EventsController extends AppController
             $user = 'anonymously';
         }
         $page = $type == 'series' ? '-series' : '';
-        $msg = "$event->title has been posted $user: https://muncieevents.com/events/edit$page/$event->id";
+        $msg = "'$event->title' has been posted $user: https://muncieevents.com/events/edit$page/$event->id";
         $this->Slack->addLine($admin . $introMsg . $msg);
         $this->Slack->send();
 
