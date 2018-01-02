@@ -211,6 +211,7 @@ class EventsController extends AppController
         } else {
             $event->end = null;
         }
+        $event->date = date('Y-m-d', strtotime($event['date']));
 
         return $event;
     }
