@@ -164,6 +164,8 @@ class AppController extends Controller
         if (php_sapi_name() != 'cli') {
             return $this->redirect(env('FULL_BASE_URL') . $this->request->getRequestTarget());
         }
+        
+        return null;
     }
 
     /**
