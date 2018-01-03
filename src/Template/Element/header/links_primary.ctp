@@ -3,7 +3,7 @@
         <?= $this->Html->link(__('Home'), ['controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']); ?>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="date_picker_toggler" data-toggle="collapse" href="#header_nav_datepicker" aria-expanded="false" aria-controls="header_nav_datepicker">Go to Date...</a>
+        <a class="nav-link" id="date_picker_toggler" data-toggle="collapse" href="#header_nav_datepicker" aria-controls="header_nav_datepicker">Go to Date...</a>
         <?php
             if (!isset($default)) {
                 $default = date('m/d/Y');

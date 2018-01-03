@@ -14,7 +14,7 @@
     Rules for Posting Events
 </a>
 
-<div id="posting_rules" class="alert alert-info collapse" aria-expanded="false">
+<div id="posting_rules" class="alert alert-info collapse">
     <?= $this->element('rules'); ?>
 </div>
 
