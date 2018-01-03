@@ -44,21 +44,10 @@
                     $day = $cellNum - $preSpacer + 1;
                     echo ("$year$month$day" == $today) ? '<td class="today">' : '<td>';
                     echo '<div>';
-
-                    echo $this->Html->link(
-                        $day,
-                        [
-                            'controller' => 'events',
-                            'action' => 'day',
-                            $month,
-                            $day,
-                            $year
-                        ],
-                        [
-                            'class' => 'date',
-                            'data-day' => str_pad($day, 2, '0', STR_PAD_LEFT)
-                        ]
-                    );
+                    $dos = str_pad($day, 2, '0', STR_PAD_LEFT);
+                    $th = date('S', strtotime($year . '-' . $month . '-' . $day));
+                    $fullMonth = date('F', strtotime($year . '-' . $month . '-' . $day));
+                    echo "<a href='/events/day/$month/$day/$year' class='date' data-day='$dos'>$day<span class='sr-only'>$th day of $fullMonth</span></a>";
 
                     $date = $year.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-'.str_pad($day, 2, '0', STR_PAD_LEFT);
                     if (isset($events[$date]) && !empty($events[$date])) {
