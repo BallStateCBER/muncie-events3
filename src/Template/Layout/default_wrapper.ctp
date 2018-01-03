@@ -56,8 +56,8 @@
         <?= $this->element('footer'); ?>
     </div>
 
-    <noscript>
-        <div id="noscript">
+    <noscript id="noscript" class="alert alert-warning">
+        <div>
             JavaScript is currently disabled in your browser.
             For full functionality of this website, JavaScript must be enabled.
             If you need assistance, <a href="http://www.enable-javascript.com/" target="_blank">Enable-JavaScript.com</a> provides instructions.

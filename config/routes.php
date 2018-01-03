@@ -140,6 +140,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // widgets
+    $routes->connect('/widgets', ['controller' => 'widgets', 'action' => 'index']);
     Router::scope('/widgets/customize', ['controller' => 'widgets'], function (RouteBuilder $routes) {
         $routes->connect('/feed', ['action' => 'customizeFeed']);
         $routes->connect('/month', ['action' => 'customizeMonth']);

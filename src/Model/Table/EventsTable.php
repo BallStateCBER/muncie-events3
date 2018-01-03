@@ -306,73 +306,75 @@ class EventsTable extends Table
         $params[] = ['start <' => $newEnd];
 
         foreach ($options as $param => $value) {
-            $categories = '';
-            if ($param == 'category' || $param == 'category_id') {
-                $cats = explode(',', $value);
-                foreach ($cats as $cat) {
-                    $categories .= "category_id = $cat OR ";
+            if ($value != null) {
+                $categories = '';
+                if ($param == 'category' || $param == 'category_id') {
+                    $cats = explode(',', $value);
+                    foreach ($cats as $cat) {
+                        $categories .= "category_id = $cat OR ";
+                    }
+                    $categories = substr($categories, 0, -4);
+                    $categories = '(' . $categories;
+                    $categories .= ')';
+                    $params[] = $categories;
                 }
-                $categories = substr($categories, 0, -4);
-                $categories = '(' . $categories;
-                $categories .= ')';
-                $params[] = $categories;
-            }
 
-            if ($param == 'location') {
-                $params[] = ['location' => $value];
-            }
+                if ($param == 'location') {
+                    $params[] = ['location' => $value];
+                }
 
-            if ($param == 'tags_included') {
-                $tagsIncluded = '';
-                $tags = explode(',', $value);
-                foreach ($tags as $tagName) {
-                    $tag = $this->Tags->find()
-                        ->where(['name' => $tagName])
-                        ->first();
+                if ($param == 'tags_included') {
+                    $tagsIncluded = '';
+                    $tags = explode(',', $value);
+                    foreach ($tags as $tagName) {
+                        $tag = $this->Tags->find()
+                            ->where(['name' => $tagName])
+                            ->first();
 
-                    $eventTags = $this->EventsTags->find()
-                        ->where(['tag_id' => $tag['id']]);
+                        $eventTags = $this->EventsTags->find()
+                            ->where(['tag_id' => $tag['id']]);
 
-                    foreach ($eventTags as $eventTag) {
-                        if (!$eventTag) {
-                            continue;
+                        foreach ($eventTags as $eventTag) {
+                            if (!$eventTag) {
+                                continue;
+                            }
+                            $tagsIncluded .= "Events.id = $eventTag->event_id OR ";
                         }
-                        $tagsIncluded .= "Events.id = $eventTag->event_id OR ";
                     }
-                }
-                $tagsIncluded = substr($tagsIncluded, 0, -4);
-                $tagsIncluded = '(' . $tagsIncluded;
-                $tagsIncluded .= ')';
-                if ($tagsIncluded == '()') {
-                    continue;
-                }
-
-                $params[] = $tagsIncluded;
-            }
-
-            if ($param == 'tags_excluded') {
-                $tagsExcluded = '';
-                $tags = explode(',', $value);
-                foreach ($tags as $tagName) {
-                    $tag = $this->Tags->find()
-                        ->where(['name' => $tagName])
-                        ->first();
-
-                    $eventTags = $this->EventsTags->find()
-                        ->where(['tag_id' => $tag['id']]);
-
-                    foreach ($eventTags as $eventTag) {
-                        $tagsExcluded .= "Events.id != $eventTag->event_id AND ";
+                    $tagsIncluded = substr($tagsIncluded, 0, -4);
+                    $tagsIncluded = '(' . $tagsIncluded;
+                    $tagsIncluded .= ')';
+                    if ($tagsIncluded == '()') {
+                        continue;
                     }
-                }
-                $tagsExcluded = substr($tagsExcluded, 0, -4);
-                $tagsExcluded = '(' . $tagsExcluded;
-                $tagsExcluded .= ')';
-                if ($tagsExcluded == '()') {
-                    continue;
+
+                    $params[] = $tagsIncluded;
                 }
 
-                $params[] = $tagsExcluded;
+                if ($param == 'tags_excluded') {
+                    $tagsExcluded = '';
+                    $tags = explode(',', $value);
+                    foreach ($tags as $tagName) {
+                        $tag = $this->Tags->find()
+                            ->where(['name' => $tagName])
+                            ->first();
+
+                        $eventTags = $this->EventsTags->find()
+                            ->where(['tag_id' => $tag['id']]);
+
+                        foreach ($eventTags as $eventTag) {
+                            $tagsExcluded .= "Events.id != $eventTag->event_id AND ";
+                        }
+                    }
+                    $tagsExcluded = substr($tagsExcluded, 0, -4);
+                    $tagsExcluded = '(' . $tagsExcluded;
+                    $tagsExcluded .= ')';
+                    if ($tagsExcluded == '()') {
+                        continue;
+                    }
+
+                    $params[] = $tagsExcluded;
+                }
             }
         }
         $events = $this->find('all', [
