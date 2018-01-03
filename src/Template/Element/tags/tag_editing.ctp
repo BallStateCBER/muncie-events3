@@ -18,7 +18,7 @@ echo $this->Html->script('tag_manager.js');
         <div id="popular_tags"></div>
     </div>
     <div class="text-muted">
-        Click <img src="/img/icons/menu-collapsed.png" /> to expand groups.
+        Click <img src="/img/icons/menu-collapsed.png" alt="The collapse button" /> to expand groups.
         Click
         <a href="#" title="Selectable tags will appear in blue" id="example_selectable_tag">selectable tags</a>
         to select them.
