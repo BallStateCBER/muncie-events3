@@ -207,7 +207,7 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/autocomplete', {
+                $.getJSON('/tags/auto_complete', {
                     term: extractLast(request.term)
                 }, response);
             },
@@ -249,7 +249,7 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/autocomplete', {
+                $.getJSON('/tags/auto_complete', {
                     term: extractLast(request.term)
                 }, response);
             },
@@ -258,7 +258,7 @@ var TagManager = {
                 // custom minLength
                 var term = extractLast(this.value);
                 if (term.length < 2) {
-                //    return false;
+                    //	return false;
                 }
                 $('#tag_autosuggest_loading').show();
             },

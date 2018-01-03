@@ -23,6 +23,7 @@
         echo $this->Html->css('style');
         echo $this->fetch('css');
     ?>
+
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <!-- jquery 3.1.1 min files, checks if CDN is down, deploys local file if necessary -->
     <script
@@ -30,8 +31,8 @@
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous">
     </script>
-    <script>window.jQuery || document.write('<script src="js/jquery-3.1.1.min.js">\x3C/script>')</script>
     <script src="/jquery_ui/js/jquery-ui-1.10.2.custom.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-3.1.1.min.js">\x3C/script>')</script>
 </head>
 <body class="layout_<?= $this->layout; ?>">
     <!--?= $this->Facebook->initJsSDK(); ?-->

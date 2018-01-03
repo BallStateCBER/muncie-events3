@@ -1,7 +1,7 @@
 <?php
 // @codingStandardsIgnoreFile
 
-/*use Migrations\AbstractMigration;
+use Migrations\AbstractMigration;
 
 class UpgradeNullFields extends AbstractMigration
 {
@@ -12,7 +12,7 @@ class UpgradeNullFields extends AbstractMigration
      * http://docs.phinx.org/en/latest/migrations.html#the-change-method
      * @return void
      */
-    /* public function change()
+    public function change()
     {
         $table = $this->table('events');
         $table
@@ -64,4 +64,3 @@ class UpgradeNullFields extends AbstractMigration
             ->save();
     }
 }
-*/
