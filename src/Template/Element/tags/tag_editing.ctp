@@ -56,6 +56,7 @@ echo $this->Html->script('tag_manager.js');
                 'id' => 'custom_tag_input'
             ]);
         ?>
+        <?php $this->Js->buffer("TagManager.setupAutosuggest('#custom_tag_input');"); ?>
         <div class="text-muted">
             Write out tags, separated by commas. <a href="#new_tag_rules" data-toggle="collapse">Rules for creating new tags</a>
         </div>
