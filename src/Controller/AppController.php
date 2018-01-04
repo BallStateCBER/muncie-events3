@@ -233,7 +233,7 @@ class AppController extends Controller
         $this->loadModel('Events');
         foreach ($events as $event) {
             $event = $this->Events->setEasternTimes($event);
-            $dates[] = $event['start']->format('Y-m-d');
+            $dates[] = $event->date->format('Y-m-d');
         }
         // are there multiple events happening on a certain date?
         $multipleDates = false;

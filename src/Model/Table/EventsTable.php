@@ -411,18 +411,13 @@ class EventsTable extends Table
      */
     public function getRangeEvents($nextStartDate, $endDate)
     {
-        $dst = $this->getDaylightSavings($nextStartDate);
-        $start = date('Y-m-d H:i:s', strtotime($nextStartDate . $dst));
-        $newEnd = date('Y-m-d H:i:s', $endDate);
-        $end = date('Y-m-d H:i:s', strtotime($newEnd . $dst));
-
         $events = $this
             ->find('all', [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['start' => 'ASC']
             ])
-            ->where(['start >=' => $start])
-            ->andwhere(['start <=' => $end])
+            ->where(['date >' => $nextStartDate])
+            ->andwhere(['date <=' => $endDate])
             ->toArray();
 
         return $events;
@@ -479,7 +474,7 @@ class EventsTable extends Table
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['start' => 'ASC']
             ])
-            ->where(['start >=' => date('Y-m-d H:i:s')])
+            ->where(['date >=' => date('Y-m-d')])
             ->toArray();
 
         return $events;
@@ -546,7 +541,8 @@ class EventsTable extends Table
         $locations = $this->find();
         $locations
             ->select(['location'])
-            ->where(['start >=' => date('Y-m-d')])
+            ->where(['date >=' => date('Y-m-d')])
+            ->order(['start' => 'ASC'])
             ->group(['location'])
             ->toArray();
         $retval = [];
@@ -567,7 +563,7 @@ class EventsTable extends Table
         $locations = $this->find();
         $locations
             ->select(['location', 'address'])
-            ->where(['start <' => date('Y-m-d H:i:s')]);
+            ->where(['date <' => date('Y-m-d')]);
         $adds = [];
         $locs = [];
         foreach ($locations as $location) {
@@ -591,7 +587,7 @@ class EventsTable extends Table
         $results
             ->select(['category_id'])
             ->select(['count' => $results->func()->count('id')])
-            ->where(['start >=' => date('Y-m-d H:i:s')])
+            ->where(['date >=' => date('Y-m-d')])
             ->group(['category_id']);
 
         $retval = [];

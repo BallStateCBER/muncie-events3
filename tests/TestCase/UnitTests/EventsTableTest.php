@@ -45,12 +45,10 @@ class EventsTableTest extends ApplicationTest
      */
     public function testGetUpcomingEvents()
     {
-        $date = date('Y-m-d H:i:s');
-
         $event = $this->Events->newEntity();
         $event->title = 'Anonymous';
         $event->category_id = 1;
-        $event->start = $date;
+        $event->date = date('Y-m-d');
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
         $this->Events->save($event);
@@ -61,7 +59,7 @@ class EventsTableTest extends ApplicationTest
         $this->EventsTags->save($joinData);
 
         $events = $this->Events->getUpcomingEvents();
-        $this->assertEquals($date, $events[0]->start->format('Y-m-d H:i:s'));
+        $this->assertEquals(date('Y-m-d'), $events[0]->date->format('Y-m-d'));
         $this->Events->delete($event);
     }
     /**
