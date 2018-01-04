@@ -698,7 +698,7 @@ class EventsController extends AppController
         $listing = $this->Events
             ->find('all', [
                 'conditions' => [
-                    'location' => $location,
+                    'location_slug' => $location,
                     "start $date" => date('Y-m-d H:i:s')
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -711,7 +711,7 @@ class EventsController extends AppController
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $dir]
             ])
-            ->where(['location' => $location])
+            ->where(['location_slug' => $location])
             ->andWhere(["Events.start $date" => date('Y-m-d H:i:s')])
             ->count();
         $oppCount = $this->Events
@@ -719,7 +719,7 @@ class EventsController extends AppController
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $oppDir]
             ])
-            ->where(['location' => $location])
+            ->where(['location_slug' => $location])
             ->andWhere(["Events.start $oppDate" => date('Y-m-d H:i:s')])
             ->count();
         $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
@@ -808,7 +808,7 @@ class EventsController extends AppController
      */
     public function pastLocations()
     {
-        $locations = $this->Events->getPastLocations();
+        $locations = $this->Events->getPastLocationsWithSlugs();
         $this->set([
             'titleForLayout' => 'Locations of Past Events',
             'pastLocations' => $locations,

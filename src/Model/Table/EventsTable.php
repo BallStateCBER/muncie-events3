@@ -577,6 +577,29 @@ class EventsTable extends Table
     }
 
     /**
+     * getPastLocationsWithSlugs method
+     *
+     * @return array $retval
+     */
+    public function getPastLocationsWithSlugs()
+    {
+        $locations = $this->find();
+        $locations
+            ->select(['location', 'location_slug'])
+            ->where(['date <' => date('Y-m-d')]);
+        $adds = [];
+        $locs = [];
+        foreach ($locations as $location) {
+            $locs[] = $location->location;
+            $slugs[] = $location->location_slug;
+        }
+        $retval = array_combine($locs, $slugs);
+        ksort($retval);
+
+        return $retval;
+    }
+
+    /**
      * getAllUpcomingEventCounts method
      *
      * @return array $retval

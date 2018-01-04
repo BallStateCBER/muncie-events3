@@ -84,7 +84,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect(
         '/location/:location/:direction*',
         ['controller' => 'events', 'action' => 'location'],
-        ['pass' => ['location', 'direction']]
+        ['pass' => ['slug', 'direction']]
     );
 
     // viewing event series
