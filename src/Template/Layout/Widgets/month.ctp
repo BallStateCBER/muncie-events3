@@ -11,6 +11,7 @@
         echo $this->Html->css('/magnific-popup/magnific-popup.css');
         echo $this->Html->css('widgets/month');
         echo $this->fetch('css');
+        echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css');
         echo $this->Html->script('widgets/month');
     ?>
     <?php if (!empty($customStyles)): ?>

@@ -314,7 +314,7 @@ table.calendar tbody td > div {
   min-height: 50px;
 }
 table.calendar tbody td.today a.date {
-  color: red;
+  color: #ee0000;
 }
 table.calendar tbody td:hover .add {
   display: block;
