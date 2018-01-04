@@ -58,10 +58,10 @@ var TagManager = {
                             var icon_image = icon.children('img.expand_collapse');
                             if (children_container.is(':visible')) {
                                 icon_image.prop('src', '/img/icons/menu-expanded.png');
-                                icon_image.prop('alt', 'Un-collapse this menu');
+                                icon_image.prop('alt', 'Collapse this menu');
                             } else {
                                 icon_image.prop('src', '/img/icons/menu-collapsed.png');
-                                icon_image.prop('alt', 'Collapse this menu');
+                                icon_image.prop('alt', 'Un-collapse this menu');
                             }
                         });
                     });
