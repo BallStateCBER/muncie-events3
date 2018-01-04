@@ -225,7 +225,7 @@ class EventsTable extends Table
             ->andWhere(['date <=' => $date])
             ->andWhere(['series_id' => $seriesId])
             ->first();
-        
+
         return $event;
     }
 
@@ -396,7 +396,7 @@ class EventsTable extends Table
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
             'order' => ['start' => 'ASC']
             ])
-            ->where(['start >=' => date('Y-m-d H:i:s', strtotime($yearMonth))])
+            ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
             ->toArray();
 
         return $events;
