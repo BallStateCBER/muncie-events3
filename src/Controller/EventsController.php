@@ -370,6 +370,7 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
+                $event->location_slug = $this->setLocationSlug($event->location);
                 $this->setCustomTags($event);
                 $event = $this->setDatesAndTimes($event);
                 if ($this->Events->save($event, [
@@ -397,6 +398,7 @@ class EventsController extends AppController
                 foreach ($dates as $date) {
                     $event = $this->Events->newEntity();
                     $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $event->location_slug = $this->setLocationSlug($event->location);
                     $event['date'] = $date;
                     $this->setCustomTags($event);
                     $event = $this->setDatesAndTimes($event);
@@ -536,6 +538,7 @@ class EventsController extends AppController
             // Make sure the end time stays null if it needs to
             $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
+            $event->location_slug = $this->setLocationSlug($event->location);
             $this->setCustomTags($event);
             $event = $this->setDatesAndTimes($event);
             $this->setImageData($event);
@@ -625,6 +628,7 @@ class EventsController extends AppController
                     }
                 }
                 $event->series_id = $seriesId;
+                $event->location_slug = $this->setLocationSlug($event->location);
                 $event->title = $this->request->getData('title');
                 $this->setCustomTags($event);
                 $event['date'] = $date;
@@ -972,6 +976,23 @@ class EventsController extends AppController
         $this->Slack->send();
 
         return null;
+    }
+
+    /**
+     * setLocationSlug method
+     *
+     * @param string $location to slug
+     * @return string
+     */
+    public function setLocationSlug($location)
+    {
+        $locationSlug = strtolower($location);
+        $locationSlug = substr($locationSlug, 0, 20);
+        $locationSlug = preg_replace("/[^A-Za-z0-9 ]/", '', $locationSlug);
+        $locationSlug = str_replace("  ", ' ', $locationSlug);
+        $locationSlug = str_replace(' ', '-', $locationSlug);
+
+        return $locationSlug;
     }
     /**
      * Shows the events with a specified tag

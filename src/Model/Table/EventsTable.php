@@ -602,7 +602,30 @@ class EventsTable extends Table
         $locations
             ->select(['location', 'location_slug'])
             ->where(['date <' => date('Y-m-d')]);
-        $adds = [];
+        $slugs = [];
+        $locs = [];
+        foreach ($locations as $location) {
+            $locs[] = $location->location;
+            $slugs[] = $location->location_slug;
+        }
+        $retval = array_combine($locs, $slugs);
+        ksort($retval);
+
+        return $retval;
+    }
+
+    /**
+     * getUpcomingLocationsWithSlugs method
+     *
+     * @return array $retval
+     */
+    public function getUpcomingLocationsWithSlugs()
+    {
+        $locations = $this->find();
+        $locations
+            ->select(['location', 'location_slug'])
+            ->where(['date >=' => date('Y-m-d')]);
+        $slugs = [];
         $locs = [];
         foreach ($locations as $location) {
             $locs[] = $location->location;

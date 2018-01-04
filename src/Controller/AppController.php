@@ -211,7 +211,7 @@ class AppController extends Controller
                 ],
                 'populated' => $populated,
                 'sidebarVars' => [
-                    'locations' => $this->Events->getLocations(),
+                    'locations' => $this->Events->getUpcomingLocationsWithSlugs(),
                     'upcomingTags' => $this->Tags->getUpcoming(),
                     'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
                 ],

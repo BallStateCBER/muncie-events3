@@ -80,8 +80,8 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                         <option value="">
                             Select a location...
                         </option>
-                        <?php foreach ($sidebarVars['locations'] as $location): ?>
-                            <option value="<?= $location; ?>">
+                        <?php foreach ($sidebarVars['locations'] as $location => $slug): ?>
+                            <option value="<?= $slug; ?>">
                                 <?= $location; ?>
                             </option>
                         <?php endforeach; ?>
