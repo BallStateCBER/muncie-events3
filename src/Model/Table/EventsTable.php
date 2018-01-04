@@ -532,6 +532,21 @@ class EventsTable extends Table
     }
 
     /**
+     * getLocationFromSlug method
+     *
+     * @param string $slug for location
+     */
+    public function getLocationFromSlug($slug)
+    {
+        $location = $this->find()
+            ->select(['location'])
+            ->where(['location_slug' => $slug])
+            ->first();
+
+        return $location['location'];
+    }
+
+    /**
      * getLocations method
      *
      * @return array $retval

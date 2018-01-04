@@ -682,11 +682,11 @@ class EventsController extends AppController
     /**
      * Shows events taking place at the specified location, optionally limited to past or future events
      *
-     * @param string|null $location location of Event entity
+     * @param string|null $slug location_slug of Event entity
      * @param string|null $direction of index
      * @return void
      */
-    public function location($location = null, $direction = null)
+    public function location($slug = null, $direction = null)
     {
         $dir = $direction == 'past' ? 'ASC' : 'DESC';
         $date = $direction == 'past' ? '<' : '>=';
@@ -698,20 +698,21 @@ class EventsController extends AppController
         $listing = $this->Events
             ->find('all', [
                 'conditions' => [
-                    'location_slug' => $location,
+                    'location_slug' => $slug,
                     "start $date" => date('Y-m-d H:i:s')
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $dir]
             ]);
         $listing = $this->paginate($listing)->toArray();
+        $location = $this->Events->getLocationFromSlug($slug);
         $this->indexEvents($listing);
         $count = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $dir]
             ])
-            ->where(['location_slug' => $location])
+            ->where(['location_slug' => $slug])
             ->andWhere(["Events.start $date" => date('Y-m-d H:i:s')])
             ->count();
         $oppCount = $this->Events
@@ -719,12 +720,12 @@ class EventsController extends AppController
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $oppDir]
             ])
-            ->where(['location_slug' => $location])
+            ->where(['location_slug' => $slug])
             ->andWhere(["Events.start $oppDate" => date('Y-m-d H:i:s')])
             ->count();
         $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
-        $this->set(['slug' => $location]);
+        $this->set(['slug' => $slug]);
         $this->set('titleForLayout', '');
     }
     /**

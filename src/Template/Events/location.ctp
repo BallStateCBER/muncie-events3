@@ -10,7 +10,7 @@ $z = $count == 1 ? '' : 's';
     "$oppCount $opposite event$s",
     [
         'controller' => 'events',
-        'action' => 'location', $location, $opposite
+        'action' => 'location', $slug, $opposite
     ],
     [
         'escape' => false
