@@ -3,7 +3,7 @@
           <tr>
                <td class="prev_month">
                     <a href="#" class="prev_month" title="Previous month">
-                         &larr;
+                         &larr;<span class='sr-only'> previous month</span>
                     </a>
                     <!--?= #$this->Calendar->prevMonth($month, $year); ?-->
                </td>
@@ -12,7 +12,7 @@
                </th>
                <td class="next_month">
                     <a href="#" class="next_month" title="Next month">
-                         &rarr;
+                         &rarr;<span class='sr-only'> next month</span>
                     </a>
                     <!--?= #$this->Calendar->nextMonth($month, $year); ?-->
                </td>
@@ -64,8 +64,9 @@
                                 ]);
                                 $count = count($events[$date]);
                                 if ($eventsDisplayedPerDay > 0 && $count > $eventsDisplayedPerDay) {
+                                    $s = $eventsDisplayedPerDay == 1 ? '' : 's';
                                     echo $this->Html->link(
-                                            $count - $eventsDisplayedPerDay.' more',
+                                            $count - $eventsDisplayedPerDay.' more event' . $s,
                                             [
                                                 'controller' => 'events',
                                                 'action' => 'day',
