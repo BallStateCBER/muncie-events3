@@ -220,14 +220,12 @@ class EventsTable extends Table
     public function getEventsByDateAndSeries($date, $seriesId)
     {
     /** @var Event $event */
-        $start = date('Y-m-d H:i:s', strtotime("$date 00:00:00"));
-        $end = date('Y-m-d H:i:s', strtotime("$date 24:00:00"));
         $event = $this->find()
-            ->where(['start >=' => $start])
-            ->andWhere(['start <=' => $end])
+            ->where(['date >=' => $date])
+            ->andWhere(['date <=' => $date])
             ->andWhere(['series_id' => $seriesId])
             ->first();
-
+        
         return $event;
     }
 

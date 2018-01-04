@@ -576,7 +576,7 @@ class EventsController extends AppController
         $dates = [];
         $dateString = '';
         foreach ($events as $event) {
-            $dateString = date_format($event->start, 'Y-m-d');
+            $dateString = $event->date->format('Y-m-d');
             $dates[] = $dateString;
         }
         $eventId = $events[0]->id;
