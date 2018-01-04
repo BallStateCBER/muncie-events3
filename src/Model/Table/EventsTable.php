@@ -441,22 +441,22 @@ class EventsTable extends Table
     public function getStartEndEvents($nextStartDate, $endDate, $options = null)
     {
         $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-        if (empty($events)) {
+        if (count($events) < 7) {
             $endDate = strtotime($nextStartDate . ' + 4 weeks');
             $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-            if (empty($events)) {
+            if (count($events) < 7) {
                 $endDate = strtotime($nextStartDate . ' + 8 weeks');
                 $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                if (empty($events)) {
+                if (count($events) < 7) {
                     $endDate = strtotime($nextStartDate . ' + 16 weeks');
                     $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                    if (empty($events)) {
+                    if (count($events) < 7) {
                         $endDate = strtotime($nextStartDate . ' + 32 weeks');
                         $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                        if (empty($events)) {
+                        if (count($events) < 7) {
                             $endDate = strtotime($nextStartDate . ' + 64 weeks');
                             $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                            if (empty($events)) {
+                            if (count($events) < 7) {
                                 $endDate = strtotime($nextStartDate . ' + 128 weeks');
                                 $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
                             }
