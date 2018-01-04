@@ -26,9 +26,9 @@ use Cake\Routing\Router;
             }
         ?>
         <?php if (count($daysEvents) > 1): ?>
-        <h2 class="short_date">
+        <h1 class="short_date">
             <?= date('M j', strtotime($date)); ?>
-        </h2>
+        </h1>
         <h2 class="day">
             <?= $day; ?>
         </h2>
@@ -72,9 +72,9 @@ use Cake\Routing\Router;
             <?php endforeach; ?>
         </ul>
     <?php elseif (count($daysEvents) == 1): ?>
-        <h2 class="short_date">
+        <h1 class="short_date">
             <?= date('M j', strtotime($date)); ?>
-        </h2>
+        </h1>
         <h2 class="day">
             <?= $day; ?>
         </h2>
