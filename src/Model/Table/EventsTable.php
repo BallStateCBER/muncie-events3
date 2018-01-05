@@ -535,6 +535,7 @@ class EventsTable extends Table
      * getLocationFromSlug method
      *
      * @param string $slug for location
+     * @return string
      */
     public function getLocationFromSlug($slug)
     {
