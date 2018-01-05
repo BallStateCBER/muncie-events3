@@ -23,6 +23,16 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Lotus Yoga Studio", address="814 W. White River Blvd." WHERE id="4116"');
         $this->execute('UPDATE events SET location="AMC Showplace Muncie 12" WHERE id="3421"');
         $this->execute('UPDATE events SET location="Ball Memorial Hospital", location_details="Auditorium" WHERE id="30"');
+        $this->execute('UPDATE events SET location="Cardinal Greenway Depot/Trail" WHERE location like "Cardinal Greenway Depot%" OR location="Cardinal Greenways, Wysor Street Depot"');
+        $this->execute('UPDATE events SET location="Carnagie Library" WHERE location like "Carnagie Library%"');
+        $this->execute('UPDATE events SET location="Delaware County Fairgrounds", location_details="Community Building" WHERE id="1563"');
+        $this->execute('UPDATE events SET location="Delaware County Fairgrounds" WHERE location="Delaware County Fair Grounds"');
+        $this->execute('UPDATE events SET location="Elm Street Brewing Company" WHERE location="Elm Street Brew Pub"');
+        $this->execute('UPDATE events SET location="Elm Street Brewing Company" WHERE location="Elm Street Brewing Company."');
+        $this->execute('UPDATE events SET location="Full Circle Arts Co-op" WHERE location like "Full Circle Arts Co-op%"');
+        $this->execute('UPDATE events SET location="Gallery 308" WHERE location="GALLERY 308"');
+        $this->execute('UPDATE events SET location="Gibson Roller Skating Arena" WHERE location like "Gibson%"');
+        $this->execute('UPDATE events SET location="Glick Center for Glass" WHERE location like "Glick%"');
 
         // oh wow, here's all the different ways ppl have learned to enter BSU buildings over the years
         $this->execute('UPDATE events SET location="Art and Journalism Building, Ball State University", location_details="Room 101", address="1001 N. McKinley Ave." WHERE id="1011"');
@@ -37,8 +47,9 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Architecture Building, Ball State University", location_details="Room 100" WHERE id="183" OR id="1562" OR id="1289"');
 
         $this->execute('UPDATE events SET location="Museum of Art, Ball State University", location_details="Room 217" WHERE location="Art Museum Room 217, Ball State University"');
-        $this->execute('UPDATE events SET location="Museum of Art, Ball State University" WHERE id="129" OR id="158" OR location="Ball State Museum of Art" OR location="Ball State University Museum of Art" OR location="Museum of Art, Ball State University, Ball State University" OR location="Museum of Art, Ball State University, Fine Arts Building"');
-        $this->execute('UPDATE events SET location="Museum of Art, Ball State University", location_details="Recital Hall" WHERE id="1490"');
+        $this->execute('UPDATE events SET location="Museum of Art, Ball State University" WHERE id="129" OR id="158" OR location="Ball State Museum of Art" OR location="Ball State University Museum of Art" OR location="Museum of Art, Ball State University, Ball State University" OR location="Museum of Art, Ball State University, Fine Arts Building" OR location like "David Owsley Museum of Art%"');
+        $this->execute('UPDATE events SET location="Museum of Art, Ball State University", location_details="Recital Hall" WHERE id="1490" OR id="1709"');
+        $this->execute('UPDATE events SET location="Museum of Art, Ball State University", location_details="Brown Study Room" WHERE id="1113"');
 
         $this->execute('UPDATE events SET location="Arts Terrace, Ball State University", address="2021 Riverside Ave." WHERE location="BSU Arts Terrace" OR location="Ball State University Arts Terrace"');
 
@@ -46,6 +57,11 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Bracken Library, Ball State University", location_details="Room 201" WHERE id="695" OR id="427"');
         $this->execute('UPDATE events SET location="Bracken Library, Ball State University", location_details="Room 215" WHERE id="1166"');
         $this->execute('UPDATE events SET location="Bracken Library, Ball State University" WHERE location="Bracken Library"');
+
+        $this->execute('UPDATE events SET location="Burkhardt Building, Ball State University", location_details="Room 220" WHERE location like "Burkhardt Building rm 220%"');
+        $this->execute('UPDATE events SET location="Burkhardt Building, Ball State University", location_details="Room 109" WHERE id="1725"');
+        $this->execute('UPDATE events SET location="Burkhardt Building, Ball State University" WHERE id="950" OR id="949"');
+        $this->execute('UPDATE events SET location="Burkhardt Building, Ball State University", location_details="Room 108" WHERE id="331" OR id="332"');
 
         $this->execute('UPDATE events SET location="Cooper Physical Science Building, Ball State University", location_details="Room 160" WHERE id="1291"');
 
@@ -56,9 +72,14 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Worthen Arena, Ball State University", location_details="Lounge" WHERE id="1290"');
         $this->execute('UPDATE events SET location="Worthen Arena, Ball State University" WHERE id="4449"');
 
+        $this->execute('UPDATE events SET location="Varsity Softball Complex, Ball State University" WHERE title="BSU Women\'s Softball"');
+        $this->execute('UPDATE events SET location="Anthony Recreation Fields, Ball State University" WHERE title="Ball State Women\'s Soccer"');
+        $this->execute('UPDATE events SET location="Briner Sports Complex, Ball State University" WHERE title="Ball State Field Hockey"');
+        $this->execute('UPDATE events SET location="Aquatic Center, Ball State University" WHERE id="4316"');
+
         $this->execute('UPDATE events SET location="Frog Baby, Ball State University" WHERE id="2207"');
 
-        $this->execute('UPDATE events SET location="Letterman Building, Ball State University", location_details="Room 125" WHERE id="526"');
+        $this->execute('UPDATE events SET location="Letterman Building, Ball State University", location_details="Room 125" WHERE id="526" OR id="3325" OR location="Ball State, LB 125"');
 
         $this->execute('UPDATE events SET location="Ball Gymnasium, Ball State University" WHERE id="4118"');
 
@@ -69,6 +90,9 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Multicultural Center, Ball State University" WHERE id="407"');
 
         $this->execute('UPDATE events SET location="Teachers College, Ball State University", location_details="Room 102" WHERE id="1294"');
+        $this->execute('UPDATE events SET location="Teachers College, Ball State University", location_details="Room 200B" WHERE id="452"');
+
+        $this->execute('UPDATE events SET location="E.B. and Bertha C. Ball Center" WHERE location like "E.B.%"');
 
         $this->execute('UPDATE events SET location="Student Center, Ball State University" WHERE location="BSU Student Center" OR location="BSU Student Center, Registration on Second Floor" OR id="2021"');
         $this->execute('UPDATE events SET location="Student Center, Ball State University", location_details="Room 310" WHERE location="BSU Student Center room 310" OR id="288"');
@@ -78,10 +102,11 @@ class CreatingLocationSlugForEvents extends AbstractMigration
         $this->execute('UPDATE events SET location="Student Center, Ball State University", location_details="Rooms 310A & B" WHERE location="BSU Student Center, Rooms 310A and B"');
         $this->execute('UPDATE events SET location="Student Center, Ball State University", location_details="Outside" WHERE id="2049"');
         $this->execute('UPDATE events SET location="Student Center, Ball State University", location_details="Ballroom" WHERE id="2234" OR id="2235"');
+        $this->execute('UPDATE events SET location="Student Center, Ball State University", location_details="Cardinal Hall" WHERE id="1675"');
 
         $this->execute('UPDATE events SET location="Ball State University (General)" WHERE id="1300"');
 
-        $this->execute('UPDATE events SET location="Multiple Locations" WHERE series_id="275"');
+        $this->execute('UPDATE events SET location="Multiple Locations" WHERE series_id="275" OR id="4991" OR id="4858" OR id="4276" OR id="4554" OR location like "Downtown and the Ball State%"');
 
         $events = $this->table('events');
         $events
