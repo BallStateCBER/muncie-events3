@@ -24,9 +24,14 @@ class CreatingLocationSlugForEvents extends AbstractMigration
             $id = $event['id'];
             $locationSlug = strtolower($event['location']);
             $locationSlug = substr($locationSlug, 0, 20);
+            $locationSlug = str_replace('/', ' ', $locationSlug);
             $locationSlug = preg_replace("/[^A-Za-z0-9 ]/", '', $locationSlug);
+            $locationSlug = str_replace("   ", ' ', $locationSlug);
             $locationSlug = str_replace("  ", ' ', $locationSlug);
             $locationSlug = str_replace(' ', '-', $locationSlug);
+            if (substr($locationSlug, -1) == '-') {
+                $locationSlug = substr($locationSlug, 0, -1);
+            }
             $this->execute('UPDATE events SET location_slug="' . $locationSlug . '" WHERE id="' . $id . '"');
         }
     }
