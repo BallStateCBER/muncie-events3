@@ -988,9 +988,14 @@ class EventsController extends AppController
     {
         $locationSlug = strtolower($location);
         $locationSlug = substr($locationSlug, 0, 20);
+        $locationSlug = str_replace('/', ' ', $locationSlug);
         $locationSlug = preg_replace("/[^A-Za-z0-9 ]/", '', $locationSlug);
+        $locationSlug = str_replace("   ", ' ', $locationSlug);
         $locationSlug = str_replace("  ", ' ', $locationSlug);
         $locationSlug = str_replace(' ', '-', $locationSlug);
+        if (substr($locationSlug, -1) == '-') {
+            $locationSlug = substr($locationSlug, 0, -1);
+        }
 
         return $locationSlug;
     }
