@@ -370,7 +370,7 @@ class EventsControllerTest extends ApplicationTest
         $event = $this->Events->find()
             ->where(['location' => 'Placeholder Place'])
             ->first();
-        $this->get('/location/Placeholder%20Place');
+        $this->get('/location/placeholder-place');
         $this->assertResponseOk();
         $this->assertResponseContains($event['title']);
         $this->assertResponseContains('Placeholder Place');
