@@ -583,7 +583,7 @@ class EventsTable extends Table
         $adds = [];
         $locs = [];
         foreach ($locations as $location) {
-            $locs[] = $location->location;
+            $locs[] = trim($location->location);
             $adds[] = $location->address;
         }
         $retval = array_combine($locs, $adds);
@@ -606,8 +606,7 @@ class EventsTable extends Table
         $slugs = [];
         $locs = [];
         foreach ($locations as $location) {
-            $loc = trim($location->location);
-            $locs[] = $loc;
+            $locs[] = trim($location->location);
             $slugs[] = $location->location_slug;
         }
         $retval = array_combine($locs, $slugs);
