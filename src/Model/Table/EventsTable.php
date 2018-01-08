@@ -611,6 +611,7 @@ class EventsTable extends Table
         }
         $retval = array_combine($locs, $slugs);
         ksort($retval);
+        dd($retval);
 
         return $retval;
     }
