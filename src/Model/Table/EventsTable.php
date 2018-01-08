@@ -606,12 +606,12 @@ class EventsTable extends Table
         $slugs = [];
         $locs = [];
         foreach ($locations as $location) {
-            $locs[] = $location->location;
+            $loc = trim($location->location);
+            $locs[] = $loc;
             $slugs[] = $location->location_slug;
         }
         $retval = array_combine($locs, $slugs);
         ksort($retval);
-        dd($retval);
 
         return $retval;
     }
