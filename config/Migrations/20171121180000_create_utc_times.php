@@ -36,8 +36,7 @@ class CreateUtcTimes extends AbstractMigration
             $endVal =
                 date('Y-m-d', strtotime($event['date'] . ' ' . $event['time_end'] . $dst)) . ' ' . date('H:i:s', strtotime($event['date'] . ' ' . $event['time_end'] . $dst));
 
-            $end = '';
-            if ($endVal == '0000-00-00 00:00:00' || $endVal == null || $event['time_end'] == null) {
+            if ($endVal == '0000-00-00 00:00:00' || $endVal == null || $event['time_end'] == '00:00:00') {
                 $this->execute("UPDATE events SET start='$start', end=null WHERE id='$id'");
             } elseif ($endVal < $start) {
                 $end =

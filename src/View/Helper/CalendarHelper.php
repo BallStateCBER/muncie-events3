@@ -76,7 +76,7 @@ class CalendarHelper extends Helper
         } else {
             $retval = date('g:ia', strtotime($startStamp));
         }
-        if ($event['end']) {
+        if ($event['end'] && !empty($event['end'])) {
             $endStamp = $event['end'];
             if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
                 $retval .= ' to ' . date('ga', strtotime($endStamp));
