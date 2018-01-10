@@ -235,6 +235,14 @@
                             'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
                         ]); ?>
                         <a href="#" id="eventform_noaddress" <?= $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
+                        <a href="#" title="In order to keep location lists neat & unified, please take care to verify the name of your event location." id="location_tips">Ball State location?</a>
+                        <?php
+                        $this->Js->buffer("
+                            $('#location_tips').tooltip().click(function(event) {
+                            event.preventDefault();
+                            });
+                        ");
+                        ?>
                     </div>
                 </td>
             </tr>

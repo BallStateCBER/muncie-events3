@@ -110,7 +110,7 @@ use Cake\Utility\Inflector;
                                             <?= __n('This event has', 'These events have', $count); ?>
                                             been edited since being posted.
                                         </strong>
-                                    <?php endif; ?>
+                                    <?php endif ?>
                                 </td>
                             </tr>
                         <?php endif; ?>
