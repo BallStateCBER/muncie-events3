@@ -751,19 +751,18 @@ class EventsController extends AppController
         /* Find sets of identical events (belonging to the same series and with the same modified date)
          * and remove all but the first */
         $identicalSeries = [];
-        $locationNew = [];
         foreach ($unapproved as $k => $event) {
             $event = $this->Events->setEasternTimes($event);
-            if (!isset($event->series_id)) {
-                continue;
-            }
-            $locationNew[$k] = 1;
+            $event['location_new'] = 1;
             $loc = $this->Events->find()
                 ->where(['location' => $event['location']])
-                ->andWhere(['user_id NOT' => $event['user_id']])
+                ->andWhere(['user_id !=' => $event['user_id']])
                 ->count();
             if ($loc > 1) {
-                $locationNew[$k] = 0;
+                $event['location_new'] = 0;
+            }
+            if (!isset($event->series_id)) {
+                continue;
             }
             $eventId = $event->id;
             $seriesId = $event->event_series['id'];
@@ -776,7 +775,6 @@ class EventsController extends AppController
         $this->set([
             'titleForLayout' => 'Review Unapproved Content',
             'unapproved' => $unapproved,
-            'locationNew' => $locationNew,
             'identicalSeries' => $identicalSeries
         ]);
     }

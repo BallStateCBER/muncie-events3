@@ -166,6 +166,9 @@ use Cake\Utility\Inflector;
                                     </th>
                                     <td>
                                         <?= $event->$var; ?>
+                                        <?php if ($var == 'location' && $event['location_new'] == 1): ?>
+                                            <br /><b style="color:#c70000;">Note: this is a new location. Please review to make sure that the location name, address, and details are correct!</b>
+                                        <?php endif ?>
                                     </td>
                                 </tr>
                             <?php endif; ?>
