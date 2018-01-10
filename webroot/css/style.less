@@ -1928,16 +1928,22 @@ table.calendar {
     }
     #location_tips {
         display: block;
+        color: #0b54a6;
+        cursor: pointer;
+        float: right;
         margin-left: 10px;
         position: relative;
+        text-align: right;
         @media @x-large {
             display: inline-block;
-            left: 33%;
         }
         @media @large {
             display: inline-block;
-            left: 33%;
         }
+    }
+    #location_tips:hover {
+        color: #C85028;
+        text-decoration: underline;
     }
     .ui-datepicker-calendar td {
         border: 1px solid transparent;

@@ -235,12 +235,31 @@
                             'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
                         ]); ?>
                         <a href="#" id="eventform_noaddress" <?= $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
-                        <a href="#" title="In order to keep location lists neat & unified, please take care to verify the name of your event location." id="location_tips">Ball State location?</a>
+                        <a id="location_tips" data-toggle="popover" title="List of Ball State locations" data-content="
+                            Put room numbers in 'location details', and format location names as such:
+                            <br />
+                            <i>[building name], Ball State University</i>.
+                            <br />
+                            <i>e.g. Art and Journalism Building, Ball State University, as opposed to 'AJ 175' or 'BSU AJ'.</i>
+                            <br />
+                            <a href='https://cms.bsu.edu/map/building-list'>Click here</a> for a list of Ball State location names.
+                            <a data-toggle='collapse' href='#collapseExample' role='button' aria-expanded='false' aria-controls='collapseExample'>
+                                Why so many rules?
+                            </a>
+                            <div class='collapse' id='collapseExample'>
+                                <div class='card card-body'>
+                                    Ball State has numerous locations that can be described many different ways. However, in order to keep
+                                    our location list neat & uniform, we ask that location names, room numbers, and details be looked up and formatted
+                                    accordingly. By keeping our list tidy, it makes promoting new events,
+                                    and archiving old events, much simpler.
+                                </div>
+                            </div>
+                        ">Ball State location?</a>
                         <?php
                         $this->Js->buffer("
-                            $('#location_tips').tooltip().click(function(event) {
-                            event.preventDefault();
-                            });
+                            $(function () {
+                            $('[data-toggle=\"popover\"]').popover({html:true})
+                            })
                         ");
                         ?>
                     </div>
