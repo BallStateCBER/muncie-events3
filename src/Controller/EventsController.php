@@ -753,6 +753,7 @@ class EventsController extends AppController
         $identicalSeries = [];
         $locationNew = [];
         foreach ($unapproved as $k => $event) {
+            $event = $this->Events->setEasternTimes($event);
             if (!isset($event->series_id)) {
                 continue;
             }

@@ -130,7 +130,7 @@ use Cake\Utility\Inflector;
                                 <?php endif; ?>
                             </td>
                         </tr>
-                        <?php if ($created != $modified): ?>
+                        <?php if ($created != $modified && $modified != '1970-01-01'): ?>
                             <tr>
                                 <th>
                                     Updated

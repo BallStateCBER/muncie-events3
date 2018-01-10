@@ -71,16 +71,15 @@ class CalendarHelper extends Helper
     {
         $this->Events = new EventsTable();
         $startStamp = $event['start'];
-        $dst = $this->Events->setDaylightSavings($event);
         if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
-            $retval = date('ga', strtotime($startStamp . $dst));
+            $retval = date('ga', strtotime($startStamp));
         } else {
-            $retval = date('g:ia', strtotime($startStamp. $dst));
+            $retval = date('g:ia', strtotime($startStamp));
         }
         if ($event['end']) {
             $endStamp = $event['end'];
             if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
-                $retval .= ' to ' . date('ga', strtotime($endStamp . $dst));
+                $retval .= ' to ' . date('ga', strtotime($endStamp));
             }
         }
 
