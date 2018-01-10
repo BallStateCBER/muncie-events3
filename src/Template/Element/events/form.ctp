@@ -242,7 +242,8 @@
                             <br />
                             <i>e.g. Art and Journalism Building, Ball State University, as opposed to 'AJ 175' or 'BSU AJ'.</i>
                             <br />
-                            <a href='https://cms.bsu.edu/map/building-list'>Click here</a> for a list of Ball State location names.
+                            <a href='https://cms.bsu.edu/map/building-list'>Click here<span class='sr-only'>for a list of Ball State location names.</span></a>
+                            for a list of Ball State location names.
                             <a data-toggle='collapse' href='#collapseExample' role='button' aria-expanded='false' aria-controls='collapseExample'>
                                 Why so many rules?
                             </a>
