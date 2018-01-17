@@ -49,8 +49,7 @@ class ImagesController extends AppController
         $this->render('/Pages/blank');
         $uploadDir = Configure::read('App.eventImagePath') . 'full' . DS;
         $fileTypes = ['jpg', 'jpeg', 'gif', 'png'];
-        $verifyToken = md5(Configure::read('App.upload_verify_token') . $_POST['timestamp']);
-        if (!empty($_FILES) && $_POST['token'] == $verifyToken) {
+        if (!empty($_FILES)) {
             $tempFile = $_FILES['Filedata']['tmp_name'];
             $imageId = $this->Images->getNextId();
             $fileParts = pathinfo($_FILES['Filedata']['name']);

@@ -115,11 +115,9 @@ $helpers = ['Html'];
 ?>
 <script>
     ImageManager.setupUpload({
-        token: '<?= md5(Configure::read('App.upload_verify_token').time()) ?>',
         user_id: '<?= $userId ?>',
         event_id: "<?= (isset($event->id) ? $event->id : 'null') ?>",
         filesize_limit: '<?= $manual_filesize_limit ?>B',
-        timestamp: "<?= time() ?>",
         event_img_base_url: '<?= Configure::read('App.eventImageBaseUrl') ?>'
     });
     ImageManager.user_id = <?= $userId ?>;

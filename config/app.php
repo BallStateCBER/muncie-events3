@@ -78,8 +78,7 @@ $config = [
             'locales' => [APP . 'Locale' . DS],
         ],
         'eventImageBaseUrl' => env('EVENT_IMG_BASE_URL', '/img/events/'),
-        'eventImagePath' => env('EVENT_IMG_PATH'),
-        'upload_verify_token' => 'wNsTlYkTrAsDi'
+        'eventImagePath' => env('EVENT_IMG_PATH')
     ],
 
     /**
