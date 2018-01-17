@@ -1,5 +1,6 @@
 <?php
 use Cake\Core\Configure;
+
 // Load variables from .env file
 try {
     josegonzalez\Dotenv\Loader::load([
