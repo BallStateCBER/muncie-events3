@@ -1,7 +1,5 @@
 <?php
-
 use Cake\Core\Configure;
-
 // Load variables from .env file
 try {
     josegonzalez\Dotenv\Loader::load([
@@ -21,7 +19,6 @@ try {
         'raiseExceptions' => false
     ]);
 }
-
 $config = [
     /**
      * Debug Level:
@@ -32,8 +29,7 @@ $config = [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => env('DEBUG'),
-
+    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
     /**
      * Configure basic information about the application.
      *
@@ -80,7 +76,6 @@ $config = [
         'eventImageBaseUrl' => env('EVENT_IMG_BASE_URL', '/img/events/'),
         'eventImagePath' => env('EVENT_IMG_PATH')
     ],
-
     /**
      * Security and encryption configuration
      *
@@ -91,7 +86,6 @@ $config = [
     'Security' => [
         'salt' => env('SECURITY_SALT'),
     ],
-
     /**
      * Apply timestamps with the last modified time to static assets (js, css, images).
      * Will append a querystring parameter containing the time the file was modified.
@@ -103,7 +97,6 @@ $config = [
     'Asset' => [
         // 'timestamp' => true,
     ],
-
     /**
      * Configure the cache adapters.
      */
@@ -112,7 +105,6 @@ $config = [
             'className' => 'File',
             'path' => CACHE,
         ],
-
         /**
          * Configure the cache used for general framework caching. Path information,
          * object listings, and translation cache files are stored with this
@@ -125,7 +117,6 @@ $config = [
             'serialize' => true,
             'duration' => '+2 minutes',
         ],
-
         /**
          * Configure the cache for model and datasource caches. This cache
          * configuration is used to store schema descriptions, and table listings
@@ -139,7 +130,6 @@ $config = [
             'duration' => '+2 minutes',
         ]
     ],
-
     /**
      * Configure the Error and Exception handlers used by your application.
      *
@@ -176,7 +166,6 @@ $config = [
         'log' => true,
         'trace' => true,
     ],
-
     /**
      * Email configuration.
      *
@@ -196,27 +185,25 @@ $config = [
      * appropriate file to src/Mailer/Transport. Transports should be named
      * 'YourTransport.php', where 'Your' is the name of the transport.
      */
-     'EmailTransport' => [
-         'Smtp' => [
-             'host' => env('EMAIL_HOST'),
-             'port' => env('EMAIL_PORT'),
-             'username' => env('EMAIL_USERNAME'),
-             'password' => env('EMAIL_PASSWORD'),
-             'className' => 'Smtp'
-         ],
-
-         'Debug' => [
-             'className' => 'Debug',
-             'host' => 'localhost',
-             'port' => 25,
-             'timeout' => 30,
-             'username' => null,
-             'password' => null,
-             'client' => null,
-             'tls' => false
-         ],
-     ],
-
+    'EmailTransport' => [
+        'Smtp' => [
+            'host' => env('EMAIL_HOST'),
+            'port' => env('EMAIL_PORT'),
+            'username' => env('EMAIL_USERNAME'),
+            'password' => env('EMAIL_PASSWORD'),
+            'className' => 'Smtp'
+        ],
+        'Debug' => [
+            'className' => 'Debug',
+            'host' => 'localhost',
+            'port' => 25,
+            'timeout' => 30,
+            'username' => null,
+            'password' => null,
+            'client' => null,
+            'tls' => false
+        ],
+    ],
     /**
      * Email delivery profiles
      *
@@ -277,7 +264,6 @@ $config = [
             'log' => true
         ]
     ],
-
     /**
      * Connection information used by the ORM to connect
      * to your application's datastores.
@@ -306,7 +292,6 @@ $config = [
             'flags' => [],
             'cacheMetadata' => true,
             'log' => false,
-
             /**
              * Set identifier quoting to true if you are using reserved words or
              * special characters in your table or column names. Enabling this
@@ -316,7 +301,6 @@ $config = [
              * manipulated before being executed.
              */
             'quoteIdentifiers' => false,
-
             /**
              * During development, if using MySQL < 5.6, uncommenting the
              * following line could boost the speed at which schema metadata is
@@ -325,36 +309,33 @@ $config = [
              * which is the recommended value in production environments
              */
             //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
-
             'url' => env('DATABASE_URL', null),
         ],
-
         /**
          * The test connection is used during the test suite.
          */
-         'test' => [
-             'className' => 'Cake\Database\Connection',
-             'driver' => 'Cake\Database\Driver\Mysql',
-             'persistent' => false,
-             'host' => 'localhost',
-             //'port' => 'nonstandard_port_number',
-             'username' => env('DB_USERNAME') ?: 'root',
-             'password' => env('DB_PASSWORD') ?: null,
-             'database' => 'okbvtfr_testing',
-             'encoding' => 'utf8mb4',
-             'timezone' => 'UTC',
-             'cacheMetadata' => true,
-             'quoteIdentifiers' => false,
-             'log' => false,
-             //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
-             'url' => env('DATABASE_TEST_URL', null),
-         ],
+        'test' => [
+            'className' => 'Cake\Database\Connection',
+            'driver' => 'Cake\Database\Driver\Mysql',
+            'persistent' => false,
+            'host' => 'localhost',
+            //'port' => 'nonstandard_port_number',
+            'username' => env('DB_USERNAME') ?: 'root',
+            'password' => env('DB_PASSWORD') ?: null,
+            'database' => 'okbvtfr_testing',
+            'encoding' => 'utf8mb4',
+            'timezone' => 'UTC',
+            'cacheMetadata' => true,
+            'quoteIdentifiers' => false,
+            'log' => false,
+            //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
+            'url' => env('DATABASE_TEST_URL', null),
+        ],
     ],
-
     /**
      * Configures logging options
      */
-     'Log' => [
+    'Log' => [
         'debug' => [
             'className' => 'Cake\Log\Engine\FileLog',
             'path' => LOGS,
@@ -369,8 +350,7 @@ $config = [
             'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
             'url' => env('LOG_ERROR_URL', null),
         ],
-     ],
-
+    ],
     /**
      * Session configuration.
      *
