@@ -377,6 +377,7 @@ class EventsController extends AppController
                     'associated' => ['Images', 'Tags']
                 ])) {
                     $this->Flash->success(__('The event has been saved.'));
+                    $this->setImageData($event);
                     $this->sendSlackNotification('event', $event['id']);
 
                     return;

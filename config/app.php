@@ -32,7 +32,7 @@ $config = [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => true,
+    'debug' => env('DEBUG'),
 
     /**
      * Configure basic information about the application.
