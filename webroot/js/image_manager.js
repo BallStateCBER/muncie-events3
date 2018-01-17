@@ -179,8 +179,6 @@ var ImageManager = {
 			'fileSizeLimit': params.filesize_limit,
 			'buttonText': 'Click to select an image',
 			'formData': {
-				'timestamp': params.timestamp,
-				'token': params.token,
 				'user_id': params.user_id,
 				'event_id': params.event_id
 			},
