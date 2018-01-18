@@ -120,39 +120,6 @@ class TagsTable extends Table
     }
 
     /**
-     * get all tags with event counts
-     *
-     * @param array $conditions for which tags
-     * @return array $tags
-     */
-    public function getAllWithCounts($conditions)
-    {
-        $results = $this->Events->find()
-            ->select('id')
-            ->where($conditions)
-            ->contain('Tags')
-            ->enableHydration(false);
-
-        $tags = [];
-        foreach ($results as $result) {
-            foreach ($result['tags'] as $tag) {
-                if (isset($tags[$tag['name']])) {
-                    $tags[$tag['name']]['count']++;
-                    continue;
-                }
-                $tags[$tag['name']] = [
-                    'id' => $tag['id'],
-                    'name' => $tag['name'],
-                    'count' => 1
-                ];
-            }
-        }
-        ksort($tags);
-
-        return $tags;
-    }
-
-    /**
      * Returns the ID of the 'delete' tag group for tags to be deleted.
      *
      * @return int
@@ -342,7 +309,28 @@ class TagsTable extends Table
             $conditions['Events.category_id'] = $filter['categories'];
         }
 
-        $tags = $this->getAllWithCounts($conditions);
+        $results = $this->Events->find()
+            ->select('id')
+            ->where($conditions)
+            ->contain('Tags')
+            ->enableHydration(false);
+
+        $tags = [];
+        foreach ($results as $result) {
+            foreach ($result['tags'] as $tag) {
+                if (isset($tags[$tag['name']])) {
+                    $tags[$tag['name']]['count']++;
+                    continue;
+                }
+                $tags[$tag['name']] = [
+                    'id' => $tag['id'],
+                    'name' => $tag['name'],
+                    'count' => 1
+                ];
+            }
+        }
+        ksort($tags);
+
         if (empty($tags)) {
             return [];
         }
