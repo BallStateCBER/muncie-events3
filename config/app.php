@@ -396,3 +396,5 @@ $config = [
     ],
     'cookie_key' => env('COOKIE_ENCRYPTION_KEY', 'cookie key')
 ];
+
+return $config;
