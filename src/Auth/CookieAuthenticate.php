@@ -1,10 +1,12 @@
 <?php
 namespace App\Auth;
+
 use Cake\Auth\BaseAuthenticate;
 use Cake\Controller\ComponentRegistry;
 use Cake\Event\Event;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
+
 class CookieAuthenticate extends BaseAuthenticate
 {
     /**
@@ -46,6 +48,7 @@ class CookieAuthenticate extends BaseAuthenticate
             return false;
         }
         $user = $this->_findUser($cookie[$username], $cookie[$password]);
+
         return $user ? $user : false;
     }
 
