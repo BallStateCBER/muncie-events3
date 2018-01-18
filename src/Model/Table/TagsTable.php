@@ -131,7 +131,7 @@ class TagsTable extends Table
             ->select('id')
             ->where($conditions)
             ->contain('Tags')
-            ->toArray();
+            ->enableHydration(false);
 
         $tags = [];
         foreach ($results as $result) {
