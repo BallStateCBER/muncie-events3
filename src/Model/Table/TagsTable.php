@@ -153,41 +153,6 @@ class TagsTable extends Table
     }
 
     /**
-     * get categories and their associated tags
-     *
-     * @param string $direction of events
-     * @return array $retval
-     */
-    public function getCategoriesWithTags($direction = 'future')
-    {
-        $eventIds = [];
-        if ($direction == 'future') {
-            $eventIds = $this->Events->getFutureEventIds();
-        } elseif ($direction == 'past') {
-            $eventIds = $this->Events->getPastEventIds();
-        }
-        $taggedEventIds = $this->EventsTags->find();
-        $taggedEventIds
-            ->select(['event_id'])
-            ->join([
-                'table' => 'events',
-                'type' => 'LEFT',
-                'conditions' => 'events.id = event_id'
-            ])
-            ->where(['event_id in' => $eventIds]);
-        $results = $this->Events->find();
-        $results
-            ->select(['category_id'])
-            ->where(['Events.id in' => $taggedEventIds]);
-        $retval = [];
-        foreach ($results as $result) {
-            $retval[] = $result['category_id'];
-        }
-
-        return $retval;
-    }
-
-    /**
      * Returns the ID of the 'delete' tag group for tags to be deleted.
      *
      * @return int

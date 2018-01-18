@@ -45,20 +45,7 @@ class TagsTableTest extends ApplicationTest
         $counts = implode($counts);
         $this->assertContains('holding places', $counts);
     }
-    /**
-     * Test getCategoriesWithTags method
-     *
-     * @return void
-     */
-    public function testGetCategoriesWithTags()
-    {
-        $categories = $this->Tags->getCategoriesWithTags('past');
-        $categories = implode(',', $categories);
-        $this->assertContains('2', $categories);
-        $categories = $this->Tags->getCategoriesWithTags('future');
-        $categories = implode(',', $categories);
-        $this->assertContains('2', $categories);
-    }
+
     /**
      * Test getDeleteGroupId method
      *

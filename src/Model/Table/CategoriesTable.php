@@ -1,7 +1,9 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -82,5 +84,37 @@ class CategoriesTable extends Table
         }
 
         return $result['name'];
+    }
+
+    /**
+     * Returns category IDs that have associated future or past events
+     *
+     * @param string $direction Either 'future' or 'past'
+     * @return array $retval
+     */
+    public function getCategoriesWithEvents($direction = 'future')
+    {
+        $retval = [];
+        $categoriesTable = TableRegistry::get('Categories');
+        $dateComparison = ($direction == 'future') ? '>=' : '<';
+        foreach ($categoriesTable->find('list') as $categoryId => $category) {
+            $result = $this->Events->find()
+                ->select(['id'])
+                ->where([
+                    function ($exp) {
+                        /** @var QueryExpression $exp */
+
+                        return $exp->isNotNull('approved_by');
+                    },
+                    'category_id' => $categoryId,
+                    "Events.start $dateComparison" => date('Y-m-d H:i:s')
+                ])
+                ->limit(1);
+            if (!$result->isEmpty()) {
+                $retval[] = $categoryId;
+            }
+        }
+
+        return $retval;
     }
 }
