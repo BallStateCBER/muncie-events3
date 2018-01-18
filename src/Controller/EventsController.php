@@ -827,7 +827,7 @@ class EventsController extends AppController
         $alpha = range('a', 'z');
         $locsByFirstLetter = array_fill_keys($alpha, '');
         foreach ($locations as $name => $tag) {
-            $firstLetter = ctype_alpha($tag) ? $tag : '#';
+            $firstLetter = ctype_alpha($tag[0]) ? $tag[0] : '#';
             $locsByFirstLetter[$firstLetter][$tag] = $name;
         }
         $this->set([
