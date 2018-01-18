@@ -107,8 +107,6 @@ $helpers = ['Html'];
     </div>
 </div>
 
-</div>
-
 <?php
     echo $this->Html->script('/uploadifive/jquery.uploadifive.min.js', ['inline' => false]);
     echo $this->Html->css('/uploadifive/uploadifive.css', ['inline' => false]);
