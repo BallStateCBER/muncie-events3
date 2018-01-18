@@ -169,8 +169,7 @@ class TagsController extends AppController
             }
         }
 
-        $this->set(compact('tags'));
-        $this->viewBuilder()->setLayout('ajax');
+        $this->viewBuilder()->setLayout('blank');
     }
 
     /**
