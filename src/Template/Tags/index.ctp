@@ -153,7 +153,7 @@
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag['id'] . '_' . Inflector::slug($tag['name']),
+                    'slug' => $tag['id'] . '_' . \Cake\Utility\Text::slug($tag['name']),
                     'direction' => $direction
                 ],
                 [
@@ -175,7 +175,7 @@
                         [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag['id'] . '_' . Inflector::slug($tag['name']),
+                            'slug' => $tag['id'] . '_' . \Cake\Utility\Text::slug($tag['name']),
                             'direction' => $direction
                         ]
                     ) ?>
