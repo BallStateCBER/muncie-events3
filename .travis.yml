@@ -8,15 +8,13 @@ services:
 sudo: false
 
 php:
-  - 7.0.8
   - 7.1
 
 matrix:
   fast_finish: true
 
   include:
-    - php: 7.0.8
-      env: PHPCS=1
+    - env: PHPCS=1
 
 before_script:
   - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:~2.1; fi
