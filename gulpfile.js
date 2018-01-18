@@ -10,7 +10,7 @@ var _ = require('lodash');
 
 function customNotify(message) {
 	return notify({
-        title: 'Tax Calculator',
+        title: 'Muncie Events',
         message: function(file) {
             return message + ': ' + file.relative;
         }
