@@ -300,7 +300,7 @@ class TagsTable extends Table
     public function getWithCounts($filter = [], $sort = 'alpha')
     {
         $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
-        $getTags = function() use ($filter) {
+        $getTags = function () use ($filter) {
             // Apply filters and find tags
             $conditions = ['Events.published' => 1];
             if (in_array($filter['direction'], ['future', 'past'])) {
