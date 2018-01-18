@@ -54,9 +54,9 @@ class TagsControllerTest extends ApplicationTest
         }
         $this->assertResponseError();
 
-    /**
-     * Test adding a tag that already exists
-     */
+        /**
+         * Test adding a tag that already exists
+         */
 
         $this->get('/tags/manage');
         $this->assertResponseOk();
@@ -77,9 +77,9 @@ class TagsControllerTest extends ApplicationTest
         }
         $this->assertResponseError();
 
-    /**
-     * Test editing tags
-     */
+        /**
+         * Test editing tags
+         */
 
         $oldTag = $this->Tags->find()
             ->where(['name' => 'lourdes'])
@@ -96,9 +96,9 @@ class TagsControllerTest extends ApplicationTest
         $this->post('/tags/edit/lourdes', $edits);
         $this->assertResponseSuccess();
 
-    /**
-     * Test merging tags
-     */
+        /**
+         * Test merging tags
+         */
 
         $oldTag = $this->Tags->find()
             ->where(['name' => 'soothsayer lies'])
@@ -123,9 +123,9 @@ class TagsControllerTest extends ApplicationTest
             $this->EventsTags->delete($newJoin);
         }
 
-    /**
-     * Test deleting tags
-     */
+        /**
+         * Test deleting tags
+         */
 
         $this->get("/tags/remove/we%20the%20heathens");
         $this->assertResponseSuccess();
@@ -177,16 +177,16 @@ class TagsControllerTest extends ApplicationTest
         }
         $this->assertResponseError();
 
-    /**
-     * Test recovering tag tree structure
-     */
+        /**
+         * Test recovering tag tree structure
+         */
 
         $this->get('/tags/recover');
         $this->assertResponseOk();
 
-    /**
-     * Test the removeUnlistedUnused() action
-     */
+        /**
+         * Test the removeUnlistedUnused() action
+         */
 
         $this->get('/tags/remove-unlisted-unused');
         $this->assertResponseOk();
@@ -198,9 +198,9 @@ class TagsControllerTest extends ApplicationTest
             $this->assertResponseError();
         }
 
-    /**
-     * Test merging duplicates
-     */
+        /**
+         * Test merging duplicates
+         */
 
         for ($x = 0; $x <= 10; $x++) {
             $duplicate = $this->Tags->newEntity([
@@ -220,9 +220,9 @@ class TagsControllerTest extends ApplicationTest
             $this->assertResponseError();
         }
 
-    /**
-     * Test removing broken associations
-     */
+        /**
+         * Test removing broken associations
+         */
 
         $broken = $this->EventsTags->newEntity();
         $broken->event_id = 99999;
