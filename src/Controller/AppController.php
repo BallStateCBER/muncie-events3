@@ -78,7 +78,6 @@ class AppController extends Controller
         $this->loadComponent('Paginator');
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
-        $this->loadComponent('Cookie');
         $this->loadComponent(
             'Auth',
             [
@@ -104,6 +103,12 @@ class AppController extends Controller
                                 'Default',
                                 'Weak' => ['hashType' => 'sha1']
                             ]
+                        ]
+                    ],
+                    'Cookie' => [
+                        'fields' => [
+                            'username' => 'email',
+                            'password' => 'password'
                         ]
                     ]
                 ],
@@ -151,6 +156,15 @@ class AppController extends Controller
     {
         if (php_sapi_name() != 'cli') {
             $this->Security->requireSecure();
+        }
+
+        if (!$this->Auth->user() && $this->request->getCookie('CookieAuth')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+            } else {
+                $this->response = $this->response->withExpiredCookie('CookieAuth');
+            }
         }
     }
 

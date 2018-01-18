@@ -17,6 +17,7 @@ namespace App;
 use Cake\Core\Configure;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\EncryptedCookieMiddleware;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 
@@ -45,7 +46,12 @@ class Application extends BaseApplication
             ->add(AssetMiddleware::class)
 
             // Apply routing
-            ->add(RoutingMiddleware::class);
+            ->add(RoutingMiddleware::class)
+
+            ->add(new EncryptedCookieMiddleware(
+                ['CookieAuth'],
+                Configure::read('cookie_key')
+            ));
 
         return $middleware;
     }

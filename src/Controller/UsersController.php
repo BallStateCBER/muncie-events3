@@ -86,13 +86,14 @@ class UsersController extends AppController
 
                 // Remember login information
                 if ($this->request->getData('remember_me')) {
-                    $this->Cookie->configKey('User', [
-                        'expires' => '+1 year',
+                    $this->response = $this->response->withCookie('CookieAuth', [
+                        'value' => [
+                            'email' => $this->request->getData('email'),
+                            'password' => $this->request->getData('password'),
+                        ],
+                        'secure' => true,
+                        'expire' => strtotime('+1 year'),
                         'httpOnly' => true
-                    ]);
-                    $this->Cookie->write('User', [
-                        'email' => $this->request->getData('email'),
-                        'password' => $this->request->getData('password')
                     ]);
                 }
 
