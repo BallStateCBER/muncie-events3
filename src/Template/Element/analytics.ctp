@@ -1,14 +1,13 @@
 <?php
-use Cake\Core\Configure;
+    use Cake\Core\Configure;
 
-// Only invoke Google Analytics if an ID is found and the page is not being served from the development server
-$google_analytics_id = Configure::read('google_analytics_id');
-$not_localhost = isset($_SERVER['SERVER_NAME']) && mb_stripos($_SERVER['SERVER_NAME'], 'localhost') === false;
+    $googleAnalyticsId = Configure::read('google_analytics_id');
+    $debug = Configure::read('debug');
 ?>
-<?php if ($google_analytics_id && $not_localhost): ?>
+<?php if ($googleAnalyticsId && !$debug): ?>
 	<script type="text/javascript">
 		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', '<?php echo $google_analytics_id; ?>']);
+		_gaq.push(['_setAccount', '<?= $googleAnalyticsId ?>']);
 		_gaq.push(['_setDomainName', 'muncieevents.com']);
 		_gaq.push(['_trackPageview']);
 
