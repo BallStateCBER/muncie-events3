@@ -111,7 +111,6 @@ class TagsController extends AppController
             'directionAdjective',
             'category'
         ));
-        $this->loadModel('Categories');
         $this->set([
             'categories' => $this->Categories->find('list')->toArray(),
             'categoriesWithTags' => $this->Categories->getCategoriesWithEvents($direction)
