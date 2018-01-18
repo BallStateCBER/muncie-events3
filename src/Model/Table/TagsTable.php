@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Cache\Cache;
 use Cake\Network\Exception\InternalErrorException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -298,37 +299,43 @@ class TagsTable extends Table
      */
     public function getWithCounts($filter = [], $sort = 'alpha')
     {
-        // Apply filters and find tags
-        $conditions = ['Events.published' => 1];
-        if (in_array($filter['direction'], ['future', 'past'])) {
-            $dateComparison = $filter['direction'] == 'future' ? '>=' : '<';
-            $conditions["Events.start $dateComparison"] = date('Y-m-d H:i:s');
-        }
-        if (isset($filter['categories'])) {
-            $conditions['Events.category_id'] = $filter['categories'];
-        }
-
-        $results = $this->Events->find()
-            ->select('id')
-            ->where($conditions)
-            ->contain('Tags')
-            ->enableHydration(false);
-
-        $tags = [];
-        foreach ($results as $result) {
-            foreach ($result['tags'] as $tag) {
-                if (isset($tags[$tag['name']])) {
-                    $tags[$tag['name']]['count']++;
-                    continue;
-                }
-                $tags[$tag['name']] = [
-                    'id' => $tag['id'],
-                    'name' => $tag['name'],
-                    'count' => 1
-                ];
+        $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
+        $getTags = function() use ($filter) {
+            // Apply filters and find tags
+            $conditions = ['Events.published' => 1];
+            if (in_array($filter['direction'], ['future', 'past'])) {
+                $dateComparison = $filter['direction'] == 'future' ? '>=' : '<';
+                $conditions["Events.start $dateComparison"] = date('Y-m-d H:i:s');
             }
-        }
-        ksort($tags);
+            if (isset($filter['categories'])) {
+                $conditions['Events.category_id'] = $filter['categories'];
+            }
+
+            $results = $this->Events->find()
+                ->select('id')
+                ->where($conditions)
+                ->contain('Tags')
+                ->enableHydration(false);
+
+            $tags = [];
+            foreach ($results as $result) {
+                foreach ($result['tags'] as $tag) {
+                    if (isset($tags[$tag['name']])) {
+                        $tags[$tag['name']]['count']++;
+                        continue;
+                    }
+                    $tags[$tag['name']] = [
+                        'id' => $tag['id'],
+                        'name' => $tag['name'],
+                        'count' => 1
+                    ];
+                }
+            }
+            ksort($tags);
+
+            return $tags;
+        };
+        $tags = Cache::remember($cacheKey, $getTags, 'daily');
 
         if (empty($tags)) {
             return [];

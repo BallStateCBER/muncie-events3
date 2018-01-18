@@ -106,6 +106,11 @@ $config = [
             'className' => 'File',
             'path' => CACHE,
         ],
+        'daily' => [
+            'className' => 'File',
+            'duration' => '+1 day',
+            'path' => CACHE . 'daily' . DS,
+        ],
         /**
          * Configure the cache used for general framework caching. Path information,
          * object listings, and translation cache files are stored with this
