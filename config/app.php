@@ -85,7 +85,7 @@ $config = [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => env('SECURITY_SALT'),
+        'salt' => env('SECURITY_SALT', false),
     ],
     /**
      * Apply timestamps with the last modified time to static assets (js, css, images).
@@ -394,4 +394,5 @@ $config = [
         'defaults' => 'php',
         'timeout' => 1430 // 1 day
     ],
+    'cookie_key' => env('COOKIE_ENCRYPTION_KEY', 'cookie key')
 ];

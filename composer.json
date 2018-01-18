@@ -20,6 +20,7 @@
         "friendsofcake/fixturize": "dev-master",
         "dereuromark/cakephp-tools": "^1.4",
         "eluceo/ical": "^0.11.3",
+        "xety/cake3-cookieauth": "1.*",
         "dereuromark/cakephp-setup": "dev-master"
     },
     "require-dev": {
