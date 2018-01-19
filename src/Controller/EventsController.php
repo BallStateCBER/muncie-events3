@@ -1108,9 +1108,9 @@ class EventsController extends AppController
             $this->request = $this->request->withData('time_end', null);
         }
         // Auto-approve if posted by an admin
-        $userId = $this->request->session()->read('Auth.User.id') ?: null;
+        $userId = $this->request->getSession()->read('Auth.User.id') ?: null;
         $this->request = $this->request->withData('user_id', $userId);
-        if ($this->request->session()->read('Auth.User.role') == 'admin') {
+        if ($this->request->getSession()->read('Auth.User.role') == 'admin') {
             $this->request = $this->request->withData('approved_by', $userId);
             $this->request = $this->request->withData('published', true);
         }

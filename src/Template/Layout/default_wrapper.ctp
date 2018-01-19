@@ -91,7 +91,7 @@
     </script>
     <script>$.fn.modal || document.write('<script src="js/bootstrap.min.js">\x3C/script>')</script>
 
-    <script src="/js/script.js"></script>
+    <script src="/js/script.min.js"></script>
     <?= $this->fetch('script'); ?>
     <script type="text/javascript" src="/magnific-popup/jquery.magnific-popup.min.js"></script>
     <script type="text/javascript" src="/js/image_popups.js"></script>
