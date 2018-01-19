@@ -248,7 +248,7 @@ class EventsTable extends Table
             'conditions' => [
                 'start >' => $today,
                 'start <' => $tomorrow,
-                'published' => 1,
+                'Events.published' => 1,
                 $filters
             ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
