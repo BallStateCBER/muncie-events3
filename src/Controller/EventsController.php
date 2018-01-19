@@ -705,7 +705,7 @@ class EventsController extends AppController
                 'conditions' => [
                     'location_slug' => $slug,
                     "start $date" => date('Y-m-d H:i:s'),
-                    'published' => 1
+                    'Events.published' => 1
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => $dir]
@@ -1052,7 +1052,7 @@ class EventsController extends AppController
         $listing = $this->Events->find()
             ->where(['Events.id IN' => $eventId])
             ->andWhere(["Events.start $date" => date('Y-m-d')])
-            ->andWhere(['published' => 1])
+            ->andWhere(['Events.published' => 1])
             ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
             ->order(['start' => $dir]);
         $listing = $this->paginate($listing)->toArray();
