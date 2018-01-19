@@ -96,7 +96,7 @@ $config = [
      * enable timestamping regardless of debug value.
      */
     'Asset' => [
-        // 'timestamp' => true,
+        'timestamp' => 'force',
     ],
     /**
      * Configure the cache adapters.
