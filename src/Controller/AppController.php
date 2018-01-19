@@ -244,7 +244,6 @@ class AppController extends Controller
      */
     public function indexEvents($events)
     {
-        $this->loadModel('Events');
         foreach ($events as $event) {
             $event = $this->Events->setEasternTimes($event);
             $dates[] = $event->date->format('Y-m-d');

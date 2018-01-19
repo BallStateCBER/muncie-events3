@@ -294,7 +294,7 @@ class EventsTable extends Table
      */
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
-        $params = [];
+        $params = ['published' => 1];
         $dst = $this->getDaylightSavings($nextStartDate);
         $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
 
@@ -418,6 +418,7 @@ class EventsTable extends Table
             ])
             ->where(['date >' => $nextStartDate])
             ->andwhere(['date <=' => $endDate])
+            ->andWhere(['published' => 1])
             ->toArray();
 
         return $events;
