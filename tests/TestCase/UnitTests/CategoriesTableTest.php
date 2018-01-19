@@ -33,4 +33,19 @@ class CategoriesTableTest extends ApplicationTest
         $result = $this->Categories->getName(1);
         $this->assertEquals('General Events', $result);
     }
+
+    /**
+     * Test getCategoriesWithEvents method
+     *
+     * @return void
+     */
+    public function testGetCategoriesWithEvents()
+    {
+        $categories = $this->Categories->getCategoriesWithEvents('past');
+        $categories = implode(',', $categories);
+        $this->assertContains('2', $categories);
+        $categories = $this->Categories->getCategoriesWithEvents('future');
+        $categories = implode(',', $categories);
+        $this->assertContains('2', $categories);
+    }
 }

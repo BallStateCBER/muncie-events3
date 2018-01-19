@@ -281,7 +281,7 @@ class EventsController extends AppController
         $imageData = $this->request->getData('data.Image');
         if ($imageData) {
             foreach ($imageData as $imageId => $caption) {
-    /** @var Image $newImage */
+                /** @var Image $newImage */
                 $newImage = $this->Images->get($imageId);
                 $this->Events->Images->unlink($event, [$newImage]);
                 $delete = $this->request->getData("delete.$imageId");
@@ -434,7 +434,7 @@ class EventsController extends AppController
         if ($nextStartDate == null) {
             $nextStartDate = date('Y-m-d');
         }
-    /** @var Category $category */
+        /** @var Category $category */
         $category = $this->Events->Categories->find('all', [
             'conditions' => ['slug' => $slug]
         ])
@@ -1034,7 +1034,7 @@ class EventsController extends AppController
 
         $tagId = $this->Tags->getIdFromSlug($slug);
 
-    /** @var Tag $tag */
+        /** @var Tag $tag */
         $tag = $this->Events->Tags->find('all', [
             'conditions' => ['id' => $tagId],
             'fields' => ['id', 'name'],

@@ -29,36 +29,7 @@ class TagsTableTest extends ApplicationTest
     {
         parent::tearDown();
     }
-    /**
-     * Test getAllWithCounts method
-     *
-     * @return void
-     */
-    public function testGetAllWithCounts()
-    {
-        // looking for the tags associated with arts
-        $conditions = [
-            'category_id' => 2
-        ];
-        $counts = $this->Tags->getAllWithCounts($conditions);
-        $counts = array_keys($counts);
-        $counts = implode($counts);
-        $this->assertContains('holding places', $counts);
-    }
-    /**
-     * Test getCategoriesWithTags method
-     *
-     * @return void
-     */
-    public function testGetCategoriesWithTags()
-    {
-        $categories = $this->Tags->getCategoriesWithTags('past');
-        $categories = implode(',', $categories);
-        $this->assertContains('2', $categories);
-        $categories = $this->Tags->getCategoriesWithTags('future');
-        $categories = implode(',', $categories);
-        $this->assertContains('2', $categories);
-    }
+
     /**
      * Test getDeleteGroupId method
      *

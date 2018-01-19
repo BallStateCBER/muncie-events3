@@ -1,21 +1,24 @@
 <?php
-use Cake\Core\Configure;
+    use Cake\Core\Configure;
 
-// Only invoke Google Analytics if an ID is found and the page is not being served from the development server
-$google_analytics_id = Configure::read('google_analytics_id');
-$not_localhost = isset($_SERVER['SERVER_NAME']) && mb_stripos($_SERVER['SERVER_NAME'], 'localhost') === false;
+    $googleAnalyticsId = Configure::read('google_analytics_id');
+    $debug = Configure::read('debug');
+    $gaConfig = [
+        'page_location' => $this->request->getUri()->__toString(),
+        'page_path' => $this->request->getUri()->getPath()
+    ];
+    if (isset($titleForLayout) && $titleForLayout) {
+        $gaConfig['page_title'] = $titleForLayout;
+    }
 ?>
-<?php if ($google_analytics_id && $not_localhost): ?>
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', '<?php echo $google_analytics_id; ?>']);
-		_gaq.push(['_setDomainName', 'muncieevents.com']);
-		_gaq.push(['_trackPageview']);
-
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+<?php if ($googleAnalyticsId && !$debug): ?>
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $googleAnalyticsId ?>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<?= $googleAnalyticsId ?>', <?= json_encode($gaConfig) ?>);
+        gtag('event', 'page_view');
+    </script>
 <?php endif; ?>
