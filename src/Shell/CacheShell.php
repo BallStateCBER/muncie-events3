@@ -6,7 +6,6 @@ use App\Model\Table\TagsTable;
 use Cake\Cache\Cache;
 use Cake\Console\Shell;
 use Cake\ORM\TableRegistry;
-use Queue\Model\Table\QueuedJobsTable;
 
 class CacheShell extends Shell
 {
@@ -40,30 +39,28 @@ class CacheShell extends Shell
         $tagsTable = TableRegistry::get('Tags');
         $categories = $categoriesTable->find('list');
         $directions = ['future', 'past'];
-        foreach ($directions as $direction) {
-            // All categories
-            $filter = compact('direction');
+        $run = function ($filter) use ($tagsTable) {
             $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
             Cache::delete($cacheKey, 'daily');
             $start = microtime(true);
             $this->out('Populating ' . $cacheKey . '...');
             $tagsTable->getWithCounts($filter);
             $duration = round((microtime(true) - $start) * 1000);
-            $this->out("Done ({$duration}ms)");
+            $this->out("Done ({$duration}ms)\n");
+        };
+
+        foreach ($directions as $direction) {
+            // All categories
+            $filter = compact('direction');
+            $run($filter);
 
             // Specific categories
             foreach ($categories as $categoryId => $category) {
                 $filter['categories'] = $categoryId;
-                $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
-                Cache::delete($cacheKey, 'daily');
-                $start = microtime(true);
-                $this->out('Populating ' . $cacheKey . '...');
-                $tagsTable->getWithCounts($filter);
-                $duration = round((microtime(true) - $start) * 1000);
-                $this->out("Done ({$duration}ms)");
+                $run($filter);
             }
         }
-        $this->out();
+
         $this->out('Finished');
     }
 }
