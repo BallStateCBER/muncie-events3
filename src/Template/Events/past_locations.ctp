@@ -70,15 +70,17 @@ use Cake\Utility\Inflector;
         <?php if (empty($locsUnderLetter)): ?>
             Sorry. No locations have been set that begin with the letter "<?= strtoupper($letter) ?>"!
         <?php else: ?>
-            <?php foreach ($locsUnderLetter as $slug => $loc): ?>
-                <li>
-                    <?php echo $this->Html->link($loc, [
-                        'controller' => 'events',
-                        'action' => 'location',
-                        $slug,
-                        'past'
-                    ]); ?>
-                </li>
+            <?php foreach ($locsUnderLetter as $locs): ?>
+                <?php foreach ($locs as $slug => $loc): ?>
+                    <li>
+                        <?php echo $this->Html->link($loc, [
+                            'controller' => 'events',
+                            'action' => 'location',
+                            $slug,
+                            'past'
+                        ]); ?>
+                    </li>
+                <?php endforeach ?>
             <?php endforeach ?>
         <?php endif ?>
     </ul>
