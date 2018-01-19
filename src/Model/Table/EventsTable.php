@@ -248,6 +248,7 @@ class EventsTable extends Table
             'conditions' => [
                 'start >' => $today,
                 'start <' => $tomorrow,
+                'published' => 1,
                 $filters
             ],
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
@@ -294,7 +295,7 @@ class EventsTable extends Table
      */
     public function getFilteredEvents($nextStartDate, $endDate, $options)
     {
-        $params = ['published' => 1];
+        $params = ['Events.published' => 1];
         $dst = $this->getDaylightSavings($nextStartDate);
         $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
 
