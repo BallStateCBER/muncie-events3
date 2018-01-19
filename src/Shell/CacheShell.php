@@ -44,7 +44,7 @@ class CacheShell extends Shell
             // All categories
             $filter = compact('direction');
             $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
-            Cache::delete($cacheKey);
+            Cache::delete($cacheKey, 'daily');
             $start = microtime(true);
             $this->out('Populating ' . $cacheKey . '...');
             $tagsTable->getWithCounts($filter);
@@ -55,7 +55,7 @@ class CacheShell extends Shell
             foreach ($categories as $categoryId => $category) {
                 $filter['categories'] = $categoryId;
                 $cacheKey = 'getTagsWithCounts-' . implode('-', $filter);
-                Cache::delete($cacheKey);
+                Cache::delete($cacheKey, 'daily');
                 $start = microtime(true);
                 $this->out('Populating ' . $cacheKey . '...');
                 $tagsTable->getWithCounts($filter);
