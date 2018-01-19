@@ -48,7 +48,7 @@ class CacheShell extends Shell
             $start = microtime(true);
             $this->out('Populating ' . $cacheKey . '...');
             $tagsTable->getWithCounts($filter);
-            $duration = round((microtime(true) - $start) / 1000);
+            $duration = round((microtime(true) - $start) * 1000);
             $this->out("Done ({$duration}ms)");
 
             // Specific categories
@@ -59,7 +59,7 @@ class CacheShell extends Shell
                 $start = microtime(true);
                 $this->out('Populating ' . $cacheKey . '...');
                 $tagsTable->getWithCounts($filter);
-                $duration = round((microtime(true) - $start) / 1000);
+                $duration = round((microtime(true) - $start) * 1000);
                 $this->out("Done ({$duration}ms)");
             }
         }
