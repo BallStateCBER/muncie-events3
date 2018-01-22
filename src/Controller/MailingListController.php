@@ -40,7 +40,7 @@ class MailingListController extends AppController
         $this->Categories = TableRegistry::get('Categories');
         $this->Events = TableRegistry::get('Events');
 
-        $this->Auth->allow(['join', 'settings']);
+        $this->Auth->allow(['join', 'sendDaily', 'sendWeekly', 'settings']);
     }
 
     /**
