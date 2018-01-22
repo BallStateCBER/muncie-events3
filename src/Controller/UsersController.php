@@ -200,6 +200,11 @@ class UsersController extends AppController
         $this->set('_serialize', ['user']);
 
         if ($this->request->is('post')) {
+            if (!$this->Recaptcha->verify()) {
+                $this->Flash->error('Please check your Recaptcha box.');
+
+                return null;
+            }
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower($user['email']);
 

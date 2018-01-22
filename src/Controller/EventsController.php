@@ -367,6 +367,11 @@ class EventsController extends AppController
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
         if ($this->request->is(['patch', 'post', 'put'])) {
+            if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
+                $this->Flash->error('Please log in or check your Recaptcha box.');
+
+                return null;
+            }
             $this->uponFormSubmission();
             // count how many dates have been picked
             $dateInput = mb_strlen($this->request->getData('date'));
