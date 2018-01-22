@@ -140,7 +140,7 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // viewing users
     Router::connect(
-        "user/:id",
+        ".user/:id/*",
         ['controller' => 'users', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );

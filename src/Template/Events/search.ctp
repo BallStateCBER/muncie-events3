@@ -99,7 +99,7 @@ use Cake\Utility\Inflector;
 
     <?php elseif (!isset($this->request->getData('Event')['filter']) && empty($this->request->getData('Event')['filter'])): ?>
         <p class="alert alert-info">
-            No events have been found.
+            No upcoming events have been found.
         </p>
     <?php endif; ?>
 </div>
