@@ -155,6 +155,19 @@ class UsersTable extends Table
     }
 
     /**
+     *
+     */
+    public function getRecentUsersCount()
+    {
+       $retval = $this->find()
+           ->where(['created <=' => date('Y-m-d H:i:s')])
+           ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-3 days'))])
+           ->count();
+
+       return $retval;
+    }
+
+    /**
      * get the security hash for the password reset
      *
      * @param int $userId of user

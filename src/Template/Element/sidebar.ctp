@@ -24,6 +24,18 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                     <?php endif; ?>
                 </li>
                 <li>
+                    <?= $this->Html->link('Moderate New Users', [
+                        'plugin' => false,
+                        'controller' => 'users',
+                        'action' => 'moderate'
+                    ]); ?>
+                    <?php if ($recentUsersCount): ?>
+                        <span class="count">
+                            <?= $recentUsersCount; ?>
+                        </span>
+                    <?php endif; ?>
+                </li>
+                <li>
                     <?= $this->Html->link('Manage Tags', [
                         'plugin' => false,
                         'controller' => 'tags',

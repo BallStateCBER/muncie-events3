@@ -228,7 +228,8 @@ class AppController extends Controller
                     'upcomingTags' => $this->Tags->getUpcoming(),
                     'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
                 ],
-                'unapprovedCount' => $this->Events->getUnapproved()
+                'unapprovedCount' => $this->Events->getUnapproved(),
+                'recentUsersCount' => $this->Users->getRecentUsersCount()
             ]);
             $this->set(compact('fullBaseUrl'));
         }
