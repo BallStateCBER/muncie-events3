@@ -67,6 +67,11 @@ class UsersController extends AppController
         parent::beforeFilter($event);
     }
 
+    public function moderate()
+    {
+        $this->set('titleForLayout', 'Moderate new users');
+    }
+
     /**
      * login for users
      *
