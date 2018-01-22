@@ -67,11 +67,39 @@ class UsersController extends AppController
         parent::beforeFilter($event);
     }
 
+    /**
+     * moderate function for checking users
+     *
+     * @return null
+     */
     public function moderate()
     {
         $this->set('titleForLayout', 'Moderate new users');
         $users = $this->Users->getRecentUsers();
         $this->set(compact('users'));
+
+        return null;
+    }
+
+    /**
+     * setUserAsSpam function for setting users as spam
+     *
+     * @param int $id of spam
+     * @return null
+     */
+    public function setUserAsSpam($id)
+    {
+        $this->autoRender = false;
+        $user = $this->Users->get($id);
+        $user->password = 'spam account';
+        if ($this->Users->save($user)) {
+            $this->Flash->success(__('The user has been marked as spam.'));
+
+            return $this->redirect('/users/moderate');
+        }
+        $this->Flash->error(__('The user could not be marked as spam. Please, try again.'));
+
+        return $this->redirect(['action' => 'moderate']);
     }
 
     /**
