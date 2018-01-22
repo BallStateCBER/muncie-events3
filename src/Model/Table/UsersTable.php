@@ -176,12 +176,12 @@ class UsersTable extends Table
      */
     public function getRecentUsersCount()
     {
-       $retval = $this->find()
+        $retval = $this->find()
            ->where(['created <=' => date('Y-m-d H:i:s')])
            ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-3 days'))])
            ->count();
 
-       return $retval;
+        return $retval;
     }
 
     /**
