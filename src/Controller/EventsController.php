@@ -370,7 +370,7 @@ class EventsController extends AppController
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
                 $this->Flash->error('Please log in or check your Recaptcha box.');
 
-                return null;
+                return;
             }
             $this->uponFormSubmission();
             // count how many dates have been picked
