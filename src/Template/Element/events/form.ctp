@@ -421,7 +421,15 @@
                     </label>
                 </th>
                 <td>
-                    <?= $this->Form->submit('Submit', ['class'=>'btn btn-secondary']) ?>
+                    <?php if ($this->request->params['action'] == 'add' && !$this->request->session()->read('Auth.User.id')): ?>
+                        <?= $this->Form->submit('Send', [
+                            'class' => 'btn btn-secondary g-recaptcha',
+                            'data-sitekey' => '6LfA-0EUAAAAAJSFEzAbHW0JMpujjgNzhO0ibfF-',
+                            'data-callback' => 'YourOnSubmitFn'
+                        ]); ?>
+                    <?php else: ?>
+                        <?= $this->Form->submit('Submit', ['class'=>'btn btn-secondary']) ?>
+                    <?php endif ?>
                 </td>
             </tr>
         </tbody>

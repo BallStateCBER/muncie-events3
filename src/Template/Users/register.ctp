@@ -21,6 +21,10 @@
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
     <div class="g-recaptcha" data-sitekey="6Lcg6tkSAAAAALkenFi1dIQ5B-4BVLJur5hYl-2J"></div>
-    <?= $this->Form->button(__('Submit'), ['class' => 'btn']) ?>
+    <?= $this->Form->submit('Send', [
+        'class' => 'btn btn-secondary g-recaptcha',
+        'data-sitekey' => '6LfA-0EUAAAAAJSFEzAbHW0JMpujjgNzhO0ibfF-',
+        'data-callback' => 'YourOnSubmitFn'
+    ]); ?>
     <?= $this->Form->end() ?>
 </div>

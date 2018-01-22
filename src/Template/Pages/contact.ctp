@@ -54,6 +54,8 @@ use Cake\Core\Configure\Engine\PhpConfig;
 <?php endif; ?>
 <div class='form-group col-lg-8 col-xs-12'>
 <?= $this->Form->submit('Send', [
-    'class'=>'btn btn-secondary'
+    'class' => 'btn btn-secondary g-recaptcha',
+    'data-sitekey' => '6LfA-0EUAAAAAJSFEzAbHW0JMpujjgNzhO0ibfF-',
+    'data-callback' => 'YourOnSubmitFn'
 ]); ?>
 </div>
