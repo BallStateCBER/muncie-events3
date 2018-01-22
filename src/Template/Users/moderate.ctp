@@ -13,7 +13,7 @@
                     <ul class="actions">
                         <li>
                             <?php
-                            $url = ['controller' => 'users', 'action' => 'setUserAsSpam'];
+                            $url = ['controller' => 'users', 'action' => 'setUserAsSpam', $user->id];
                             echo $this->Form->postLink(
                                 $this->Html->image('icons/cross.png', ['alt' => 'Mark as Spam']).'Mark as Spam',
                                 $url,

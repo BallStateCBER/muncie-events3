@@ -245,4 +245,20 @@ class UsersTable extends Table
 
         return $retval;
     }
+
+    /**
+     * setUserAsSpam
+     *
+     * @param \App\Model\Entity\User|\Cake\Datasource\EntityInterface $user entity that is spam
+     * @return bool
+     */
+    public function setUserAsSpam($user)
+    {
+        $user['password'] = Configure::read('App.spamPassword');
+        if ($this->save($user)) {
+            return true;
+        }
+
+        return false;
+    }
 }

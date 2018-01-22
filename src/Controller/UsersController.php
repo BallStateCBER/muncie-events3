@@ -91,8 +91,7 @@ class UsersController extends AppController
     {
         $this->autoRender = false;
         $user = $this->Users->get($id);
-        $user->password = 'spam account';
-        if ($this->Users->save($user)) {
+        if ($this->Users->setUserAsSpam($user)) {
             $this->Flash->success(__('The user has been marked as spam.'));
 
             return $this->redirect('/users/moderate');
