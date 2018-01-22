@@ -25,7 +25,7 @@
                     </ul>
                     <table>
                         <?php if ($user->password == 'spam account'): ?>
-                            <tr class="spam">
+                            <tr class="alert alert-danger">
                                 <th>
                                     SPAM!
                                 </th>
