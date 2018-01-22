@@ -25,6 +25,9 @@ class UsersController extends AppController
             'resetPassword',
             'view'
         ]);
+        if ($this->request->getParam('action') === 'register') {
+            $this->loadComponent('Recaptcha.Recaptcha');
+        }
     }
 
     /**

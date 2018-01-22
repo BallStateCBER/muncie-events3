@@ -52,6 +52,9 @@ class EventsController extends AppController
         $this->loadComponent('Search.Prg', [
             'actions' => ['search']
         ]);
+        if ($this->request->getParam('action') === 'add') {
+            $this->loadComponent('Recaptcha.Recaptcha');
+        }
     }
     /**
      * Determines whether or not the user is authorized to make the current request

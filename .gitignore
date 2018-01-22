@@ -21,3 +21,6 @@
 
 # slack info
 /config/slack_webhook_url.php
+
+# recaptcha info
+/config/recaptcha.php

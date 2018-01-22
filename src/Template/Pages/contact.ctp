@@ -50,7 +50,7 @@ use Cake\Core\Configure\Engine\PhpConfig;
     ]); ?>
 </div>
 <?php if (!$this->request->session()->read('Auth.User')): ?>
-    <div class="g-recaptcha" data-sitekey="6Lcg6tkSAAAAALkenFi1dIQ5B-4BVLJur5hYl-2J"></div>
+    <?= $this->Recaptcha->display() ?>
 <?php endif; ?>
 <div class='form-group col-lg-8 col-xs-12'>
 <?= $this->Form->submit('Send', [

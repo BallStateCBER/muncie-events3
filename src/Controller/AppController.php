@@ -122,7 +122,6 @@ class AppController extends Controller
                 'blackHoleCallback' => 'forceSSL',
                 'validatePost' => false
             ]);
-            $this->loadComponent('Captcha.Captcha');
             /*if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
                 $this->loadComponent('AkkaFacebook.Graph', [
                     'app_id' => '496726620385625',

@@ -39,6 +39,9 @@ class PagesController extends AppController
          $this->Auth->allow([
              'about', 'contact', 'terms'
          ]);
+        if ($this->request->getParam('action') === 'contact') {
+            $this->loadComponent('Recaptcha.Recaptcha');
+        }
     }
 
     /**
@@ -71,7 +74,7 @@ class PagesController extends AppController
             $this->set($this->request->getData());
 
             $errors = $validator->errors($this->request->getData());
-            if (empty($errors)) {
+            if (empty($errors && ($this->Recaptcha->verify() || $this->request->getSession()))) {
                 $email = new Email('contact_form');
                 $email->setFrom([$this->request->getData('email') => $this->request->getData('name')])
                      ->setTo(Configure::read('admin_email'))
@@ -87,6 +90,10 @@ class PagesController extends AppController
 
                     return null;
                 }
+            } else {
+                $this->Flash->error('Did you remember to check your Recaptcha box?');
+
+                return null;
             }
         }
         $this->set([
