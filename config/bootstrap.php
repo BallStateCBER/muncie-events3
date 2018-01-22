@@ -196,3 +196,4 @@ Plugin::load('Josegonzalez/Upload');
 Plugin::load('Search');
 Plugin::load('Setup');
 Plugin::load('Migrations');
+Plugin::load('Recaptcha', ['routes' => true, 'bootstrap' => true]);

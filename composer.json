@@ -12,7 +12,7 @@
         "cakephp/plugin-installer": "*",
         "josegonzalez/dotenv": "dev-master",
         "oldskool/cakephp-js": "dev-master",
-        "ivanamat/cakephp3-captcha": "^1.0",
+        "cake17/cakephp-recaptcha": "dev-master",
         "akkaweb/cakephp-ckeditor": "dev-master",
         "akkaweb/cakephp-facebook": "dev-master",
         "josegonzalez/cakephp-upload": "^3.6",
