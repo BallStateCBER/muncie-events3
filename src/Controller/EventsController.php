@@ -1032,10 +1032,20 @@ class EventsController extends AppController
      *
      * @param string|null $slug tag slug
      * @param string|null $direction of results
-     * @return void
+     * @return null|\Cake\Http\Response
      */
     public function tag($slug = '', $direction = null)
     {
+        $str = filter_input(INPUT_SERVER, 'QUERY_STRING', FILTER_SANITIZE_STRING);
+        $pos = strpos($str, 'slug');
+
+        if ($pos !== false) {
+            $slugUrl = explode('=', $str);
+            $slu = $slugUrl[1];
+
+            return ($this->redirect("/events/tag/$slu"));
+        }
+
         $dir = $direction == 'past' ? 'ASC' : 'DESC';
         $date = $direction == 'past' ? '<' : '>=';
         $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
@@ -1082,6 +1092,8 @@ class EventsController extends AppController
         $this->set([
             'titleForLayout' => 'Tag: ' . ucwords($tag->name)
         ]);
+
+        return null;
     }
     /**
      * Shows the events taking place today
