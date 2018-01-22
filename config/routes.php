@@ -119,6 +119,12 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['controller' => 'events', 'action' => 'tag'],
         ['pass' => ['slug', 'direction']]
     );
+    // Tag
+    Router::connect(
+        "/tag/:slug",
+        ['controller' => 'events', 'action' => 'tag'],
+        ['pass' => ['slug']]
+    );
 
     // Tags
     Router::scope('/tags', ['controller' => 'tags'], function (RouteBuilder $routes) {
