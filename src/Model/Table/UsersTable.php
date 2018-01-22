@@ -155,7 +155,24 @@ class UsersTable extends Table
     }
 
     /**
+     * getRecentUsers method
      *
+     * @return array
+     */
+    public function getRecentUsers()
+    {
+        $retval = $this->find()
+            ->where(['created <=' => date('Y-m-d H:i:s')])
+            ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-3 days'))])
+            ->toArray();
+
+        return $retval;
+    }
+
+    /**
+     * getRecentUsersCount method
+     *
+     * @return int
      */
     public function getRecentUsersCount()
     {
