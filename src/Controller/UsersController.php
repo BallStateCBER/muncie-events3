@@ -70,6 +70,8 @@ class UsersController extends AppController
     public function moderate()
     {
         $this->set('titleForLayout', 'Moderate new users');
+        $users = $this->Users->getRecentUsers();
+        $this->set(compact('users'));
     }
 
     /**
