@@ -163,7 +163,8 @@ class UsersTable extends Table
     {
         $retval = $this->find()
             ->where(['created <=' => date('Y-m-d H:i:s')])
-            ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-3 days'))])
+            ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-2 days'))])
+            ->andWhere(['password !=' => Configure::read('App.spamPassword')])
             ->toArray();
 
         return $retval;
@@ -178,7 +179,8 @@ class UsersTable extends Table
     {
         $retval = $this->find()
            ->where(['created <=' => date('Y-m-d H:i:s')])
-           ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-3 days'))])
+           ->andWhere(['created >' => date('Y-m-d H:i:s', strtotime('-2 days'))])
+           ->andWhere(['password !=' => Configure::read('App.spamPassword')])
            ->count();
 
         return $retval;
