@@ -765,13 +765,15 @@ class TagsController extends AppController
                 $message .= '" because another tag (';
                 $message .= $oldTags;
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
-                return $this->Flash->error($message);
+                $this->Flash->error($message);
+
+                return null;
             }
             // Set flag to recover tag tree if necessary
             $tag = $this->Tags->find()
                 ->where(['id' => $this->request->data['id']])
                 ->first();
-            $previousParentId = $tag->parent_id;
+            $previousParentId = $tag['parent_id'];
             $newParentId = $this->request->data['parent_id'];
             $recoverTagTree = ($previousParentId != $newParentId);
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
@@ -781,45 +783,42 @@ class TagsController extends AppController
                 }
                 $message = 'Tag successfully edited.';
                 if ($this->request->data['listed'] && $tag->parent_id == 1012) {
-                    $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
+                    $message .= ' This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.';
                 }
-                return $this->Flash->success($message);
+                $this->Flash->success($message);
+
+                return null;
             }
-            return $this->renderMessage([
-                'message' => 'There was an error editing that tag.',
-                'class' => 'error'
-            ]);
+            $this->Flash->error('There was an error editing that tag.');
+
+            return null;
         } else {
             if (!$tagName) {
-                return $this->renderMessage([
-                    'title' => 'Tag Name Not Provided',
-                    'message' => 'Please try again. But with a tag name provided this time.',
-                    'class' => 'error'
-                ]);
+                $this->Flash->error('Please try again. But with a tag name provided this time.');
+
+                return null;
             }
             $result = $this->Tags->find()
                 ->where(['name' => $tagName])
                 ->first();
             if (empty($result)) {
-                return $this->renderMessage([
-                    'title' => 'Tag Not Found',
-                    'message' => "Could not find a tag with the exact tag name \"$tagName\".",
-                    'class' => 'error'
-                ]);
+                $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
+
+                return null;
             }
             if (count($result) > 1) {
                 $tagIds = [];
                 foreach ($result as $tag) {
                     $tagIds[] = $tag->id;
                 }
-                return $this->renderMessage([
-                    'title' => 'Duplicate Tags Found',
-                    'message' => "Tags with the following IDs are named \"$tagName\": ".implode(', ', $tagIds).'<br />You will need to merge them before editing.',
-                    'class' => 'error'
-                ]);
+                $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . " You will need to merge them before editing.");
+
+                return null;
             }
             $this->request->data = $result;
         }
+
+        return null;
     }
 
     /**
