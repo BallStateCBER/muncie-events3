@@ -740,19 +740,20 @@ class TagsController extends AppController
      * @param string|null $tagName name of the tag you wish to edit
      * @return null
      */
+
     public function edit($tagName = null)
     {
         if ($this->request->is('ajax')) {
             $this->viewBuilder()->setLayout('ajax');
         }
         if ($this->request->is('put') || $this->request->is('post')) {
-            $tagName = strtolower(trim($this->request->getData('name')));
-            $parentId = trim($this->request->getData('parent_id'));
-            if (empty($parentId)) {
-                $parentId = null;
+            $this->request->data['name'] = strtolower(trim($this->request->data['name']));
+            $this->request->data['parent_id'] = trim($this->request->data['parent_id']);
+            if (empty($this->request->data['parent_id'])) {
+                $this->request->data['parent_id'] = null;
             }
             $duplicates = $this->Tags->find()
-                ->where(['name' => $tagName])
+                ->where(['name' => $this->request->data['name']])
                 ->toArray();
             $oldTags = [];
             foreach ($duplicates as $duplicate) {
@@ -760,63 +761,65 @@ class TagsController extends AppController
             }
             if (!empty($duplicates)) {
                 $message = 'That tag\'s name cannot be changed to "';
-                $message .= $tagName;
+                $message .= $this->request->data['name'];
                 $message .= '" because another tag (';
-                $message .= print_r($oldTags);
+                $message .= $oldTags;
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
-                $this->Flash->error($message);
-
-                return null;
+                return $this->Flash->error($message);
             }
-
             // Set flag to recover tag tree if necessary
-            $tag = $this->Tags->get($this->request->getData('id'));
+            $tag = $this->Tags->find()
+                ->where(['id' => $this->request->data['id']])
+                ->first();
             $previousParentId = $tag->parent_id;
-            $newParentId = $parentId;
+            $newParentId = $this->request->data['parent_id'];
             $recoverTagTree = ($previousParentId != $newParentId);
-
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
-
             if ($this->Tags->save($tag)) {
                 if ($recoverTagTree) {
                     $this->Tags->recover();
                 }
                 $message = 'Tag successfully edited.';
-                if ($this->request->getData('listed') && $tag->parent_id == $this->Tags->getUnlistedGroupId()) {
+                if ($this->request->data['listed'] && $tag->parent_id == 1012) {
                     $message .= '<br /><strong>This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.</strong>';
                 }
-                $this->Flash->success($message);
-
-                return null;
+                return $this->Flash->success($message);
             }
-            $this->Flash->error('There was an error editing that tag.');
-
-            return null;
-        }
-        if (!$tagName) {
-            $this->Flash->error('Please try again, but with a tag name provided this time.');
-
-            return null;
-        }
-        $result = $this->Tags->find()
-            ->where(['name' => $tagName])
-            ->first();
-        if (empty($result)) {
-            $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
-
-            return null;
-        }
-        if (count($result) > 1) {
-            $tagIds = [];
-            foreach ($result as $tag) {
-                $tagIds[] = $tag->id;
+            return $this->renderMessage([
+                'message' => 'There was an error editing that tag.',
+                'class' => 'error'
+            ]);
+        } else {
+            if (!$tagName) {
+                return $this->renderMessage([
+                    'title' => 'Tag Name Not Provided',
+                    'message' => 'Please try again. But with a tag name provided this time.',
+                    'class' => 'error'
+                ]);
             }
-            $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . '<br />You will need to merge them before editing.');
-
-            return null;
+            $result = $this->Tags->find()
+                ->where(['name' => $tagName])
+                ->first();
+            if (empty($result)) {
+                return $this->renderMessage([
+                    'title' => 'Tag Not Found',
+                    'message' => "Could not find a tag with the exact tag name \"$tagName\".",
+                    'class' => 'error'
+                ]);
+            }
+            if (count($result) > 1) {
+                $tagIds = [];
+                foreach ($result as $tag) {
+                    $tagIds[] = $tag->id;
+                }
+                return $this->renderMessage([
+                    'title' => 'Duplicate Tags Found',
+                    'message' => "Tags with the following IDs are named \"$tagName\": ".implode(', ', $tagIds).'<br />You will need to merge them before editing.',
+                    'class' => 'error'
+                ]);
+            }
+            $this->request->data = $result;
         }
-
-        return null;
     }
 
     /**
