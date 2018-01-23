@@ -740,7 +740,6 @@ class TagsController extends AppController
      * @param string|null $tagName name of the tag you wish to edit
      * @return null
      */
-
     public function edit($tagName = null)
     {
         if ($this->request->is('ajax')) {
