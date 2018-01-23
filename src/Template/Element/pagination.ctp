@@ -4,7 +4,7 @@ if ($this->request->action) {
 }
 
 $detail = '';
-$direction = strtolower($direction);
+$direction = $this->request->getParam('action') != 'view' ? strtolower($direction) : '';
 $trait = '';
 if ($this->request->getParam('action') == 'location') {
     $detail = $location;
@@ -13,6 +13,10 @@ if ($this->request->getParam('action') == 'location') {
 if ($this->request->getParam('action') == 'tag') {
     $detail = '"' . $tag['name'] . '"';
     $trait = 'tagged as';
+}
+if ($this->request->getParam('controller') == 'Users' && $this->request->getParam('action') == 'view') {
+    $detail = $user['name'];
+    $trait = 'posted by';
 }
 
 $count = $this->Paginator->counter(['format' => __('{{current}}')]);

@@ -57,6 +57,8 @@
 
     <?= $this->element('events/accordion'); ?>
 
+    <?= $this->element('pagination') ?>
+
     <?php $this->Js->buffer("setupEventAccordion();"); ?>
 
 </div>
