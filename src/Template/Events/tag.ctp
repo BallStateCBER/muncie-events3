@@ -3,11 +3,12 @@
 
 $s = $oppCount == 1 ? '' : 's';
 $z = $count == 1 ? '' : 's';
+$d = $direction == 'past' ? 'Past' : 'Upcoming';
 
 ?>
 
 <h1 class="page_title">
-    <?= "$count $direction Event$z with $titleForLayout" ?>
+    <?= "$count $d Event$z with $titleForLayout" ?>
 </h1>
 
 <?= $this->Html->link(

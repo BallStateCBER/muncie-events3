@@ -38,8 +38,7 @@ if (!isset($upcomingTags)) {
                         [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag_info['id'].'_'.Inflector::slug($tag_info['name']),
-                            'direction' => 'upcoming'
+                            'slug' => $tag_info['id'].'_'.Inflector::slug($tag_info['name'])
                         ],
                         [
                             'escape' => false,
