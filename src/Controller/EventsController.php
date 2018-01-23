@@ -693,7 +693,7 @@ class EventsController extends AppController
         $this->indexEvents($events);
     }
     /**
-     * Shows events taking place at the specified location, optionally limited to past or future events
+     * Shows events taking place at the specified location, optionally limited to past or upcoming events
      *
      * @param string|null $slug location_slug of Event entity
      * @param string|null $direction of index
@@ -856,13 +856,13 @@ class EventsController extends AppController
     public function search()
     {
         $filter = $this->request->getQuery();
-        // Determine the direction (past or future)
+        // Determine the direction (past or upcoming)
         $direction = $filter['direction'];
-        $dateQuery = ($direction == 'future') ? 'start >=' : 'start <';
+        $dateQuery = ($direction == 'upcoming') ? 'start >=' : 'start <';
         if ($direction == 'all') {
             $dateQuery = 'start !=';
         };
-        $dir = ($direction == 'future') ? 'ASC' : 'DESC';
+        $dir = ($direction == 'upcoming') ? 'ASC' : 'DESC';
         $dateWhen = ($direction == 'all') ? '1900-01-01 00:00:00' : date('Y-m-d H:i:s');
         $events = $this->Events->find('search', [
             'search' => $filter,
@@ -888,8 +888,8 @@ class EventsController extends AppController
             $this->set(compact('counts'));
         }
         // Determine if there are events in the opposite direction
-        if ($direction == 'past' || $direction = 'future') {
-            $whereKey = ($direction == 'future') ? 'start <' : 'start >=';
+        if ($direction == 'past' || $direction = 'upcoming') {
+            $whereKey = ($direction == 'upcoming') ? 'start <' : 'start >=';
             $oppositeCount = $this->Events->find('search', ['search' => $filter])
                 ->where([$whereKey => date('Y-m-d H:i:s')])
                 ->count();
@@ -907,7 +907,7 @@ class EventsController extends AppController
         $this->set([
             'titleForLayout' => 'Search Results',
             'direction' => $direction,
-            'directionAdjective' => ($direction == 'future') ? 'upcoming' : $direction,
+            'directionAdjective' => ($direction == 'upcoming') ? 'upcoming' : $direction,
             'filter' => $filter,
             'dateQuery' => $dateQuery,
             'tags' => $tags,
@@ -962,8 +962,7 @@ class EventsController extends AppController
             ]);
             $x = $x + 1;
         }
-        $this->set(compact('tags'));
-        $this->viewBuilder()->setLayout('ajax');
+        $this->viewBuilder()->setLayout('blank');
     }
 
     /**

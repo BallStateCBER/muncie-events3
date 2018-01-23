@@ -36,11 +36,11 @@
                     </label>
                     <?= $this->Form->input('direction', [
                         'options' => [
-                            'future' => 'Upcoming Events',
+                            'upcoming' => 'Upcoming Events',
                             'past' => 'Past Events',
                             'all' => 'All Events'
                         ],
-                        'default' => 'future',
+                        'default' => 'upcoming',
                         'type' => 'radio',
                         'label' => false,
                         'legend' => false,

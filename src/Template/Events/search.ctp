@@ -36,7 +36,7 @@ use Cake\Utility\Inflector;
             foreach ($counts as $dir => $count) {
                 if ($count > 0) {
                     $url = array_merge($this->request->params['filter'], [
-                        'direction' => ($dir == 'upcoming') ? 'future' : 'past'
+                        'direction' => ($dir == 'upcoming') ? 'upcoming' : 'past'
                     ]);
                     $link_label = "$count $dir ".__n('event', 'events', $count);
                     $breakdown[] = $this->Html->link($link_label, $url);
@@ -51,17 +51,17 @@ use Cake\Utility\Inflector;
                             'controller' => 'events',
                             'action' => 'search',
                             'filter' => $filter['filter'],
-                            'direction' => ($direction == 'future') ? 'past' : 'future'
+                            'direction' => ($direction == 'upcoming') ? 'past' : 'upcoming'
                         ], true);
                 $link_label = $oppositeEvents.' matching ';
-                $link_label .= (($direction == 'future') ? 'past ' : 'upcoming ');
+                $link_label .= (($direction == 'upcoming') ? 'past ' : 'upcoming ');
                 $link_label .= __n('event ', 'events ', $oppositeEvents);
                 $link_label .= 'found';
                 echo $this->Html->link($link_label, $url);
             } else {
                 echo '<span class="text-muted">';
                 echo 'No matching ';
-                echo ($direction == 'future') ? 'past' : 'upcoming';
+                echo ($direction == 'upcoming') ? 'past' : 'upcoming';
                 echo ' events found.';
                 echo '</span>';
             }
