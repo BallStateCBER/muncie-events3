@@ -2,38 +2,40 @@ language: php
 
 dist: trusty
 
-services:
-  - mysql
-
 sudo: false
 
 php:
   - 7.1
 
+env:
+  - PHPUNIT=1
+  - PHPCS=1
+  - JSHINT=1
+
 matrix:
   fast_finish: true
 
-  include:
-    - env: PHPCS=1
-
 before_script:
-  - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:3.*; fi
-  - if [[ $PHPCS != 1 ]]; then composer install; fi
-  - if [[ $PHPCS != 1 ]]; then composer require phpunit/phpunit:"^5.7|^6.0"; fi
-  - if [[ $PHPCS != 1 ]]; then composer run-script post-install-cmd --no-interaction; fi
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS okbvtfr_testing'
+  - if [[ $PHPCS = 1 ]]; then composer require cakephp/cakephp-codesniffer:^3.0; fi
+  - if [[ $PHPUNIT = 1 ]]; then composer install; fi
+  - if [[ $PHPUNIT = 1 ]]; then composer require phpunit/phpunit:"^5.7|^6.0"; fi
+  - if [[ $PHPUNIT = 1 ]]; then composer run-script post-install-cmd --no-interaction; fi
+  - if [[ $PHPUNIT = 1 ]]; then sh -c "mysql -e 'CREATE DATABASE IF NOT EXISTS okbvtfr_commenttesting;'"; fi
+  - if [[ $JSHINT = 1 ]]; then npm install -g jshint; fi
+  - phpenv rehash
 
 script:
-  - if [[ $PHPCS != 1 ]]; then vendor/bin/phpunit; fi
+  - if [[ $PHPUNIT = 1 ]]; then vendor/bin/phpunit; fi
   - if [[ $PHPCS = 1 ]]; then vendor/bin/phpcs -p --extensions=php --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests ./config ./webroot; fi
+  - if [[ $JSHINT = 1 ]]; then jshint webroot/js/; fi
 
 notifications:
   email: false
-  slack: cber:ZeUxtjnpHNEYCkMtUBhskwXl
+  slack: cber:ZeUxtjnpHNEYCkMtUBhsk
 
 addons:
   code_climate:
     repo_token: 234563002b595ccee04d56dc2c0b39848d0c4af9cdda1104187bbd3241fd4c03
 
 after_success:
-  - vendor/bin/test-reporter
+  - vendor/bin/test-reporterwXl
