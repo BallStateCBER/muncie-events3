@@ -190,7 +190,7 @@ class EventsControllerTest extends ApplicationTest
         $this->get("/events/day/$date[0]/$date[1]/$date[2]");
         $this->assertResponseOk();
         $this->assertResponseContains('Events on ');
-        $this->assertResponseContains($this->eventInSeries1['title']);
+        $this->assertResponseContains($this->regularEvent['title']);
     }
 
     /**
@@ -352,12 +352,10 @@ class EventsControllerTest extends ApplicationTest
      */
     public function testEventsIndex()
     {
-        $event = $this->Events->find()->firstOrFail();
         $this->get('/');
         $this->assertResponseOk();
         $this->assertResponseContains('Today');
         $this->assertResponseContains('Tomorrow');
-        $this->assertResponseContains($event['title']);
     }
 
     /**

@@ -419,7 +419,7 @@ class EventsTable extends Table
             ])
             ->where(['date >' => $nextStartDate])
             ->andwhere(['date <=' => $endDate])
-            ->andWhere(['Events.published' => 1])
+            ->andWhere(["Events.published" => 1])
             ->toArray();
 
         return $events;

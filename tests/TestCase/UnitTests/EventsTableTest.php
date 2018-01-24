@@ -265,7 +265,7 @@ class EventsTableTest extends ApplicationTest
     }
     public function testGetFutureEventIdsAndGetFutureEvents()
     {
-        $theFuture = date('Y-m-d H:i:s', strtotime('+2 weeks 23:59:59'));
+        $theFuture = date('Y-m-d H:i:s', strtotime('Today 23:59:59'));
         $event = $this->Events->find()
             ->where(['title' => 'Placeholder Event Regular'])
             ->andWhere(['start' => $theFuture])
@@ -274,11 +274,11 @@ class EventsTableTest extends ApplicationTest
         $this->assertContains($event->id, $eventIds);
 
         $theFuture = [
-            0 => date('l', strtotime('+2 weeks')),
-            1 => date('M', strtotime('+2 weeks')),
-            2 => date('m', strtotime('+2 weeks')),
-            3 => date('d', strtotime('+2 weeks')),
-            4 => date('Y', strtotime('+2 weeks'))
+            0 => date('l', strtotime('Today')),
+            1 => date('M', strtotime('Today')),
+            2 => date('m', strtotime('Today')),
+            3 => date('d', strtotime('Today')),
+            4 => date('Y', strtotime('Today'))
         ];
         $events = $this->Events->getFutureEvents();
         $this->assertContains($theFuture, $events);
