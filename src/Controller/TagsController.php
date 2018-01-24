@@ -738,7 +738,7 @@ class TagsController extends AppController
      * tag editor
      *
      * @param string|null $tagName name of the tag you wish to edit
-     * @return null
+     * @return null|\Cake\Http\Response
      */
     public function edit($tagName = null)
     {
@@ -753,6 +753,7 @@ class TagsController extends AppController
             }
             $duplicates = $this->Tags->find()
                 ->where(['name' => $this->request->data['name']])
+                ->andWhere(['id is NOT' => $this->request->data['id']])
                 ->toArray();
             $oldTags = [];
             foreach ($duplicates as $duplicate) {
@@ -766,7 +767,7 @@ class TagsController extends AppController
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
                 $this->Flash->error($message);
 
-                return null;
+                return $this->render('/Tags/flash');
             }
             // Set flag to recover tag tree if necessary
             $tag = $this->Tags->find()
@@ -786,16 +787,17 @@ class TagsController extends AppController
                 }
                 $this->Flash->success($message);
 
-                return null;
-            }
-            $this->Flash->error('There was an error editing that tag.');
+                return $this->render('/Tags/flash');
+            } else {
+                $this->Flash->error('There was an error editing that tag.');
 
-            return null;
+                return $this->render('/Tags/flash');
+            }
         } else {
             if (!$tagName) {
                 $this->Flash->error('Please try again. But with a tag name provided this time.');
 
-                return null;
+                return $this->render('/Tags/flash');
             }
             $result = $this->Tags->find()
                 ->where(['name' => $tagName])
@@ -803,7 +805,7 @@ class TagsController extends AppController
             if (empty($result)) {
                 $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
 
-                return null;
+                return $this->render('/Tags/flash');
             }
             if (count($result) > 1) {
                 $tagIds = [];
@@ -812,7 +814,7 @@ class TagsController extends AppController
                 }
                 $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . " You will need to merge them before editing.");
 
-                return null;
+                return $this->render('/Tags/flash');
             }
             $this->request->data = $result;
         }
