@@ -34,7 +34,5 @@
     <div class="footnote">
         Leave blank to place at the root level.
     </div>
-<?= $this->Form->submit('Update tag #'.$this->request->data['id'], [
-        'class' => 'btn btn-default'
-]); ?>
+<?= $this->Form->submit('Update tag #' . $this->request->data['id'], ['class' => 'btn btn-default']); ?>
 <?= $this->Form->end(); ?>

@@ -746,14 +746,14 @@ class TagsController extends AppController
             $this->viewBuilder()->setLayout('ajax');
         }
         if ($this->request->is('put') || $this->request->is('post')) {
-            $this->request->data['name'] = strtolower(trim($this->request->data['name']));
-            $this->request->data['parent_id'] = trim($this->request->data['parent_id']);
-            if (empty($this->request->data['parent_id'])) {
-                $this->request->data['parent_id'] = null;
+            $this->request = $this->request->withData('name', strtolower(trim($this->request->getData('name'))));
+            $this->request = $this->request->withData('parent_id', trim($this->request->getData('parent_id')));
+            if (empty($this->request->getData('parent_id'))) {
+                $this->request = $this->request->withData('parent_id', null);
             }
             $duplicates = $this->Tags->find()
-                ->where(['name' => $this->request->data['name']])
-                ->andWhere(['id is NOT' => $this->request->data['id']])
+                ->where(['name' => $this->request->getData('name')])
+                ->andWhere(['id !=' => $this->request->getData('id')])
                 ->toArray();
             $oldTags = [];
             foreach ($duplicates as $duplicate) {
@@ -761,7 +761,7 @@ class TagsController extends AppController
             }
             if (!empty($duplicates)) {
                 $message = 'That tag\'s name cannot be changed to "';
-                $message .= $this->request->data['name'];
+                $message .= $this->request->getData('name');
                 $message .= '" because another tag (';
                 $message .= $oldTags;
                 $message .= ') already has that name. You can, however, merge this tag into that tag.';
@@ -771,10 +771,10 @@ class TagsController extends AppController
             }
             // Set flag to recover tag tree if necessary
             $tag = $this->Tags->find()
-                ->where(['id' => $this->request->data['id']])
+                ->where(['id' => $this->request->getData('id')])
                 ->first();
             $previousParentId = $tag['parent_id'];
-            $newParentId = $this->request->data['parent_id'];
+            $newParentId = $this->request->getData('parent_id');
             $recoverTagTree = ($previousParentId != $newParentId);
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
             if ($this->Tags->save($tag)) {
@@ -782,7 +782,7 @@ class TagsController extends AppController
                     $this->Tags->recover();
                 }
                 $message = 'Tag successfully edited.';
-                if ($this->request->data['listed'] && $tag->parent_id == 1012) {
+                if ($this->request->getData('listed') && $tag->parent_id == 1012) {
                     $message .= ' This tag is now listed, but is still in the "Unlisted" group. It is recommended that it now be moved out of that group.';
                 }
                 $this->Flash->success($message);
@@ -801,13 +801,12 @@ class TagsController extends AppController
             }
             $result = $this->Tags->find()
                 ->where(['name' => $tagName])
-                ->first();
+                ->toArray();
             if (empty($result)) {
                 $this->Flash->error("Could not find a tag with the exact tag name \"$tagName\".");
 
                 return $this->render('/Tags/flash');
-            }
-            if (count($result) > 1) {
+            } elseif (count($result) > 1) {
                 $tagIds = [];
                 foreach ($result as $tag) {
                     $tagIds[] = $tag->id;
@@ -815,8 +814,15 @@ class TagsController extends AppController
                 $this->Flash->error("Tags with the following IDs are named \"$tagName\": " . implode(', ', $tagIds) . " You will need to merge them before editing.");
 
                 return $this->render('/Tags/flash');
+            } elseif (count($result) == 1) {
+                foreach ($result as $tag) {
+                    $this->request = $this->request->withData('id', $tag->id);
+                    $this->request = $this->request->withData('parent_id', $tag->parent_id);
+                    $this->request = $this->request->withData('name', $tag->name);
+                    $this->request = $this->request->withData('listed', $tag->listed);
+                    $this->request = $this->request->withData('selectable', $tag->selectable);
+                }
             }
-            $this->request->data = $result;
         }
 
         return null;
