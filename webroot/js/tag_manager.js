@@ -1,3 +1,4 @@
+/*jshint loopfunc:true */
 var TagManager = {
     tags: [],
     selectedTags: [],
@@ -103,7 +104,7 @@ var TagManager = {
     },
 
     preselectTags: function(selectedTags) {
-        if (selectedTags.length == 0) {
+        if (selectedTags.length === 0) {
             return;
         }
         $('#selected_tags_container').show();
@@ -116,9 +117,9 @@ var TagManager = {
         var available_tag_list_item = $('#available_tag_li_'+tag_id);
 
         // If available tag has not yet been loaded, then simply remove the selected tag
-        if (available_tag_list_item.length == 0) {
+        if (available_tag_list_item.length === 0) {
             unselect_link.remove();
-            if ($('#selected_tags').children().length == 0) {
+            if ($('#selected_tags').children().length === 0) {
                 $('#selected_tags_container').slideUp(200);
             }
             return;
@@ -133,7 +134,7 @@ var TagManager = {
         var remove_link = function() {
             unselect_link.fadeOut(200, function() {
                 unselect_link.remove();
-                if ($('#selected_tags').children().length == 0) {
+                if ($('#selected_tags').children().length === 0) {
                     $('#selected_tags_container').slideUp(200);
                 }
             });
@@ -179,8 +180,8 @@ var TagManager = {
         list_item.fadeIn(200);
 
         // If available tag has not yet been loaded, then return
-        var available_tag_list_item = $('#available_tag_li_'+tag_id);
-        if (available_tag_list_item.length == 0) {
+        available_tag_list_item = $('#available_tag_li_'+tag_id);
+        if (available_tag_list_item.length === 0) {
             return;
         }
 
@@ -192,7 +193,7 @@ var TagManager = {
         };
         var callback = function() {
             link.addClass('selected');
-            var has_children = (available_tag_list_item.children('div.children').length != 0);
+            var has_children = (available_tag_list_item.children('div.children').length !== 0);
             if (! has_children) {
                 available_tag_list_item.slideUp(200);
             }
