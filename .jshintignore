@@ -1,2 +1,3 @@
-*.min.js
-jquery*
+webroot/js/*.min.js
+webroot/js/jquery*
+webroot/jquery_ui/*
