@@ -24,8 +24,8 @@ var ImageManager = {
 	},
 
 	getLinkedImage: function(image_id, filename) {
-        var fullUrl = this.event_img_base_url + '/full/' + filename;
-        var tinyUrl = this.event_img_base_url + '/tiny/' + filename;
+        var fullUrl = this.event_img_base_url + 'full/' + filename;
+        var tinyUrl = this.event_img_base_url + 'tiny/' + filename;
 		return $('<a href="' + fullUrl + '" rel="popup" id="thumbnail_link_'+image_id+'"><img src="' + tinyUrl + '" class="selected_image" /></a>');
 	},
 
@@ -49,7 +49,7 @@ var ImageManager = {
 
 	addHiddenListedImage: function(image_id, filename) {
 		var link = $('<a href="#" id="listed_image_'+image_id+'" data-image-id="'+image_id+'" data-image-filename="'+filename+'"></a>');
-        var url = this.event_img_base_url + '/tiny/' + filename;
+        var url = this.event_img_base_url + 'tiny/' + filename;
         link.html('<img src="' + url + '" />');
 		link.click(function (event) {
 			event.preventDefault();
@@ -295,7 +295,7 @@ var ImageManager = {
 			}
 
 			var linked_image = $('<a href="#" id="listed_image_'+image_id+'" data-image-id="'+image_id+'" data-image-filename="'+filename+'">');
-            var url = this.event_img_base_url + '/tiny/' + filename;
+            var url = this.event_img_base_url + 'tiny/' + filename;
             linked_image.html('<img src="' + url + '" />');
 			linked_image.hide();
 			container.append(linked_image);
