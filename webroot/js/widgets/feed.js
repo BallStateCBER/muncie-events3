@@ -1,3 +1,4 @@
+/*jshint loopfunc:true */
 var muncieEventsFeedWidget = {
      next_start_date: null,
      no_more_events: false,
@@ -105,10 +106,11 @@ var muncieEventsFeedWidget = {
                return;
           }
           var qs_separator_index = window.location.href.indexOf('?');
+          var queryString = '';
           if (qs_separator_index != -1) {
-               var queryString = window.location.href.slice(qs_separator_index + 1);
+               queryString = window.location.href.slice(qs_separator_index + 1);
           } else {
-               var queryString = '';
+               queryString = '';
           }
           $.ajax({
                url: '/widgets/feed/'+muncieEventsFeedWidget.next_start_date+'?'+queryString,

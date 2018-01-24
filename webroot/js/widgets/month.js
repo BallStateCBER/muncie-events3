@@ -1,8 +1,8 @@
-
+/*jshint loopfunc:true */
 var muncieEventsMonthWidget = {
 	current_month: null,
 	current_year: null,
-	prepared_calendars: new Array(),
+	prepared_calendars: new [],
 	events: {},
 	fade_duration: 200,
 
@@ -254,10 +254,11 @@ var muncieEventsMonthWidget = {
 			return;
 		}
 		var qs_separator_index = window.location.href.indexOf('?');
+		var query_string = '';
 		if (qs_separator_index != -1) {
-			var query_string = window.location.href.slice(qs_separator_index + 1);
+			query_string = window.location.href.slice(qs_separator_index + 1);
 		} else {
-			var query_string = '';
+			query_string = '';
 		}
 		$.ajax({
 			url: '/widgets/month/'+year+'-'+month+'?'+query_string,
