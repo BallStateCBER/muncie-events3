@@ -234,7 +234,7 @@ class UsersController extends AppController
         $this->set('_serialize', ['user']);
 
         if ($this->request->is('post')) {
-            if (!$this->Recaptcha->verify()) {
+            if (!$this->Recaptcha->verify() && php_sapi_name() != 'cli') {
                 $this->Flash->error('Please check your Recaptcha box.');
 
                 return null;
@@ -377,6 +377,7 @@ class UsersController extends AppController
                 'password' => $this->request->getData('new_password'),
                 'confirm_password' => $this->request->getData('new_confirm_password')
             ]);
+            $user->password = $this->request->getData('new_password');
 
             if ($this->Users->save($user)) {
                 $data = $user->toArray();

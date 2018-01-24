@@ -69,11 +69,11 @@ class ElementsTest extends ApplicationTest
      */
     public function testThatSearchFilterParamsPass()
     {
-        $this->get('/events/search?filter=market&direction=future');
+        $this->get('/events/search?filter=market&direction=upcoming');
         // do the view variables match up?
         $filter = $this->viewVariable('filter');
         $this->assertEquals('market', $filter['filter']);
-        $this->assertEquals('future', $filter['direction']);
+        $this->assertEquals('upcoming', $filter['direction']);
         // dateQuery & directionAdjective are constant with $filter->direction
         $this->assertEquals('start >=', $this->viewVariable('dateQuery'));
         $this->assertEquals('upcoming', $this->viewVariable('directionAdjective'));

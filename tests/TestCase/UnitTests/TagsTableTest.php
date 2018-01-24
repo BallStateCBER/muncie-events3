@@ -149,7 +149,6 @@ class TagsTableTest extends ApplicationTest
         ], 'alpha');
         $counts = array_keys($counts);
         $counts = implode($counts);
-        dd($counts);
  /*       $events = $this->Events->find()
             ->contain('Tags')
             ->where(['date >=' => date('Y-m-d')])
