@@ -67,15 +67,17 @@ class EventsTableTest extends ApplicationTest
      *
      * @return void
      */
-    public function testgetUpcomingFilteredEvents()
+    public function testGetUpcomingFilteredEvents()
     {
         // the only event that should make it out of the filter
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-01'));
+        $event->date = date('Y-m-d', strtotime('2020-01-01'));
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-01 10:29:37'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
+        $event->published = 1;
         $this->Events->save($event);
 
         $joinData = $this->EventsTags->newEntity();
@@ -87,9 +89,11 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 2;
-        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
+        $event->date = date('Y-m-d', strtotime('2020-01-28'));
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28 10:29:37'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
+        $event->published = 1;
         $this->Events->save($event);
 
         $joinData = $this->EventsTags->newEntity();
@@ -101,9 +105,11 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
+        $event->date = date('Y-m-d', strtotime('2020-01-28'));
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28 10:29:37'));
         $event->location = 'Placeholder parce';
         $event->description = 'Unit testing sure is boring';
+        $event->published = 1;
         $this->Events->save($event);
 
         $joinData = $this->EventsTags->newEntity();
@@ -115,9 +121,11 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
+        $event->date = date('Y-m-d', strtotime('2020-01-28'));
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28 10:29:37'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
+        $event->published = 1;
         $this->Events->save($event);
 
         $joinData = $this->EventsTags->newEntity();
@@ -129,9 +137,11 @@ class EventsTableTest extends ApplicationTest
         $event = $this->Events->newEntity();
         $event->title = 'Best friend by Yelawolf on repeat';
         $event->category_id = 1;
-        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28'));
+        $event->date = date('Y-m-d', strtotime('2020-01-28'));
+        $event->start = date('Y-m-d H:i:s', strtotime('2020-01-28 10:29:37'));
         $event->location = 'Placeholder palace';
         $event->description = 'Unit testing sure is boring';
+        $event->published = 1;
         $this->Events->save($event);
 
         $joinData = $this->EventsTags->newEntity();
@@ -147,11 +157,10 @@ class EventsTableTest extends ApplicationTest
             'tags_included' => 'holding places',
             'tags_excluded' => 'delete'
         ];
-
         $nextStartDate = $date;
         $endDate = strtotime('2020-01-28');
         $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
-        $this->assertEquals(date('Y-m-d H:i:s', strtotime('2020-01-01')), $events[0]->start->format('Y-m-d H:i:s'));
+        $this->assertEquals(date('Y-m-d H:i:s', strtotime('2020-01-01 10:29:37')), $events[0]->start->format('Y-m-d H:i:s'));
     }
     public function testGetUnapproved()
     {

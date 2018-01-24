@@ -417,18 +417,6 @@ class EventsControllerTest extends ApplicationTest
     }
 
     /**
-     * test search autocomplete populate for ajax
-     *
-     * @return void
-     */
-    public function testSearchAutocomplete()
-    {
-        $this->get("/events/search_auto_complete/all?term=holding");
-        $this->assertResponseOk();
-        $this->assertResponseContains('{"1":"holding places"');
-    }
-
-    /**
      * test tag index
      *
      * @return void

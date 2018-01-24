@@ -1,1 +1,0 @@
-<?= $this->Js->object($tags);
