@@ -59,8 +59,8 @@ class EventsControllerTest extends ApplicationTest
     {
         // first, with a non-user
         $this->get('/events/add');
-        $this->assertResponseOk();
         $this->assertResponseContains('You can still submit this event, but...');
+        $this->assertResponseOk();
 
         $newData = [
             'title' => 'Anonymous event!',
