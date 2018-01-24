@@ -2,7 +2,7 @@
 var muncieEventsMonthWidget = {
 	current_month: null,
 	current_year: null,
-	prepared_calendars: new [],
+	prepared_calendars: [],
 	events: {},
 	fade_duration: 200,
 
