@@ -38,15 +38,9 @@ function setupHeaderNav() {
 			var year = date.getFullYear().toString();
 			var month_year = month+'-'+year;
 
-			if (muncieEvents.populatedDates.hasOwnProperty(month_year)) {
-				var selectable = muncieEvents.populatedDates[month_year].indexOf(day) !== -1;
-				var class_name = selectable ? 'has_events' : 'no_events';
-				var tooltip = selectable ? null : 'No events';
-			} else {
-				var selectable = false;
-				var class_name = 'no_events';
-				var tooltip = 'No events';
-			}
+			var selectable = muncieEvents.populatedDates[month_year].indexOf(day) !== -1;
+            var class_name = selectable ? 'has_events' : 'no_events';
+            var tooltip = selectable ? null : 'No events';
 
 			return [selectable, class_name, tooltip];
 		},
@@ -58,16 +52,12 @@ function setupHeaderNav() {
 
 function setupSidebar() {
     function sidebarSelectLocation(location) {
-        if (location == '') {
+        if (location === '') {
             return false;
         }
-        if (location == '[past events]') {
-            var url = '/past_locations';
-        } else {
-            var url = '/location/'+encodeURIComponent(location);
-        }
+        var url = location== '[past_events]' ? '/past_locations' : '/location/'+encodeURIComponent(location);
         window.location.href = url;
-    };
+    }
     $('#sidebar > div.locations select').change(function() {
         var location = $(this).val();
         sidebarSelectLocation(location);
@@ -97,7 +87,7 @@ function setupSearch() {
     $('#EventSearchForm').submit(function() {
         var input = $('#EventFilter');
         input.val($.trim(input.val()));
-        if (input.val() == '') {
+        if (input.val() === '') {
             alert('Please enter a word or phrase in the search box to search for events.');
             return false;
         }
@@ -118,12 +108,13 @@ function setupSearch() {
         }
     }).autocomplete({
         source: function(request, response) {
+            var direction = '';
             if ($('#EventDirectionFuture').is(':checked')) {
-                var direction = 'future';
+                direction = 'future';
             } else if ($('#EventDirectionPast').is(':checked')) {
-                var direction = 'past';
+                direction = 'past';
             } else {
-                var direction = 'all';
+                direction = 'all';
             }
             $.getJSON('/events/search_autocomplete/'+direction, {
                 term: extractLast(request.term)
@@ -182,7 +173,7 @@ function insertFlashMessage(message, classname) {
 function setupCategoriesApplyButton() {
     $('#apply_changed_event_categories').click(function(event) {
         event.preventDefault();
-        var selected_categories = new Array();
+        var selected_categories = [];
         $('#event_category_options input').each(function() {
             if ($(this).is(':checked')) {
                 var category_id = this.id.replace('event_category_', '');
@@ -269,8 +260,8 @@ function setupTagCloud() {
 
 var muncieEventsFeed = {
     nextStartDate: null,
-    accordions_prepared: new Array(),
-    xfbml_parsed: new Array(),
+    accordions_prepared: [],
+    xfbml_parsed: [],
     no_more_events: false
 };
 /**Sets the date that the next "page" of events will start at
@@ -433,7 +424,7 @@ function prepareImagePopups() {
             link.magnificPopup(options);
 
         // Group together all images with this value for rel
-        } else if (rel.indexOf('popup[') == 0) {
+        } else if (rel.indexOf('popup[') === 0) {
 
             // Skip a group that's already been processed
             if (muncieEvents.imagePopups.groups_processed.indexOf(rel) != -1) {

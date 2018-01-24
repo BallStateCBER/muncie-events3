@@ -238,7 +238,6 @@ function setupAddressLookup() {
 		if (location_name == '') {
 			return;
 		}
-		var address_field = $('#EventAddress');
 		var address_row = $('#eventform_address');
 		var address_handle = $('#eventform_noaddress');
 		// Attempt to look up address from this user's previous locations

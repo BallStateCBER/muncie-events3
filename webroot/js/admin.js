@@ -30,13 +30,8 @@ function setupTagArranger() {
             oldNextSibling = node.nextSibling;
         });
         tree.on('movenode', function(tree, node, oldParent, newParent, position){
-            if (oldParent == newParent){
-                var url = reorderUrl;
-                var params = {'node':node.id, 'delta':(position-oldPosition)};
-            } else {
-                var url = reparentUrl;
-                var params = {'node':node.id, 'parent':newParent.id, 'position':position};
-            }
+            var url = oldParent == newParent ? reorderUrl : reparentUrl;
+            var params = oldParent == newParent ? {'node':node.id, 'delta':(position-oldPosition)} : {'node':node.id, 'parent':newParent.id, 'position':position};
             // we disable tree interaction until we've heard a response from the server
             // this prevents concurrent requests which could yield unusual results
             tree.disable();
