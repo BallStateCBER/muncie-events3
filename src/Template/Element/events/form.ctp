@@ -42,7 +42,7 @@
             to skip the hassle.
         </p>
     </div>
-<?php elseif ($autoPublish && $this->request->getParam('action') == 'add'): ?>
+<?php elseif (isset($autoPublish) && $this->request->getParam('action') == 'add'): ?>
     <div class="alert alert-info">
         <p>
             <strong>Thanks for registering an account!</strong> Unfortunately, to combat spam, your first event will need to be
