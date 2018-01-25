@@ -42,6 +42,14 @@
             to skip the hassle.
         </p>
     </div>
+<?php elseif ($this->request->getSession()->read('Auth.User.id') && $this->request->getParam('action') == 'add'): ?>
+    <div class="alert alert-info">
+        <p>
+            <strong>Thanks for registering an account!</strong> Unfortunately, to combat spam, your first event will need to be
+            approved by an administrator before it gets published. This typically happens in less than 24 hours. But after that,
+            all of your events will go directly to the calendar network.
+        </p>
+    </div>
 <?php endif; ?>
 
 <?= $this->Form->create($event, [
