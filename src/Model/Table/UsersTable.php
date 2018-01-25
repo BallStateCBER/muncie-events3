@@ -117,6 +117,24 @@ class UsersTable extends Table
     }
 
     /**
+     * Returns true only if the user has previously submitted an event that has been published/approved
+     * @param int $userId of user
+     * @return boolean
+     */
+    public function getAutoPublish($userId)
+    {
+        if (!$userId) {
+            return false;
+        }
+        $count = $this->Events->find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['published' => 1])
+            ->andwhere(['approved_by IS NOT' => null])
+            ->count();
+        return $count > 1;
+    }
+
+    /**
      * send the email from someone's user ID
      *
      * @param int $userId of user

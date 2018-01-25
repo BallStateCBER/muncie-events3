@@ -364,7 +364,7 @@ class EventsController extends AppController
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
         $userId = $this->request->getSession()->read('Auth.User.id') ?: '';
-        $autoPublish = $this->User->canAutopublish($userId);
+        $autoPublish = $this->Users->getAutoPublish($userId);
         $this->set(compact('autoPublish', 'event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
