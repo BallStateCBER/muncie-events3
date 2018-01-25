@@ -122,7 +122,7 @@ class EventSeriesControllerTest extends ApplicationTest
     public function testViewingEventSeries()
     {
         $series = $this->EventSeries->find()->firstOrFail();
-        $this->get("/event-series/$series->id");
+        $this->get("/event_series/$series->id");
         $this->assertResponseOk();
         $this->assertResponseContains($series['title']);
     }
