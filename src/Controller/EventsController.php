@@ -363,7 +363,9 @@ class EventsController extends AppController
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
+        $userId = $this->request->getSession()->read('Auth.User.id') ?: '';
+        $autoPublish = $this->User->canAutopublish($userId);
+        $this->set(compact('autoPublish', 'event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -397,8 +399,8 @@ class EventsController extends AppController
                 $eventSeries = $this->Events->EventSeries->newEntity();
                 $eventSeries = $this->Events->EventSeries->patchEntity($eventSeries, $this->request->getData());
                 $eventSeries->title = $this->request->getData('title');
-                $eventSeries->user_id = $this->request->session()->read('Auth.User.id');
-                $eventSeries->published = ($this->request->session()->read('Auth.User.role') == 'admin') ? 1 : 0;
+                $eventSeries->user_id = $this->request->getSession()->read('Auth.User.id');
+                $eventSeries->published = ($this->request->getSession()->read('Auth.User.role') == 'admin') ? 1 : 0;
                 $eventSeries->created = date('Y-m-d');
                 $eventSeries->modified = date('Y-m-d');
                 $this->Events->EventSeries->save($eventSeries);
