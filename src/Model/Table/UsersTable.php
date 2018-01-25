@@ -119,7 +119,7 @@ class UsersTable extends Table
     /**
      * Returns true only if the user has previously submitted an event that has been published/approved
      * @param int $userId of user
-     * @return boolean
+     * @return bool
      */
     public function getAutoPublish($userId)
     {
@@ -131,6 +131,7 @@ class UsersTable extends Table
             ->andWhere(['published' => 1])
             ->andwhere(['approved_by IS NOT' => null])
             ->count();
+
         return $count > 1;
     }
 
