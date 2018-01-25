@@ -108,7 +108,7 @@ $url = Router::url([
                     <th>Series:</th>
                     <td>
                         <?= $this->Html->link($event->event_series->title, [
-                                    'controller' => 'event_series',
+                                    'controller' => 'eventSeries',
                                     'action' => 'view', $event->series_id
                                 ]); ?>
                     </td>
