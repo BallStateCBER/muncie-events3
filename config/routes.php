@@ -64,7 +64,7 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
     // events actions
-    foreach (['approve', 'delete', 'edit', 'editseries', 'location', 'publish'] as $action) {
+    foreach (['approve', 'delete', 'edit', 'edit_series', 'location', 'publish'] as $action) {
         Router::connect(
             "/event/$action/:id",
             ['controller' => 'events', 'action' => $action],
@@ -89,14 +89,14 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     // viewing event series
     Router::connect(
-        "event-series/:id",
+        "event_series/:id",
         ['controller' => 'eventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
     // eventseries actions
     Router::connect(
-        "/event-series/edit/:id",
+        "/event_series/edit/:id",
         ['controller' => 'eventSeries', 'action' => 'edit'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
