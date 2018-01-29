@@ -89,9 +89,12 @@ class PagesController extends AppController
 
                     return null;
                 } else {
-                    $this->Flash->error('There was some problem sending your email.
-                         It could be a random glitch, or something could be permanently
-                         broken. Please contact <a href="mailto:' . Configure::read('admin_email') . '">' . Configure::read('admin_email') . '</a> for assistance.');
+                    $msg = 'There was some problem sending your email. It could be a random glitch, ' .
+                        'or something could be permanently broken. Please contact ' .
+                        '<a href="mailto:' . Configure::read('admin_email') . '">' .
+                        Configure::read('admin_email') .
+                        '</a> for assistance.';
+                    $this->Flash->error($msg);
 
                     return null;
                 }
@@ -102,8 +105,8 @@ class PagesController extends AppController
             }
         }
         $this->set([
-             'titleForLayout' => 'Contact Us'
-         ]);
+            'titleForLayout' => 'Contact Us'
+        ]);
 
         return null;
     }
