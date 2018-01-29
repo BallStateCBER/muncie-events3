@@ -24,9 +24,9 @@ class User extends Entity
     ];
 
     /**
-     * Fields that are excluded from JSON versions of the entity.
+     * Hashes the user's password if it doesn't match App.spamPassword
      *
-     * @param string $password to reset password
+     * @param string $password The plaintext password
      * @return string
      */
     protected function _setPassword($password)
