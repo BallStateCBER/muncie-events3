@@ -429,7 +429,7 @@
                     </label>
                 </th>
                 <td>
-                    <?= $this->Form->submit('Submit', ['class' => 'btn btn-secondary']) ?>
+                    <?= $this->Form->submit('Submit', ['class' => 'btn btn-default']) ?>
                 </td>
             </tr>
         </tbody>
