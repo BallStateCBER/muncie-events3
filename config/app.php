@@ -226,21 +226,21 @@ $config = [
      */
     'Email' => [
         'default' => [
-            'transport' => 'Debug',
+            'transport' => 'default',
             'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
         ],
         'contact_form' => [
-            'transport' => 'Debug',
+            'transport' => 'default',
             'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
         ],
         'mailing_list' => [
-            'transport' => 'Debug',
+            'transport' => 'default',
             'from' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
