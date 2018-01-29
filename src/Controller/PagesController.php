@@ -82,6 +82,11 @@ class PagesController extends AppController
                 if ($email->send($this->request->getData('body'))) {
                     $this->Flash->success('Thanks for contacting us. We will try to respond to your message soon.');
 
+                    // Clear form
+                    foreach (['body', 'email', 'name'] as $field) {
+                        $this->request = $this->request->withData($field, '');
+                    }
+
                     return null;
                 } else {
                     $this->Flash->error('There was some problem sending your email.
