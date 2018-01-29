@@ -74,7 +74,7 @@ class PagesController extends AppController
             $this->set($this->request->getData());
 
             $errors = $validator->errors($this->request->getData());
-            if (empty($errors && ($this->Recaptcha->verify() || $this->request->getSession()))) {
+            if (empty($errors) && ($this->Recaptcha->verify() || $this->request->getSession())) {
                 $email = new Email('contact_form');
                 $email->setFrom([$this->request->getData('email') => $this->request->getData('name')])
                      ->setTo(Configure::read('admin_email'))
