@@ -369,21 +369,21 @@ class EventsController extends AppController
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $this->cleanFormData();
-
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
                 $this->Flash->error('Please log in or check your Recaptcha box.');
 
                 return;
             }
 
-            $this->uponFormSubmission();
+            $this->cleanFormData();
+            $this->autoApprove();
 
             // count how many dates have been picked
             $dateInput = mb_strlen($this->request->getData('date'));
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $this->request->getData());
+                $event->user_id = $this->Auth->user('id');
                 $event->location_slug = $this->setLocationSlug($event->location);
                 $this->setCustomTags($event);
                 $event = $this->setDatesAndTimes($event);
@@ -567,7 +567,7 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->cleanFormData();
-            $this->uponFormSubmission();
+            $this->autoApprove();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->location_slug = $this->setLocationSlug($event->location);
             $this->setCustomTags($event);
@@ -1137,21 +1137,25 @@ class EventsController extends AppController
 
         return $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
+
     /**
-     * Conditionally auto-approves the submitted event
+     * Approves and publishes an event if the form is being submitted by an administrator
      *
      * @return void
      */
-    private function uponFormSubmission()
+    private function autoApprove()
     {
-        // Auto-approve if posted by an admin
-        $userId = $this->request->getSession()->read('Auth.User.id') ?: null;
-        $this->request = $this->request->withData('user_id', $userId);
-        if ($this->request->getSession()->read('Auth.User.role') == 'admin') {
-            $this->request = $this->request->withData('approved_by', $userId);
-            $this->request = $this->request->withData('published', true);
+        if ($this->request->getParam('action') != 'add') {
+            return;
         }
+        if ($this->Auth->user('role') != 'admin') {
+            return;
+        }
+        $adminId = $this->Auth->user('id');
+        $this->request = $this->request->withData('approved_by', $adminId);
+        $this->request = $this->request->withData('published', true);
     }
+
     /**
      * Shows a specific event
      *
