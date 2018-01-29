@@ -23,8 +23,6 @@
         echo $this->Html->css('style');
         echo $this->fetch('css');
     ?>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-
 </head>
 <body class="layout_<?= $this->layout; ?>">
     <!-- jquery 3.1.1 min files, checks if CDN is down, deploys local file if necessary -->
