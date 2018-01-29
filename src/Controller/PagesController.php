@@ -57,7 +57,7 @@ class PagesController extends AppController
     /**
      * view for the terms page
      *
-     * @return null
+     * @return void
      */
     public function contact()
     {
@@ -84,8 +84,6 @@ class PagesController extends AppController
                     foreach (['body', 'email', 'name'] as $field) {
                         $this->request = $this->request->withData($field, '');
                     }
-
-                    return null;
                 } else {
                     $msg = 'There was some problem sending your email. It could be a random glitch, ' .
                         'or something could be permanently broken. Please contact ' .
@@ -93,17 +91,11 @@ class PagesController extends AppController
                         Configure::read('admin_email') .
                         '</a> for assistance.';
                     $this->Flash->error($msg);
-
-                    return null;
                 }
             } else {
                 $this->Flash->error('Did you remember to check your Recaptcha box?');
-
-                return null;
             }
         }
-
-        return null;
     }
 
     /**
