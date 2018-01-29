@@ -23,7 +23,8 @@ class UsersController extends AppController
             'forgotPassword',
             'register',
             'resetPassword',
-            'view'
+            'view',
+            'logout'
         ]);
         if ($this->request->getParam('action') === 'register') {
             $this->loadComponent('Recaptcha.Recaptcha');
