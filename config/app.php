@@ -400,7 +400,15 @@ $config = [
         'defaults' => 'php',
         'timeout' => 1430 // 1 day
     ],
-    'cookie_key' => env('COOKIE_ENCRYPTION_KEY', 'cookie key')
+    'cookie_key' => env('COOKIE_ENCRYPTION_KEY', 'cookie key'),
+    'Recaptcha' => [
+        'sitekey' => env('RECAPTCHA_KEY'),
+        'secret' => env('RECAPTCHA_SECRET'),
+        'lang' => 'en',
+        'theme' => 'light',
+        'type' => 'image',
+        'size' => 'normal'
+    ]
 ];
 
 return $config;

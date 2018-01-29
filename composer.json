@@ -12,7 +12,6 @@
         "cakephp/plugin-installer": "*",
         "josegonzalez/dotenv": "dev-master",
         "oldskool/cakephp-js": "dev-master",
-        "cake17/cakephp-recaptcha": "dev-master",
         "akkaweb/cakephp-ckeditor": "dev-master",
         "akkaweb/cakephp-facebook": "dev-master",
         "josegonzalez/cakephp-upload": "^3.6",
@@ -21,7 +20,8 @@
         "dereuromark/cakephp-tools": "^1.4",
         "eluceo/ical": "^0.11.3",
         "xety/cake3-cookieauth": "1.*",
-        "dereuromark/cakephp-setup": "dev-master"
+        "dereuromark/cakephp-setup": "dev-master",
+        "cakephp-fr/recaptcha": "~0.4"
     },
     "require-dev": {
         "psy/psysh": "@stable",
