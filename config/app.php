@@ -415,4 +415,12 @@ $config = [
     ]
 ];
 
+// Use DebugTransport for all emails while in debug mode
+if ($config['debug']) {
+    foreach ($config['Email'] as $profile => $profileConfig) {
+        $config['Email'][$profile]['transport'] = 'Debug';
+        $config['Email'][$profile]['log'] = true;
+    }
+}
+
 return $config;
