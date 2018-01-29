@@ -21,5 +21,8 @@
         <?= $this->Form->control('email', ['class' => 'form-control']); ?>
     </div>
     <?= $this->Recaptcha->display() ?>
+    <?= $this->Form->submit('Register', [
+        'class' => 'btn btn-default'
+    ]); ?>
     <?= $this->Form->end() ?>
 </div>
