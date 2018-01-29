@@ -71,8 +71,6 @@ class PagesController extends AppController
             ->requirePresence('body')
             ->notEmpty('body', 'Don\'t forget to write a message.');
         if ($this->request->is('post')) {
-            $this->set($this->request->getData());
-
             $errors = $validator->errors($this->request->getData());
             if (empty($errors) && ($this->request->getSession() || $this->Recaptcha->verify())) {
                 $email = new Email('contact_form');
@@ -104,9 +102,6 @@ class PagesController extends AppController
                 return null;
             }
         }
-        $this->set([
-            'titleForLayout' => 'Contact Us'
-        ]);
 
         return null;
     }
