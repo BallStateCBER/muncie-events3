@@ -193,12 +193,16 @@ $config = [
      * 'YourTransport.php', where 'Your' is the name of the transport.
      */
     'EmailTransport' => [
-        'Smtp' => [
+        'default' => [
             'host' => env('EMAIL_HOST'),
             'port' => env('EMAIL_PORT'),
             'username' => env('EMAIL_USERNAME'),
             'password' => env('EMAIL_PASSWORD'),
-            'className' => 'Smtp'
+            'className' => 'Smtp',
+            'timeout' => 30,
+            'client' => null,
+            'tls' => null,
+            'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
         'Debug' => [
             'className' => 'Debug',
