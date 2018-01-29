@@ -51,5 +51,5 @@ use Cake\Core\Configure;
     <?= $this->Recaptcha->display() ?>
 <?php endif; ?>
 <div class='form-group col-lg-8 col-xs-12'>
-    <?= $this->Form->submit('Send') ?>
+    <?= $this->Form->submit('Send', ['class' => 'btn btn-default']) ?>
 </div>
