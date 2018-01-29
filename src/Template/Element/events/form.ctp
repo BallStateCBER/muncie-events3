@@ -429,11 +429,7 @@
                     </label>
                 </th>
                 <td>
-                    <?php if ($this->request->params['action'] == 'add' && !$this->request->session()->read('Auth.User.id')): ?>
-                        <?= $this->Form->submit('Submit') ?>
-                    <?php else: ?>
-                        <?= $this->Form->submit('Submit', ['class'=>'btn btn-secondary']) ?>
-                    <?php endif ?>
+                    <?= $this->Form->submit('Submit', ['class' => 'btn btn-secondary']) ?>
                 </td>
             </tr>
         </tbody>
