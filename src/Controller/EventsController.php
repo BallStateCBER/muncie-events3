@@ -369,12 +369,16 @@ class EventsController extends AppController
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
         if ($this->request->is(['patch', 'post', 'put'])) {
+            $this->cleanFormData();
+
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
                 $this->Flash->error('Please log in or check your Recaptcha box.');
 
                 return;
             }
+
             $this->uponFormSubmission();
+
             // count how many dates have been picked
             $dateInput = mb_strlen($this->request->getData('date'));
             // a single event
@@ -432,6 +436,20 @@ class EventsController extends AppController
             }
         }
     }
+
+    /**
+     * Performs various actions to massage the data coming in from an event form
+     *
+     * @return void
+     */
+    private function cleanFormData()
+    {
+        // Kill the end time if it hasn't been set
+        if (!$this->request->getData('has_end_time')) {
+            $this->request = $this->request->withData('time_end', null);
+        }
+    }
+
     /**
      * Displays events in the specified category
      *
@@ -536,6 +554,7 @@ class EventsController extends AppController
         $event = $this->Events->get($id, [
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
+
         // Prepare form
         $this->setDatePicker($event);
         $this->setEventForm($event);
@@ -545,8 +564,9 @@ class EventsController extends AppController
         $this->set(compact('event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Edit Event');
+
         if ($this->request->is(['patch', 'post', 'put'])) {
-            // Make sure the end time stays null if it needs to
+            $this->cleanFormData();
             $this->uponFormSubmission();
             $event = $this->Events->patchEntity($event, $this->request->getData());
             $event->location_slug = $this->setLocationSlug($event->location);
@@ -1118,16 +1138,12 @@ class EventsController extends AppController
         return $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
     }
     /**
-     * Conditionally removes time_end and auto-approves the submitted event
+     * Conditionally auto-approves the submitted event
      *
      * @return void
      */
     private function uponFormSubmission()
     {
-        // Kill the end time if it hasn't been set
-        if (!$this->request->getData('has_end_time')) {
-            $this->request = $this->request->withData('time_end', null);
-        }
         // Auto-approve if posted by an admin
         $userId = $this->request->getSession()->read('Auth.User.id') ?: null;
         $this->request = $this->request->withData('user_id', $userId);
