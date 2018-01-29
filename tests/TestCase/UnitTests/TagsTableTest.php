@@ -110,21 +110,7 @@ class TagsTableTest extends ApplicationTest
         $counts = $this->Tags->getUpcoming(['direction' => 'future']);
         $counts = array_keys($counts);
         $counts = implode($counts);
- #       $events = $this->Events->find()
-  #          ->contain('Tags')
-   #         ->where(['date >=' => date('Y-m-d')])
-    #        ->toArray();
-    #    foreach ($events as $event) {
-    #        if (isset($event['tags'])) {
-     #           foreach ($event['tags'] as $tag) {
-      #              $upcoming = $tag->name;
-       #             $this->assertContains($upcoming, $counts);
-        #        }
-
-         #       return;
-          #  }
-            $this->assertEquals($counts, null);
-#        }#
+        $this->assertEquals($counts, null);
     }
     /**
      * Test getUsedTagIds method
@@ -149,21 +135,7 @@ class TagsTableTest extends ApplicationTest
         ], 'alpha');
         $counts = array_keys($counts);
         $counts = implode($counts);
- /*       $events = $this->Events->find()
-            ->contain('Tags')
-            ->where(['date >=' => date('Y-m-d')])
-            ->toArray();
-        foreach ($events as $event) {
-            if (isset($event['tags'])) {
-                foreach ($event['tags'] as $tag) {
-                    $upcoming = $tag->name;
-                    $this->assertContains($upcoming, $counts);
-                }
-
-                return;
-            } */
-            $this->assertEquals($counts, null);
-      #  }
+        $this->assertEquals($counts, null);
     }
     /**
      * Test isUnderUnlistedGroup method
