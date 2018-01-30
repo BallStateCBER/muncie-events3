@@ -60,12 +60,5 @@ class WidgetsControllerTest extends ApplicationTest
             ]
         ]);
         $this->assertResponseOk();
-        $dummies = $this->Events->find()
-            ->where(['title' => 'Widget!'])
-            ->orWhere(['title' => 'Twidget!']);
-        foreach ($dummies as $dummy) {
-            $this->Events->delete($dummy);
-        }
-        $this->markTestIncomplete();
     }
 }
