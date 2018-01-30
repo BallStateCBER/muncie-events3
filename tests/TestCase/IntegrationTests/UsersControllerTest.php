@@ -14,6 +14,7 @@ class UsersControllerTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -23,6 +24,7 @@ class UsersControllerTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test login method
      *
@@ -61,6 +63,7 @@ class UsersControllerTest extends ApplicationTest
         $this->get('/user/1');
         $this->assertResponseContains('adminplaceholder@bsu.edu');
     }
+
     /**
      * Test logout
      *
@@ -76,8 +79,11 @@ class UsersControllerTest extends ApplicationTest
         $this->get('/user/1');
         $this->assertResponseContains('to view email address.');
     }
+
     /**
      * Test the procedure for resetting one's password
+     *
+     * @return void
      */
     public function testPasswordResetProcedure()
     {
@@ -118,6 +124,7 @@ class UsersControllerTest extends ApplicationTest
         $this->post('/login', $newCreds);
         $this->assertSession(1, 'Auth.User.id');
     }
+
     /**
      * Test entire life cycle of user account
      *
