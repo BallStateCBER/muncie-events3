@@ -30,132 +30,17 @@ class WidgetsControllerTest extends ApplicationTest
      */
     public function testFeedCustomizer()
     {
-        $dummyEvent = [
-            'title' => 'Widget!',
-            'category_id' => 1,
-            'date' => date('m/d/Y'),
-            'time_start' => [
-                'hour' => '12',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'time_end' => [
-                'hour' => '01',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'location' => 'PlaceholderTown',
-            'location_details' => 'Room 6',
-            'address' => '666 Placeholder Place',
-            'description' => 'Come out with my support!',
-            'cost' => '$6',
-            'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly',
-            'data' => [
-                'Tags' => [
-                    1
-                ]
+        $this->get([
+            'controller' => 'Widgets',
+            'action' => 'feed',
+            '?' => [
+                'category' => 2,
+                'location' => 'placeholdertown',
+                'tags_included' => 'holding places',
+                'tags_excluded' => ''
             ]
-        ];
-        $this->post('/events/add', $dummyEvent);
-        $this->assertResponseSuccess();
-        $dummyEvent = [
-            'title' => 'Twidget!',
-            'category_id' => 2,
-            'date' => date('m/d/Y'),
-            'time_start' => [
-                'hour' => '12',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'time_end' => [
-                'hour' => '01',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'location' => 'PlaceholderTown',
-            'location_details' => 'Room 6',
-            'address' => '666 Placeholder Place',
-            'description' => 'Come out with my support!',
-            'cost' => '$6',
-            'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly',
-            'data' => [
-                'Tags' => [
-                    1
-                ]
-            ]
-        ];
-        $this->post('/events/add', $dummyEvent);
-        $this->assertResponseSuccess();
-        $dummyEvent = [
-            'title' => 'Twidget!',
-            'category_id' => 1,
-            'date' => date('m/d/Y'),
-            'time_start' => [
-                'hour' => '12',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'time_end' => [
-                'hour' => '01',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'location' => 'PlaceholderTown',
-            'location_details' => 'Room 6',
-            'address' => '666 Placeholder Place',
-            'description' => 'Come out with my support!',
-            'cost' => '$6',
-            'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly',
-            'data' => [
-                'Tags' => [
-                    1
-                ]
-            ]
-        ];
-        $this->post('/events/add', $dummyEvent);
-        $this->assertResponseSuccess();
-        $dummyEvent = [
-            'title' => 'Twidget!',
-            'category_id' => 2,
-            'date' => date('m/d/Y'),
-            'time_start' => [
-                'hour' => '12',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'time_end' => [
-                'hour' => '01',
-                'minute' => '00',
-                'meridian' => 'am'
-            ],
-            'location' => 'Mr. Placeholder\'s Casa',
-            'location_details' => 'Room 6',
-            'address' => '666 Placeholder Place',
-            'description' => 'Come out with my support!',
-            'cost' => '$6',
-            'age_restriction' => '66 or younger',
-            'source' => 'Placeholder Digest Tri-Weekly',
-            'data' => [
-                'Tags' => [
-                    1
-                ]
-            ]
-        ];
-        $this->post('/events/add', $dummyEvent);
-        $this->assertResponseSuccess();
-        $this->get('/widgets/feed?', [
-            'category' => 2,
-            'location' => 'placeholdertown',
-            'tags_included' => 'holding places',
-            'tags_excluded' => ''
         ]);
         $this->assertResponseOk();
-        $iframeQueryString = $this->viewVariable('iframeQueryString');
-        $this->markTestIncomplete();
-        #$this->assertEquals('category=2&location=placeholdertown&tags_included=holding%20places', $iframeQueryString);
     }
     /**
      * Test month customizer method
