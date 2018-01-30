@@ -48,11 +48,13 @@ class TagHelper extends Helper
     private function preselectTags($event)
     {
         $selectedTags = [];
-        foreach ($event->tags as $tag) {
-            $selectedTags[] = [
-                'id' => $tag->id,
-                'name' => $tag->name
-            ];
+        if (is_array($event->tags)) {
+            foreach ($event->tags as $tag) {
+                $selectedTags[] = [
+                    'id' => $tag->id,
+                    'name' => $tag->name
+                ];
+            }
         }
         $this->Js->buffer('TagManager.preselectTags(' . json_encode($selectedTags) . ');');
     }
