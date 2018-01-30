@@ -1,3 +1,7 @@
+<h1 class="page_title">
+    <?= $titleForLayout; ?>
+</h1>
+
 <div class="content_box col-lg-6">
     <?= $this->Form->create('User', ['url' => [
             'controller' => 'users',
