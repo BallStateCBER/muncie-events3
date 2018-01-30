@@ -390,7 +390,8 @@ class EventsController extends AppController
                 if ($this->Events->save($event, [
                     'associated' => ['Images', 'Tags']
                 ])) {
-                    $this->Flash->success(__('The event has been saved.'));
+                    $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+                    $this->Flash->success($msg);
                     $this->setImageData($event);
                     $this->sendSlackNotification('event', $event['id']);
 
@@ -577,11 +578,13 @@ class EventsController extends AppController
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ])) {
                 $event->date = $this->request->getData('date');
-                $this->Flash->success(__('The event has been saved.'));
+                $this->Flash->success('Event updated');
 
                 return $this->redirect('/');
             }
-            $this->Flash->error(__('The event could not be saved. Please, try again.'));
+            $msg = 'The event could not be updated. Please correct any indicated errors and try again, or contact an ' .
+                'administrator if you need assistance.';
+            $this->Flash->error($msg);
 
             return $this->redirect('/');
         }
@@ -598,7 +601,8 @@ class EventsController extends AppController
     {
         $eventSeries = $this->EventSeries->get($seriesId);
         if (!$eventSeries) {
-            $this->Flash->error('Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.');
+            $msg = 'Sorry, it looks like you were trying to edit an event series that doesn\'t exist anymore.';
+            $this->Flash->error($msg);
 
             return;
         }
@@ -623,7 +627,7 @@ class EventsController extends AppController
         $event->start = $dates;
         $this->setEventForm($event);
         $this->setDatePicker($event);
-        $this->Flash->error('Warning: all events in this series will be overwritten.');
+        $this->Flash->error('Warning: All events in this series will be overwritten.');
         $categories = $this->Categories->find('list');
         $this->set([
             'titleForLayout' => 'Edit Event Series: ' . $eventSeries['title']
@@ -637,7 +641,7 @@ class EventsController extends AppController
                 if (!in_array($oldDate, $newDates)) {
                     $deleteEvent = $this->Events->getEventsByDateAndSeries($date, $seriesId);
                     if ($this->Events->delete($deleteEvent)) {
-                        $this->Flash->success(__("Event '$deleteEvent->title' has been deleted."));
+                        $this->Flash->success("Event '$deleteEvent->title' has been deleted.");
                     }
                 }
             }
@@ -666,23 +670,23 @@ class EventsController extends AppController
                 $event = $this->setDatesAndTimes($event);
                 if ($this->Events->save($event, [
                     'associated' => ['EventSeries', 'Images', 'Tags']])) {
-                    $this->Flash->success(__("Event '$event->title' has been saved."));
+                    $this->Flash->success("Event '$event->title' has been saved.");
                     continue;
                 }
                 if (!$this->Events->save($event)) {
-                    $this->Flash->error(__("The event '$event->title' (#$event->id) could not be saved."));
+                    $this->Flash->error("The event '$event->title' (#$event->id) could not be saved.");
                 }
             }
             $series = $this->EventSeries->get($seriesId);
             $series = $this->EventSeries->patchEntity($series, $this->request->getData());
             $series->title = $this->request->getData('series_title');
             if ($this->EventSeries->save($series)) {
-                $this->Flash->success(__("The event series '$series->title' was saved."));
+                $this->Flash->success("The event series '$series->title' was saved.");
 
                 return;
             }
             if (!$this->EventSeries->save($series)) {
-                $this->Flash->error(__("The event series '$series->title' was not saved."));
+                $this->Flash->error("The event series '$series->title' was not saved.");
 
                 return;
             }
