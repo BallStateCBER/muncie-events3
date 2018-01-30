@@ -5,8 +5,8 @@ use App\Test\TestCase\ApplicationTest;
 
 class PagesControllerTest extends ApplicationTest
 {
-    /*
-     * test that pages are loading.
+    /**
+     * Test that pages are loading.
      *
      * @return void
      */
@@ -18,8 +18,8 @@ class PagesControllerTest extends ApplicationTest
         $this->assertResponseOk();
     }
 
-    /*
-     * test that the about page loads
+    /**
+     * Test that the about page loads
      *
      * @return void
      */
@@ -31,8 +31,8 @@ class PagesControllerTest extends ApplicationTest
         $this->assertResponseContains('</html>');
     }
 
-    /*
-     * test that the contact page loads
+    /**
+     * Test that the contact page loads
      *
      * @return void
      */
@@ -44,8 +44,8 @@ class PagesControllerTest extends ApplicationTest
         $this->assertResponseContains('</html>');
     }
 
-    /*
-     * test that the contact page sends emails
+    /**
+     * Test that the contact page sends emails
      *
      * @return void
      */
@@ -62,8 +62,8 @@ class PagesControllerTest extends ApplicationTest
         $this->assertResponseOk();
     }
 
-    /*
-     * test that our ToS loads
+    /**
+     * Test that our ToS loads
      *
      * @return void
      */
