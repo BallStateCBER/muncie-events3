@@ -23,10 +23,12 @@
             'class' => 'form-control',
             'label' => false
         ]) ?>
+    </div>
+    <div class="col-lg-6">
         <?= $this->Form->button(__('Send password-resetting email'), [
             'class' => 'btn btn-default'
         ]) ?>
-        <?= $this->Form->end() ?>
     </div>
+    <?= $this->Form->end() ?>
     <br class="clear" />
 </div>
