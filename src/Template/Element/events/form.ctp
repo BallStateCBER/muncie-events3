@@ -210,7 +210,8 @@
                                 ],
                                 'meridian' => [
                                     'class' => 'form-control event_time_form'
-                                ]
+                                ],
+                                'empty' => false
                             ]);
                         ?>
                         <?= $this->Form->hidden('has_end_time', [
