@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Helper;
 
+use App\Model\Entity\Event;
 use Cake\ORM\TableRegistry;
 use Cake\View\Helper;
 
@@ -38,69 +39,21 @@ class TagHelper extends Helper
     }
 
     /**
-     * create array for json of selected tags
+     * Adds JS that pre-selects tags in the event form
      *
-     * @param array $selectedTags to convert for json
-     * @return array
+     * @param Event $event Event entity
+     * @return void
      */
-    private function selectedTagsForJs($selectedTags)
+    private function preselectTags($event)
     {
-        $arrayForJson = [];
-        if (is_array($selectedTags)) {
-            foreach ($selectedTags as $tag) {
-                $arrayForJson[] = [
-                    'id' => $tag->id,
-                    'name' => $tag->name
-                ];
-            }
+        $selectedTags = [];
+        foreach ($event->tags as $tag) {
+            $selectedTags[] = [
+                'id' => $tag->id,
+                'name' => $tag->name
+            ];
         }
-
-        return $arrayForJson;
-    }
-
-    /**
-     * If necessary, convert selectedTags from an array of IDs to a full array of tag info
-     *
-     * @param array|null $newTags to check for duplicates
-     * @param ResultSet $event being tagged
-     * @return array
-     */
-    private function formatSelectedTags($newTags, $event)
-    {
-        $this->Tags = TableRegistry::get('Tags');
-        $this->Events = TableRegistry::get('Events');
-        $retval = [];
-
-        // $_POST but no data? all tags have been deleted.
-        if (empty($newTags) && $_POST) {
-            return [];
-        }
-
-        // no data but there are previous tags? page is just now being edited.
-        if (empty($newTags) && $event->tags) {
-            return $event->tags;
-        }
-
-        // finally, are there new or remaining tags? link them.
-        if (is_array($newTags)) {
-            foreach ($newTags as $tagId) {
-                // check for duplicates
-                $prevTag = $this->Events
-                    ->EventsTags
-                    ->find()
-                    ->where(['tag_id' => $tagId])
-                    ->andWhere(['event_id' => $event->id])
-                    ->count();
-
-                // proceed if there are no duplicates
-                if ($prevTag < 1) {
-                    $result = $this->Tags->getTagFromId($tagId);
-                    $retval[] = $result;
-                }
-            }
-        }
-
-        return $retval;
+        $this->Js->buffer('TagManager.preselectTags(' . json_encode($selectedTags) . ');');
     }
 
     /**
@@ -108,18 +61,12 @@ class TagHelper extends Helper
      *
      * @param array $availableTags to be selected
      * @param string $containerId of the tag menu
-     * @param ResultSet $event that is being tagged
+     * @param Event $event that is being tagged
      * @return void
      */
     public function setup($availableTags, $containerId, $event)
     {
-        $newTags = $this->request->getData('tags._ids');
-        $selectedTags = $this->formatSelectedTags($newTags, $event);
-
-        $this->Js->buffer("
-            TagManager.selectedTags = " . $this->Js->object($this->selectedTagsForJs($selectedTags)) . ";
-            TagManager.preselectTags(TagManager.selectedTags);
-        ");
+        $this->preselectTags($event);
 
         $parentTags = [];
         foreach ($availableTags as $tag) {
