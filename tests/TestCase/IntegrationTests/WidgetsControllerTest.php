@@ -49,10 +49,17 @@ class WidgetsControllerTest extends ApplicationTest
      */
     public function testMonthCustomizer()
     {
-        $this->get('/widgets/month' . '?hideGeneralEventsIcon=1&category=2&location=placeholdertown&tags_included=holding%20places');
+        $this->get([
+            'controller' => 'Widgets',
+            'action' => 'month',
+            '?' => [
+                'hideGeneralEventsIcon' => 1,
+                'category' => 2,
+                'location' => 'placeholdertown',
+                'tags_included' => 'holding places'
+            ]
+        ]);
         $this->assertResponseOk();
-        /*    $iframeQueryString =  $this->viewVariable('iframeQueryString');
-            $this->assertEquals('hideGeneralEventsIcon=1&category=13&location=placeholdertown&tags_included=potluck&tags_excluded=slow+food', $iframeQueryString); */
         $dummies = $this->Events->find()
             ->where(['title' => 'Widget!'])
             ->orWhere(['title' => 'Twidget!']);
