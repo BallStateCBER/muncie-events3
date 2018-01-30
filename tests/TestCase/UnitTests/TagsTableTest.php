@@ -11,6 +11,7 @@ class TagsTableTest extends ApplicationTest
      * @var \App\Model\Table\TagsTable
      */
     public $Tags;
+
     /**
      * setUp method
      *
@@ -20,6 +21,7 @@ class TagsTableTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -40,6 +42,7 @@ class TagsTableTest extends ApplicationTest
         $del = $this->Tags->getDeleteGroupId();
         $this->assertEquals(1011, $del);
     }
+
     /**
      * Test getIdFromName method
      *
@@ -52,6 +55,7 @@ class TagsTableTest extends ApplicationTest
         $tag = $this->Tags->getIdFromName('unlisted');
         $this->assertEquals(1012, $tag);
     }
+
     /**
      * Test getIdFromSlug method
      *
@@ -64,6 +68,7 @@ class TagsTableTest extends ApplicationTest
         $tag = $this->Tags->getIdFromSlug('1012_unlisted');
         $this->assertEquals(1012, $tag);
     }
+
     /**
      * Test getIndentLevel method
      *
@@ -78,6 +83,7 @@ class TagsTableTest extends ApplicationTest
         $level = $this->Tags->getIndentLevel($name);
         $this->assertEquals(0, $level);
     }
+
     /**
      * Test getTagFromId method
      *
@@ -90,6 +96,7 @@ class TagsTableTest extends ApplicationTest
         $tag = $this->Tags->getTagFromId(9214878513758);
         $this->assertEquals(null, $tag);
     }
+
     /**
      * Test getUnlistedGroupId method
      *
@@ -100,6 +107,7 @@ class TagsTableTest extends ApplicationTest
         $unl = $this->Tags->getUnlistedGroupId();
         $this->assertEquals(1012, $unl);
     }
+
     /**
      * Test getUpcoming method
      *
@@ -112,6 +120,7 @@ class TagsTableTest extends ApplicationTest
         $counts = implode($counts);
         $this->assertEquals($counts, null);
     }
+
     /**
      * Test getUsedTagIds method
      *
@@ -123,6 +132,7 @@ class TagsTableTest extends ApplicationTest
         $used = implode(',', $used);
         $this->assertContains('1', $used);
     }
+
     /**
      * Test getWithCounts method
      *
@@ -137,6 +147,7 @@ class TagsTableTest extends ApplicationTest
         $counts = implode($counts);
         $this->assertEquals($counts, null);
     }
+
     /**
      * Test isUnderUnlistedGroup method
      *
