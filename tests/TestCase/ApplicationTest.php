@@ -5,6 +5,7 @@ use App\Application;
 use App\Test\Fixture\EventsFixture;
 use App\Test\Fixture\MailingListFixture;
 use App\Test\Fixture\UsersFixture;
+use Cake\Cache\Cache;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\ORM\TableRegistry;
@@ -116,6 +117,8 @@ class ApplicationTest extends IntegrationTestCase
                 'User' => $usersFixture->records[1]
             ]
         ];
+
+        Cache::clear(false);
     }
 
     /**
@@ -147,5 +150,6 @@ class ApplicationTest extends IntegrationTestCase
         }
 
         parent::tearDown();
+        Cache::clear(false);
     }
 }
