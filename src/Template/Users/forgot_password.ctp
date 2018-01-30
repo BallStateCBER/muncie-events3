@@ -2,7 +2,7 @@
     <?= $titleForLayout; ?>
 </h1>
 
-<div class='form-group'>
+<div class="form-group">
     <p>
         If you have forgotten the password to your MuncieEvents.com account, you can enter your email address below (the same one that
         you used to register an account) and we'll send you an email with a link to reset your password.
