@@ -239,12 +239,6 @@ class EventsController extends AppController
             'previousLocations' => $this->Events->getPastLocations(),
             'userId' => $userId,
         ]);
-        // Prepare the tag helper
-        $availableTags = $this->Events->Tags->find()
-            ->where(['listed' => 1])
-            ->order(['name' => 'ASC'])
-            ->toArray();
-        $this->set(compact('availableTags'));
         if ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'editSeries') {
             $hasSeries = count($event['date']) > 1;
             $hasEndTime = isset($event['time_end']);

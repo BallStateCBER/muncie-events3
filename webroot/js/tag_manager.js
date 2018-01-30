@@ -1,8 +1,5 @@
 /*jshint loopfunc:true */
 var TagManager = {
-    tags: [],
-    selectedTags: [],
-
     /**
      * @param data An array of tag objects
      * @param container $('#container_id')

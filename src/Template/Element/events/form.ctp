@@ -322,7 +322,6 @@
                 <td id="eventform_tags">
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
                         <?= $this->element('tags/tag_editing', [
-                            'availableTags' => $availableTags,
                             'event' => $event,
                             'hide_label' => true
                         ]); ?>
