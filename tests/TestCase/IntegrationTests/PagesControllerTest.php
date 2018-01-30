@@ -51,8 +51,6 @@ class PagesControllerTest extends ApplicationTest
      */
     public function testContactPageSendsEmails()
     {
-        $this->get('/contact');
-        $this->assertResponseOk();
         $data = [
             'category' => 'General',
             'name' => 'Placeholder Man',
