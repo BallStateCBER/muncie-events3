@@ -9,7 +9,7 @@
         If you need assistance, please
         <?= $this->Html->link('contact us', [
             'controller' => 'Pages',
-            'url' => 'contact'
+            'action' => 'contact'
         ]); ?>.
     </p>
     <?= $this->Form->create('User', ['url' => ['controller' => 'Users', 'action' => 'forgotPassword']]); ?>
