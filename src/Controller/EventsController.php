@@ -349,10 +349,11 @@ class EventsController extends AppController
 
         return $this->redirect($this->referer());
     }
+
     /**
      * Adds a new event
      *
-     * @return void
+     * @return \Cake\Http\Response|null
      */
     public function add()
     {
@@ -372,7 +373,7 @@ class EventsController extends AppController
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
                 $this->Flash->error('Please log in or check your Recaptcha box.');
 
-                return;
+                return null;
             }
 
             $this->cleanFormData();
@@ -392,10 +393,16 @@ class EventsController extends AppController
                 ])) {
                     $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
                     $this->Flash->success($msg);
-                    $this->setImageData($event);
                     $this->sendSlackNotification('event', $event['id']);
+                    $url = ['controller' => 'Events'];
+                    if ($autoPublish) {
+                        $url['action'] = 'view';
+                        $url[] = $event->id;
+                    } else {
+                        $url['action'] = 'index';
+                    }
 
-                    return;
+                    return $this->redirect($url);
                 }
             }
             // a series of multiple events
@@ -427,13 +434,11 @@ class EventsController extends AppController
                 $this->Flash->success(__('The event series has been saved.'));
                 $this->sendSlackNotification('series', $eventSeries['id']);
 
-                return;
+                return null;
             }
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
                 $this->Flash->error(__('The event could not be saved. Please, try again.'));
-
-                return;
             }
         }
     }
