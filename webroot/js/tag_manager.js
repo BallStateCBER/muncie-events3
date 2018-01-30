@@ -168,7 +168,7 @@ var TagManager = {
         // Add tag
         var list_item = $('<a href="#" title="Click to remove" data-tag-id="'+tag_id+'" id="selected_tag_'+tag_id+'"></a>');
         list_item.append(tag_name);
-        list_item.append('<input type="hidden" name="data[Tags][]" value="'+tag_id+'" />');
+        list_item.append('<input type="hidden" name="tags[_ids][]" value="' + tag_id + '" />');
         list_item.click(function (event) {
             event.preventDefault();
             var unselect_link = $(this);

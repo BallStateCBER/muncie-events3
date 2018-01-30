@@ -61,7 +61,7 @@ class TagHelper extends Helper
     /**
      * If necessary, convert selectedTags from an array of IDs to a full array of tag info
      *
-     * @param array $newTags to check for duplicates
+     * @param array|null $newTags to check for duplicates
      * @param ResultSet $event being tagged
      * @return array
      */
@@ -94,20 +94,22 @@ class TagHelper extends Helper
         }
 
         // finally, are there new or remaining tags? link them.
-        foreach ($newTags as $tagId) {
-            // check for duplicates
-            $prevTag = $this->Events
-                ->EventsTags
-                ->find()
-                ->where(['tag_id' => $tagId])
-                ->andWhere(['event_id' => $event->id])
-                ->count();
+        if (is_array($newTags)) {
+            foreach ($newTags as $tagId) {
+                // check for duplicates
+                $prevTag = $this->Events
+                    ->EventsTags
+                    ->find()
+                    ->where(['tag_id' => $tagId])
+                    ->andWhere(['event_id' => $event->id])
+                    ->count();
 
-            // proceed if there are no duplicates
-            if ($prevTag < 1) {
-                $result = $this->Tags->getTagFromId($tagId);
-                $this->Events->Tags->link($event, [$result]);
-                $retval[] = $result;
+                // proceed if there are no duplicates
+                if ($prevTag < 1) {
+                    $result = $this->Tags->getTagFromId($tagId);
+                    $this->Events->Tags->link($event, [$result]);
+                    $retval[] = $result;
+                }
             }
         }
 
@@ -124,7 +126,7 @@ class TagHelper extends Helper
      */
     public function setup($availableTags, $containerId, $event)
     {
-        $newTags = $this->request->getData('data')['Tags'] != null ? $this->request->getData('data')['Tags'] : [];
+        $newTags = $this->request->getData('tags._ids');
         $selectedTags = $this->formatSelectedTags($newTags, $event);
 
         $this->Js->buffer("

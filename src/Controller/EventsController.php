@@ -109,47 +109,55 @@ class EventsController extends AppController
         }
         $customTags = explode(',', $customTags);
         // Force lowercase and remove leading/trailing whitespace
-        foreach ($customTags as &$ct) {
-            $ct = strtolower(trim($ct));
+        foreach ($customTags as &$customTag) {
+            $customTag = strtolower(trim($customTag));
         }
-        unset($ct);
+        unset($customTag);
         // Remove duplicates
         $customTags = array_unique($customTags);
-        foreach ($customTags as $ct) {
+        foreach ($customTags as $customTag) {
             // Skip over blank tags
-            if ($ct == '') {
+            if ($customTag == '') {
                 continue;
             }
-            // Get ID of existing tag, if it exists
-            $tagId = $this->Events->Tags->find()
-                ->select('id')
-                ->where(['name' => $ct])
+
+            // Get existing tag
+            $existingTag = $this->Events->Tags->find()
+                ->select('id', 'selectable')
+                ->where(['name' => $customTag])
                 ->first();
-            // Include this tag if it exists and is selectable
-            if ($tagId) {
-                $selectable = $this->Events->Tags->find()
-                    ->select('selectable')
-                    ->where(['id' => $tagId->id])
-                    ->toArray();
-                if (!$selectable) {
+
+            // Include this tag if it exists
+            if ($existingTag) {
+                // Ignore this custom tag if it matches an unselectable tag
+                if (!$existingTag->selectable) {
                     continue;
                 }
-                $this->request = $this->request->withData('data.Tags[]', $tagId);
-            }
+
+                $fieldName = 'tags._ids.' . count($this->request->getData('tags._ids'));
+                $this->request = $this->request->withData($fieldName, $existingTag->id);
+
+                $event->tags[] = $this->Events->Tags->get($existingTag->id);
+
             // Create the custom tag if it does not already exist
-            if (!$tagId) {
+            } else {
                 $newTag = $this->Events->Tags->newEntity();
-                $newTag->name = $ct;
+                $newTag->name = $customTag;
                 $newTag->user_id = $this->Auth->user('id');
                 $newTag->user_id = $this->Auth->user('id');
                 $newTag->parent_id = 1012; // 'Unlisted' group
                 $newTag->listed = $this->Auth->user('role') == 'admin' ? 1 : 0;
                 $newTag->selectable = 1;
                 $this->Events->Tags->save($newTag);
-                $this->request = $this->request->withData('data.Tags[]', $newTag->id);
+
+                $fieldName = 'tags._ids.' . count($this->request->getData('tags._ids'));
+                $this->request = $this->request->withData($fieldName, $newTag->id);
+
+                $event->tags[] = $newTag;
             }
         }
-        $this->request = $this->request->withData('data.Tags', array_unique($this->request->getData('data.Tags')));
+        $uniqueTagIds = array_unique($this->request->getData('tags._ids'));
+        $this->request = $this->request->withData('tags._ids', $uniqueTagIds);
         $event->customTags = '';
     }
     /**
