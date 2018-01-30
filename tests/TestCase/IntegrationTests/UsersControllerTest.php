@@ -160,14 +160,6 @@ class UsersControllerTest extends ApplicationTest
         ];
         $id = $this->Users->getIdFromEmail($accountInfo['email']);
 
-        // for the moment, we're not using this test, because it's not working and I have no idea why
-        /*$this->get('/account');
-        $this->post('/account', $accountInfo);
-        $user = $this->Users->get($id);
-        dd($user);
-
-        $this->assertEquals('I am yet another placeholder.', $user->bio);*/
-
         $this->get('/logout');
 
         $this->session($this->commoner);
