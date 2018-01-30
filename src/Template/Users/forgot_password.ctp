@@ -24,7 +24,7 @@
             'label' => false
         ]) ?>
         <?= $this->Form->button(__('Send password-resetting email'), [
-            'class' => 'form-control btn btn-default'
+            'class' => 'btn btn-default'
         ]) ?>
         <?= $this->Form->end() ?>
     </div>
