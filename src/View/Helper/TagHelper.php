@@ -71,18 +71,6 @@ class TagHelper extends Helper
         $this->Events = TableRegistry::get('Events');
         $retval = [];
 
-        // clear it out first to prevent duplicates
-        $oldTags = $this->Events
-            ->EventsTags
-            ->find()
-            ->where(['event_id' => $event->id])
-            ->toArray();
-
-        foreach ($oldTags as $oldTag) {
-            $result = $this->Tags->getTagFromId($oldTag->tag_id);
-            $this->Events->Tags->unlink($event, [$result]);
-        };
-
         // $_POST but no data? all tags have been deleted.
         if (empty($newTags) && $_POST) {
             return [];
@@ -107,7 +95,6 @@ class TagHelper extends Helper
                 // proceed if there are no duplicates
                 if ($prevTag < 1) {
                     $result = $this->Tags->getTagFromId($tagId);
-                    $this->Events->Tags->link($event, [$result]);
                     $retval[] = $result;
                 }
             }
