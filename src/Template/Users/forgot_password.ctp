@@ -16,7 +16,9 @@
     <div class="col-lg-6">
         <?php
             echo $this->Form->input('email', ['class' => 'form-control', 'label' => false]);
-            echo $this->Form->button(__('Send password-resetting email'), ['class' => 'form-control btn']);
+            echo $this->Form->button(__('Send password-resetting email'), [
+                'class' => 'form-control btn btn-default'
+            ]);
             echo $this->Form->end();
         ?>
     </div>
