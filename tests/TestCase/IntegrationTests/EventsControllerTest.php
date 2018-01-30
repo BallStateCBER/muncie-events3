@@ -166,10 +166,8 @@ class EventsControllerTest extends ApplicationTest
             'cost' => '$6',
             'age_restriction' => '66 or younger',
             'source' => 'Placeholder Digest Tri-Weekly',
-            'data' => [
-                'Tags' => [
-                    1
-                ]
+            'tags' => [
+                '_ids' => [1]
             ],
             'customTags' => 'adding custom tags too'
         ];
