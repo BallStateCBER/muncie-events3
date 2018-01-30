@@ -185,7 +185,7 @@ class EventsControllerTest extends ApplicationTest
             ->contain(['Tags'])
             ->firstOrFail();
 
-        $this->assertEquals(count($event['tags']), 2);
+        $this->assertEquals(2, count($event['tags']));
     }
 
     /**
