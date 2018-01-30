@@ -11,7 +11,7 @@ your old one.
 
 
 NOTE: That link will only work for the rest of <?php echo date('F Y'); ?>.
-If you need to reset your password in <?php echo date('F', strtotime('+1 month')); ?>, you'll need
+If you need to reset your password after that, you'll need
 to request another password reset link. That's so if you forget to delete this email and some creep
 finds it later, they won't be able to use it to get into your account. Still, it would be a good
 idea to delete this email as soon as you've reset your password.
