@@ -199,7 +199,6 @@
                                     : $event['time_end'];
                             }
                             echo $this->Form->time('time_end', [
-                                #'label' => false,
                                 'interval' => 5,
                                 'timeFormat' => '12',
                                 'hour' => [
