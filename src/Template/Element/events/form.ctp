@@ -174,7 +174,8 @@
                             ],
                             'meridian' => [
                                 'class' => 'form-control event_time_form'
-                            ]
+                            ],
+                            'empty' => false
                         ],
                         'form-control event_time_form'); ?>
                         <span id="eventform_noendtime"<?=$has['end_time'] ? ' style="display: none;"' : ''?>>
