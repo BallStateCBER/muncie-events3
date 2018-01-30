@@ -126,64 +126,64 @@ class UsersControllerTest extends ApplicationTest
     }
 
     /**
-     * Test entire life cycle of user account
+     * Tests that the registration page loads from a GET request
      *
      * @return void
      */
-    public function testRegistrationAndAccountEditingAndDeletingAUser()
+    public function testRegistrationGet()
     {
         $this->get('/register');
         $this->assertResponseOk();
+    }
 
-        // validation works?
+    /**
+     * Tests that registration rejects passwords that don't match
+     *
+     * @return void
+     */
+    public function testRegistrationUnmatchedPasswords()
+    {
         $newUser = [
             'name' => 'Paulie Placeholder',
             'password' => 'placeholder',
             'confirm_password' => 'placehollder',
-            'email' => 'userplaceholder2@bsu.edu'
+            'email' => 'userplaceholder2@example.com'
         ];
 
         $this->post('/register', $newUser);
         $this->assertResponseContains('Your passwords do not match.');
+    }
 
-        // let's try again!
-        $newUser['confirm_password'] = 'placeholder';
+    /**
+     * Tests that registration with valid data works
+     *
+     * @return void
+     */
+    public function testRegistrationPost()
+    {
+        $newUser = [
+            'name' => 'Paulie Placeholder',
+            'password' => 'placeholder',
+            'confirm_password' => 'placeholder',
+            'email' => 'userplaceholder2@example.com'
+        ];
 
         $this->post('/register', $newUser);
         $this->assertRedirect('/account');
         $this->assertSession(3, 'Auth.User.id');
+    }
 
-        $accountInfo = [
-            'name' => 'Paulie Farce',
-            'email' => 'userplaceholder2@bsu.edu',
-            'bio' => 'I am yet another placeholder.',
-            'photo' => [
-                'tmp_name' => null,
-                'error' => 4,
-                'name' => null,
-                'type' => null,
-                'size' => 0
-            ]
-        ];
-        $id = $this->Users->getIdFromEmail($accountInfo['email']);
-
-        $this->get('/logout');
-
-        $this->session($this->commoner);
-
-        $this->get("users/delete/$id");
-        $id = $this->Users->getIdFromEmail($accountInfo['email']);
-        $this->assertEquals($id, 3);
-
-        // let's try again with an admin
+    public function testDeleteUser()
+    {
         $this->session($this->admin);
 
-        $this->get("users/delete/$id");
-
+        $userId = 2;
+        $this->get("users/delete/$userId");
         $this->assertRedirect('/');
-        $id = $this->Users->getIdFromEmail($accountInfo['email']);
-        $this->assertEquals($id, null);
 
-        $this->markTestIncomplete();
+        $result = $this->Users->find()
+            ->where(['id' => $userId])
+            ->count();
+        $this->assertEquals(0, $result);
     }
 }

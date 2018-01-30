@@ -51,17 +51,27 @@ class EventsControllerTest extends ApplicationTest
     }
 
     /**
-     * test adding new events
+     * Tests that the "add event" page loads and has expected content if the user is anonymous
      *
      * @return void
      */
-    public function testAddingEvents()
+    public function testAddGetAsAnonymous()
     {
-        // first, with a non-user
-        $this->get('/events/add');
+        $this->get([
+            'controller' => 'Events',
+            'action' => 'add'
+        ]);
         $this->assertResponseContains('You can still submit this event, but...');
         $this->assertResponseOk();
+    }
 
+    /**
+     * Tests posting an event as an anonymous user
+     *
+     * @return void
+     */
+    public function testAddPostAsAnonymous()
+    {
         $newData = [
             'title' => 'Anonymous event!',
             'category_id' => 1,
@@ -85,13 +95,14 @@ class EventsControllerTest extends ApplicationTest
             'age_restriction' => '66 or younger',
             'source' => 'Placeholder Digest Tri-Weekly',
             'data' => [
-                'Tags' => [
-                    1
-                ]
+                'Tags' => [1]
             ]
         ];
 
-        $this->post('/events/add', $newData);
+        $this->post([
+            'controller' => 'Events',
+            'action' => 'add'
+        ], $newData);
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
@@ -101,16 +112,38 @@ class EventsControllerTest extends ApplicationTest
 
         $this->assertEquals(0, $event['published']);
         $dst = $this->Events->getDaylightSavings(date('Y-m-d'));
-        $this->assertEquals($event['start']->format('Y-m-d H:i:s'), date('Y-m-d H:i:s', strtotime("Today 00:00:00$dst")));
+        $this->assertEquals(
+            $event['start']->format('Y-m-d H:i:s'),
+            date('Y-m-d H:i:s', strtotime("Today 00:00:00$dst"))
+        );
         foreach ($event['tags'] as $tag) {
             $this->assertEquals(1, $tag['id']);
         }
+    }
 
-        // now with a common user
+    /**
+     * Tests getting the "add event" page as an authenticated user
+     *
+     * @return void
+     */
+    public function testAddGetAuthenticated()
+    {
         $this->session($this->commoner);
-        $this->get('/events/add');
+        $this->get([
+            'controller' => 'Events',
+            'action' => 'add'
+        ]);
         $this->assertResponseOk();
+    }
 
+    /**
+     * Tests posting to the "add event" page as an authenticated user
+     *
+     * @return void
+     */
+    public function testAddPostAuthenticated()
+    {
+        $this->session($this->commoner);
         $newData = [
             'title' => 'Wow, I can add custom tags!',
             'category_id' => 1,
@@ -141,7 +174,10 @@ class EventsControllerTest extends ApplicationTest
             'customTags' => 'adding custom tags too'
         ];
 
-        $this->post('/events/add', $newData);
+        $this->post([
+            'controller' => 'Events',
+            'action' => 'add'
+        ], $newData);
         $this->assertResponseSuccess();
 
         $event = $this->Events->find()
