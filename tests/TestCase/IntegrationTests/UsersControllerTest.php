@@ -69,13 +69,21 @@ class UsersControllerTest extends ApplicationTest
      *
      * @return void
      */
-    public function testLoggingOutAndViewingUsers()
+    public function testLoggingOut()
     {
         $this->session($this->commoner);
 
         $this->get('/logout');
         $this->assertSession(null, 'Auth.User.id');
+    }
 
+    /**
+     * Tests that email addresses are hidden for anonymous users on user profile pages
+     *
+     * @return void
+     */
+    public function testHiddenEmailAddress()
+    {
         $this->get('/user/1');
         $this->assertResponseContains('to view email address.');
     }
