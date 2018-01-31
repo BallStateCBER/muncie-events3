@@ -449,7 +449,9 @@ class EventsController extends AppController
 
             // if neither a single event nor multiple-event series can be saved
             if (!$this->Events->save($event)) {
-                $this->Flash->error(__('The event could not be saved. Please, try again.'));
+                $msg = 'The event could not be submitted. Please correct any errors and try again. If you need ' .
+                    'assistance, please contact an administrator.';
+                $this->Flash->error($msg);
             }
         }
 
