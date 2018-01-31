@@ -163,6 +163,7 @@ class EventsController extends AppController
 
         $uniqueTagIds = array_unique($this->request->getData('tags._ids'));
         $this->request = $this->request->withData('tags._ids', $uniqueTagIds);
+        $this->request = $this->request->withData('customTags', '');
         $event->customTags = '';
     }
 
