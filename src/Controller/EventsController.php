@@ -269,14 +269,6 @@ class EventsController extends AppController
             ]
         ]);
 
-        // Fixes bug where midnight is saved as null
-        if (!$event['time_start']) {
-            $event['time_start'] = '00:00:00';
-        }
-        if ($hasEndTime && !$event['time_end']) {
-            $event['time_end'] = '00:00:00';
-        }
-
         // Fixes bug that prevents CakePHP from deleting all tags
         if (null !== $this->request->getData('Tags')) {
             $this->set('Tags', []);
