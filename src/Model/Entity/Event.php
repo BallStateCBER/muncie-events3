@@ -29,7 +29,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Category $category
- * @property \App\Model\Entity\Series $series
+ * @property \App\Model\Entity\EventSeries $series
  * @property \App\Model\Entity\Image[] $images
  * @property \App\Model\Entity\Tag[] $tags
  */
@@ -83,5 +83,19 @@ class Event extends Entity
         }
 
         return $locationSlug;
+    }
+
+    /**
+     * Sets the event to approved and published if $user (the user submitting the form) is an administrator
+     *
+     * @param array $user The user submitting the form (not necessarily the original event author)
+     * @return void
+     */
+    public function autoApprove($user)
+    {
+        if ($user['role'] == 'admin') {
+            $this->approved_by = $user['id'];
+            $this->published = true;
+        }
     }
 }
