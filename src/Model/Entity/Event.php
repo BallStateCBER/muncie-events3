@@ -68,8 +68,8 @@ class Event extends Entity
     /**
      * Returns the slugged version of the location name
      *
-     * @param $location
-     * @return bool|mixed|null|string|string[]
+     * @param string $location Location name
+     * @return string
      */
     private function getLocationSlug($location)
     {
@@ -120,6 +120,4 @@ class Event extends Entity
             null;
         $this->date = date('Y-m-d', strtotime($data['date']));
     }
-
-
 }
