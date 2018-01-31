@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Entity;
 
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 
 /**
@@ -17,8 +18,8 @@ use Cake\ORM\Entity;
  * @property int $category_id
  * @property int $series_id
  * @property \Cake\I18n\Time $date
- * @property \Cake\I18n\Time $time_start
- * @property \Cake\I18n\Time $time_end
+ * @property \Cake\I18n\Time $start
+ * @property \Cake\I18n\Time $end
  * @property string $age_restriction
  * @property string $cost
  * @property string $source
@@ -98,4 +99,22 @@ class Event extends Entity
             $this->published = true;
         }
     }
+
+    /**
+     * Sets the start, end, and date properties
+     *
+     * @param array $data Results of request->data() from an event form page
+     * @return void
+     */
+    public function setDatesAndTimes($data)
+    {
+        $time = new \App\Time\Time();
+        $this->start = $time->getStartUtc($data['date'], $data['time_start']);
+        $this->end = isset($data['time_end']) ?
+            $time->getEndUtc($data['date'], $data['time_end'], $data['time_start']) :
+            null;
+        $this->date = date('Y-m-d', strtotime($data['date']));
+    }
+
+
 }
