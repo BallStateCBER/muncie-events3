@@ -19,6 +19,7 @@ class UsersFixture extends TestFixture
         // password is "placeholder" for all these users
         $this->records = [
             [
+                'id' => 1,
                 'name' => 'Ash Admin',
                 'role' => 'admin',
                 'bio' => 'I am the admin and I do admin things.',
@@ -30,6 +31,7 @@ class UsersFixture extends TestFixture
             ],
             [
                 // this fixture uses a legacy password to test the rehasher
+                'id' => 2,
                 'name' => 'Stevie User',
                 'role' => 'user',
                 'bio' => 'I sit around listening to witch house and not doing anything.',
