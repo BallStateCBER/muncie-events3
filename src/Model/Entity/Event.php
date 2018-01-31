@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\I18n\Time;
+use Cake\Network\Exception\InternalErrorException;
 use Cake\ORM\Entity;
 
 /**
@@ -91,10 +92,14 @@ class Event extends Entity
      *
      * @param array $user The user submitting the form (not necessarily the original event author)
      * @return void
+     * @throws InternalErrorException
      */
     public function autoApprove($user)
     {
-        if ($user['role'] == 'admin') {
+        if (isset($user['role']) && $user['role'] == 'admin') {
+            if (! isset($user['id'])) {
+                throw new InternalErrorException('Cannot approve event. Administrator ID unknown.');
+            }
             $this->approved_by = $user['id'];
             $this->published = true;
         }
