@@ -244,12 +244,6 @@ class EventsController extends AppController
     {
         $this->setDatePicker($event);
 
-        $userId = $this->Auth->user('id');
-        $this->set([
-            'previousLocations' => $this->Events->getPastLocations(),
-            'userId' => $userId,
-        ]);
-
         $hasSeries = false;
         $hasEndTime = false;
         if (in_array($this->request->getParam('action'), ['add', 'editSeries'])) {
@@ -260,6 +254,7 @@ class EventsController extends AppController
             $hasEndTime = isset($event['time_end']) && $event['end'];
         }
 
+        $userId = $this->Auth->user('id');
         $this->set([
             'has' => [
                 'series' => $hasSeries,
@@ -268,7 +263,10 @@ class EventsController extends AppController
                 'cost' => isset($event['cost']) && $event['cost'],
                 'ages' => isset($event['age_restriction']) && $event['age_restriction'],
                 'source' => isset($event['source']) && $event['source']
-            ]
+            ],
+            'categories' => $this->Events->Categories->find('list'),
+            'previousLocations' => $this->Events->getPastLocations(),
+            'userId' => $userId
         ]);
     }
 
@@ -359,16 +357,19 @@ class EventsController extends AppController
      */
     public function add()
     {
+        /** @var Event $event */
         $event = $this->Events->newEntity();
+        $userId = $this->Auth->user('id') ?: '';
+        $autoPublish = $this->Users->getAutoPublish($userId);
 
         // Prepare form
         $this->setEventFormVars($event);
-        $categories = $this->Events->Categories->find('list');
-        $userId = $this->Auth->user('id') ?: '';
-        $autoPublish = $this->Users->getAutoPublish($userId);
-        $this->set(compact('autoPublish', 'event', 'categories'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Submit an Event');
+        $this->set([
+            '_serialize' => ['event'],
+            'autoPublish' => $autoPublish,
+            'event' => $event,
+            'titleForLayout' => 'Submit an Event',
+        ]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
@@ -378,7 +379,6 @@ class EventsController extends AppController
             }
 
             $this->cleanFormData();
-            $this->autoApprove();
 
             $data = $this->request->getData();
             if (!$this->request->getData('tags')) {
@@ -391,6 +391,7 @@ class EventsController extends AppController
             // a single event
             if ($dateInput == 10) {
                 $event = $this->Events->patchEntity($event, $data);
+                $event = $this->autoApprove($event);
                 $event->user_id = $this->Auth->user('id');
                 $event->location_slug = $this->setLocationSlug($event->location);
                 $this->setCustomTags($event);
@@ -429,7 +430,8 @@ class EventsController extends AppController
                 $dates = explode(',', $this->request->getData('date'));
                 foreach ($dates as $date) {
                     $event = $this->Events->newEntity();
-                    $event = $this->Events->patchEntity($event, $this->request->getData());
+                    $event = $this->Events->patchEntity($event, $data);
+                    $event = $this->autoApprove($event);
                     $event->location_slug = $this->setLocationSlug($event->location);
                     $event['date'] = $date;
                     $this->setCustomTags($event);
@@ -590,7 +592,6 @@ class EventsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->cleanFormData();
-            $this->autoApprove();
 
             $data = $this->request->getData();
             if (!$this->request->getData('tags')) {
@@ -598,6 +599,7 @@ class EventsController extends AppController
             }
 
             $event = $this->Events->patchEntity($event, $data);
+            $event = $this->autoApprove($event);
             $event->location_slug = $this->setLocationSlug($event->location);
             $this->setCustomTags($event);
             $event = $this->setDatesAndTimes($event);
@@ -1184,19 +1186,17 @@ class EventsController extends AppController
     /**
      * Approves and publishes an event if the form is being submitted by an administrator
      *
-     * @return void
+     * @param Event $event Event entity
+     * @return Event
      */
-    private function autoApprove()
+    private function autoApprove($event)
     {
-        if ($this->request->getParam('action') != 'add') {
-            return;
+        if ($this->request->getParam('action') == 'add' && $this->Auth->user('role') != 'admin') {
+            $event->approved_by = $this->Auth->user('id');
+            $event->published = true;
         }
-        if ($this->Auth->user('role') != 'admin') {
-            return;
-        }
-        $adminId = $this->Auth->user('id');
-        $this->request = $this->request->withData('approved_by', $adminId);
-        $this->request = $this->request->withData('published', true);
+
+        return $event;
     }
 
     /**
