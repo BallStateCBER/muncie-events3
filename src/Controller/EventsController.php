@@ -240,8 +240,10 @@ class EventsController extends AppController
      * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
-    private function setEventForm($event)
+    private function setEventFormVars($event)
     {
+        $this->setDatePicker($event);
+
         $userId = $this->Auth->user('id');
         $this->set([
             'previousLocations' => $this->Events->getPastLocations(),
@@ -268,11 +270,6 @@ class EventsController extends AppController
                 'source' => isset($event['source']) && $event['source']
             ]
         ]);
-
-        // Fixes bug that prevents CakePHP from deleting all tags
-        if (null !== $this->request->getData('Tags')) {
-            $this->set('Tags', []);
-        }
     }
 
     /**
@@ -365,12 +362,11 @@ class EventsController extends AppController
         $event = $this->Events->newEntity();
 
         // Prepare form
-        $this->setDatePicker($event);
-        $this->setEventForm($event);
+        $this->setEventFormVars($event);
         $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
         $eventseries = $this->Events->EventSeries->find('list');
-        $userId = $this->request->getSession()->read('Auth.User.id') ?: '';
+        $userId = $this->Auth->user('id') ?: '';
         $autoPublish = $this->Users->getAutoPublish($userId);
         $this->set(compact('autoPublish', 'event', 'users', 'categories', 'eventseries'));
         $this->set('_serialize', ['event']);
@@ -385,12 +381,17 @@ class EventsController extends AppController
             $this->cleanFormData();
             $this->autoApprove();
 
+            $data = $this->request->getData();
+            if (!$this->request->getData('tags')) {
+                $data['tags'] = [];
+            }
+
             // count how many dates have been picked
             $dateInput = mb_strlen($this->request->getData('date'));
 
             // a single event
             if ($dateInput == 10) {
-                $event = $this->Events->patchEntity($event, $this->request->getData());
+                $event = $this->Events->patchEntity($event, $data);
                 $event->user_id = $this->Auth->user('id');
                 $event->location_slug = $this->setLocationSlug($event->location);
                 $this->setCustomTags($event);
@@ -417,10 +418,10 @@ class EventsController extends AppController
             if ($dateInput > 10) {
                 // save the series itself
                 $eventSeries = $this->Events->EventSeries->newEntity();
-                $eventSeries = $this->Events->EventSeries->patchEntity($eventSeries, $this->request->getData());
+                $eventSeries = $this->Events->EventSeries->patchEntity($eventSeries, $data);
                 $eventSeries->title = $this->request->getData('title');
-                $eventSeries->user_id = $this->request->getSession()->read('Auth.User.id');
-                $eventSeries->published = ($this->request->getSession()->read('Auth.User.role') == 'admin') ? 1 : 0;
+                $eventSeries->user_id = $this->Auth->user('id');
+                $eventSeries->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
                 $eventSeries->created = date('Y-m-d');
                 $eventSeries->modified = date('Y-m-d');
                 $this->Events->EventSeries->save($eventSeries);
@@ -581,8 +582,7 @@ class EventsController extends AppController
         ]);
 
         // Prepare form
-        $this->setDatePicker($event);
-        $this->setEventForm($event);
+        $this->setEventFormVars($event);
         $users = $this->Users->find('list');
         $categories = $this->Categories->find('list');
         $eventseries = $this->EventSeries->find('list');
@@ -593,7 +593,13 @@ class EventsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $this->cleanFormData();
             $this->autoApprove();
-            $event = $this->Events->patchEntity($event, $this->request->getData());
+
+            $data = $this->request->getData();
+            if (!$this->request->getData('tags')) {
+                $data['tags'] = [];
+            }
+
+            $event = $this->Events->patchEntity($event, $data);
             $event->location_slug = $this->setLocationSlug($event->location);
             $this->setCustomTags($event);
             $event = $this->setDatesAndTimes($event);
@@ -650,8 +656,7 @@ class EventsController extends AppController
         $timeStart = date_format($event->start, 'H:i:s');
         $event->time_start = date('h:i a', strtotime($timeStart . $dst));
         $event->start = $dates;
-        $this->setEventForm($event);
-        $this->setDatePicker($event);
+        $this->setEventFormVars($event);
         $this->Flash->error('Warning: All events in this series will be overwritten.');
         $categories = $this->Categories->find('list');
         $this->set([
