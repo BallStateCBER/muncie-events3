@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property string $description
  * @property string $location
  * @property string $location_details
+ * @property string $location_slug
  * @property string $address
  * @property int $user_id
  * @property int $category_id
@@ -48,4 +49,39 @@ class Event extends Entity
         '*' => true,
         'id' => false
     ];
+
+    /**
+     * Automatically sets the location_slug field
+     *
+     * @param string $location The location name
+     * @return string
+     */
+    protected function _setLocation($location)
+    {
+        $this->location_slug = $this->getLocationSlug($location);
+
+        return $location;
+    }
+
+    /**
+     * Returns the slugged version of the location name
+     *
+     * @param $location
+     * @return bool|mixed|null|string|string[]
+     */
+    private function getLocationSlug($location)
+    {
+        $locationSlug = strtolower($location);
+        $locationSlug = substr($locationSlug, 0, 20);
+        $locationSlug = str_replace('/', ' ', $locationSlug);
+        $locationSlug = preg_replace("/[^A-Za-z0-9 ]/", '', $locationSlug);
+        $locationSlug = str_replace("   ", ' ', $locationSlug);
+        $locationSlug = str_replace("  ", ' ', $locationSlug);
+        $locationSlug = str_replace(' ', '-', $locationSlug);
+        if (substr($locationSlug, -1) == '-') {
+            $locationSlug = substr($locationSlug, 0, -1);
+        }
+
+        return $locationSlug;
+    }
 }
