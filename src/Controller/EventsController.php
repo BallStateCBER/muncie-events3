@@ -363,14 +363,13 @@ class EventsController extends AppController
 
         // Prepare form
         $this->setEventFormVars($event);
-        $users = $this->Events->Users->find('list');
         $categories = $this->Events->Categories->find('list');
-        $eventseries = $this->Events->EventSeries->find('list');
         $userId = $this->Auth->user('id') ?: '';
         $autoPublish = $this->Users->getAutoPublish($userId);
-        $this->set(compact('autoPublish', 'event', 'users', 'categories', 'eventseries'));
+        $this->set(compact('autoPublish', 'event', 'categories'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Submit an Event');
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
                 $this->Flash->error('Please log in or check your Recaptcha box.');
@@ -585,8 +584,7 @@ class EventsController extends AppController
         $this->setEventFormVars($event);
         $users = $this->Users->find('list');
         $categories = $this->Categories->find('list');
-        $eventseries = $this->EventSeries->find('list');
-        $this->set(compact('event', 'users', 'categories', 'eventseries'));
+        $this->set(compact('event', 'users', 'categories'));
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', 'Edit Event');
 
