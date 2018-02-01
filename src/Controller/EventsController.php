@@ -351,6 +351,16 @@ class EventsController extends AppController
     }
 
     /**
+     * Returns a boolean indicating whether or not the current user has passed bot detection
+     *
+     * @return bool
+     */
+    private function passedBotDetection()
+    {
+        return $this->Auth->user() || $this->Recaptcha->verify();
+    }
+
+    /**
      * Adds a new event
      *
      * @return \Cake\Http\Response|null
@@ -372,88 +382,72 @@ class EventsController extends AppController
         ]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            if (!$this->request->getSession() && !$this->Recaptcha->verify()) {
-                $this->Flash->error('Please log in or check your Recaptcha box.');
+            if ($this->passedBotDetection()) {
+                $data = $this->request->getData();
+                if (!$this->request->getData('tags')) {
+                    $data['tags'] = [];
+                }
+                if (!$this->request->getData('has_end_time')) {
+                    $data['time_end'] = null;
+                }
 
-                return null;
-            }
+                // Single event
+                $dates = explode(',', $this->request->getData('date'));
+                if (count($dates) < 2) {
+                    $event = $this->Events->patchEntity($event, $data);
+                    $event->autoApprove($this->Auth->user());
+                    $event->user_id = $this->Auth->user('id');
+                    $this->setCustomTags($event);
+                    $data['date'] = $dates[0];
+                    $event->setDatesAndTimes($data);
+                    $saved = $this->Events->save($event, [
+                        'associated' => ['Images', 'Tags']
+                    ]);
+                    if ($saved) {
+                        $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+                        $this->Flash->success($msg);
+                        $this->sendSlackNotification('event', $event->id);
 
-            $this->cleanFormData();
-
-            $data = $this->request->getData();
-            if (!$this->request->getData('tags')) {
-                $data['tags'] = [];
-            }
-
-            // count how many dates have been picked
-            $dateInput = mb_strlen($this->request->getData('date'));
-
-            // a single event
-            if ($dateInput == 10) {
-                $event = $this->Events->patchEntity($event, $data);
-                $event = $this->autoApprove($event);
-                $event->user_id = $this->Auth->user('id');
-                $event->location_slug = $this->setLocationSlug($event->location);
-                $this->setCustomTags($event);
-                $event = $this->setDatesAndTimes($event);
-                if ($this->Events->save($event, [
-                    'associated' => ['Images', 'Tags']
-                ])) {
-                    $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
-                    $this->Flash->success($msg);
-                    $this->sendSlackNotification('event', $event['id']);
-                    $url = ['controller' => 'Events'];
-                    if ($autoPublish) {
-                        $url['action'] = 'view';
-                        $url[] = $event->id;
-                    } else {
-                        $url['action'] = 'index';
+                        return $this->redirectAfterAdd($autoPublish, $event->id);
                     }
 
-                    return $this->redirect($url);
-                }
-            }
+                // Event series
+                } else {
+                    $series = $this->Events->EventSeries->newEntity($data);
+                    $series->title = $data['title'];
+                    $series->user_id = $this->Auth->user('id');
+                    $series->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
+                    $series->created = date('Y-m-d');
+                    $series->modified = date('Y-m-d');
+                    $this->Events->EventSeries->save($series);
 
-            // a series of multiple events
-            if ($dateInput > 10) {
-                // save the series itself
-                $eventSeries = $this->Events->EventSeries->newEntity();
-                $eventSeries = $this->Events->EventSeries->patchEntity($eventSeries, $data);
-                $eventSeries->title = $this->request->getData('title');
-                $eventSeries->user_id = $this->Auth->user('id');
-                $eventSeries->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
-                $eventSeries->created = date('Y-m-d');
-                $eventSeries->modified = date('Y-m-d');
-                $this->Events->EventSeries->save($eventSeries);
+                    foreach ($dates as $date) {
+                        $event = $this->Events->newEntity($data);
+                        $event->autoApprove($this->Auth->user());
+                        $this->setCustomTags($event);
+                        $data['date'] = $date;
+                        $event->setDatesAndTimes($data);
+                        $this->setImageData($event);
+                        $event->series_id = $series->id;
+                        $this->Events->save($event, [
+                            'associated' => ['EventSeries', 'Images', 'Tags']
+                        ]);
+                    }
 
-                // now save every event
-                $dates = explode(',', $this->request->getData('date'));
-                foreach ($dates as $date) {
-                    $event = $this->Events->newEntity();
-                    $event = $this->Events->patchEntity($event, $data);
-                    $event = $this->autoApprove($event);
-                    $event->location_slug = $this->setLocationSlug($event->location);
-                    $event['date'] = $date;
-                    $this->setCustomTags($event);
-                    $event = $this->setDatesAndTimes($event);
-                    $this->setImageData($event);
-                    $event->series_id = $eventSeries->id;
-                    $this->Events->save($event, [
-                        'associated' => ['EventSeries', 'Images', 'Tags']
-                    ]);
+                    $this->Flash->success('The event series has been saved.');
+                    $this->sendSlackNotification('series', $series->id);
+
+                    return null;
                 }
 
-                $this->Flash->success(__('The event series has been saved.'));
-                $this->sendSlackNotification('series', $eventSeries['id']);
-
-                return null;
-            }
-
-            // if neither a single event nor multiple-event series can be saved
-            if (!$this->Events->save($event)) {
-                $msg = 'The event could not be submitted. Please correct any errors and try again. If you need ' .
-                    'assistance, please contact an administrator.';
-                $this->Flash->error($msg);
+                // if neither a single event nor multiple-event series can be saved
+                if (!$this->Events->save($event)) {
+                    $msg = 'The event could not be submitted. Please correct any errors and try again. If you need ' .
+                        'assistance, please contact an administrator.';
+                    $this->Flash->error($msg);
+                }
+            } else {
+                $this->Flash->error('Please log in or check your Recaptcha box.');
             }
         }
 
@@ -461,16 +455,24 @@ class EventsController extends AppController
     }
 
     /**
-     * Performs various actions to massage the data coming in from an event form
+     * Redirects the user after successfully adding an event
      *
-     * @return void
+     * @param bool $autoPublish Whether or not the event was automatically published
+     * @param int $eventId The event's ID
+     *
+     * @return \Cake\Http\Response
      */
-    private function cleanFormData()
+    private function redirectAfterAdd($autoPublish, $eventId)
     {
-        // Kill the end time if it hasn't been set
-        if (!$this->request->getData('has_end_time')) {
-            $this->request = $this->request->withData('time_end', null);
+        $url = ['controller' => 'Events'];
+        if ($autoPublish) {
+            $url['action'] = 'view';
+            $url[] = $eventId;
+        } else {
+            $url['action'] = 'index';
         }
+
+        return $this->redirect($url);
     }
 
     /**
@@ -578,6 +580,7 @@ class EventsController extends AppController
      */
     public function edit($id = null)
     {
+        /** @var Event $event */
         $event = $this->Events->get($id, [
             'contain' => ['EventSeries', 'Images', 'Tags']
         ]);
@@ -591,18 +594,18 @@ class EventsController extends AppController
         $this->set('titleForLayout', 'Edit Event');
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $this->cleanFormData();
-
             $data = $this->request->getData();
             if (!$this->request->getData('tags')) {
                 $data['tags'] = [];
             }
+            if (!$this->request->getData('has_end_time')) {
+                $data['time_end'] = null;
+            }
 
             $event = $this->Events->patchEntity($event, $data);
-            $event = $this->autoApprove($event);
-            $event->location_slug = $this->setLocationSlug($event->location);
+            $event->autoApprove($this->Auth->user());
             $this->setCustomTags($event);
-            $event = $this->setDatesAndTimes($event);
+            $event->setDatesAndTimes($data);
             $this->setImageData($event);
             if ($this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
@@ -693,7 +696,6 @@ class EventsController extends AppController
                     }
                 }
                 $event->series_id = $seriesId;
-                $event->location_slug = $this->setLocationSlug($event->location);
                 $event->title = $this->request->getData('title');
                 $this->setCustomTags($event);
                 $event['date'] = $date;
@@ -1181,22 +1183,6 @@ class EventsController extends AppController
         $tomorrow = explode('-', $tomorrow);
 
         return $this->redirect('/events/day/' . $tomorrow[0] . '/' . $tomorrow[1] . '/' . $tomorrow[2]);
-    }
-
-    /**
-     * Approves and publishes an event if the form is being submitted by an administrator
-     *
-     * @param Event $event Event entity
-     * @return Event
-     */
-    private function autoApprove($event)
-    {
-        if ($this->request->getParam('action') == 'add' && $this->Auth->user('role') != 'admin') {
-            $event->approved_by = $this->Auth->user('id');
-            $event->published = true;
-        }
-
-        return $event;
     }
 
     /**
