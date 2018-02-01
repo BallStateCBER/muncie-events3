@@ -357,7 +357,7 @@ class EventsController extends AppController
      */
     private function passedBotDetection()
     {
-        return $this->Auth->user() || $this->Recaptcha->verify();
+        return php_sapi_name() == 'cli' || $this->Auth->user() || $this->Recaptcha->verify();
     }
 
     /**
