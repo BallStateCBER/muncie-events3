@@ -293,8 +293,12 @@ class EventsTable extends Table
      * @param array $options for filtering events
      * @return array $events
      */
-    public function getFilteredEvents($nextStartDate, $endDate, $options)
+    public function getFilteredEvents($nextStartDate, $endDate, $options = [])
     {
+        if (!$options) {
+            return $this->getRangeEvents($nextStartDate, $endDate);
+        }
+
         $params = ['Events.published' => 1];
         $dst = $this->getDaylightSavings($nextStartDate);
         $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
@@ -426,39 +430,25 @@ class EventsTable extends Table
     }
 
     /**
-     * getStartEndEvents searches for events by range
+     * Returns an array of no fewer than seven events within 128 weeks of $endDate if possible, or fewer than seven
+     * events if no more could be found within 128 weeks of $endDate
      *
-     * @param string $nextStartDate of range
-     * @param string $endDate of range
-     * @param array $options in case of filter
+     * @param string $nextStartDate The date or datetime string immediately before the earliest date of results if $options is empty, or the earliest date of the results if $options is not
+     * @param string $endDate The date or datettime string of the last day of results, or the day after the last day of results if $options is not empty
+     * @param array $options An array of filter keys and values, such as 'location' => 'Location Name'
      * @return array $events
      */
-    public function getStartEndEvents($nextStartDate, $endDate, $options = null)
+    public function getStartEndEvents($nextStartDate, $endDate, $options = [])
     {
-        $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-        if (count($events) < 7) {
-            $endDate = strtotime($nextStartDate . ' + 4 weeks');
-            $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
+        $events = $this->getFilteredEvents($nextStartDate, $endDate, $options);
+
+        for ($i = 2; $i <= 7; $i++) {
             if (count($events) < 7) {
-                $endDate = strtotime($nextStartDate . ' + 8 weeks');
-                $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                if (count($events) < 7) {
-                    $endDate = strtotime($nextStartDate . ' + 16 weeks');
-                    $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                    if (count($events) < 7) {
-                        $endDate = strtotime($nextStartDate . ' + 32 weeks');
-                        $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                        if (count($events) < 7) {
-                            $endDate = strtotime($nextStartDate . ' + 64 weeks');
-                            $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                            if (count($events) < 7) {
-                                $endDate = strtotime($nextStartDate . ' + 128 weeks');
-                                $events = $options ? $this->getFilteredEvents($nextStartDate, $endDate, $options) : $this->getRangeEvents($nextStartDate, $endDate);
-                            }
-                        }
-                    }
-                }
+                break;
             }
+            $weeks = pow(2, $i);
+            $endDate = strtotime($nextStartDate . ' + ' . $weeks . ' weeks');
+            $events = $this->getFilteredEvents($nextStartDate, $endDate, $options);
         }
 
         return $events;
