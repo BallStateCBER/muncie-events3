@@ -425,6 +425,7 @@ class EventsController extends AppController
                     $series->modified = date('Y-m-d');
                     $this->Events->EventSeries->save($series);
 
+                    $firstEventId = null;
                     foreach ($dates as $date) {
                         $event = $this->Events->newEntity($data);
                         $event->autoApprove($this->Auth->user());
@@ -436,12 +437,15 @@ class EventsController extends AppController
                         $this->Events->save($event, [
                             'associated' => ['EventSeries', 'Images', 'Tags']
                         ]);
+                        if (! $firstEventId) {
+                            $firstEventId = $event->id;
+                        }
                     }
 
                     $this->Flash->success('The event series has been saved.');
                     $this->sendSlackNotification('series', $series->id);
 
-                    return null;
+                    return $this->redirectAfterAdd($autoPublish, $firstEventId);
                 }
 
                 // if neither a single event nor multiple-event series can be saved
