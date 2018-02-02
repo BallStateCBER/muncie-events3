@@ -442,7 +442,8 @@ class EventsController extends AppController
                         }
                     }
 
-                    $this->Flash->success('The event series has been saved.');
+                    $msg = 'Your event series has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+                    $this->Flash->success($msg);
                     $this->sendSlackNotification('series', $series->id);
 
                     return $this->redirectAfterAdd($autoPublish, $firstEventId);
