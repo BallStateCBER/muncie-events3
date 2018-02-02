@@ -373,7 +373,7 @@ class EventsController extends AppController
          * @var EventSeries $series
          */
         $event = $this->Events->newEntity();
-        $userId = $this->Auth->user('id') ?: '';
+        $userId = $this->Auth->user('id');
         $autoPublish = $this->Users->getAutoPublish($userId);
 
         // Prepare form
