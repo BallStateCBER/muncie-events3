@@ -9,38 +9,39 @@
 ?>
 
 <?php if (empty($events)): ?>
-    <?= $this->Js->buffer("setNoMoreEvents();"); ?>
+    <?php $this->Js->buffer("setNoMoreEvents();"); ?>
 <?php else: ?>
     <?php if (!$multipleDates): ?>
         <?php foreach ($events as $date => $event): ?>
-            <?= $this->Calendar->dayHeaders($date); ?>
+            <?= $this->Calendar->dayHeaders($date) ?>
             <ul class="event_accordion">
-            <?= $this->element('events/accordion_day', [
-                'event' => $event
-            ]); ?>
+                <?= $this->element('events/accordion_day', [
+                    'event' => $event
+                ]) ?>
             </ul>
         <?php endforeach; ?>
     <?php else: ?>
         <?php foreach ($events as $date => $event): ?>
-            <?= $this->Calendar->dayHeaders($date); ?>
+            <?= $this->Calendar->dayHeaders($date) ?>
             <ul class="event_accordion">
-            <?php if (count($event) > 1): ?>
-                <?php foreach ($event as $k => $e): ?>
+                <?php if (count($event) > 1): ?>
+                    <?php foreach ($event as $k => $e): ?>
+                        <?= $this->element('events/accordion_day', [
+                            'event' => $e
+                        ]) ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <?= $this->element('events/accordion_day', [
-                        'event' => $e
-                    ]); ?>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <?= $this->element('events/accordion_day', [
-                    'event' => $event
-                ]); ?>
-            <?php endif; ?>
+                        'event' => $event
+                    ]) ?>
+                <?php endif; ?>
             </ul>
         <?php endforeach; ?>
     <?php endif; ?>
-    <?php if (isset($nextStartDate)) {
-                    $this->Js->buffer("setNextStartDate('$nextStartDate'); 
-                    ");
-                }
-    $this->Js->buffer("setupEventAccordion();"); ?>
+
+    <?php if (isset($nextStartDate)): ?>
+        <?php $this->Js->buffer("setNextStartDate('$nextStartDate');"); ?>
+    <?php endif; ?>
+
+    <?php $this->Js->buffer("setupEventAccordion();"); ?>
 <?php endif; ?>
