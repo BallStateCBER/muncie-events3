@@ -623,7 +623,7 @@ class EventsController extends AppController
                 'administrator if you need assistance.';
             $this->Flash->error($msg);
 
-            return $this->redirect('/');
+            return null;
         }
 
         return null;
