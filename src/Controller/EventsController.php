@@ -622,7 +622,11 @@ class EventsController extends AppController
             if ($saved) {
                 $this->Flash->success('Event updated');
 
-                return $this->redirect('/');
+                return $this->redirect([
+                    'controller' => 'Events',
+                    'action' => 'view',
+                    $event->id
+                ]);
             }
             $msg = 'The event could not be updated. Please correct any indicated errors and try again, or contact an ' .
                 'administrator if you need assistance.';
