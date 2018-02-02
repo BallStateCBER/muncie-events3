@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Model\Entity\Category;
 use App\Model\Entity\Event;
+use App\Model\Entity\EventSeries;
 use App\Model\Entity\Image;
 use App\Model\Entity\Tag;
 use App\Model\Entity\User;
@@ -367,7 +368,10 @@ class EventsController extends AppController
      */
     public function add()
     {
-        /** @var Event $event */
+        /**
+         * @var Event $event
+         * @var EventSeries $series
+         */
         $event = $this->Events->newEntity();
         $userId = $this->Auth->user('id') ?: '';
         $autoPublish = $this->Users->getAutoPublish($userId);
@@ -396,7 +400,7 @@ class EventsController extends AppController
                 if (count($dates) < 2) {
                     $event = $this->Events->patchEntity($event, $data);
                     $event->autoApprove($this->Auth->user());
-                    $event->user_id = $this->Auth->user('id');
+                    $event->user_id = $userId;
                     $this->setCustomTags($event);
                     $data['date'] = $dates[0];
                     $event->setDatesAndTimes($data);
@@ -415,7 +419,7 @@ class EventsController extends AppController
                 } else {
                     $series = $this->Events->EventSeries->newEntity($data);
                     $series->title = $data['title'];
-                    $series->user_id = $this->Auth->user('id');
+                    $series->user_id = $userId;
                     $series->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
                     $series->created = date('Y-m-d');
                     $series->modified = date('Y-m-d');
@@ -587,11 +591,11 @@ class EventsController extends AppController
 
         // Prepare form
         $this->setEventFormVars($event);
-        $users = $this->Users->find('list');
-        $categories = $this->Categories->find('list');
-        $this->set(compact('event', 'users', 'categories'));
-        $this->set('_serialize', ['event']);
-        $this->set('titleForLayout', 'Edit Event');
+        $this->set([
+            '_serialize' => ['event'],
+            'event' => $event,
+            'titleForLayout' => 'Edit Event',
+        ]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
@@ -607,10 +611,10 @@ class EventsController extends AppController
             $this->setCustomTags($event);
             $event->setDatesAndTimes($data);
             $this->setImageData($event);
-            if ($this->Events->save($event, [
+            $saved = $this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
-            ])) {
-                $event->date = $this->request->getData('date');
+            ]);
+            if ($saved) {
                 $this->Flash->success('Event updated');
 
                 return $this->redirect('/');
