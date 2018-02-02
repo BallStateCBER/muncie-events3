@@ -423,7 +423,14 @@ class EventsController extends AppController
                     $series->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
                     $series->created = date('Y-m-d');
                     $series->modified = date('Y-m-d');
-                    $this->Events->EventSeries->save($series);
+                    $seriesSaved = $this->Events->EventSeries->save($series);
+                    $seriesErrorMsg = 'There was an error submitting your event series. Please correct any error ' .
+                        'messages indicated below and contact an administrator if you need assistance.';
+                    if (!$seriesSaved) {
+                        $this->Flash->error($seriesErrorMsg);
+
+                        return null;
+                    }
 
                     $firstEventId = null;
                     foreach ($dates as $date) {
@@ -434,10 +441,15 @@ class EventsController extends AppController
                         $event->setDatesAndTimes($data);
                         $this->setImageData($event);
                         $event->series_id = $series->id;
-                        $this->Events->save($event, [
+                        $eventSaved = $this->Events->save($event, [
                             'associated' => ['EventSeries', 'Images', 'Tags']
                         ]);
-                        if (! $firstEventId) {
+                        if (!$eventSaved) {
+                            $this->Flash->error($seriesErrorMsg);
+
+                            return null;
+                        }
+                        if (!$firstEventId) {
                             $firstEventId = $event->id;
                         }
                     }
