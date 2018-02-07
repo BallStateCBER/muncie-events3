@@ -433,6 +433,7 @@ class EventsController extends AppController
                     }
 
                     $firstEventId = null;
+                    $error = false;
                     foreach ($dates as $date) {
                         $event = $this->Events->newEntity($data);
                         $event->autoApprove($this->Auth->user());
@@ -446,19 +447,24 @@ class EventsController extends AppController
                         ]);
                         if (!$eventSaved) {
                             $this->Flash->error($seriesErrorMsg);
-
-                            return null;
+                            $error = true;
+                            break;
                         }
                         if (!$firstEventId) {
                             $firstEventId = $event->id;
                         }
                     }
 
-                    $msg = 'Your event series has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
-                    $this->Flash->success($msg);
-                    $this->sendSlackNotification('series', $series->id);
+                    if ($error) {
+                        $this->Flash->error($seriesErrorMsg);
+                        $this->Events->EventSeries->delete($seriesSaved);
+                    } else {
+                        $msg = 'Your event series has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+                        $this->Flash->success($msg);
+                        $this->sendSlackNotification('series', $series->id);
 
-                    return $this->redirectAfterAdd($autoPublish, $firstEventId);
+                        return $this->redirectAfterAdd($autoPublish, $firstEventId);
+                    }
                 }
 
                 // if neither a single event nor multiple-event series can be saved
