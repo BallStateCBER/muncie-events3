@@ -4,7 +4,7 @@
 
 <b><u>
 	1. Terms
-</b></u>
+</u></b>
 
 <p>
 	By accessing this web site, you are agreeing to be bound by these
@@ -17,7 +17,7 @@
 
 <b><u>
 	2. Use License
-</b></u>
+</u></b>
 
 <ol type="a">
 	<li>
@@ -41,7 +41,7 @@
 
 <b><u>
 	3. Disclaimer
-</b></u>
+</u></b>
 
 <ol type="a">
 	<li>
@@ -51,7 +51,7 @@
 
 <b><u>
 	4. Limitations
-</b></u>
+</u></b>
 
 <p>
 	In no event shall Muncie Events or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption,) arising out of the use or inability to use the materials on Muncie Events's Internet site, even if Muncie Events or a Muncie Events authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.
@@ -59,7 +59,7 @@
 
 <b><u>
 	5. Revisions and Errata
-</b></u>
+</u></b>
 
 <p>
 	The materials appearing on Muncie Events's web site could include technical, typographical, or photographic errors. Muncie Events does not warrant that any of the materials on its web site are accurate, complete, or current. Muncie Events may make changes to the materials contained on its web site at any time without notice. Muncie Events does not, however, make any commitment to update the materials.
@@ -67,7 +67,7 @@
 
 <b><u>
 	6. Links
-</b></u>
+</u></b>
 
 <p>
 	Muncie Events has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by Muncie Events of the site. Use of any such linked web site is at the user's own risk.
@@ -75,7 +75,7 @@
 
 <b><u>
 	7. Site Terms of Use Modifications
-</b></u>
+</u></b>
 
 <p>
 	Muncie Events may revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.
@@ -83,7 +83,7 @@
 
 <b><u>
 	8. Governing Law
-</b></u>
+</u></b>
 
 <p>
 	Any claim relating to Muncie Events's web site shall be governed by the laws of the State of Indiana without regard to its conflict of law provisions.
