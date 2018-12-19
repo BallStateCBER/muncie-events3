@@ -2,6 +2,9 @@
 /**
  * @var \App\View\AppView $this
  */
+
+use Cake\Utility\Inflector;
+
 $model_plural = Inflector::pluralize($model);
 $model_lower_plural = strtolower($model_plural);
 ?>

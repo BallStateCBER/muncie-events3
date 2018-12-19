@@ -2,6 +2,8 @@
 /**
  * @var \App\View\AppView $this
  */
+
+use Cake\Routing\Router;
 ?>
 <h1 class="page_title">
     <?php echo $titleForLayout; ?>

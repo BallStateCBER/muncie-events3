@@ -2,6 +2,8 @@
 /**
  * @var \App\View\AppView $this
  */
+
+use Cake\Core\Configure;
 ?>
 <?php if (Configure::read('debug') != 0): ?>
 	<br style="clear: both;" />
