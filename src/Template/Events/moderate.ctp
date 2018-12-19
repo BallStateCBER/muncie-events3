@@ -1,4 +1,10 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Event $event
+ * @var \App\Model\Entity\Tag $tag
+ * @var \App\Model\Entity\Image $image
+ */
 use Cake\Utility\Inflector;
 
 ?>

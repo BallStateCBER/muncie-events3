@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div>
 	<label for="WidgetHeight">
 		Height:

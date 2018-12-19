@@ -6,6 +6,10 @@ use Cake\Datasource\ResultSetInterface;
 use Cake\ORM\TableRegistry;
 use Cake\View\Helper;
 
+/**
+ * @property \Cake\View\Helper\HtmlHelper $Html
+ * @property \CakeJs\View\Helper\JsHelper $Js
+ */
 class TagHelper extends Helper
 {
     public $helpers = ['Html', 'Js'];

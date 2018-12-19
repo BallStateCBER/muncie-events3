@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <h3 class="selected_tag_category">
     Events
 </h3>

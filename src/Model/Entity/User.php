@@ -5,6 +5,24 @@ use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
 use Cake\ORM\Entity;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $role
+ * @property string $bio
+ * @property string $email
+ * @property string $password
+ * @property int|null $mailing_list_id
+ * @property int $facebook_id
+ * @property string|null $api_key
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
+ * @property \App\Model\Entity\MailingList $mailing_list
+ * @property \App\Model\Entity\EventSeries[] $event_series
+ * @property \App\Model\Entity\Event[] $events
+ * @property \App\Model\Entity\Image[] $images
+ * @property \App\Model\Entity\Tag[] $tags
+ */
 class User extends Entity
 {
 

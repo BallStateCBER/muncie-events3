@@ -7,18 +7,18 @@ use Cake\ORM\Entity;
  * Tag Entity
  *
  * @property int $id
- * @property int $parent_id
- * @property int $lft
- * @property int $rght
- * @property string $name
+ * @property int|null $parent_id
+ * @property int|null $lft
+ * @property int|null $rght
+ * @property string|null $name
  * @property bool $listed
  * @property bool $selectable
- * @property int $user_id
- * @property \Cake\I18n\Time $created
+ * @property int|null $user_id
+ * @property \Cake\I18n\FrozenTime $created
  *
- * @property \App\Model\Entity\ParentTag $parent_tag
+ * @property \App\Model\Entity\Tag $parent_tag
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\ChildTag[] $child_tags
+ * @property \App\Model\Entity\Tag[] $child_tags
  * @property \App\Model\Entity\Event[] $events
  */
 class Tag extends Entity

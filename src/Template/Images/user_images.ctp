@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Image[]|\Cake\Collection\CollectionInterface $images
+ */
 use Cake\Core\Configure;
 
 // Avoiding whitespace to prevent some display oddities

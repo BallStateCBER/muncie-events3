@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Tag[]|\Cake\Collection\CollectionInterface $tags
+ */
 
 use Cake\Routing\Router;
 use Cake\Utility\Inflector;

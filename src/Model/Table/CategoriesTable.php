@@ -9,8 +9,17 @@ use Cake\Validation\Validator;
 /**
  * Categories Model
  *
- * @property \Cake\ORM\Association\HasMany $Events
- * @property \Cake\ORM\Association\BelongsToMany $MailingList
+ * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\HasMany $Events
+ * @property \App\Model\Table\MailingListTable|\Cake\ORM\Association\BelongsToMany $MailingList
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $CategoriesMailingList
+ * @method \App\Model\Entity\Category get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Category newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Category[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Category|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Category|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Category patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Category[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Category findOrCreate($search, callable $callback = null, $options = [])
  */
 class CategoriesTable extends Table
 {

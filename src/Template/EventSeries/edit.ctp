@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\EventSeries $eventSeries
+ */
     /* TO DO:
      *         If event->delete is checked, have confirmation dialogue box pop up upon hitting submit
      */

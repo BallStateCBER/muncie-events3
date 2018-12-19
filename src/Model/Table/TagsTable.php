@@ -12,14 +12,22 @@ use Cake\Validation\Validator;
  * Tags Model
  *
  * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\BelongsToMany $Events
- * @property \Cake\ORM\Association\BelongsTo $ParentTags
- * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\HasMany $ChildTags
- * @property \Cake\ORM\Association\BelongsToMany $EventsTags
+ * @property \App\Model\Table\TagsTable|\Cake\ORM\Association\BelongsTo $ParentTags
+ * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\TagsTable|\Cake\ORM\Association\HasMany $ChildTags
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $EventsTags
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  * @mixin \Cake\ORM\Behavior\TreeBehavior
  * @mixin \Search\Model\Behavior\SearchBehavior
+ * @method \App\Model\Entity\Tag get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Tag newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Tag[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Tag|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Tag|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Tag patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Tag[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Tag findOrCreate($search, callable $callback = null, $options = [])
  */
 class TagsTable extends Table
 {

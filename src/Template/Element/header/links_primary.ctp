@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <ul class="navbar-nav">
     <li class="<?= (($this->request->params['controller']=='Events') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
         <?= $this->Html->link(__('Home'), ['controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']); ?>

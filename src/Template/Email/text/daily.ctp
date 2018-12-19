@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Event[]|\Cake\Collection\CollectionInterface $events
+ */
+?>
 Events for <?= $date; ?>
 
 brought to you by https://MuncieEvents.com

@@ -12,6 +12,9 @@ use Cake\Core\Configure;
 
 /**
  * Events Controller
+ *
+ * @property \App\Model\Table\EventsTable $Events
+ * @property \Search\Controller\Component\PrgComponent $Prg
  */
 class EventsController extends AppController
 {

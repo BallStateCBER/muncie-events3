@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
     <?php if ($this->request->session()->read('Auth.User')): ?>
         <li class="nav-item">
             <?php #if ($facebook_user):?>

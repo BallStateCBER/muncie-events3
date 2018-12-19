@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Category $category
+ */
 use Cake\Routing\Router;
 
 $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');

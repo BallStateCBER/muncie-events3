@@ -15,25 +15,26 @@ use Cake\ORM\Entity;
  * @property string $location_details
  * @property string $location_slug
  * @property string $address
- * @property int $user_id
+ * @property int|null $user_id
  * @property int $category_id
- * @property int $series_id
- * @property \Cake\I18n\Time $date
- * @property \Cake\I18n\Time $start
- * @property \Cake\I18n\Time $end
+ * @property int|null $series_id
+ * @property \Cake\I18n\FrozenDate $date
+ * @property \Cake\I18n\FrozenTime $start
+ * @property \Cake\I18n\FrozenTime|null $end
  * @property string $age_restriction
  * @property string $cost
  * @property string $source
  * @property bool $published
- * @property int $approved_by
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
+ * @property int|null $approved_by
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Category $category
  * @property \App\Model\Entity\EventSeries $series
  * @property \App\Model\Entity\Image[] $images
  * @property \App\Model\Entity\Tag[] $tags
+ * @property \App\Model\Entity\EventSeries $event_series
  */
 class Event extends Entity
 {

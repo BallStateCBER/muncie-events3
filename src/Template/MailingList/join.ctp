@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\MailingList $mailingList
+ */
+?>
 <div class="mailing_list_settings">
     <?= $this->Form->create($mailingList, [
         'id' => 'MailingListForm'

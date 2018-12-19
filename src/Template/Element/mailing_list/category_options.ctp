@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <fieldset class="col-md-5">
     <legend>Event Types</legend>
     <?php

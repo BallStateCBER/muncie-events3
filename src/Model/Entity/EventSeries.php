@@ -8,12 +8,13 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $title
- * @property int $user_id
+ * @property int|null $user_id
  * @property bool $published
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Event[] $events
  */
 class EventSeries extends Entity
 {

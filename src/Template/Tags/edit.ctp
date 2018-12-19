@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?= $this->Form->create('Tag');?>
 <?= $this->Form->control('id', [
     'default' => $this->request->getData('id'),

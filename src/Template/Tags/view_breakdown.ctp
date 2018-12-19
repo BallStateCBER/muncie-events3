@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
 $model_plural = Inflector::pluralize($model);
 $model_lower_plural = strtolower($model_plural);
 ?>

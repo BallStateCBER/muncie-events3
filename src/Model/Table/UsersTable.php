@@ -13,12 +13,22 @@ use Cake\Validation\Validator;
  * Users Model
  *
  * @property \Cake\ORM\Association\BelongsTo $MailingLists
- * @property \Cake\ORM\Association\HasMany $EventSeries
- * @property \Cake\ORM\Association\HasMany $Events
- * @property \Cake\ORM\Association\HasMany $Images
- * @property \Cake\ORM\Association\HasMany $Tags
+ * @property \App\Model\Table\EventSeriesTable|\Cake\ORM\Association\HasMany $EventSeries
+ * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\HasMany $Events
+ * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\HasMany $Images
+ * @property \App\Model\Table\TagsTable|\Cake\ORM\Association\HasMany $Tags
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @property \App\Model\Table\MailingListTable|\Cake\ORM\Association\BelongsTo $MailingList
+ * @method \App\Model\Entity\User get($primaryKey, $options = [])
+ * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\User[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\User|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\User|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\User patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\User[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\User findOrCreate($search, callable $callback = null, $options = [])
+ * @mixin \Josegonzalez\Upload\Model\Behavior\UploadBehavior
  */
 class UsersTable extends Table
 {

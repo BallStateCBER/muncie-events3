@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Event $event
+ */
     $multipleDatesAllowed = ($this->request->action == 'add' || $this->request->action == 'editSeries');
     echo $this->Html->script('event_form.js', ['inline' => false]);
     $this->Form->setTemplates([

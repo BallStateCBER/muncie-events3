@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
 /*
     This displays complete information for a collection of events.
     $events can be for multiple days, i.e.

@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php $this->extend('default_wrapper'); ?>
 
 <?php if ($this->params['controller'] == 'pages' && $this->action == 'home'): ?>

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     foreach ($calDates as $monthYear => $days) {
         $this->Js->buffer('muncieEvents.populatedDates['.$monthYear.'] = ['.implode(',', $days).'];');
     }

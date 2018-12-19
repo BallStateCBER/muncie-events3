@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     $text_colors = [
         'Default' => 'textColorDefault',
         'Light' => 'textColorLight',

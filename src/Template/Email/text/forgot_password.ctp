@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php echo $email; ?>,
 
 Someone (presumably you) just requested that your password for MuncieEvents.com be reset

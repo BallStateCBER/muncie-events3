@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php if (empty($events)): ?>
     <p class="no_events">
         <?php if ($is_ajax): ?>

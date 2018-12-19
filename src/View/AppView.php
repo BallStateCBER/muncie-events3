@@ -21,6 +21,13 @@ use Cake\View\View;
  * Your application’s default view class
  *
  * @link http://book.cakephp.org/3.0/en/views.html#the-app-view
+ * @property \AkkaCKEditor\View\Helper\CKEditorHelper $CKEditor
+ * @property \CakeJs\View\Helper\JsHelper $Js
+ * @property \App\View\Helper\CalendarHelper $Calendar
+ * @property \App\View\Helper\IconHelper $Icon
+ * @property \App\View\Helper\TagHelper $Tag
+ * @property \AkkaFacebook\View\Helper\FacebookHelper $Facebook
+ * @property \Recaptcha\View\Helper\RecaptchaHelper $Recaptcha
  */
 class AppView extends View
 {

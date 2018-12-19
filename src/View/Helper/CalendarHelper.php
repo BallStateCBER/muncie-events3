@@ -6,6 +6,10 @@ use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use Cake\View\Helper;
 
+/**
+ * @property \Cake\View\Helper\HtmlHelper $Html
+ * @property \CakeJs\View\Helper\JsHelper $Js
+ */
 class CalendarHelper extends Helper
 {
     public $helpers = ['Html', 'Js'];

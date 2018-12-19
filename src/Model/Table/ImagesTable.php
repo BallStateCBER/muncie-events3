@@ -9,10 +9,19 @@ use Cake\Validation\Validator;
 /**
  * Images Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsToMany $Events
+ * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\BelongsToMany $Events
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $EventsImages
+ * @method \App\Model\Entity\Image get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Image newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Image[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Image|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Image|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Image patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Image[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Image findOrCreate($search, callable $callback = null, $options = [])
  */
 class ImagesTable extends Table
 {

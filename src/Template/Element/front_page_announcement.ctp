@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div id="front_page_announcement" class="alert alert-info">
     <h2>What is Muncie Events?</h2>
     <p>

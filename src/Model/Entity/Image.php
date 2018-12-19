@@ -10,8 +10,8 @@ use Cake\ORM\Entity;
  * @property string $filename
  * @property bool $is_flyer
  * @property int $user_id
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Event[] $events

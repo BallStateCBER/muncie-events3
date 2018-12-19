@@ -1,4 +1,9 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\EventSeries $eventSeries
+ * @var \App\Model\Entity\Event $event
+ */
 use App\Model\Table\EventsTable;
 
 $this->Events = new EventsTable();

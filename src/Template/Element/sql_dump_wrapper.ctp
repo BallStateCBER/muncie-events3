@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php if (Configure::read('debug') != 0): ?>
 	<br style="clear: both;" />
 	<div class="sql_dump" style="clear: both;">

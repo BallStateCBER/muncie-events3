@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php if (isset($recipientId) && isset($hash)): ?>
     <?php
     $form_url = ['controller' => 'mailing_list', 'action' => 'settings'];

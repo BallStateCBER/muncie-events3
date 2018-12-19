@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     $phrases = [
         'make MEmories',
         'coME as you are',

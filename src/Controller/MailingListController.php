@@ -5,6 +5,9 @@ use Cake\ORM\TableRegistry;
 
 /**
  * MailingList Controller
+ *
+ * @property \App\Model\Table\CategoriesTable $Categories
+ * @property \App\Model\Table\MailingListTable $MailingList
  */
 class MailingListController extends AppController
 {

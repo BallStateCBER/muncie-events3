@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
 // This element has (optionally) $selectedTags passed into it
 if (!isset($hideLabel)) {
     $hideLabel = false;

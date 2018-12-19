@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div id="calendar_list_view_wrapper">
     <div class="event_accordion" id="event_accordion">
         <?php if (empty($events)): ?>

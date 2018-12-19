@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     $form_setup = [
         'Text colors' => [
             'Default' => 'textColorDefault',

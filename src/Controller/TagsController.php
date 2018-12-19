@@ -5,6 +5,9 @@ use Cake\ORM\TableRegistry;
 
 /**
  * Tags Controller
+ *
+ * @property \App\Model\Table\CategoriesTable $Categories
+ * @property \App\Model\Table\TagsTable $Tags
  */
 class TagsController extends AppController
 {

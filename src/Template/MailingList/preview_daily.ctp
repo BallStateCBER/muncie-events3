@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <?php if (empty($events)): ?>
 	<h1 class="page_title">
 		Daily Email Preview Unavailable

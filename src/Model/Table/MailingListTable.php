@@ -11,12 +11,20 @@ use Cake\Validation\Validator;
 /**
  * MailingList Model
  *
- * @property \Cake\ORM\Association\HasMany $Users
+ * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\HasMany $Users
  * @property \Cake\ORM\Association\BelongsTo $MailingListLog
- * @property \Cake\ORM\Association\BelongsToMany $Categories
- * @property \Cake\ORM\Association\BelongsToMany $CategoriesMailingList
+ * @property \App\Model\Table\CategoriesTable|\Cake\ORM\Association\BelongsToMany $Categories
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $CategoriesMailingList
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @method \App\Model\Entity\MailingList get($primaryKey, $options = [])
+ * @method \App\Model\Entity\MailingList newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\MailingList[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\MailingList|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\MailingList|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\MailingList patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\MailingList[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\MailingList findOrCreate($search, callable $callback = null, $options = [])
  */
 class MailingListTable extends Table
 {

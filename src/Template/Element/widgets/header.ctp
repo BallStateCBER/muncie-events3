@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <ul class="header">
     <li>
         <a href="https://muncieevents.com"><i class="icon icon-me-logo"></i>MuncieEvents.com</a>

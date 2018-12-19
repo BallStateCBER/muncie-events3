@@ -5,6 +5,8 @@ use Cake\I18n\Time;
 
 /**
  * EventSeries Controller
+ *
+ * @property \App\Model\Table\EventSeriesTable $EventSeries
  */
 class EventSeriesController extends AppController
 {

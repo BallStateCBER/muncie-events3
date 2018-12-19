@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Category $category
+ */
     $this->Html->script('tag_manager.js', ['inline' => false]);
 ?>
 

@@ -18,10 +18,10 @@ use Cake\ORM\Entity;
  * @property bool $daily_fri
  * @property bool $daily_sat
  * @property bool $new_subscriber
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
- * @property \Cake\I18n\Time $processed_daily
- * @property \Cake\I18n\Time $processed_weekly
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime $modified
+ * @property \Cake\I18n\FrozenTime|null $processed_daily
+ * @property \Cake\I18n\FrozenTime|null $processed_weekly
  *
  * @property \App\Model\Entity\Category[] $categories
  * @property \App\Model\Entity\User[] $users

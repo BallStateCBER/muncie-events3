@@ -6,6 +6,8 @@ use Cake\ORM\TableRegistry;
 
 /**
  * Images Controller
+ *
+ * @property \App\Model\Table\ImagesTable $Images
  */
 class ImagesController extends AppController
 {

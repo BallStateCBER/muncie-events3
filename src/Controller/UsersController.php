@@ -8,6 +8,8 @@ use Cake\Routing\Router;
 
 /**
  * Users Controller
+ *
+ * @property \App\Model\Table\UsersTable $Users
  */
 class UsersController extends AppController
 {

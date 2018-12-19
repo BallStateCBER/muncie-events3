@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <h1 class="page_title">
 	<?= $titleForLayout; ?>
 </h1>

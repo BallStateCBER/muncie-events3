@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Category $category
+ */
+?>
 <?php if (isset($prevStartDate)): ?>
     <?php if ($prevStartDate == date('Ymd', strtotime('Today'))): ?>
         <h1 class="page_title">

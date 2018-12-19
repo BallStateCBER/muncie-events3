@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     $data = [];
     foreach ($nodes as $node) {
         $text = ucwords($node->name).' ('.$node->id.')';

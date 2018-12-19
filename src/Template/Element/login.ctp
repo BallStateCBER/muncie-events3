@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div id="login">
     <?= $this->Form->create('User'); ?>
     <div class='form-group col-lg-4 col-xs-12'>

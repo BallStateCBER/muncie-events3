@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     use Cake\Utility\Inflector;
 
 $s = $oppCount == 1 ? '' : 's';

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
 
 $titleForLayout = "Muncie Events";
     # remember to make the title dynamic instead of static

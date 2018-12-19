@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <b>Trace results:</b><br />
 <ul>
 	<li>Tags</li>

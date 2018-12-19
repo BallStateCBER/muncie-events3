@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ */
     $border_colors = [
         'Light' => 'borderColorLight',
         'Dark' => 'borderColorDark'

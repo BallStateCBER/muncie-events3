@@ -3,6 +3,9 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
+/**
+ * @property \App\Model\Table\MailingListTable|\Cake\ORM\Association\BelongsTo $MailingList
+ */
 class MailingListLogTable extends Table
 {
     /**

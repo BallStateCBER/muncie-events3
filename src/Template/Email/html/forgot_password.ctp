@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <h1>
 	<a href="https://muncieevents.com">
 		<img src="https://muncieevents.com/img/email_logo.png" alt="Muncie Events" />

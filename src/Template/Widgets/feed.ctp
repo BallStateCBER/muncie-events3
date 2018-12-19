@@ -1,4 +1,9 @@
 <?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Image $image
+ * @var \App\Model\Entity\Event $event
+ */
 
 use Cake\Routing\Router;
 

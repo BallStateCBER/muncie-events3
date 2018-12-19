@@ -11,15 +11,24 @@ use Cake\Validation\Validator;
 /**
  * Events Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Categories
- * @property \Cake\ORM\Association\BelongsTo $EventSeries
- * @property \Cake\ORM\Association\BelongsToMany $EventsTags
- * @property \Cake\ORM\Association\BelongsToMany $Images
- * @property \Cake\ORM\Association\BelongsToMany $Tags
+ * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\CategoriesTable|\Cake\ORM\Association\BelongsTo $Categories
+ * @property \App\Model\Table\EventSeriesTable|\Cake\ORM\Association\BelongsTo $EventSeries
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $EventsTags
+ * @property \App\Model\Table\ImagesTable|\Cake\ORM\Association\BelongsToMany $Images
+ * @property \App\Model\Table\TagsTable|\Cake\ORM\Association\BelongsToMany $Tags
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  * @mixin \Search\Model\Behavior\SearchBehavior
+ * @property \Cake\ORM\Table|\Cake\ORM\Association\HasMany $EventsImages
+ * @method \App\Model\Entity\Event get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Event newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Event[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Event|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Event|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Event patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Event[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Event findOrCreate($search, callable $callback = null, $options = [])
  */
 class EventsTable extends Table
 {

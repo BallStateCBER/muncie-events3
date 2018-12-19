@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 All trademarks and copyrights are owned by their respective owners.
 Written content is owned by its author.
 <br />
