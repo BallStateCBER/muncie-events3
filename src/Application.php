@@ -47,6 +47,7 @@ class Application extends BaseApplication
                 // Do not halt if the plugin is missing
             }
             $this->addPlugin('Migrations');
+            $this->addPlugin('IdeHelper');
         }
 
         /*
