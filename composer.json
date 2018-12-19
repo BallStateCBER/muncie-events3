@@ -21,7 +21,8 @@
         "eluceo/ical": "^0.11.3",
         "xety/cake3-cookieauth": "1.*",
         "dereuromark/cakephp-setup": "dev-master",
-        "cakephp-fr/recaptcha": "~0.4"
+        "cakephp-fr/recaptcha": "~0.4",
+        "ext-json": "*"
     },
     "require-dev": {
         "psy/psysh": "@stable",
