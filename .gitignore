@@ -7,6 +7,7 @@
 /webroot/jquery_ui/*
 /webroot/test.php
 /webroot/uploadifive/*
+/config/Migrations/schema-dump-default.lock
 
 # Environment variable definitions
 /config/.env
