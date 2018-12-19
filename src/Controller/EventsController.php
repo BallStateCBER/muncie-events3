@@ -1249,7 +1249,7 @@ class EventsController extends AppController
         $this->loadModel('Events');
         $results = $this->Events->find()
             ->where(
-                function ($exp, $q) {
+                function ($exp) {
                     return $exp->gte('date', date('Y-m-d'));
                 }
             )
