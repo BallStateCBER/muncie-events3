@@ -100,8 +100,6 @@ class CalendarHelper extends Helper
     {
         $linkedTags = [];
         foreach ($event['tags'] as $tag) {
-            $tagLinkId = "filter_tag_inline_{$event['id']}_{$tag['id']}";
-            $tagSlug = "{$tag['id']}_" . Inflector::slug($tag['name']);
             $linkedTags[] = $this->Html->link(
                 $tag['name'],
                 [
@@ -221,9 +219,6 @@ class CalendarHelper extends Helper
      */
     public function nextMonth($month, $year)
     {
-        if ($month == 12) {
-            $newMonth = 1;
-        }
         $newMonth = $month == 12 ? 1 : $month + 1;
         $newYear = $month == 12 ? $year + 1 : $year;
 
