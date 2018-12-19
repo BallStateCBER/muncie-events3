@@ -9,6 +9,8 @@ use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Slack;
 use Cake\Core\Configure;
+use Cake\Database\Expression\QueryExpression;
+use Cake\ORM\Query;
 
 /**
  * Events Controller
@@ -1249,24 +1251,24 @@ class EventsController extends AppController
         $this->loadModel('Events');
         $results = $this->Events->find()
             ->where(
-                function ($exp) {
+                function (QueryExpression $exp) {
                     return $exp->gte('date', date('Y-m-d'));
                 }
             )
             ->contain([
-                'Users' => function ($q) {
+                'Users' => function (Query $q) {
                     return $q->select(['id', 'name']);
                 },
-                'EventSeries' => function ($q) {
+                'EventSeries' => function (Query $q) {
                     return $q->select(['id', 'title']);
                 },
-                'Tags' => function ($q) {
+                'Tags' => function (Query $q) {
                     return $q->select(['id', 'name']);
                 },
-                'Categories' => function ($q) {
+                'Categories' => function (Query $q) {
                     return $q->select(['id', 'name']);
                 },
-                'Images' => function ($q) {
+                'Images' => function (Query $q) {
                     return $q->select(['id', 'filename']);
                 }
             ])

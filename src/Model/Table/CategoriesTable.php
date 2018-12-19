@@ -110,9 +110,7 @@ class CategoriesTable extends Table
             $result = $this->Events->find()
                 ->select(['id'])
                 ->where([
-                    function ($exp) {
-                        /** @var QueryExpression $exp */
-
+                    function (QueryExpression $exp) {
                         return $exp->isNotNull('approved_by');
                     },
                     'category_id' => $categoryId,
