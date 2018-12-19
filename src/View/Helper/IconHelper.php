@@ -1,7 +1,6 @@
 <?php
 namespace App\View\Helper;
 
-use Cake\Routing\Router;
 use Cake\View\Helper;
 
 class IconHelper extends Helper

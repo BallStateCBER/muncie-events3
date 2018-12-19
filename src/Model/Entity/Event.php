@@ -1,7 +1,6 @@
 <?php
 namespace App\Model\Entity;
 
-use Cake\I18n\Time;
 use Cake\Http\Exception\InternalErrorException;
 use Cake\ORM\Entity;
 

@@ -4,8 +4,6 @@
  * @var \App\Model\Entity\Event $event
  */
 use App\Model\Table\EventsTable;
-use Cake\Utility\Inflector;
-use Eluceo\iCal;
 
 $this->Events = new EventsTable();
 $dst = $this->Events->getDaylightSavings($event->start->format('Y-m-d'));

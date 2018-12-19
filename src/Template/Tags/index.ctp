@@ -2,7 +2,6 @@
 /**
  * @var \App\View\AppView $this
  */
-    use Cake\Utility\Inflector;
 ?>
 
 <h1 class="page_title">

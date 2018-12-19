@@ -2,7 +2,6 @@
 /**
  * @var \App\View\AppView $this
  */
-    use Cake\Utility\Inflector;
 
 $s = $oppCount == 1 ? '' : 's';
 $z = $count == 1 ? '' : 's';

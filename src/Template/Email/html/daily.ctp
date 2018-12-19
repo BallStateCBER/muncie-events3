@@ -3,7 +3,6 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Event[]|\Cake\Collection\CollectionInterface $events
  */
-use Cake\Routing\Router;
 
 ?>
 <style>
