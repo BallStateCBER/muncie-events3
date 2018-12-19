@@ -2,7 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\I18n\Time;
-use Cake\Network\Exception\InternalErrorException;
+use Cake\Http\Exception\InternalErrorException;
 use Cake\ORM\Entity;
 
 /**

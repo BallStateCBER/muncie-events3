@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use Cake\Network\Exception\InternalErrorException;
+use Cake\Http\Exception\InternalErrorException;
 use Cake\Routing\Router;
 
 class WidgetsController extends AppController

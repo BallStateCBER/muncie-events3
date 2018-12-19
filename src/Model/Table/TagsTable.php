@@ -2,7 +2,7 @@
 namespace App\Model\Table;
 
 use Cake\Cache\Cache;
-use Cake\Network\Exception\InternalErrorException;
+use Cake\Http\Exception\InternalErrorException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
