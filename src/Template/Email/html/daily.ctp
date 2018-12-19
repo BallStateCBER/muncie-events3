@@ -7,8 +7,8 @@ use Cake\Routing\Router;
 </style>
 
 <h1>
-    <a href="<? $fullBaseUrl ?>">
-        <img src="<? $fullBaseUrl ?>img/email_logo.png" alt="Muncie Events" />
+    <a href="<?= $fullBaseUrl ?>">
+        <img src="<?= $fullBaseUrl ?>img/email_logo.png" alt="Muncie Events" />
     </a>
 </h1>
 
@@ -49,7 +49,7 @@ use Cake\Routing\Router;
 
 <p class="footnote">
     This email was sent to <?= $recipient_email; ?>
-    on behalf of <a href="<? $fullBaseUrl ?>">MuncieEvents.com</a>
+    on behalf of <a href="<?= $fullBaseUrl ?>">MuncieEvents.com</a>
     <br />
     <?= $this->Html->link(
         'Add Event',
