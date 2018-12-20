@@ -410,7 +410,11 @@ $config = [
         'theme' => 'light',
         'type' => 'image',
         'size' => 'normal'
-    ]
+    ],
+    'admin_email' => 'admin@muncieevents.com',
+    'Captcha.secret' => env('RECAPTCHA_KEY'),
+    'password_reset_salt' => env('RESET_SALT'),
+    'profile_picture_salt' => env('PROFILE_SALT')
 ];
 
 // Use DebugTransport for all emails while in debug mode

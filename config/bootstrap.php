@@ -149,13 +149,8 @@ Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
 TransportFactory::setConfig(Configure::consume('EmailTransport'));
 Email::setConfig(Configure::consume('Email'));
-Configure::write('admin_email', 'admin@muncieevents.com');
 Log::setConfig(Configure::consume('Log'));
 Security::salt(Configure::consume('Security.salt'));
-
-Configure::write('Captcha.secret', env('RECAPTCHA_KEY'));
-Configure::write('password_reset_salt', env('RESET_SALT'));
-Configure::write('profile_picture_salt', env('PROFILE_SALT'));
 
 /*
  * The default crypto extension in 3.0 is OpenSSL.
