@@ -57,6 +57,14 @@ class Application extends BaseApplication
         if (Configure::read('debug')) {
             $this->addPlugin(\DebugKit\Plugin::class);
         }
+
+        $this->addPlugin('CakeJs');
+        $this->addPlugin('AkkaFacebook', ['bootstrap' => false, 'routes' => true]);
+        $this->addPlugin('Josegonzalez/Upload');
+        $this->addPlugin('Search');
+        $this->addPlugin('Setup');
+        $this->addPlugin('Migrations');
+        $this->addPlugin('Recaptcha', ['routes' => true, 'bootstrap' => true]);
     }
 
     /**
