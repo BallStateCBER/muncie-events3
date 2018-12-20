@@ -64,7 +64,7 @@ class ImagesController extends AppController
                             // Create DB entry for the image
                             $image = $this->Images->newEntity();
                             $image->filename = $filename;
-                            $image->user_id = $this->request->session()->read('Auth.User.id');
+                            $image->user_id = $this->request->getSession()->read('Auth.User.id');
                             if ($this->Images->save($image)) {
                                 // If the event ID is available, create association
                                 if (isset($_POST['event_id']) && is_int($_POST['event_id'])) {

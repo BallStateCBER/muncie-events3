@@ -685,7 +685,7 @@ class TagsController extends AppController
      */
     public function removeBrokenAssociations()
     {
-        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->EventsTags = TableRegistry::getTableLocator()->get('EventsTags');
         set_time_limit(120);
 
         $associations = $this->EventsTags->find()->toArray();

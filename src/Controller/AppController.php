@@ -189,8 +189,8 @@ class AppController extends Controller
      */
     public function beforeRender(Event $event)
     {
-        if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->type(), ['application/json', 'application/xml'])
+        if (!array_key_exists('_serialize', $this->viewBuilder()->getVars()) &&
+            in_array($this->response->getType(), ['application/json', 'application/xml'])
         ) {
             $this->set('_serialize', true);
         }
@@ -331,10 +331,9 @@ class AppController extends Controller
         // if a date has more than one event, add the event to its end, as a new array
         array_walk(
             $events,
-            create_function(
-                '&$v',
-                '$v = (count($v) == 1)? array_pop($v): $v;'
-            )
+            function (&$v) {
+                $v = (count($v) == 1) ? array_pop($v): $v;
+            }
         );
 
         // remove any null or empty events from the array

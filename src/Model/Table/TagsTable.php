@@ -81,8 +81,8 @@ class TagsTable extends Table
             ])
             ->add('foo', 'Search.Callback');
 
-        $this->Events = TableRegistry::get('Events');
-        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->Events = TableRegistry::getTableLocator()->get('Events');
+        $this->EventsTags = TableRegistry::getTableLocator()->get('EventsTags');
     }
 
     /**
@@ -282,7 +282,7 @@ class TagsTable extends Table
      */
     public function getUsedTagIds()
     {
-        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->EventsTags = TableRegistry::getTableLocator()->get('EventsTags');
         $findOptions = [];
 
         $results = $this->EventsTags->find('all', $findOptions)

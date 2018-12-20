@@ -65,11 +65,11 @@ class PagesController extends AppController
         $validator = new Validator();
         $validator
             ->requirePresence('name')
-            ->notEmpty('name', 'Please tell us who you are.')
+            ->minLength('name', 1, 'Please tell us who you are.')
             ->requirePresence('email')
-            ->notEmpty('email', 'Please provide a valid email address. Otherwise, we can\'t respond back.')
+            ->email('email', false, 'Please provide a valid email address. Otherwise, we can\'t respond back.')
             ->requirePresence('body')
-            ->notEmpty('body', 'Don\'t forget to write a message.');
+            ->minLength('body', 1, 'Don\'t forget to write a message.');
         if ($this->request->is('post')) {
             $errors = $validator->errors($this->request->getData());
             if (empty($errors) && ($this->request->getSession() || $this->Recaptcha->verify())) {

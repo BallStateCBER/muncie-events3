@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US" xmlns:fb="https://www.facebook.com/2008/fbml">
 <head>
     <link rel="dns-prefetch" href="//ajax.googleapis.com" />
-    <?= $this->Html->charset(); ?>
+    <?= $this->Html->charset() ?>
     <title>
         Muncie Events
     </title>
@@ -21,7 +21,7 @@
     <?php if (!empty($customStyles)): ?>
         <style>
             <?php foreach ($customStyles as $element => $rules): ?>
-                <?= $element; ?> {<?= implode('', $rules); ?>}
+                <?= $element ?> {<?= implode('', $rules) ?>}
             <?php endforeach; ?>
         </style>
     <?php endif; ?>
@@ -29,10 +29,10 @@
 </head>
 <body>
     <div class="header">
-        <?= $this->request->params['action'] == 'event' ? '' : $this->element('widgets/header'); ?>
+        <?= $this->request->getParam('action') == 'event' ? '' : $this->element('widgets/header') ?>
     </div>
     <div id="event_list">
-        <?= $this->fetch('content'); ?>
+        <?= $this->fetch('content') ?>
     </div>
     <div id="loading" style="display: none;">
         <div></div>

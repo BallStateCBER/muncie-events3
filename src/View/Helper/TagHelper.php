@@ -22,7 +22,7 @@ class TagHelper extends Helper
      */
     private function availableTagsForJs($availableTags)
     {
-        $this->Tags = TableRegistry::get('Tags');
+        $this->Tags = TableRegistry::getTableLocator()->get('Tags');
         $arrayForJson = [];
         if (is_array($availableTags)) {
             foreach ($availableTags as $tag) {
@@ -90,7 +90,7 @@ class TagHelper extends Helper
      */
     private function setAvailableTags($containerSelector)
     {
-        $tagsTable = TableRegistry::get('Tags');
+        $tagsTable = TableRegistry::getTableLocator()->get('Tags');
         $results = $tagsTable->find('threaded')
             ->where(['listed' => 1])
             ->order(['name' => 'ASC'])

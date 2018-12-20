@@ -41,8 +41,8 @@ class MailingListController extends AppController
     {
         parent::initialize();
 
-        $this->Categories = TableRegistry::get('Categories');
-        $this->Events = TableRegistry::get('Events');
+        $this->Categories = TableRegistry::getTableLocator()->get('Categories');
+        $this->Events = TableRegistry::getTableLocator()->get('Events');
 
         $this->Auth->allow(['join', 'sendDaily', 'sendWeekly', 'settings']);
     }

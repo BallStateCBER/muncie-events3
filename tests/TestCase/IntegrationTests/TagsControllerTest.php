@@ -67,8 +67,13 @@ class TagsControllerTest extends ApplicationTest
         ];
         $this->post('/tags/add', $newTag);
         $tags = $this->Tags->find()
-            ->where(['name' => 'lourdes'])
-            ->orWhere(['name' => 'soothsayer lies'])
+            ->where([
+                'OR' => [
+                    ['name' => 'lourdes'],
+                    ['name' => 'soothsayer lies']
+                ]
+
+            ])
             ->count();
         if ($tags == 2) {
             $this->assertResponseSuccess();
@@ -130,8 +135,12 @@ class TagsControllerTest extends ApplicationTest
         $this->get("/tags/remove/we%20the%20heathens");
         $this->assertResponseSuccess();
         $newTag = $this->Tags->find()
-            ->where(['name' => 'we the heathens'])
-            ->orWhere(['name' => 'soothsayer lies'])
+            ->where([
+                'OR' => [
+                    ['name' => 'we the heathens'],
+                    ['name' => 'soothsayer lies']
+                ]
+            ])
             ->first();
         if (!isset($newTag->name)) {
             $this->assertResponseSuccess();

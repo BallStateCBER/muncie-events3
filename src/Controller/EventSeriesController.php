@@ -53,7 +53,7 @@ class EventSeriesController extends AppController
                 ? $this->Events->get($entityId)
                 : $this->EventSeries->get($entityId);
 
-            $id = php_sapi_name() != 'cli' ? $user['id'] : $this->request->session()->read(['Auth.User.id']);
+            $id = php_sapi_name() != 'cli' ? $user['id'] : $this->request->getSession()->read(['Auth.User.id']);
 
             return $entity->user_id === $id;
         }

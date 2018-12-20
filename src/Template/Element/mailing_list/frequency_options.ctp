@@ -11,7 +11,7 @@
         ];
         $this->Form->setTemplates($formTemplate);
     ?>
-    <?php echo $this->Form->input(
+    <?= $this->Form->control(
         'frequency',
         [
             'type' => 'radio',
@@ -27,8 +27,8 @@
             'hiddenField' => false,
             'selected' => true
         ]
-    ); ?>
-    <?php echo $this->Form->input(
+    ) ?>
+    <?= $this->Form->control(
         'frequency',
         [
             'type' => 'radio',
@@ -43,8 +43,8 @@
             'hiddenField' => false,
             'label' => false
         ]
-    ); ?>
-    <?php echo $this->Form->input(
+    ) ?>
+    <?= $this->Form->control(
         'frequency',
         [
             'type' => 'radio',
@@ -59,11 +59,11 @@
             'hiddenField' => false,
             'label' => false
         ]
-    ); ?>
+    ) ?>
     <div id="custom_frequency_options">
         <?php if (isset($frequency_error)): ?>
             <div class="error">
-                <?= $frequency_error; ?>
+                <?= $frequency_error ?>
             </div>
         <?php endif; ?>
         <table>
@@ -72,13 +72,13 @@
                     Weekly:
                 </th>
                 <td>
-                    <?= $this->Form->input(
+                    <?= $this->Form->control(
                         'weekly',
                         [
                             'type' => 'checkbox',
                             'label' => ' Thursday'
                         ]
-                    ); ?>
+                    ) ?>
                 </td>
             </tr>
             <tr>
@@ -87,16 +87,16 @@
                 </th>
                 <td>
                     <?php foreach ($days as $code => $day): ?>
-                        <?= $this->Form->input(
+                        <?= $this->Form->control(
                             "daily_$code",
                             [
                                 'type' => 'checkbox',
                                 'label' => false,
                                 'id' => 'daily_'.$code
                             ]
-                        ); ?>
-                        <label for="daily_<?= $code; ?>">
-                            <?= $day; ?>
+                        ) ?>
+                        <label for="daily_<?= $code ?>">
+                            <?= $day ?>
                         </label>
                         <br />
                     <?php endforeach; ?>

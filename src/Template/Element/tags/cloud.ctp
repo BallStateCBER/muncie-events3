@@ -2,7 +2,6 @@
 /**
  * @var \App\View\AppView $this
  */
-    use Cake\Utility\Inflector;
 ?>
 <div class="tag_cloud">
     <?php if (empty($upcomingTags)): ?>
@@ -31,17 +30,21 @@
         <ul class="list-group">
             <?php foreach ($upcomingTags as $tag_info): ?>
                 <?php
-                    $font_size = $min_font_size + round($font_size_range * (($tag_info['count'] - $min_count) / $count_range));
+                    $font_size = $min_font_size + round(
+                        $font_size_range * (($tag_info['count'] - $min_count) / $count_range)
+                    );
                     echo $this->Html->link(
-                        '<li class="list-group-item" style="font-size: '.$font_size.'%;">'.$tag_info['name'].'</li>',
+                        '<li class="list-group-item" style="font-size: ' . $font_size . '%;">' .
+                            $tag_info['name'] .
+                        '</li>',
                         [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag_info['id'].'_'.Inflector::slug($tag_info['name'])
+                            'slug' => $tag_info['id'] . '_' . Text::slug($tag_info['name'])
                         ],
                         [
                             'escape' => false,
-                            'id' => 'filter_tag_'.$tag_info['id']
+                            'id' => 'filter_tag_' . $tag_info['id']
                         ]
                     );
                 ?>

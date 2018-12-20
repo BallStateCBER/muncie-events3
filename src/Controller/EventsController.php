@@ -850,8 +850,12 @@ class EventsController extends AppController
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
                 'order' => ['start' => 'ASC']
             ])
-            ->where(['Events.approved_by' => null])
-            ->orWhere(['Events.published' => '0'])
+            ->where([
+                'OR' => [
+                    ['Events.approved_by' => null],
+                    ['Events.published' => '0']
+                ]
+            ])
             ->toArray();
         /* Find sets of identical events (belonging to the same series and with the same modified date)
          * and remove all but the first */

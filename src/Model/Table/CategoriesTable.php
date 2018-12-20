@@ -58,20 +58,19 @@ class CategoriesTable extends Table
     {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence('id', 'update');
 
         $validator
             ->requirePresence('name', 'create')
-            ->notEmpty('name');
+            ->minLength('name', 1);
 
         $validator
             ->requirePresence('slug', 'create')
-            ->notEmpty('slug');
+            ->minLength('slug', 1);
 
         $validator
             ->integer('weight')
-            ->requirePresence('weight', 'create')
-            ->notEmpty('weight');
+            ->requirePresence('weight', 'create');
 
         return $validator;
     }
@@ -104,7 +103,7 @@ class CategoriesTable extends Table
     public function getCategoriesWithEvents($direction = 'future')
     {
         $retval = [];
-        $categoriesTable = TableRegistry::get('Categories');
+        $categoriesTable = TableRegistry::getTableLocator()->get('Categories');
         $dateComparison = ($direction == 'future') ? '>=' : '<';
         foreach ($categoriesTable->find('list') as $categoryId => $category) {
             $result = $this->Events->find()

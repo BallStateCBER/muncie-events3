@@ -153,7 +153,7 @@ class UsersTable extends Table
      */
     public function getEmailFromId($userId)
     {
-        $query = TableRegistry::get('Users')->find()->select(['email'])->where(['id' => $userId]);
+        $query = TableRegistry::getTableLocator()->get('Users')->find()->select(['email'])->where(['id' => $userId]);
         $result = $query->all();
         $email = $result->toArray();
         $email = implode($email);

@@ -35,8 +35,8 @@ class CacheShell extends Shell
          * @var CategoriesTable $categoriesTable
          * @var TagsTable $tagsTable
          */
-        $categoriesTable = TableRegistry::get('Categories');
-        $tagsTable = TableRegistry::get('Tags');
+        $categoriesTable = TableRegistry::getTableLocator()->get('Categories');
+        $tagsTable = TableRegistry::getTableLocator()->get('Tags');
         $categories = $categoriesTable->find('list');
         $directions = ['future', 'past'];
         $run = function ($filter) use ($tagsTable) {

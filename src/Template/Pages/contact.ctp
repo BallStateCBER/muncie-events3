@@ -22,7 +22,7 @@ use Cake\Core\Configure;
     ]
 ]) ?>
 <div class="form-group col-lg-8 col-xs-12">
-    <?= $this->Form->input('category', [
+    <?= $this->Form->control('category', [
         'label' => 'Category',
         'class' => 'form-control',
         'options' => [
@@ -32,25 +32,25 @@ use Cake\Core\Configure;
     ]) ?>
 </div>
 <div class='form-group col-lg-8 col-xs-12'>
-    <?= $this->Form->input('name', [
-        'default' => $this->request->session()->read('Auth.User.name'),
+    <?= $this->Form->control('name', [
+        'default' => $this->request->getSession()->read('Auth.User.name'),
         'class' => 'form-control'
     ]) ?>
 </div>
 <div class='form-group col-lg-8 col-xs-12'>
-    <?= $this->Form->input('email', [
-        'default' => $this->request->session()->read('Auth.User.email'),
+    <?= $this->Form->control('email', [
+        'default' => $this->request->getSession()->read('Auth.User.email'),
         'class' => 'form-control'
     ]) ?>
 </div>
 <div class='form-group col-lg-8 col-xs-12'>
-    <?= $this->Form->input('body', [
+    <?= $this->Form->control('body', [
         'label' => 'Message',
         'type' => 'textarea',
         'class' => 'form-control'
     ]) ?>
 </div>
-<?php if (!$this->request->session()->read('Auth.User')): ?>
+<?php if (!$this->request->getSession()->read('Auth.User')): ?>
     <?= $this->Recaptcha->display() ?>
 <?php endif; ?>
 <div class='form-group col-lg-8 col-xs-12'>

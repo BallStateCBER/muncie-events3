@@ -11,7 +11,8 @@ use Cake\Http\MiddlewareQueue;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\IntegrationTestTrait;
+use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\EventsController Test Case
@@ -27,8 +28,10 @@ use Cake\TestSuite\IntegrationTestCase;
  * @property \App\Model\Table\TagsTable $Tags
  * @property \App\Model\Table\UsersTable $Users
  */
-class ApplicationTest extends IntegrationTestCase
+class ApplicationTest extends TestCase
 {
+    use IntegrationTestTrait;
+
     /**
      * Fixtures
      *
@@ -89,7 +92,7 @@ class ApplicationTest extends IntegrationTestCase
             'environment' => ['HTTPS' => 'on']
         ]);
         foreach ($this->objects as $object) {
-            $this->$object = TableRegistry::get($object);
+            $this->$object = TableRegistry::getTableLocator()->get($object);
         }
 
         $eventsFixture = new EventsFixture();

@@ -12,15 +12,14 @@
         $this->Form->setTemplates($formTemplate);
     ?>
     <?= $this->Form->create('Event', [
-            'id' => 'EventSearchForm',
-            'url' => array_merge(['controller' => 'events', 'action' => 'search'], $this->request->params['pass'])
-        ]);
-    ?>
+        'id' => 'EventSearchForm',
+        'url' => array_merge(['controller' => 'events', 'action' => 'search'], $this->request->getParam('pass'))
+    ]) ?>
     <img src="/img/loading_small_dark.gif" id="search_autocomplete_loading" alt="Loading..." />
     <label class="sr-only" for="EventFilter">
         Search events
     </label>
-    <?= $this->Form->input('filter', [
+    <?= $this->Form->Control('filter', [
         'label' => false,
         'class' => 'form-control',
         'id' => 'EventFilter'
@@ -39,7 +38,7 @@
                     <label class="sr-only" for="direction">
                         Direction of events
                     </label>
-                    <?= $this->Form->input('direction', [
+                    <?= $this->Form->control('direction', [
                         'options' => [
                             'upcoming' => 'Upcoming Events',
                             'past' => 'Past Events',

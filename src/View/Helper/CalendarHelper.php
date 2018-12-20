@@ -3,7 +3,7 @@ namespace App\View\Helper;
 
 use App\Model\Table\EventsTable;
 use Cake\Core\Configure;
-use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Cake\View\Helper;
 
 /**
@@ -24,7 +24,7 @@ class CalendarHelper extends Helper
     {
         $filterUrlParams = [];
         if (isset($filter['tag'])) {
-            $filterUrlParams['tag'] = $filter['tag']['id'] . '_' . Inflector::slug($filter['tag']['name']);
+            $filterUrlParams['tag'] = $filter['tag']['id'] . '_' . Text::slug($filter['tag']['name']);
         }
 
         return $filterUrlParams;
@@ -105,7 +105,7 @@ class CalendarHelper extends Helper
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag['id'] . '_' . Inflector::slug($tag['name']),
+                    'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
                     'direction' => 'upcoming'
                 ],
                 [

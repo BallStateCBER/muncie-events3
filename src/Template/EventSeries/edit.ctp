@@ -30,7 +30,7 @@
         <tr>
             <th>Series</th>
             <td><?php
-                echo $this->Form->input('title', [
+                echo $this->Form->control('title', [
                     'label' => false,
                     'class' => 'form-control',
                     'div' => false,
@@ -126,7 +126,7 @@
                                             <tr>
                                                 <th>Title</th>
                                                 <td>
-                                                    <?= $this->Form->input('events.'.$x.'.title', [
+                                                    <?= $this->Form->control('events.'.$x.'.title', [
                                                         'class' => 'form-control',
                                                         'id' => ''.$event['id'].'title',
                                                         'label' => false,

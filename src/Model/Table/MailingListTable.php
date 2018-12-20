@@ -55,8 +55,8 @@ class MailingListTable extends Table
             'propertyName' => 'categories'
         ]);
 
-        $this->CategoriesMailingList = TableRegistry::get('CategoriesMailingList');
-        $this->MailingListLog = TableRegistry::get('MailingListLog');
+        $this->CategoriesMailingList = TableRegistry::getTableLocator()->get('CategoriesMailingList');
+        $this->MailingListLog = TableRegistry::getTableLocator()->get('MailingListLog');
     }
 
     /**
@@ -69,73 +69,58 @@ class MailingListTable extends Table
     {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence('id', 'update');
 
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
-            ->notEmpty('email');
+            ->minLength('email', 5);
 
         $validator
             ->boolean('all_categories')
-            ->requirePresence('all_categories', 'create')
-            ->notEmpty('all_categories');
-
-        $validator
-            ->allowEmpty('categories');
+            ->requirePresence('all_categories', 'create');
 
         $validator
             ->boolean('weekly')
-            ->requirePresence('weekly', 'create')
-            ->notEmpty('weekly');
+            ->requirePresence('weekly', 'create');
 
         $validator
             ->boolean('daily_sun')
-            ->requirePresence('daily_sun', 'create')
-            ->notEmpty('daily_sun');
+            ->requirePresence('daily_sun', 'create');
 
         $validator
             ->boolean('daily_mon')
-            ->requirePresence('daily_mon', 'create')
-            ->notEmpty('daily_mon');
+            ->requirePresence('daily_mon', 'create');
 
         $validator
             ->boolean('daily_tue')
-            ->requirePresence('daily_tue', 'create')
-            ->notEmpty('daily_tue');
+            ->requirePresence('daily_tue', 'create');
 
         $validator
             ->boolean('daily_wed')
-            ->requirePresence('daily_wed', 'create')
-            ->notEmpty('daily_wed');
+            ->requirePresence('daily_wed', 'create');
 
         $validator
             ->boolean('daily_thu')
-            ->requirePresence('daily_thu', 'create')
-            ->notEmpty('daily_thu');
+            ->requirePresence('daily_thu', 'create');
 
         $validator
             ->boolean('daily_fri')
-            ->requirePresence('daily_fri', 'create')
-            ->notEmpty('daily_fri');
+            ->requirePresence('daily_fri', 'create');
 
         $validator
             ->boolean('daily_sat')
-            ->requirePresence('daily_sat', 'create')
-            ->notEmpty('daily_sat');
+            ->requirePresence('daily_sat', 'create');
 
         $validator
             ->boolean('new_subscriber')
-            ->requirePresence('new_subscriber', 'create')
-            ->notEmpty('new_subscriber');
+            ->requirePresence('new_subscriber', 'create');
 
         $validator
-            ->dateTime('processed_daily')
-            ->allowEmpty('processed_daily');
+            ->dateTime('processed_daily');
 
         $validator
-            ->dateTime('processed_weekly')
-            ->allowEmpty('processed_weekly');
+            ->dateTime('processed_weekly');
 
         return $validator;
     }
@@ -613,7 +598,6 @@ class MailingListTable extends Table
             ->setSubject($subject)
             ->setTemplate('daily')
             ->setEmailFormat('both')
-            ->setHelpers(['Html', 'Text'])
             ->setViewVars([
                 'titleForLayout' => $subject,
                 'events' => $events,
@@ -624,6 +608,7 @@ class MailingListTable extends Table
                 'welcome_message' => $this->getWelcomeMessage($recipientId),
                 'settings_display' => $this->getSettingsDisplay($recipient)
             ]);
+        $email->viewBuilder()->setHelpers(['Html', 'Text']);
         if ($email->send()) {
             $this->setDailyAsProcessed($recipientId, 0);
 
@@ -703,7 +688,6 @@ class MailingListTable extends Table
             ->setSubject($subject)
             ->setTemplate('weekly')
             ->setEmailFormat('both')
-            ->setHelpers(['Html', 'Text'])
             ->setViewVars([
                 'titleForLayout' => $subject,
                 'events' => $events,
@@ -714,6 +698,7 @@ class MailingListTable extends Table
                 'welcome_message' => $this->getWelcomeMessage($recipientId),
                 'settings_display' => $this->getSettingsDisplay($recipient)
             ]);
+        $email->viewBuilder()->setHelpers(['Html', 'Text']);
         if ($email->send()) {
             $this->setWeeklyAsProcessed($recipientId, 0);
 

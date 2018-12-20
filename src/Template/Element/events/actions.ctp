@@ -7,8 +7,8 @@
 use App\Model\Table\EventsTable;
 use Cake\Routing\Router;
 
-$userId = $this->request->session()->read('Auth.User.id');
-    $userRole = $this->request->session()->read('Auth.User.role') ?: null;
+    $userId = $this->request->getSession()->read('Auth.User.id');
+    $userRole = $this->request->getSession()->read('Auth.User.role') ?: null;
     $canEdit = $userId && ($userRole == 'admin' || $userId == $event['user_id']);
 
     $eventUrl = Router::url([

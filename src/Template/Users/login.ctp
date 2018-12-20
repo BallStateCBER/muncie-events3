@@ -3,10 +3,10 @@
  * @var \App\View\AppView $this
  */
 ?>
-<?php if (!$this->request->params['isAjax']): ?>
+<?php if (!$this->request->getParam('isAjax')): ?>
     <h1 class="page_title">
-        <?php echo $titleForLayout; ?>
+        <?= $titleForLayout ?>
     </h1>
 <?php endif; ?>
 
-<?php echo $this->element('login'); ?>
+<?= $this->element('login') ?>

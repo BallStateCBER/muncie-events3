@@ -73,16 +73,15 @@ class ImagesTable extends Table
     {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence('id', 'update');
 
         $validator
             ->requirePresence('filename', 'create')
-            ->notEmpty('filename');
+            ->minLength('filename', 5);
 
         $validator
             ->boolean('is_flyer')
-            ->requirePresence('is_flyer', 'create')
-            ->notEmpty('is_flyer');
+            ->requirePresence('is_flyer', 'create');
 
         return $validator;
     }

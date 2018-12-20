@@ -4,7 +4,7 @@
  */
 ?>
 <h1 class="page_title">
-    <?= $titleForLayout; ?>
+    <?= $titleForLayout ?>
 </h1>
 
 <div class="form-group">
@@ -24,7 +24,7 @@
         ]
     ]) ?>
     <div class="col-lg-6">
-        <?= $this->Form->input('email', [
+        <?= $this->Form->control('email', [
             'class' => 'form-control',
             'label' => false
         ]) ?>

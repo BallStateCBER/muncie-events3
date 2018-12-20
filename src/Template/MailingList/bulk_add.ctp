@@ -4,7 +4,7 @@
  */
 ?>
 <h1 class="page_title">
-	<?= $titleForLayout; ?>
+	<?= $titleForLayout ?>
 </h1>
 
 <p>
@@ -14,9 +14,10 @@
 	will be removed from the text box.
 </p>
 
-<?= $this->Form->create(false); ?>
-<?= $this->Form->input('email_addresses', ['type' => 'textarea']); ?>
-<?= $this->Form->submit(__('Bulk Add'), [
-    'class' => 'btn btn-secondary btn-sm'
-    ]) ?>
-<?= $this->Form->end(); ?>
+<?= $this->Form->create(false) ?>
+<?= $this->Form->control('email_addresses', ['type' => 'textarea']) ?>
+<?= $this->Form->submit(
+    'Bulk Add',
+    ['class' => 'btn btn-secondary btn-sm']
+) ?>
+<?= $this->Form->end() ?>

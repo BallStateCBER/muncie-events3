@@ -5,9 +5,9 @@
  */
 use Cake\Routing\Router;
 
-$loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
-    $userRole = $this->request->session()->read('Auth.User.role');
-    $this->Js->buffer("setupSidebar();");
+$loggedIn = (boolean) $this->request->getSession()->read('Auth.User.id');
+$userRole = $this->request->getSession()->read('Auth.User.role');
+$this->Js->buffer("setupSidebar();");
 ?>
 <div id="sidebar" class="col-lg-3 col-md-4">
 
@@ -20,10 +20,10 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                         'plugin' => false,
                         'controller' => 'events',
                         'action' => 'moderate'
-                    ]); ?>
+                    ]) ?>
                     <?php if ($unapprovedCount): ?>
                         <span class="count">
-                            <?= $unapprovedCount; ?>
+                            <?= $unapprovedCount ?>
                         </span>
                     <?php endif; ?>
                 </li>
@@ -32,10 +32,10 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                         'plugin' => false,
                         'controller' => 'users',
                         'action' => 'moderate'
-                    ]); ?>
+                    ]) ?>
                     <?php if ($recentUsersCount): ?>
                         <span class="count">
-                            <?= $recentUsersCount; ?>
+                            <?= $recentUsersCount ?>
                         </span>
                     <?php endif; ?>
                 </li>
@@ -44,7 +44,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                         'plugin' => false,
                         'controller' => 'tags',
                         'action' => 'manage'
-                    ]); ?>
+                    ]) ?>
                 </li>
             </ul>
         </div>
@@ -56,10 +56,10 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
             <ul>
                 <?php foreach ($headerVars['categories'] as $category): ?>
                     <li>
-                        <a href="<?= Router::url(['controller' => 'events', 'action' => 'category', $category->slug]); ?>" class="with_icon">
+                        <a href="<?= Router::url(['controller' => 'events', 'action' => 'category', $category->slug]) ?>" class="with_icon">
                             <span class="category_name"><?php
                                 echo $category->name;
-                             ?></span>
+                            ?></span>
                             <?php
                                 $categoryId = $category->id;
                                 if (isset($sidebarVars['upcomingEventsByCategory'][$categoryId])) {
@@ -70,11 +70,11 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                                 if ($upcomingEventsCount):
                                     $title = $upcomingEventsCount.' upcoming '.__n('event', 'events', $upcomingEventsCount);
                             ?>
-                                <span class="upcoming_events_count" title="<?= $title; ?>">
-                                    <?= $upcomingEventsCount; ?>
+                                <span class="upcoming_events_count" title="<?= $title ?>">
+                                    <?= $upcomingEventsCount ?>
                                 </span>
                             <?php endif; ?>
-                            <?= $this->Icon->category($category->name); ?>
+                            <?= $this->Icon->category($category->name) ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -97,8 +97,8 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
                             Select a location...
                         </option>
                         <?php foreach ($sidebarVars['locations'] as $location => $slug): ?>
-                            <option value="<?= $slug; ?>">
-                                <?= $location; ?>
+                            <option value="<?= $slug ?>">
+                                <?= $location ?>
                             </option>
                         <?php endforeach; ?>
                         <option value=""></option>
@@ -118,15 +118,21 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
     <div>
         <h2>
             Tags
-            <?= $this->Html->link('See all', [
-                'controller' => 'tags', 'action' => 'index', 'plugin' => false
-            ], ['class' => 'see_all']); ?>
+            <?= $this->Html->link(
+                'See all',
+                [
+                    'controller' => 'Tags',
+                    'action' => 'index',
+                    'plugin' => false
+                ],
+                ['class' => 'see_all'])
+            ?>
         </h2>
         <?php if (isset($sidebarVars['upcomingTags']) && count($sidebarVars['upcomingTags']) > 0): ?>
             <?= $this->element('tags/cloud', [
                 'upcomingTags' => $sidebarVars['upcomingTags'],
                 'class' => 'form-control'
-            ]); ?>
+            ]) ?>
         <?php else: ?>
             <span class="no_results">
                 No tags found for upcoming events.
@@ -139,7 +145,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
             Mailing List
         </h2>
         <p>
-            <?= $this->Html->link('Join the Mailing List', ['plugin' => false, 'controller' => 'mailing_list', 'action' => 'join']); ?>
+            <?= $this->Html->link('Join the Mailing List', ['plugin' => false, 'controller' => 'mailing_list', 'action' => 'join']) ?>
             and get daily or weekly emails about all upcoming events or only the categories
             that you're interested in.
         </p>
@@ -152,7 +158,7 @@ $loggedIn = (boolean) $this->request->session()->read('Auth.User.id');
         <p>
             Join our event promotion network by displaying a free
             <strong>
-                <?= $this->Html->link('custom calendar widget', ['plugin' => false, 'controller' => 'widgets', 'action' => 'index']); ?>
+                <?= $this->Html->link('custom calendar widget', ['plugin' => false, 'controller' => 'widgets', 'action' => 'index']) ?>
             </strong>
             on your website.
         </p>

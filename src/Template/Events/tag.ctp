@@ -2,7 +2,7 @@
 /**
  * @var \App\View\AppView $this
  */
-    use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 
 $s = $oppCount == 1 ? '' : 's';
 $z = $count == 1 ? '' : 's';
@@ -15,19 +15,18 @@ $d = $direction == 'past' ? 'Past' : 'Upcoming';
 </h1>
 
 <?= $this->Html->link(
-        "$oppCount $opposite event$s",
-        [
-            'controller' => 'events',
-            'action' => 'tag',
-            'slug' => $tag['id'].'_'.Inflector::slug($tag['name']),
-            'direction' => $opposite
-        ]
-    );
-?>
+    "$oppCount $opposite event$s",
+    [
+        'controller' => 'events',
+        'action' => 'tag',
+        'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
+        'direction' => $opposite
+    ]
+); ?>
 
 <?php if (isset($events) && !empty($events)): ?>
 
-    <?= $this->element('events/accordion_wrapper'); ?>
+    <?= $this->element('events/accordion_wrapper') ?>
 
     <?php $this->Js->buffer("setupEventAccordion();"); ?>
 

@@ -5,8 +5,7 @@
  */
 
 use Cake\Routing\Router;
-use Cake\Utility\Inflector;
-
+use Cake\Utility\Text;
 ?>
 
 <h1 class="page_title">
@@ -26,7 +25,7 @@ use Cake\Utility\Inflector;
                 if ($directionAdjective != 'all') {
                     echo "$directionAdjective ";
                 }
-                echo __n('event', 'events', $total)." containing \"$term\"";
+                echo __n('event', 'events', $total) . " containing \"$term\"";
                 // Test
             ?>
         </h2>
@@ -39,10 +38,10 @@ use Cake\Utility\Inflector;
             $breakdown = [];
             foreach ($counts as $dir => $count) {
                 if ($count > 0) {
-                    $url = array_merge($this->request->params['filter'], [
+                    $url = array_merge($this->request->getParam('filter'), [
                         'direction' => ($dir == 'upcoming') ? 'upcoming' : 'past'
                     ]);
-                    $link_label = "$count $dir ".__n('event', 'events', $count);
+                    $link_label = "$count $dir " . __n('event', 'events', $count);
                     $breakdown[] = $this->Html->link($link_label, $url);
                 } else {
                     $breakdown[] = "no $dir events";
@@ -52,11 +51,11 @@ use Cake\Utility\Inflector;
         } else {
             if ($oppositeEvents) {
                 $url = Router::url([
-                            'controller' => 'events',
-                            'action' => 'search',
-                            'filter' => $filter['filter'],
-                            'direction' => ($direction == 'upcoming') ? 'past' : 'upcoming'
-                        ], true);
+                    'controller' => 'events',
+                    'action' => 'search',
+                    'filter' => $filter['filter'],
+                    'direction' => ($direction == 'upcoming') ? 'past' : 'upcoming'
+                ], true);
                 $link_label = $oppositeEvents.' matching ';
                 $link_label .= (($direction == 'upcoming') ? 'past ' : 'upcoming ');
                 $link_label .= __n('event ', 'events ', $oppositeEvents);
@@ -76,14 +75,14 @@ use Cake\Utility\Inflector;
         <div id="search_result_tags" class="alert alert-info">
             <p>
                 Want to narrow your search?
-                Some <?php echo $directionAdjective; ?> events have <?php echo __n('this', 'these', count($tags)); ?> matching <?php echo __n('tag', 'tags', count($tags)); ?>:
+                Some <?= $directionAdjective ?> events have <?= __n('this', 'these', count($tags)) ?> matching <?= __n('tag', 'tags', count($tags)) ?>:
                 <?php
                     $tagLinks = [];
                     foreach ($tags as $tag) {
                         $tagLinks[] = $this->Html->link($tag->name, [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag->id.'_'.Inflector::slug($tag->name),
+                            'slug' => $tag->id . '_' . Text::slug($tag->name),
                             'direction' => $direction
                         ]);
                     }

@@ -90,7 +90,7 @@ class EventsTable extends Table
             ])
             ->add('foo', 'Search.Callback');
 
-        $this->EventsTags = TableRegistry::get('EventsTags');
+        $this->EventsTags = TableRegistry::getTableLocator()->get('EventsTags');
     }
 
     /**
@@ -103,27 +103,28 @@ class EventsTable extends Table
     {
         $validator
             ->requirePresence('title', 'create')
-            ->notEmpty('title');
+            ->minLength('title', 1);
 
         $validator
-            ->requirePresence('date', 'create')
-            ->notEmpty('date');
+            ->date('date')
+            ->requirePresence('date', 'create');
 
         $validator
-            ->allowEmpty('time_end');
+            ->date('time_end')
+            ->allowEmptyDate('time_end');
 
         $validator
             ->requirePresence('location', 'create')
-            ->notEmpty('location');
+            ->minLength('location', 1);
 
         $validator
             ->requirePresence('description', 'create')
-            ->notEmpty('description');
+            ->minLength('description', 1);
 
         $validator
             ->integer('category_id')
             ->requirePresence('category_id')
-            ->notEmpty('category_id');
+            ->greaterThan('category_id', 0);
 
         return $validator;
     }

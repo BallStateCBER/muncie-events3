@@ -11,7 +11,7 @@
 ?>
 
 <h1 class="page_title">
-    <?= $titleForLayout; ?>
+    <?= $titleForLayout ?>
 </h1>
 
 <a href="#posting_rules" id="posting_rules_toggler" data-toggle="collapse">
@@ -19,10 +19,10 @@
 </a>
 
 <div id="posting_rules" class="alert alert-info collapse">
-    <?= $this->element('rules'); ?>
+    <?= $this->element('rules') ?>
 </div>
 
-<?php if (!$this->request->session()->read('Auth.User.id')): ?>
+<?php if (!$this->request->getSession()->read('Auth.User.id')): ?>
     <div class="alert alert-info">
         <p>
             <strong>You're not currently logged in</strong>. You can still submit this event, but...
@@ -58,7 +58,7 @@
 
 <?= $this->Form->create($event, [
     'type' => 'file'
-    ]) ?>
+]) ?>
     <table class="event_form">
         <tbody>
             <tr>
@@ -73,7 +73,7 @@
                         <?= $this->Form->control('title', [
                             'class' => 'form-control',
                             'label' => false
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </td>
             </tr>
@@ -90,7 +90,7 @@
                             'class' => 'form-control',
                             'label' => false,
                             'options' => $categories
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </td>
             </tr>
@@ -100,22 +100,22 @@
                 </th>
                 <td>
                     <div class="col-xs-12 col-lg-8 col-md-10">
-                        <div id="datepicker" class='<?= $multipleDatesAllowed ? 'multi' : 'single'; ?>'></div>
+                        <div id="datepicker" class=""<?= $multipleDatesAllowed ? 'multi' : 'single' ?>"></div>
                         <?php
                         if ($multipleDatesAllowed) {
                             echo $this->Html->script('jquery-ui.multidatespicker.js', ['inline' => false]);
                             $this->Js->buffer("
-                                var default_date = '".$defaultDate."';
+                                var default_date = '" . $defaultDate . "';
                                 var preselected_dates = $preselectedDates;
                                 setupDatepickerMultiple(default_date, preselected_dates);
                             ");
                         } else {
                             $this->Js->buffer("
-                                var default_date = '".$event->date."';
+                                var default_date = '" . $event->date . "';
                                 setupDatepickerSingle(default_date);
                             ");
                         }
-                        echo $this->Form->input('date', [
+                        echo $this->Form->control('date', [
                             'id' => 'datepicker_hidden',
                             'type' => 'hidden'
                         ]);
@@ -124,9 +124,9 @@
                             <div class="text-muted" id="datepicker_text">
                                 Select more than one date to create multiple events connected by a series.
                             </div>
-                            <?= $this->Form->input('series_id', [
+                            <?= $this->Form->control('series_id', [
                                 'type' => 'hidden'
-                            ]); ?>
+                            ]) ?>
                         <?php endif; ?>
                     </div>
                 </td>
@@ -139,11 +139,11 @@
                     </label>
                     <td>
                         <div class='form-group col-lg-8 col-md-10 col-xs-12'>
-                            <?= $this->Form->input('series_title', [
+                            <?= $this->Form->control('series_title', [
                                 'label' => false,
                                 'class' => 'form-control',
                                 'id' => 'EventSeriesTitle'
-                            ]); ?>
+                            ]) ?>
                             <div class="text-muted">
                                 By default, the series and its events have the same title.
                             </div>
@@ -166,23 +166,26 @@
                         AM or PM
                     </label>
                     <div id="eventform_timestart_div" class="form-group col-md-10 col-xs-12">
-                        <?= $this->Form->time('time_start', [
-                            'label' => false,
-                            'interval' => 5,
-                            'timeFormat' => '12',
-                            'hour' => [
-                                'class' => 'form-control event_time_form'
+                        <?= $this->Form->time(
+                            'time_start',
+                            [
+                                'label' => false,
+                                'interval' => 5,
+                                'timeFormat' => '12',
+                                'hour' => [
+                                    'class' => 'form-control event_time_form'
+                                ],
+                                'minute' => [
+                                    'class' => 'form-control event_time_form'
+                                ],
+                                'meridian' => [
+                                    'class' => 'form-control event_time_form'
+                                ],
+                                'empty' => false
                             ],
-                            'minute' => [
-                                'class' => 'form-control event_time_form'
-                            ],
-                            'meridian' => [
-                                'class' => 'form-control event_time_form'
-                            ],
-                            'empty' => false
-                        ],
-                        'form-control event_time_form'); ?>
-                        <span id="eventform_noendtime"<?=$has['end_time'] ? ' style="display: none;"' : ''?>>
+                            'form-control event_time_form'
+                        ) ?>
+                        <span id="eventform_noendtime"<?= $has['end_time'] ? ' style="display: none;"' : '' ?>>
                             <a id="add_end_time" href="#">Add end time</a>
                         </span>
                     </div>
@@ -221,7 +224,7 @@
                         <?= $this->Form->hidden('has_end_time', [
                             'id' => 'eventform_hasendtime_boolinput',
                             'value' => $has['end_time'] ? 1 : 0
-                        ]); ?>
+                        ]) ?>
                         <a href="#" id="remove_end_time">Remove end time</a>
                     </div>
                 </td>
@@ -238,7 +241,7 @@
                         <?= $this->Form->control('location', [
                             'class' => 'form-control',
                             'label' => false
-                        ]); ?>
+                        ]) ?>
                         <label class="sr-only" for="location-details">
                             Location details
                         </label>
@@ -246,8 +249,8 @@
                             'class' => 'form-control',
                             'label' => false,
                             'placeholder' => 'Location details (e.g. upstairs, room 149, etc.)'
-                        ]); ?>
-                        <a href="#" id="eventform_noaddress" <?= $has["address"] ? "style=\'display: none;\'" : ""?>>Add address</a>
+                        ]) ?>
+                        <a href="#" id="eventform_noaddress" <?= $has["address"] ? "style=\'display: none;\'" : "" ?>>Add address</a>
                         <a id="location_tips" data-toggle="popover" title="List of Ball State locations" data-content="
                             Put room numbers in 'location details', and format location names as such:
                             <br />
@@ -270,11 +273,11 @@
                             </div>
                         ">Ball State location?</a>
                         <?php
-                        $this->Js->buffer("
-                            $(function () {
-                            $('[data-toggle=\"popover\"]').popover({html:true})
-                            })
-                        ");
+                            $this->Js->buffer("
+                                $(function () {
+                                    $('[data-toggle=\"popover\"]').popover({html:true})
+                                })
+                            ");
                         ?>
                     </div>
                 </td>
@@ -292,7 +295,7 @@
                             'class' => 'form-control',
                             'label' => false,
                             'id' => 'EventAddress'
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </td>
             </tr>
@@ -306,16 +309,16 @@
                     </label>
                     <script src="/emojione/lib/js/emojione.min.js"></script>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
-                        <?= $this->CKEditor->loadJs(); ?>
+                        <?= $this->CKEditor->loadJs() ?>
                         <?= $this->Form->control('description', [
                             'label' => false,
                             'id' => 'EventDescription'
-                        ]); ?>
+                        ]) ?>
                         <script>
                             CKEDITOR.plugins.addExternal('emojione', '/ckeditor-emojione/', 'plugin.js');
                             CKEDITOR.config.extraPlugins = 'emojione';
                         </script>
-                        <?= $this->CKEditor->replace('description'); ?>
+                        <?= $this->CKEditor->replace('description') ?>
                     </div>
                 </td>
             </tr>
@@ -328,97 +331,100 @@
                         <?= $this->element('tags/tag_editing', [
                             'event' => $event,
                             'hide_label' => true
-                        ]); ?>
+                        ]) ?>
                     </div>
                 </td>
             </tr>
-            <?php if ($this->request->session()->read('Auth.User.id')): ?>
+            <?php if ($this->request->getSession()->read('Auth.User.id')): ?>
                 <tr>
                     <th>
                         Images
                     </th>
                     <td>
                         <div class="form-group col-xs-12">
-                            <?= $this->element('images/form'); ?>
+                            <?= $this->element('images/form') ?>
                         </div>
                     </td>
                 </tr>
             <?php endif; ?>
-            <tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_nocost"<?= ($has['cost']) ? ' style="display: none;"' : '' ?>>
                 <td>
                     <a href="#" id="event_add_cost">
                         Add cost
                     </a>
                 </td>
             </tr>
-            <tr id="eventform_hascost"<?= (!$has['cost']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_hascost"<?= (!$has['cost']) ? ' style="display: none;"' : '' ?>>
                 <th>Cost</th>
                 <td>
                     <label class="sr-only" for="EventCost">
                         Cost
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
-                        <?= $this->Form->input('cost', [
+                        <?= $this->Form->control('cost', [
                             'maxLength' => 200,
                             'label' => false,
                             'class' => 'form-control',
                             'id' => 'EventCost'
-                        ]); ?>
+                        ]) ?>
                         <a href="#" id="event_remove_cost">Remove</a>
                         <div class="text-muted">Just leave this blank if the event is free.</div>
                     </div>
                 </td>
             </tr>
-            <tr id="eventform_noages"<?= ($has['ages']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_noages"<?= ($has['ages']) ? ' style="display: none;"' : '' ?>>
                 <td>
                     <a href="#" id="event_add_age_restriction">
                         Add age restriction
                     </a>
                 </td>
             </tr>
-            <tr id="eventform_hasages"<?= (!$has['ages']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_hasages"<?= (!$has['ages']) ? ' style="display: none;"' : '' ?>>
                 <th>Age Restriction</th>
                 <td>
                     <label class="sr-only" for="EventAgeRestriction">
                         Age Restriction
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
-                        <?= $this->Form->input('age_restriction', [
+                        <?= $this->Form->control('age_restriction', [
                             'label' => false,
                             'class' => 'form-control',
                             'maxLength' => 30,
                             'id' => 'EventAgeRestriction'
-                        ]); ?>
+                        ]) ?>
                         <a href="#" id="event_remove_age_restriction">Remove</a>
                         <div class="text-muted">Leave this blank if this event has no age restrictions.</div>
                     </div>
                 </td>
             </tr>
-            <tr id="eventform_nosource"<?= ($has['source']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_nosource"<?= ($has['source']) ? ' style="display: none;"' : '' ?>>
                 <td>
                     <a href="#" id="event_add_source">
                         Add info source
                     </a>
                 </td>
             </tr>
-            <tr id="eventform_hassource"<?= (!$has['source']) ? ' style="display: none;"' : ''; ?>>
+            <tr id="eventform_hassource"<?= (!$has['source']) ? ' style="display: none;"' : '' ?>>
                 <th>Source</th>
                 <td>
                     <label class="sr-only" for="EventSource">
                         Source
                     </label>
                     <div class='form-group col-lg-8 col-md-10 col-xs-12'>
-                        <?= $this->Form->input('source', [
+                        <?= $this->Form->control('source', [
                             'label' => false,
                             'class' => 'form-control',
                             'id' => 'EventSource'
-                        ]); ?>
+                        ]) ?>
                         <a href="#" id="event_remove_source">Remove</a>
                         <div class="text-muted">Did you get this information from a website, newspaper, flyer, etc?</div>
                     </div>
                 </td>
             </tr>
-            <?php if ($this->request->params['action'] == 'add' && !$this->request->session()->read('Auth.User.id')): ?>
+            <?php if (
+                $this->request->getParam('action') == 'add'
+                && !$this->request->getSession()->read('Auth.User.id')
+            ): ?>
                 <tr>
                     <th>Spam Protection</th>
                     <td>

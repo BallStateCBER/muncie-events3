@@ -4,8 +4,8 @@
  */
 ?>
 <ul class="navbar-nav">
-    <li class="<?= (($this->request->params['controller']=='Events') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
-        <?= $this->Html->link(__('Home'), ['controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']); ?>
+    <li class="<?= (($this->request->getParam('controller') == 'Events') && ($this->request->getParam('action') == 'index')) ? 'active ' : '' ?>nav-item">
+        <?= $this->Html->link('Home', ['controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']) ?>
     </li>
     <li class="nav-item">
         <a class="nav-link" id="date_picker_toggler" data-toggle="collapse" href="#header_nav_datepicker" aria-controls="header_nav_datepicker">Go to Date...</a>
@@ -50,7 +50,7 @@
                     <ul>
                         <?php foreach ($dayLinks as $dayLink): ?>
                             <li>
-                                <?= $dayLink; ?>
+                                <?= $dayLink ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -59,11 +59,11 @@
             </div>
         </div>
     </li>
-    <li class="<?= (($this->request->params['controller']=='Events') && ($this->request->params['action']=='add'))?'active ' :'' ?>nav-item">
-        <?= $this->Html->link(__('Add Event'), ['controller' => 'Events', 'action' => 'add'], ['class' => 'nav-link']); ?>
+    <li class="<?= (($this->request->getParam('controller') == 'Events') && ($this->request->getParam('action') == 'add')) ? 'active ' : '' ?>nav-item">
+        <?= $this->Html->link('Add Event', ['controller' => 'Events', 'action' => 'add'], ['class' => 'nav-link']) ?>
     </li>
-    <li class="<?= (($this->request->params['controller']=='Widgets') && ($this->request->params['action']=='index'))?'active ' :'' ?>nav-item">
-        <?= $this->Html->link(__('Widgets'), ['controller' => 'Widgets', 'action' => 'index'], ['class' => 'nav-link']); ?>
+    <li class="<?= (($this->request->getParam('controller') == 'Widgets') && ($this->request->getParam('action') == 'index')) ? 'active ' : '' ?>nav-item">
+        <?= $this->Html->link('Widgets', ['controller' => 'Widgets', 'action' => 'index'], ['class' => 'nav-link']) ?>
     </li>
 </ul>
 <?php

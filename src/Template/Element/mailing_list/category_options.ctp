@@ -33,7 +33,7 @@
         <?php foreach ($categories as $key => $category): ?>
             <div class="form-control mailing-options">
                 <?= $this->Icon->category($category) ?>
-                <?= $this->Form->input(
+                <?= $this->Form->control(
                     'selected_categories.'.$key,
                     [
                         'type' => 'checkbox',

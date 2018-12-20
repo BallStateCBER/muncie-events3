@@ -18,7 +18,7 @@
     </title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 
-    <?= $this->element('og_meta_tags'); ?>
+    <?= $this->element('og_meta_tags') ?>
     <?php
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
@@ -29,7 +29,7 @@
         echo $this->fetch('css');
     ?>
 </head>
-<body class="layout_<?= $this->layout; ?>">
+<body class="layout_<?= $this->layout ?>">
     <!-- jquery 3.1.1 min files, checks if CDN is down, deploys local file if necessary -->
     <script
         src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -41,7 +41,7 @@
     <!--?= $this->Facebook->initJsSDK(); ?-->
     <div class="clearfix" id="header">
         <div class="container">
-            <?= $this->element('header'); ?>
+            <?= $this->element('header') ?>
         </div>
     </div>
 
@@ -49,14 +49,17 @@
 
     <div class="container">
         <div class="row">
-            <?php if ($this->request->params['controller'] == 'Events' && $this->request->params['action'] == 'index'): ?>
-            <?= $this->element('front_page_announcement'); ?>
+            <?php if (
+                $this->request->getParam('controller') == 'Events'
+                && $this->request->getParam('action') == 'index'
+            ): ?>
+                <?= $this->element('front_page_announcement') ?>
             <?php endif; ?>
-            <?= $this->fetch('content'); ?>
+            <?= $this->fetch('content') ?>
         </div>
     </div>
     <div id="footer">
-        <?= $this->element('footer'); ?>
+        <?= $this->element('footer') ?>
     </div>
 
     <noscript id="noscript" class="alert alert-warning">
@@ -95,7 +98,7 @@
     <script>$.fn.modal || document.write('<script src="js/bootstrap.min.js">\x3C/script>')</script>
 
     <script src="/js/script.min.js"></script>
-    <?= $this->fetch('script'); ?>
+    <?= $this->fetch('script') ?>
     <script type="text/javascript" src="/magnific-popup/jquery.magnific-popup.min.js"></script>
     <script type="text/javascript" src="/js/image_popups.js"></script>
     <?php

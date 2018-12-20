@@ -51,24 +51,24 @@
                         $id = $eventImage['id'];
                         $filename = $eventImage['filename'];
                     ?>
-                    <li id="selectedimage_<?= $id; ?>" data-image-id="<?= $id; ?>">
+                    <li id="selectedimage_<?= $id ?>" data-image-id="<?= $id ?>">
                         <img src="/img/icons/arrow-move.png" class="handle" alt="Move" title="Move" />
                         <label class="remove" for="delete[<?= $id ?>]">
                             Delete?
                         </label>
-                        <?= $this->Form->checkbox("delete[$id]"); ?>
+                        <?= $this->Form->checkbox("delete[$id]") ?>
                         <?= $this->Calendar->thumbnail('tiny', [
                             'filename' => $filename,
                             'class' => 'selected_image'
-                        ]); ?>
-                        <?= $this->Form->input("data.Image.$id", [
+                        ]) ?>
+                        <?= $this->Form->control("data.Image.$id", [
                             'label' => 'Caption:',
                             'div' => false,
                             'type' => 'text',
                             'value' => $eventImage['_joinData']['caption'],
                             'placeholder' => "Enter a caption for this image",
                             'class' => 'caption'
-                        ]); ?>
+                        ]) ?>
                     </li>
                 <?php endforeach; ?>
             <?php endif; ?>
@@ -86,7 +86,7 @@
                     <span>Uploading</span>
                     <ul class="footnote">
                         <li>Images must be .jpg, .jpeg, .gif, or .png.</li>
-                        <li>Each file cannot exceed <?= $manual_filesize_limit; ?>B</li>
+                        <li>Each file cannot exceed <?= $manual_filesize_limit ?>B</li>
                         <li>You can upload an image once and re-use it in multiple events.</li>
                         <li>By uploading an image, you affirm that you are not violating any copyrights.</li>
                         <li>Images must not include offensive language, nudity, or graphic violence</li>

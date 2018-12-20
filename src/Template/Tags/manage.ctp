@@ -4,7 +4,7 @@
  */
 ?>
 <h1 class="page_title">
-    <?= $titleForLayout; ?>
+    <?= $titleForLayout ?>
 </h1>
 
 <div id="tag_management_tabs" class="clearfix">
@@ -44,7 +44,7 @@
     </div>
 
     <div id="tab-add">
-        <?= $this->Form->create('Tag', ['url' => ['controller' => 'tags', 'action' => 'add']]); ?>
+        <?= $this->Form->create('Tag', ['url' => ['controller' => 'tags', 'action' => 'add']]) ?>
         <strong>Tag</strong>(s)<br />
         Multiple tags go on separate lines. Child-tags can be indented under parent-tags with one hyphen or tab per level. Example:
     <pre style="background-color: #eee; font-size: 80%; margin-left: 20px; width: 200px;">Fruits
@@ -54,13 +54,13 @@
 -Nanners
 Vegetables
 -Taters</pre>
-        <?= $this->Form->input('name', ['type' => 'textarea', 'label' => false, 'style' => 'width: 100%;']); ?>
-        <?= $this->Form->input('parent_name', ['label' => 'Parent Tag (optional)', 'type' => 'text', 'class' => 'search_field form-control']); ?>
+        <?= $this->Form->control('name', ['type' => 'textarea', 'label' => false, 'style' => 'width: 100%;']) ?>
+        <?= $this->Form->control('parent_name', ['label' => 'Parent Tag (optional)', 'type' => 'text', 'class' => 'search_field form-control']) ?>
         <p>
             All tags will be created as both listed and selectable.
         </p>
         <?= $this->Form->submit('Add', ['class' => 'btn']) ?>
-        <?= $this->Form->end(); ?>
+        <?= $this->Form->end() ?>
 
         <div id="add_results"></div>
     </div>
@@ -69,9 +69,13 @@ Vegetables
         <p class="alert alert-info">
             Warning: If a tag is removed, all child-tags will also be removed. This cannot be undone.
         </p>
-        <?= $this->Html->link('Remove all tags in the "Delete" group', [
-            'controller' => 'tags', 'action' => 'emptyDeleteGroup'
-        ]); ?>
+        <?= $this->Html->link(
+            'Remove all tags in the "Delete" group',
+            [
+                'controller' => 'tags',
+                'action' => 'emptyDeleteGroup'
+            ]
+        ) ?>
         <p>
             Or start typing a tag name:
         </p>
@@ -135,23 +139,23 @@ Vegetables
         </p>
         <ul>
             <li>
-                <?= $this->Html->link('Regroup unlisted tags', ['controller' => 'tags', 'action' => 'groupUnlisted']); ?>
+                <?= $this->Html->link('Regroup unlisted tags', ['controller' => 'tags', 'action' => 'groupUnlisted']) ?>
                 <br />Moves unlisted root-level tags into the 'Unlisted' group
             </li>
             <li>
-                <?= $this->Html->link('Recover tag tree', ['controller' => 'tags', 'action' => 'recover']); ?>
+                <?= $this->Html->link('Recover tag tree', ['controller' => 'tags', 'action' => 'recover']) ?>
                 <br />If the tree structure in the database (lft and rght fields) has gotten screwed up
             </li>
             <li>
-                <?= $this->Html->link('Remove unlisted, unused, root-level, childless tags', ['controller' => 'tags', 'action' => 'removeUnlistedUnused']); ?>
+                <?= $this->Html->link('Remove unlisted, unused, root-level, childless tags', ['controller' => 'tags', 'action' => 'removeUnlistedUnused']) ?>
                 <br />These are probably just taking up space.
             </li>
             <li>
-                <?= $this->Html->link('Remove duplicate tags', ['controller' => 'tags', 'action' => 'duplicates']); ?>
+                <?= $this->Html->link('Remove duplicate tags', ['controller' => 'tags', 'action' => 'duplicates']) ?>
                 <br />And merge associations into the retained tags
             </li>
             <li>
-                <?= $this->Html->link('Remove broken associations', ['controller' => 'tags', 'action' => 'removeBrokenAssociations']); ?>
+                <?= $this->Html->link('Remove broken associations', ['controller' => 'tags', 'action' => 'removeBrokenAssociations']) ?>
                 <br />Associations in the events_tags table involving either nonexistent tags or events.
             </li>
         </ul>
@@ -169,8 +173,8 @@ Vegetables
     </li>
 </ul>
 
-<?= $this->Html->css('/ext-2.0.1/resources/css/ext-custom.css', [null], ['inline' => false]); ?>
-<?= $this->Html->script('/ext-2.0.1/ext-custom.js', ['inline' => false]); ?>
-<?= $this->Html->script('jquery.form.js', ['inline' => false]); ?>
-<?= $this->Html->script('admin.js', ['inline' => false]); ?>
-<?php $this->Js->buffer("setupTagManager();"); ?>
+<?= $this->Html->css('/ext-2.0.1/resources/css/ext-custom.css', [null], ['inline' => false]) ?>
+<?= $this->Html->script('/ext-2.0.1/ext-custom.js', ['inline' => false]) ?>
+<?= $this->Html->script('jquery.form.js', ['inline' => false]) ?>
+<?= $this->Html->script('admin.js', ['inline' => false]) ?>
+<?php $this->Js->buffer("setupTagManager();") ?>
