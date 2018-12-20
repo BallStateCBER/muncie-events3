@@ -3,10 +3,6 @@
  * @var \App\View\AppView $this
  */
     use Cake\Utility\Inflector;
-
-if (!isset($upcomingTags)) {
-    $upcomingTags = $this->requestAction(['controller' => 'events', 'action' => 'upcomingTags']);
-}
 ?>
 <div class="tag_cloud">
     <?php if (empty($upcomingTags)): ?>
