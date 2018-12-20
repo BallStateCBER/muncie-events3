@@ -187,7 +187,7 @@
 
 <?php
     $this->Js->buffer("
-        event_ids = ".$this->Js->object($eventIds).";
+        event_ids = " . json_encode($eventIds) . ";
         setup_eventseries_edit_form();
     ");
 ?>

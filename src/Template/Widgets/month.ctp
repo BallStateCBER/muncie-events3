@@ -119,6 +119,6 @@
      muncieEventsMonthWidget.setCurrentMonth('$month');
      muncieEventsMonthWidget.setCurrentYear('$year');
      muncieEventsMonthWidget.prepareLinks('#calendar_$year-$month');
-     var events = ".$this->Js->object($eventsForJson).";
+     var events = " . json_encode($eventsForJson) . ";
      muncieEventsMonthWidget.setEvents(events);
 "); ?>

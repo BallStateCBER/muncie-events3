@@ -26,4 +26,4 @@
         }
         $data[] = $datum;
     }
-    echo $this->Js->object($data);
+    echo json_encode($data);

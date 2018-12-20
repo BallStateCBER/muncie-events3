@@ -448,7 +448,7 @@
         ];
     }
     $this->Js->buffer('
-        eventForm.previousLocations = '.$this->Js->object($previous_locations_for_autocomplete).';
+        eventForm.previousLocations = ' . json_encode($previous_locations_for_autocomplete) . ';
         setupEventForm();
     ');
 ?>
