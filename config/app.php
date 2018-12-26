@@ -39,6 +39,7 @@ $config = [
         'namespace' => 'App',
         'encoding' => env('APP_ENCODING', 'UTF-8'),
         'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
+        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',
@@ -65,7 +66,7 @@ $config = [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => env('SECURITY_SALT', false),
+        'salt' => env('SECURITY_SALT', '__SALT__'),
     ],
     /**
      * Apply timestamps with the last modified time to static assets (js, css, images).
@@ -83,11 +84,12 @@ $config = [
      */
     'Cache' => [
         'default' => [
-            'className' => 'File',
+            'className' => 'Cake\Cache\Engine\FileEngine',
             'path' => CACHE,
+            'url' => env('CACHE_DEFAULT_URL', null),
         ],
         'daily' => [
-            'className' => 'File',
+            'className' => 'Cake\Cache\Engine\FileEngine',
             'duration' => '+1 day',
             'path' => CACHE . 'daily' . DS,
         ],
@@ -97,11 +99,12 @@ $config = [
          * configuration.
          */
         '_cake_core_' => [
-            'className' => 'File',
+            'className' => 'Cake\Cache\Engine\FileEngine',
             'prefix' => 'muncie_events3_cake_core_',
-            'path' => CACHE . 'persistent/',
+            'path' => CACHE . 'persistent' . DS,
             'serialize' => true,
-            'duration' => '+2 minutes',
+            'duration' => '+1 years',
+            'url' => env('CACHE_CAKECORE_URL', null),
         ],
         /**
          * Configure the cache for model and datasource caches. This cache
@@ -109,12 +112,27 @@ $config = [
          * in connections.
          */
         '_cake_model_' => [
-            'className' => 'File',
+            'className' => 'Cake\Cache\Engine\FileEngine',
             'prefix' => 'muncie_events3_cake_model_',
-            'path' => CACHE . 'models/',
+            'path' => CACHE . 'models' . DS,
             'serialize' => true,
-            'duration' => '+2 minutes',
-        ]
+            'duration' => '+1 years',
+            'url' => env('CACHE_CAKEMODEL_URL', null),
+        ],
+
+        /**
+         * Configure the cache for routes. The cached routes collection is built the
+         * first time the routes are processed via `config/routes.php`.
+         * Duration will be set to '+2 seconds' in bootstrap.php when debug = true
+         */
+        '_cake_routes_' => [
+            'className' => 'Cake\Cache\Engine\FileEngine',
+            'prefix' => 'muncie_events3_cake_routes_',
+            'path' => CACHE,
+            'serialize' => true,
+            'duration' => '+1 years',
+            'url' => env('CACHE_CAKEROUTES_URL', null),
+        ],
     ],
     /**
      * Configure the Error and Exception handlers used by your application.
@@ -146,7 +164,7 @@ $config = [
      *   breathing room to complete logging or error handling.
      */
     'Error' => [
-        'errorLevel' => E_ALL & ~E_DEPRECATED,
+        'errorLevel' => E_ALL,
         'exceptionRenderer' => 'Cake\Error\ExceptionRenderer',
         'skipLog' => [],
         'log' => true,
@@ -173,18 +191,21 @@ $config = [
      */
     'EmailTransport' => [
         'default' => [
-            'host' => env('EMAIL_HOST'),
-            'port' => env('EMAIL_PORT'),
+            'className' => 'Cake\Mailer\Transport\MailTransport',
+            /*
+             * The following keys are used in SMTP transports:
+             */
+            'host' => env('EMAIL_HOST', 'localhost'),
+            'port' => env('EMAIL_PORT', 25),
+            'timeout' => 30,
             'username' => env('EMAIL_USERNAME'),
             'password' => env('EMAIL_PASSWORD'),
-            'className' => 'Mail',
-            'timeout' => 30,
             'client' => null,
             'tls' => null,
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
         'Debug' => [
-            'className' => 'Debug',
+            'className' => 'Cake\Mailer\Transport\DebugTransport',
             'host' => 'localhost',
             'port' => 25,
             'timeout' => 30,
@@ -210,6 +231,8 @@ $config = [
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
+            //'charset' => 'utf-8',
+            //'headerCharset' => 'utf-8',
         ],
         'contact_form' => [
             'transport' => 'default',
@@ -217,6 +240,8 @@ $config = [
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
+            //'charset' => 'utf-8',
+            //'headerCharset' => 'utf-8',
         ],
         'mailing_list' => [
             'transport' => 'default',
@@ -224,34 +249,8 @@ $config = [
             'sender' => ['automailer@MuncieEvents.com' => 'Muncie Events'],
             'returnPath' => 'automailer@MuncieEvents.com',
             'emailFormat' => 'both'
-        ],
-        'fast' => [
-            'from' => 'you@localhost',
-            'sender' => null,
-            'to' => null,
-            'cc' => null,
-            'bcc' => null,
-            'replyTo' => null,
-            'readReceipt' => null,
-            'returnPath' => null,
-            'messageId' => true,
-            'subject' => null,
-            'message' => null,
-            'headers' => null,
-            'viewRender' => null,
-            'template' => false,
-            'layout' => false,
-            'viewVars' => null,
-            'attachments' => null,
-            'emailFormat' => null,
-            'transport' => 'Smtp',
-            'host' => 'localhost',
-            'port' => 25,
-            'timeout' => 30,
-            'username' => 'user',
-            'password' => 'secret',
-            'client' => null,
-            'log' => true
+            //'charset' => 'utf-8',
+            //'headerCharset' => 'utf-8',
         ]
     ],
     /**
@@ -330,15 +329,25 @@ $config = [
             'className' => 'Cake\Log\Engine\FileLog',
             'path' => LOGS,
             'file' => 'debug',
-            'levels' => ['notice', 'info', 'debug'],
             'url' => env('LOG_DEBUG_URL', null),
+            'scopes' => false,
+            'levels' => ['notice', 'info', 'debug'],
         ],
         'error' => [
             'className' => 'Cake\Log\Engine\FileLog',
             'path' => LOGS,
             'file' => 'error',
-            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
             'url' => env('LOG_ERROR_URL', null),
+            'scopes' => false,
+            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+        ],
+        // To enable this dedicated query log, you need set your datasource's log flag to true
+        'queries' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path' => LOGS,
+            'file' => 'queries',
+            'url' => env('LOG_QUERIES_URL', null),
+            'scopes' => ['queriesLog'],
         ],
     ],
     /**
