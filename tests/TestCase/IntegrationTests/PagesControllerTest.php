@@ -9,6 +9,7 @@ class PagesControllerTest extends ApplicationTest
      * Test that pages are loading.
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testMultipleGet()
     {
@@ -22,6 +23,7 @@ class PagesControllerTest extends ApplicationTest
      * Test that the about page loads
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testAboutPageLoads()
     {
@@ -35,6 +37,7 @@ class PagesControllerTest extends ApplicationTest
      * Test that the contact page loads
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testContactPageLoads()
     {
@@ -48,6 +51,7 @@ class PagesControllerTest extends ApplicationTest
      * Test that the contact page sends emails
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testContactPageSendsEmails()
     {
@@ -66,6 +70,7 @@ class PagesControllerTest extends ApplicationTest
      * Test that our ToS loads
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testTermsPageLoads()
     {

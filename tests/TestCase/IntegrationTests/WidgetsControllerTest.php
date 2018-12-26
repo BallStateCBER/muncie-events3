@@ -23,10 +23,12 @@ class WidgetsControllerTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test feed customizer method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testFeedCustomizer()
     {
@@ -42,10 +44,12 @@ class WidgetsControllerTest extends ApplicationTest
         ]);
         $this->assertResponseOk();
     }
+
     /**
      * Test month customizer method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testMonthCustomizer()
     {

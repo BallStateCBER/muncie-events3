@@ -30,6 +30,7 @@ class EventsControllerTest extends ApplicationTest
      * test how events get approved
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testApprovalSystem()
     {
@@ -54,6 +55,7 @@ class EventsControllerTest extends ApplicationTest
      * Tests that the "add event" page loads and has expected content if the user is anonymous
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testAddGetAsAnonymous()
     {
@@ -69,6 +71,7 @@ class EventsControllerTest extends ApplicationTest
      * Tests posting an event as an anonymous user
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testAddPostAsAnonymous()
     {
@@ -125,6 +128,7 @@ class EventsControllerTest extends ApplicationTest
      * Tests getting the "add event" page as an authenticated user
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testAddGetAuthenticated()
     {
@@ -140,6 +144,7 @@ class EventsControllerTest extends ApplicationTest
      * Tests posting to the "add event" page as an authenticated user
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testAddPostAuthenticated()
     {
@@ -190,6 +195,7 @@ class EventsControllerTest extends ApplicationTest
      * test the category index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testCategoryIndex()
     {
@@ -205,6 +211,7 @@ class EventsControllerTest extends ApplicationTest
      * test the datepicker
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testDatepickerFunctionWorks()
     {
@@ -216,6 +223,7 @@ class EventsControllerTest extends ApplicationTest
      * test day index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testDayIndex()
     {
@@ -231,6 +239,7 @@ class EventsControllerTest extends ApplicationTest
      * test delete
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testDelete()
     {
@@ -262,6 +271,7 @@ class EventsControllerTest extends ApplicationTest
      * test editing the events
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testEditingEvents()
     {
@@ -316,6 +326,7 @@ class EventsControllerTest extends ApplicationTest
      * test editing the event series
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testEditingSeries()
     {
@@ -371,6 +382,7 @@ class EventsControllerTest extends ApplicationTest
      * test getting events addresses for ajax
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testGettingEventsAddresses()
     {
@@ -383,6 +395,7 @@ class EventsControllerTest extends ApplicationTest
      * test events index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testEventsIndex()
     {
@@ -396,6 +409,7 @@ class EventsControllerTest extends ApplicationTest
      * test locations index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testLocationsIndex()
     {
@@ -412,6 +426,7 @@ class EventsControllerTest extends ApplicationTest
      * test months index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testMonthsIndex()
     {
@@ -427,6 +442,7 @@ class EventsControllerTest extends ApplicationTest
      * test index of past locations
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testPastLocations()
     {
@@ -439,6 +455,7 @@ class EventsControllerTest extends ApplicationTest
      * test search function
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testSearch()
     {
@@ -452,6 +469,7 @@ class EventsControllerTest extends ApplicationTest
      * test tag index
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testTagIndex()
     {
@@ -467,6 +485,7 @@ class EventsControllerTest extends ApplicationTest
      * test the today & tomorrow redirects
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testTodayAndTomorrow()
     {
@@ -485,6 +504,7 @@ class EventsControllerTest extends ApplicationTest
      * test individual event views
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testEventView()
     {

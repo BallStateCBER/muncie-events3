@@ -19,6 +19,7 @@ class WidgetsController extends AppController
      * Initialize hook method.
      *
      * @return void
+     * @throws \Exception
      */
     public function initialize()
     {

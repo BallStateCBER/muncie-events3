@@ -29,6 +29,7 @@ class EventSeriesControllerTest extends ApplicationTest
      * test editing an event series
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testEditingEventSeries()
     {
@@ -118,6 +119,7 @@ class EventSeriesControllerTest extends ApplicationTest
      * test viewing an event series
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testViewingEventSeries()
     {

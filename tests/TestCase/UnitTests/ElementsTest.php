@@ -14,6 +14,7 @@ class ElementsTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -23,8 +24,12 @@ class ElementsTest extends ApplicationTest
     {
         parent::tearDown();
     }
-    /*
+
+    /**
      * test that sidebars are populating
+     *
+     * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testSidebarsLoading()
     {
@@ -35,8 +40,10 @@ class ElementsTest extends ApplicationTest
         $this->assertResponseContains('<div id="sidebar_mailinglist">');
         $this->assertResponseContains('<div id="sidebar_widget">');
     }
-    /*
+
+    /**
      * test that the calendar is populating dates
+     * @throws \PHPUnit\Exception
      */
     public function testDatepickerIsBeingPopulated()
     {
@@ -44,8 +51,11 @@ class ElementsTest extends ApplicationTest
         // test the datepicker
         $this->assertResponseContains('/events/day/');
     }
-    /*
+
+    /**
      * test header links when logged out
+     * @throws \PHPUnit\Exception
+     * @return void
      */
     public function testUnauthenticatedHeaderFunctions()
     {
@@ -53,8 +63,12 @@ class ElementsTest extends ApplicationTest
         $this->assertResponseContains('<a href="/login"');
         $this->assertResponseContains('<a href="/register"');
     }
-    /*
+
+    /**
      * test header links when logged in
+     *
+     * @throws \PHPUnit\Exception
+     * @return void
      */
     public function testAuthenticatedHeaderFunctions()
     {
@@ -64,8 +78,11 @@ class ElementsTest extends ApplicationTest
         $this->assertResponseContains('<a href="/account"');
         $this->assertResponseContains('<a href="/logout"');
     }
-    /*
+
+    /**
      * test that search filters actually filter search
+     * @throws \PHPUnit\Exception
+     * @return void
      */
     public function testThatSearchFilterParamsPass()
     {

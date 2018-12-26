@@ -16,6 +16,7 @@ class EventSeriesController extends AppController
      * Initialization hook method.
      *
      * @return void
+     * @throws \Exception
      */
     public function initialize()
     {

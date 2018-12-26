@@ -23,10 +23,12 @@ class TagsControllerTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test adding, editing, and deleting tags
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testTagLifecycle()
     {
@@ -156,6 +158,7 @@ class TagsControllerTest extends ApplicationTest
      * Test tag fixing functions
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testRegroupingOrphanTags()
     {

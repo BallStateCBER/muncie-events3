@@ -29,6 +29,7 @@ class UsersControllerTest extends ApplicationTest
      * Test login method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testLoggingInAndViewingUsers()
     {
@@ -68,6 +69,7 @@ class UsersControllerTest extends ApplicationTest
      * Test logout
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testLoggingOut()
     {
@@ -81,6 +83,7 @@ class UsersControllerTest extends ApplicationTest
      * Tests that email addresses are hidden for anonymous users on user profile pages
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testHiddenEmailAddress()
     {
@@ -92,6 +95,7 @@ class UsersControllerTest extends ApplicationTest
      * Test the procedure for resetting one's password
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testPasswordResetProcedure()
     {
@@ -137,6 +141,7 @@ class UsersControllerTest extends ApplicationTest
      * Tests that the registration page loads from a GET request
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testRegistrationGet()
     {
@@ -148,6 +153,7 @@ class UsersControllerTest extends ApplicationTest
      * Tests that registration rejects passwords that don't match
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testRegistrationUnmatchedPasswords()
     {
@@ -166,6 +172,7 @@ class UsersControllerTest extends ApplicationTest
      * Tests that registration with valid data works
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testRegistrationPost()
     {
@@ -181,6 +188,12 @@ class UsersControllerTest extends ApplicationTest
         $this->assertSession(3, 'Auth.User.id');
     }
 
+    /**
+     * Tests that a user can be deleted successfully
+     *
+     * @return void
+     * @throws \PHPUnit\Exception
+     */
     public function testDeleteUser()
     {
         $this->session($this->admin);

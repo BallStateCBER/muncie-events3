@@ -29,6 +29,7 @@ class MailingListControllerTest extends ApplicationTest
      * test sendDaily method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testSendDaily()
     {
@@ -41,6 +42,7 @@ class MailingListControllerTest extends ApplicationTest
      * test sendWeekly method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testSendWeekly()
     {
@@ -53,6 +55,7 @@ class MailingListControllerTest extends ApplicationTest
      * test join method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testJoin()
     {
@@ -119,6 +122,7 @@ class MailingListControllerTest extends ApplicationTest
      * test resetProcessedTime method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testResetProcessedTime()
     {
@@ -131,6 +135,7 @@ class MailingListControllerTest extends ApplicationTest
      * test bulkAdd method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testBulkAdd()
     {
@@ -143,6 +148,7 @@ class MailingListControllerTest extends ApplicationTest
      * test settings method
      *
      * @return void
+     * @throws \PHPUnit\Exception
      */
     public function testSettings()
     {

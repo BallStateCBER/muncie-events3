@@ -32,10 +32,12 @@ class MailingListController extends AppController
 
         return false;
     }
+
     /**
      * Initialization hook method.
      *
      * @return void
+     * @throws \Exception
      */
     public function initialize()
     {
