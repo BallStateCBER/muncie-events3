@@ -15,6 +15,20 @@
     RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
 </IfModule>
 
+<IfModule mod_expires.c>
+    # Enable expirations
+    ExpiresActive On
+
+    # My favicon
+    ExpiresByType image/x-icon "access plus 1 year"
+
+    # Images
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+</IfModule>
+
 # php -- BEGIN cPanel-generated handler, do not edit
 # NOTE this account's php is controlled via FPM and the vhost, this is a place holder.
 # Do not edit. This next line is to support the cPanel php wrapper (php_cli).
