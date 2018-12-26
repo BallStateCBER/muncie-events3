@@ -17,7 +17,6 @@
  * @link          https://cakephp.org CakePHP(tm) Project
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;
@@ -102,9 +101,6 @@ Router::scope('/', function (RouteBuilder $routes) {
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
-    // moderation
-    $routes->connect('/moderate', ['controller' => 'events', 'action' => 'moderate']);
-
     // pages
     $pages = ['about', 'contact', 'terms'];
     foreach ($pages as $page) {
@@ -177,5 +173,17 @@ Router::scope('/', function (RouteBuilder $routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
+    $routes->fallbacks(DashedRoute::class);
+});
+
+Router::prefix('admin', function (RouteBuilder $routes) {
+    $routes->connect('/moderate', ['controller' => 'events', 'action' => 'moderate']);
+
+    $routes->connect(
+        '/event/approve/:id',
+        ['controller' => 'events', 'action' => 'approve'],
+        ['id' => '[0-9]+', 'pass' => ['id']]
+    );
+
     $routes->fallbacks(DashedRoute::class);
 });

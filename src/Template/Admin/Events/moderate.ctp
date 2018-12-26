@@ -4,6 +4,7 @@
  * @var \App\Model\Entity\Event $event
  * @var \App\Model\Entity\Tag $tag
  * @var \App\Model\Entity\Image $image
+ * @var array $identicalSeries
  */
 use Cake\Utility\Inflector;
 
@@ -25,6 +26,7 @@ use Cake\Utility\Inflector;
                     $modified = date('Y-m-d', strtotime($event->modified));
                     $published = $event->published;
                     $isSeries = isset($event->series_id);
+                    $seriesPartEventIds = [];
 
                     if ($isSeries) {
                         $series_id = $event->series_id;
@@ -86,10 +88,9 @@ use Cake\Utility\Inflector;
                                     $confirm = 'Are you sure?';
                                 }
                                 echo $this->Form->postLink(
-                                    $this->Html->image('icons/cross.png', ['alt' => 'Delete']).'Delete',
+                                    $this->Html->image('icons/cross.png', ['alt' => 'Delete']) . 'Delete',
                                     $url,
-                                    ['escape' => false, 'confirm' => $confirm],
-                                    'Are you sure?'
+                                    ['escape' => false, 'confirm' => $confirm]
                                 );
                             ?>
                         </li>
