@@ -5,7 +5,7 @@
  * @var \App\Model\Entity\Tag $tag
  * @var \App\Model\Entity\Image $image
  */
-use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 
 ?>
 <h1 class="page_title">
@@ -13,19 +13,17 @@ use Cake\Utility\Inflector;
 </h1>
 
 <div class="event">
-    <?=
-        $this->element('events/actions', compact('event'));
-        $this->Js->buffer("setupEventActions('.event');");
-    ?>
+    <?= $this->element('events/actions', compact('event')) ?>
+    <?php $this->Js->buffer("setupEventActions('.event');"); ?>
 
     <div class="header_details">
         <table class="details">
             <tr>
                 <th>When</th>
                 <td>
-                    <?= $this->Calendar->date($event->start); ?>
+                    <?= $this->Calendar->date($event->start) ?>
                     <br />
-                    <?= $this->Calendar->time($event); ?>
+                    <?= $this->Calendar->time($event) ?>
                 </td>
             </tr>
             <tr>
@@ -40,11 +38,11 @@ use Cake\Utility\Inflector;
                     ); ?>
                     <?php if ($event->location_details): ?>
                         <br />
-                        <?= $event->location_details; ?>
+                        <?= $event->location_details ?>
                     <?php endif; ?>
                     <?php if ($event->address): ?>
                         <br />
-                        <?= $event->address; ?>
+                        <?= $event->address ?>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -53,9 +51,16 @@ use Cake\Utility\Inflector;
                 <td class="what">
                     <?php
                         echo $this->Html->link(
-                            $this->Icon->category($event->category->name).$event->category->name,
-                            ['controller' => 'events', 'action' => 'category', $event->category->slug],
-                            ['escape' => false, 'title' => 'View this category']
+                            $this->Icon->category($event->category->name) . $event->category->name,
+                            [
+                                'controller' => 'events',
+                                'action' => 'category',
+                                $event->category->slug
+                            ],
+                            [
+                                'escape' => false,
+                                'title' => 'View this category'
+                            ]
                         );
                         if (!empty($event->tags)) {
                             $linked_tags = [];
@@ -65,12 +70,12 @@ use Cake\Utility\Inflector;
                                     [
                                         'controller' => 'events',
                                         'action' => 'tag',
-                                        'slug' => $tag->id.'_'.Inflector::slug($tag->name)
+                                        'slug' => $tag->id . '_' . Text::slug($tag->name)
                                     ],
                                     ['title' => 'View this tag']
                                 );
                             }
-                            echo '<span> - '.implode(', ', $linked_tags).'</span>';
+                            echo '<span> - ' . implode(', ', $linked_tags) . '</span>';
                         }
                     ?>
                 </td>
@@ -78,13 +83,13 @@ use Cake\Utility\Inflector;
             <?php if ($event->cost): ?>
                 <tr>
                     <th>Cost</th>
-                    <td><?= $event->cost; ?></td>
+                    <td><?= $event->cost ?></td>
                 </tr>
             <?php endif; ?>
             <?php if ($event->age_restriction): ?>
                 <tr>
                     <th>Ages</th>
-                    <td><?= $event->age_restriction; ?></td>
+                    <td><?= $event->age_restriction ?></td>
                 </tr>
             <?php endif; ?>
             <?php if (isset($event->series_id) && isset($event->event_series->title)): ?>
@@ -93,7 +98,11 @@ use Cake\Utility\Inflector;
                     <td>
                         <?= $this->Html->link(
                             $event->event_series->title,
-                            ['controller' => 'EventSeries', 'action' => 'view', 'id' => $event->series_id]
+                            [
+                                'controller' => 'EventSeries',
+                                'action' => 'view',
+                                'id' => $event->series_id
+                            ]
                         ); ?>
                     </td>
                 </tr>
@@ -107,12 +116,12 @@ use Cake\Utility\Inflector;
                     <?= $this->Calendar->thumbnail('small', [
                         'filename' => $image->filename,
                         'caption' => $image->caption,
-                        'group' => 'event'.$event->id,
+                        'group' => 'event' . $event->id,
                         'alt' => $image->caption
-                    ]); ?>
+                    ]) ?>
                     <?php if ($image->caption): ?>
                         <span class="caption">
-                            <?= $image->caption; ?>
+                            <?= $image->caption ?>
                         </span>
                     <?php endif; ?>
                 <?php endforeach; ?>
@@ -120,7 +129,7 @@ use Cake\Utility\Inflector;
         <?php endif; ?>
         <?= $this->Text->autoLink($event->description, [
             'escape' => false
-        ]); ?>
+        ]) ?>
     </div>
 
     <div class="footer_details">
@@ -130,16 +139,21 @@ use Cake\Utility\Inflector;
             <?php elseif (!$event->user->name): ?>
                 Added by a user whose account no longer exists
             <?php else: ?>
-                Author: <?= $this->Html->link(
+                Author:
+                <?= $this->Html->link(
                     $event->user->name,
-                    ['controller' => 'users', 'action' => 'view', 'id' => $event->user->id]
-                ); ?>
+                    [
+                        'controller' => 'users',
+                        'action' => 'view',
+                        'id' => $event->user->id
+                    ]
+                ) ?>
             <?php endif; ?>
 
             <?php if ($event->source): ?>
                 <br />
                 Source:
-                <?= $this->Text->autoLink($event->source); ?>
+                <?= $this->Text->autoLink($event->source) ?>
             <?php endif; ?>
         </p>
     </div>

@@ -7,14 +7,13 @@
 use App\Model\Table\EventsTable;
 
 $this->Events = new EventsTable();
-
-    $userId = $this->request->session()->read('Auth.User.id');
-    $userRole = $this->request->session()->read('Auth.User.role');
-    $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id']);
+$userId = $this->request->getSession()->read('Auth.User.id');
+$userRole = $this->request->getSession()->read('Auth.User.role');
+$canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id']);
 ?>
 
 <h1 class="page_title">
-    <?= $titleForLayout; ?>
+    <?= $titleForLayout ?>
 </h1>
 
 <div class="event_series">
@@ -24,7 +23,7 @@ $this->Events = new EventsTable();
                 $this->Html->image('/img/icons/pencil.png').'Edit',
                 ['controller' => 'eventSeries', 'action' => 'edit', $eventSeries->id],
                 ['escape' => false]
-            ); ?>
+            ) ?>
         </div>
     <?php endif; ?>
 
@@ -44,7 +43,7 @@ $this->Events = new EventsTable();
         continue;
     } ?>
         <h2>
-            <?= ucwords($section); ?> Events
+            <?= ucwords($section) ?> Events
         </h2>
         <table>
             <tbody>
@@ -54,15 +53,20 @@ $this->Events = new EventsTable();
                     ?>
                     <tr>
                         <td>
-                            <?= date('M j, Y', strtotime($event->start . $dst)); ?>
+                            <?= date('M j, Y', strtotime($event->start . $dst)) ?>
                         </td>
                         <td>
-                            <?= date('g:ia', strtotime($event->start . $dst)); ?>
+                            <?= date('g:ia', strtotime($event->start . $dst)) ?>
                         </td>
                         <td>
-                            <?= $this->Html->link($event['title'],
-                                ['controller' => 'events', 'action' => 'view', 'id' => $event->id]
-                            ); ?>
+                            <?= $this->Html->link(
+                                $event['title'],
+                                [
+                                    'controller' => 'events',
+                                    'action' => 'view',
+                                    'id' => $event->id
+                                ]
+                            ) ?>
                         </td>
                     </tr>
                 <?php endforeach;?>
@@ -73,9 +77,14 @@ $this->Events = new EventsTable();
     <p class="author">
         <?php if (isset($eventSeries->user['name'])): ?>
             Author:
-            <?= $this->Html->link($eventSeries->user['name'], [
-                'controller' => 'users', 'action' => 'view', 'id' => $eventSeries->user['id']
-            ]); ?>
+            <?= $this->Html->link(
+                $eventSeries->user['name'],
+                [
+                    'controller' => 'users',
+                    'action' => 'view',
+                    'id' => $eventSeries->user['id']
+                ]
+            ) ?>
         <?php else: ?>
             This event series was posted anonymously.
         <?php endif; ?>

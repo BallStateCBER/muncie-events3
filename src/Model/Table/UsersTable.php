@@ -87,29 +87,26 @@ class UsersTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->integer('id');
 
         $validator
             ->requirePresence('name', 'create')
-            ->notEmpty('name');
+            ->minLength('name', 1);
 
         $validator
-            ->requirePresence('email', 'create')
-            ->notEmpty('email');
+            ->email('email')
+            ->requirePresence('email', 'create');
 
         $validator
             ->requirePresence('password', 'create')
-            ->notEmpty(['password', 'confirm_password'])
+            ->minLength('password', 1)
+            ->minLength('confirm_password', 1)
             ->add('confirm_password', [
                 'compare' => [
                     'rule' => ['compareWith', 'password'],
                     'message' => 'Your passwords do not match.'
                 ]
             ]);
-
-        $validator
-            ->allowEmpty('photo', 'update');
 
         return $validator;
     }

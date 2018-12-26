@@ -6,7 +6,7 @@
 
 ?>
 <style>
-    <?php include(WWW_ROOT.'css'.DS.'email.css'); ?>
+    <?php include(WWW_ROOT . 'css' . DS . 'email.css'); ?>
 </style>
 
 <h1>
@@ -17,41 +17,41 @@
 
 <?php if ($welcome_message): ?>
     <p>
-        <?= $this->Text->autoLink($welcome_message); ?>
+        <?= $this->Text->autoLink($welcome_message) ?>
     </p>
 <?php endif; ?>
 
 <div>
     <h3 class="day">
-        <?= date('l').' <span class="date">'.date('F j').'<sup>'.date('S').'</sup></span>'; ?>
+        <?= date('l') . ' <span class="date">' . date('F j') . '<sup>' . date('S') . '</sup></span>' ?>
     </h3>
     <?php foreach ($events as $event): ?>
         <p class="event">
-            <?= $this->Icon->category($event->Categories['name'], 'email'); ?>
+            <?= $this->Icon->category($event->Categories['name'], 'email') ?>
 
             <?= $this->Html->link(
                 $event->title,
                 "https://www.muncieevents.com/$event->id"
-            ); ?>
+            ) ?>
             <br />
-            <?= date('g:ia', strtotime($event->time_start)); ?>
+            <?= date('g:ia', strtotime($event->time_start)) ?>
             <?php if ($event->time_end): ?>
-                - <?= date('g:ia', strtotime($event->time_end)); ?>
+                - <?= date('g:ia', strtotime($event->time_end)) ?>
             <?php endif; ?>
             @
-            <?= $event->location; ?>
+            <?= $event->location ?>
         </p>
     <?php endforeach; ?>
 </div>
 
 <p class="footnote">
     <strong>Your settings...</strong><br />
-    Frequency: <?= $settings_display['frequency']; ?><br />
-    Events: <?= $settings_display['eventTypes']; ?>
+    Frequency: <?= $settings_display['frequency'] ?><br />
+    Events: <?= $settings_display['eventTypes'] ?>
 </p>
 
 <p class="footnote">
-    This email was sent to <?= $recipient_email; ?>
+    This email was sent to <?= $recipient_email ?>
     on behalf of <a href="<?= $fullBaseUrl ?>">MuncieEvents.com</a>
     <br />
     <?= $this->Html->link(
