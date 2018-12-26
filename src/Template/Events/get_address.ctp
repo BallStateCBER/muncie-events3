@@ -2,5 +2,5 @@
 /**
  * @var \App\View\AppView $this
  */
-?>
-<?= $address;
+
+echo $address;

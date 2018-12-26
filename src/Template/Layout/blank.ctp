@@ -2,5 +2,5 @@
 /**
  * @var \App\View\AppView $this
  */
-?>
-<?= $this->fetch('content');
+
+echo $this->fetch('content');
