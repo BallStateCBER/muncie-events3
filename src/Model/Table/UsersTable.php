@@ -249,11 +249,12 @@ class UsersTable extends Table
             ->setSubject('Muncie Events: Reset Password')
             ->setTemplate('forgot_password')
             ->setEmailFormat('both')
-            ->setHelpers(['Html', 'Text'])
             ->setViewVars(compact(
                 'email',
                 'resetUrl'
             ));
+
+        $resetEmail->viewBuilder()->setHelpers(['Html', 'Text']);
 
         return $resetEmail->send();
     }
