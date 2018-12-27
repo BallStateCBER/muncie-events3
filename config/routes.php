@@ -124,7 +124,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     );
 
     // Tags
-    Router::scope('/tags', ['controller' => 'tags'], function (RouteBuilder $routes) {
+    Router::scope('/tags', ['controller' => 'Tags'], function (RouteBuilder $routes) {
         $routes->connect('/', ['action' => 'index', 'future']);
         $routes->connect('/past', ['action' => 'index', 'past']);
     });
