@@ -2,7 +2,8 @@
 /**
  * @var \App\View\AppView $this
  */
-?>
+
+use Cake\Utility\Text; ?>
 
 <h1 class="page_title">
     <?= $titleForLayout ?>
@@ -94,20 +95,22 @@
                             ]
                         ) ?>
                     </li>
-                    <?php $letters = array_merge(range('a', 'z'), ['#']); ?>
                     <?php foreach ($letters as $letter): ?>
                         <li>
                             <?php if (isset($tagsByFirstLetter[$letter])): ?>
-                                <?= $this->Html->link(
-                                    strtoupper($letter),
-                                    '#',
-                                    [
-                                        'title' =>
-                                            'View only tags for ' . $directionAdjective .
-                                            ' events beginning with ' . strtoupper($letter),
-                                        'data-tag-list' => $letter
-                                    ]
-                                ) ?>
+                                <?php
+                                    $label = $letter == 'nonalpha' ? '#' : strtoupper($letter);
+                                    $title = "View only tags for $directionAdjective events beginning with ";
+                                    $title .= $letter == 'nonalpha' ? 'numbers or symbols' : strtoupper($letter);
+                                    echo $this->Html->link(
+                                        $label,
+                                        '#',
+                                        [
+                                            'title' => $title,
+                                            'data-tag-list' => $letter
+                                        ]
+                                    );
+                                ?>
                             <?php else: ?>
                                 <span title="No tags for <?= $directionAdjective ?> events beginning with <?= strtoupper($letter) ?>">
                                      <?= strtoupper($letter) ?>
@@ -150,19 +153,19 @@
                 $fontSize = log($maxCount) == 0 ? log($tag['count']) / 1 * $fontSizeRange + $minFontSize : log($tag['count']) / log($maxCount) * $fontSizeRange + $minFontSize;
                 $fontSize = round($fontSize, 1);
             ?>
-            <?php echo $this->Html->link(
+            <?= $this->Html->link(
                 $tagName,
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag['id'] . '_' . \Cake\Utility\Text::slug($tag['name']),
+                    'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
                     'direction' => $direction
                 ],
                 [
                     'title' => $tag['count'] . ' ' . __n('event', 'events', $tag['count']),
                     'style' => "font-size: {$fontSize}%"
                 ]
-            ); ?>
+            ) ?>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
@@ -177,7 +180,7 @@
                         [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag['id'] . '_' . \Cake\Utility\Text::slug($tag['name']),
+                            'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
                             'direction' => $direction
                         ]
                     ) ?>

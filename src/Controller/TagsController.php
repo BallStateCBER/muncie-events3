@@ -51,7 +51,7 @@ class TagsController extends AppController
         $tags = $this->Tags->getWithCounts($filters, 'alpha');
         $tagsByFirstLetter = [];
         foreach ($tags as $tag) {
-            $firstLetter = ctype_alpha($tag['name'][0]) ? $tag['name'][0] : '#';
+            $firstLetter = ctype_alpha($tag['name'][0]) ? $tag['name'][0] : 'nonalpha';
             $tagsByFirstLetter[$firstLetter][$tag['name']] = $tag;
         }
         $directionAdjective = ($direction == 'future' ? 'upcoming' : 'past');
@@ -72,7 +72,8 @@ class TagsController extends AppController
         ));
         $this->set([
             'categories' => $this->Categories->find('list')->toArray(),
-            'categoriesWithTags' => $this->Categories->getCategoriesWithEvents($direction)
+            'categoriesWithTags' => $this->Categories->getCategoriesWithEvents($direction),
+            'letters' => array_merge(range('a', 'z'), ['nonalpha'])
         ]);
     }
 
