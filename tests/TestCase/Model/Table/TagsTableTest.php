@@ -1,9 +1,9 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
+use Cake\TestSuite\TestCase;
 
-class TagsTableTest extends ApplicationTest
+class TagsTableTest extends TestCase
 {
     /**
      * Test subject

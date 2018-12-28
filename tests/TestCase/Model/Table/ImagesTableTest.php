@@ -1,9 +1,9 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
+use Cake\TestSuite\TestCase;
 
-class ImagesTableTest extends ApplicationTest
+class ImagesTableTest extends TestCase
 {
     /**
      * Test subject
@@ -11,6 +11,7 @@ class ImagesTableTest extends ApplicationTest
      * @var \App\Model\Table\ImagesTable
      */
     public $Images;
+
     /**
      * setUp method
      *
@@ -20,6 +21,7 @@ class ImagesTableTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -29,6 +31,7 @@ class ImagesTableTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test getNextId method
      *

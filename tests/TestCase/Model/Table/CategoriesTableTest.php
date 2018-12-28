@@ -1,10 +1,17 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
+use Cake\TestSuite\TestCase;
 
-class CategoriesTableTest extends ApplicationTest
+class CategoriesTableTest extends TestCase
 {
+    /**
+     * Test subject
+     *
+     * @var \App\Model\Table\CategoriesTable
+     */
+    public $Categories;
+
     /**
      * setUp method
      *

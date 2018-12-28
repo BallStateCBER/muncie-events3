@@ -1,10 +1,10 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
 use Cake\Core\Configure;
+use Cake\TestSuite\TestCase;
 
-class UsersTableTest extends ApplicationTest
+class UsersTableTest extends TestCase
 {
     /**
      * Test subject
@@ -12,6 +12,7 @@ class UsersTableTest extends ApplicationTest
      * @var \App\Model\Table\UsersTable
      */
     public $Users;
+
     /**
      * setUp method
      *
@@ -21,6 +22,7 @@ class UsersTableTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -30,6 +32,7 @@ class UsersTableTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test getEmailFromId method
      *
@@ -43,6 +46,7 @@ class UsersTableTest extends ApplicationTest
         $email = $this->Users->getEmailFromId($user->id);
         $this->assertEquals($user['email'], $email);
     }
+
     /**
      * Test getIdFromEmail method
      *
@@ -56,6 +60,7 @@ class UsersTableTest extends ApplicationTest
         $id = $this->Users->getIdFromEmail($user['email']);
         $this->assertEquals($user->id, $id);
     }
+
     /**
      * Test getResetPasswordHash method
      *
@@ -69,6 +74,7 @@ class UsersTableTest extends ApplicationTest
         $hash = $this->Users->getResetPasswordHash($user->id, $user['email']);
         $this->assertEquals(md5($user->id . $user['email'] . Configure::read('password_reset_salt') . date('my')), $hash);
     }
+
     /**
      * Test sendPasswordResetEmail
      *
@@ -84,6 +90,7 @@ class UsersTableTest extends ApplicationTest
         $resetPasswordHash = $this->Users->getResetPasswordHash($user->id, $user['email']);
         $this->assertTextContains($resetPasswordHash, $email);
     }
+
     /**
      * Test getImagesList
      *

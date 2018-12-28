@@ -1,9 +1,9 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
+use Cake\TestSuite\TestCase;
 
-class MailingListTableTest extends ApplicationTest
+class MailingListTableTest extends TestCase
 {
     /**
      * Test subject
@@ -11,6 +11,7 @@ class MailingListTableTest extends ApplicationTest
      * @var \App\Model\Table\MailingListTable
      */
     public $MailingList;
+
     /**
      * setUp method
      *
@@ -20,6 +21,7 @@ class MailingListTableTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -29,6 +31,7 @@ class MailingListTableTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     /**
      * Test getTodayYMD method
      *
@@ -40,6 +43,7 @@ class MailingListTableTest extends ApplicationTest
         $today = [date('Y'), date('m'), date('d')];
         $this->assertEquals($date, $today);
     }
+
     /**
      * Test getDailyRecipients method
      *
@@ -56,6 +60,7 @@ class MailingListTableTest extends ApplicationTest
             $this->assertEquals([], $dailies);
         }
     }
+
     /**
      * Test getWeeklyDeliveryDay method
      *
@@ -71,6 +76,7 @@ class MailingListTableTest extends ApplicationTest
             $this->assertEquals(false, $weekday);
         }
     }
+
     /**
      * Test getWeeklyRecipients method
      *
@@ -86,6 +92,7 @@ class MailingListTableTest extends ApplicationTest
             $this->assertEquals([], $weeklies);
         }
     }
+
     /**
      * Test getDays method
      *
@@ -100,6 +107,7 @@ class MailingListTableTest extends ApplicationTest
             }
         }
     }
+
     /**
      * Test isNewSubscriber method
      *
@@ -116,6 +124,7 @@ class MailingListTableTest extends ApplicationTest
         $subscriber = $this->MailingList->isNewSubscriber($mailingListWeekly->id);
         $this->assertEquals($subscriber, true);
     }
+
     /**
      * Test getHash method
      *
@@ -130,6 +139,7 @@ class MailingListTableTest extends ApplicationTest
         $secondHash = md5('recipient' . $mailingListWeekly->id);
         $this->assertEquals($hash, $secondHash);
     }
+
     /**
      * Test setDailyAsProcessed method
      *
@@ -152,6 +162,7 @@ class MailingListTableTest extends ApplicationTest
         $processed = $this->MailingList->setDailyAsProcessed($mailingListDaily->id, 0);
         $this->assertEquals($processed['new_subscriber'], 0);
     }
+
     /**
      * Test setWeeklyAsProcessed method
      *
@@ -165,6 +176,7 @@ class MailingListTableTest extends ApplicationTest
         $processed = $this->MailingList->setWeeklyAsProcessed($mailingListWeekly->id, 0);
         $this->assertEquals($processed['new_subscriber'], 0);
     }
+
     /**
      * Test setAllDailyAsProcessed method
      *
@@ -175,6 +187,7 @@ class MailingListTableTest extends ApplicationTest
         $processed = $this->MailingList->setAllDailyAsProcessed($this->MailingList->getDailyRecipients(), 0);
         $this->assertEquals(true, $processed);
     }
+
     /**
      * Test setAllWeeklyAsProcessed method
      *
@@ -185,6 +198,7 @@ class MailingListTableTest extends ApplicationTest
         $processed = $this->MailingList->setAllWeeklyAsProcessed($this->MailingList->getWeeklyRecipients(), 0);
         $this->assertEquals(true, $processed);
     }
+
     /**
      * Test filterEvents method
      *
@@ -211,6 +225,7 @@ class MailingListTableTest extends ApplicationTest
             $this->assertEquals(1, $event->category_id);
         }
     }
+
     /**
      * Test toList method
      *
@@ -231,6 +246,7 @@ class MailingListTableTest extends ApplicationTest
             return;
         }
     }
+
     /**
      * Test getSettingsDisplay method
      *
@@ -252,6 +268,7 @@ class MailingListTableTest extends ApplicationTest
             ->first();
         $this->CategoriesMailingList->delete($join);
     }
+
     /**
      * Test getWelcomeMessage method
      *
@@ -269,6 +286,7 @@ class MailingListTableTest extends ApplicationTest
         $oldRecipient = $this->MailingList->getWelcomeMessage($mailingListWeekly->id);
         $this->assertEquals(null, $oldRecipient);
     }
+
     /**
      * Test sendDaily method
      *
@@ -292,6 +310,7 @@ class MailingListTableTest extends ApplicationTest
         }
         $this->MailingList->delete($mailingListDaily);
     }
+
     /**
      * Test sendWeekly method
      *

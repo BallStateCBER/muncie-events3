@@ -1,9 +1,9 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\TestCase\ApplicationTest;
+use Cake\TestSuite\TestCase;
 
-class EventsTableTest extends ApplicationTest
+class EventsTableTest extends TestCase
 {
     /**
      * Test subject
@@ -11,6 +11,7 @@ class EventsTableTest extends ApplicationTest
      * @var \App\Model\Table\EventsTable
      */
     public $Events;
+
     /**
      * setUp method
      *
@@ -20,6 +21,7 @@ class EventsTableTest extends ApplicationTest
     {
         parent::setUp();
     }
+
     /**
      * tearDown method
      *
@@ -29,6 +31,7 @@ class EventsTableTest extends ApplicationTest
     {
         parent::tearDown();
     }
+
     public function testGetEventsOnDay()
     {
         $date = date('Y-m-d H:i:s', strtotime('Today 23:59:59'));
@@ -37,6 +40,7 @@ class EventsTableTest extends ApplicationTest
             $this->assertEquals($event->start->format('Y-m-d H:i:s'), $date);
         }
     }
+
     /**
      * Test getUpcomingEvents method
      *
@@ -61,6 +65,7 @@ class EventsTableTest extends ApplicationTest
         $this->assertEquals(date('Y-m-d'), $events[0]->date->format('Y-m-d'));
         $this->Events->delete($event);
     }
+
     /**
      * Test getUpcomingFilteredEvents method
      *
@@ -161,11 +166,13 @@ class EventsTableTest extends ApplicationTest
         $events = $this->Events->getFilteredEvents($nextStartDate, $endDate, $options);
         $this->assertEquals(date('Y-m-d H:i:s', strtotime('2020-01-01 10:29:37')), $events[0]->start->format('Y-m-d H:i:s'));
     }
+
     public function testGetUnapproved()
     {
         $count = $this->Events->getUnapproved();
         $this->assertEquals(3, $count);
     }
+
     public function testGetNextStartDate()
     {
         $dates = [
@@ -178,6 +185,7 @@ class EventsTableTest extends ApplicationTest
         $lastDate = $this->Events->getNextStartDate($dates);
         $this->assertEquals('20200202', $lastDate);
     }
+
     public function testGetPrevStartDate()
     {
         $dates = [
@@ -190,11 +198,13 @@ class EventsTableTest extends ApplicationTest
         $prevDate = $this->Events->getPrevStartDate($dates);
         $this->assertEquals(date('Ymd', strtotime('Yesterday')), $prevDate);
     }
+
     public function testGetLocations()
     {
         $locations = $this->Events->getLocations();
         $this->assertContains('Placeholder Place', $locations);
     }
+
     public function testGetPastLocations()
     {
         $event = $this->Events->newEntity();
@@ -214,6 +224,7 @@ class EventsTableTest extends ApplicationTest
         $locations = $this->Events->getPastLocations();
         $this->assertContains('1234 Counting St', $locations);
     }
+
     public function testGetAllUpcomingEventCounts()
     {
         $events = $this->Events->getAllUpcomingEventCounts();
@@ -223,6 +234,7 @@ class EventsTableTest extends ApplicationTest
             ->count();
         $this->assertEquals($artsyEvents, $events[2]);
     }
+
     public function testGetCountInDirectionWithTag()
     {
         $event = $this->Events->newEntity();
@@ -241,17 +253,20 @@ class EventsTableTest extends ApplicationTest
         $tags = $this->Events->getCountInDirectionWithTag('future', 1012);
         $this->assertEquals($tags, 1);
     }
+
     public function testGetCountPastWithTag()
     {
         $tags = $this->Events->getCountPastWithTag(1);
 
         $this->assertEquals($tags, 1);
     }
+
     public function testGetCountUpcomingWithTag()
     {
         $tags = $this->Events->getCountUpcomingWithTag(1);
         $this->assertEquals($tags, 1);
     }
+
     public function testGetPastEventIds()
     {
         $myBirthday = date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59'));
@@ -262,6 +277,7 @@ class EventsTableTest extends ApplicationTest
         $eventIds = $this->Events->getPastEventIds();
         $this->assertContains($event->id, $eventIds);
     }
+
     public function testGetFutureEventIdsAndGetFutureEvents()
     {
         $theFuture = date('Y-m-d H:i:s', strtotime('Today 23:59:59'));
@@ -282,6 +298,7 @@ class EventsTableTest extends ApplicationTest
         $events = $this->Events->getFutureEvents();
         $this->assertContains($theFuture, $events);
     }
+
     public function testGetIdsFromTag()
     {
         $eventIds = $this->Events->getIdsFromTag(1);
@@ -290,6 +307,7 @@ class EventsTableTest extends ApplicationTest
             ->first();
         $this->assertEquals(1, $event->id);
     }
+
     public function testGetValidFilters()
     {
         $options = [
