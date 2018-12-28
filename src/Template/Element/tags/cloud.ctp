@@ -2,6 +2,9 @@
 /**
  * @var \App\View\AppView $this
  */
+
+use Cake\Utility\Text;
+
 ?>
 <div class="tag_cloud">
     <?php if (empty($upcomingTags)): ?>
