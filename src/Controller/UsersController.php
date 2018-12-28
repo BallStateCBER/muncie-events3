@@ -72,40 +72,6 @@ class UsersController extends AppController
     }
 
     /**
-     * moderate function for checking users
-     *
-     * @return null
-     */
-    public function moderate()
-    {
-        $this->set('titleForLayout', 'Moderate new users');
-        $users = $this->Users->getRecentUsers();
-        $this->set(compact('users'));
-
-        return null;
-    }
-
-    /**
-     * setUserAsSpam function for setting users as spam
-     *
-     * @param int $id of spam
-     * @return null
-     */
-    public function setUserAsSpam($id)
-    {
-        $this->autoRender = false;
-        $user = $this->Users->get($id);
-        if ($this->Users->setUserAsSpam($user)) {
-            $this->Flash->success(__('The user has been marked as spam.'));
-
-            return $this->redirect('/users/moderate');
-        }
-        $this->Flash->error(__('The user could not be marked as spam. Please, try again.'));
-
-        return $this->redirect(['action' => 'moderate']);
-    }
-
-    /**
      * login for users
      *
      * @return \Cake\Http\Response|null
@@ -396,25 +362,5 @@ class UsersController extends AppController
         }
 
         return null;
-    }
-
-    /**
-     * deleting users
-     *
-     * @param int|null $id of the user to delete
-     * @return \Cake\Http\Response;
-     */
-    public function delete($id = null)
-    {
-        $this->autoRender = false;
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-
-            return $this->redirect('/');
-        }
-        $this->Flash->error(__('The user could not be deleted. Please, try again.'));
-
-        return $this->redirect(['action' => 'index']);
     }
 }
