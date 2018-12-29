@@ -156,7 +156,7 @@ use Cake\Utility\Text; ?>
 
 <?php if (! empty($tags)): ?>
     <?php foreach ($tagsByFirstLetter as $letter => $tagsUnderLetter): ?>
-        <ul id="tag_sublist_<?php echo $letter ?>" class="tag_sublist" style="display: none;">
+        <ul id="tag_sublist_<?= $letter ?>" class="tag_sublist" style="display: none;">
             <?php foreach ($tagsUnderLetter as $tagName => $tag): ?>
                 <li>
                     <?= $this->Html->link(
