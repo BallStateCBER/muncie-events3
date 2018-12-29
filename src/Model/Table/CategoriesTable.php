@@ -76,16 +76,16 @@ class CategoriesTable extends Table
     }
 
     /**
-     * getName
+     * Returns the name of the specified category, or FALSE if none can be found
      *
-     * @param int $id of user whose name we want
+     * @param int $categoryId Category record ID
      * @return string|bool
      */
-    public function getName($id)
+    public function getName($categoryId)
     {
         $result = $this->find()
             ->select('name')
-            ->where(['id' => $id])
+            ->where(['id' => $categoryId])
             ->first();
         if (empty($result)) {
             return false;
