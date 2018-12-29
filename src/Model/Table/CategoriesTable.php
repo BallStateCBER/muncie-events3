@@ -79,7 +79,7 @@ class CategoriesTable extends Table
      * getName
      *
      * @param int $id of user whose name we want
-     * @return string
+     * @return string|bool
      */
     public function getName($id)
     {
