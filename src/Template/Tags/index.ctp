@@ -1,6 +1,12 @@
 <?php
 /**
  * @var \App\View\AppView $this
+ * @var array $tagsByFirstLetter
+ * @var callable $calculateFontSize
+ * @var int[] $categoriesWithTags
+ * @var string $category
+ * @var string $directionAdjective
+ * @var string[] $categories
  */
 
 use Cake\Utility\Text; ?>
@@ -130,29 +136,7 @@ use Cake\Utility\Text; ?>
             No tags found for any <?= $directionAdjective ?> events.
         </p>
     <?php else: ?>
-        <?php
-            $minCount = $maxCount = null;
-            foreach ($tags as $tagName => $tag) {
-                if ($minCount == null) {
-                    $minCount = $maxCount = $tag['count'];
-                }
-                if ($tag['count'] < $minCount) {
-                    $minCount = $tag['count'];
-                }
-                if ($tag['count'] > $maxCount) {
-                    $maxCount = $tag['count'];
-                }
-            }
-            $countRange = max($maxCount - $minCount, 1);
-            $minFontSize = 75;
-            $maxFontSize = 150;
-            $fontSizeRange = $maxFontSize - $minFontSize;
-        ?>
         <?php foreach ($tags as $tagName => $tag): ?>
-            <?php
-                $fontSize = log($maxCount) == 0 ? log($tag['count']) / 1 * $fontSizeRange + $minFontSize : log($tag['count']) / log($maxCount) * $fontSizeRange + $minFontSize;
-                $fontSize = round($fontSize, 1);
-            ?>
             <?= $this->Html->link(
                 $tagName,
                 [
@@ -163,7 +147,7 @@ use Cake\Utility\Text; ?>
                 ],
                 [
                     'title' => $tag['count'] . ' ' . __n('event', 'events', $tag['count']),
-                    'style' => "font-size: {$fontSize}%"
+                    'style' => 'font-size: ' . $calculateFontSize($tag['count']) . '%'
                 ]
             ) ?>
         <?php endforeach; ?>

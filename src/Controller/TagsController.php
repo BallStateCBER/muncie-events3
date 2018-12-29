@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use Cake\Utility\Hash;
+
 /**
  * Tags Controller
  *
@@ -33,42 +35,63 @@ class TagsController extends AppController
     }
 
     /**
-     * tags index
+     * Tag index / cloud page
      *
-     * @param string $direction of the tags
-     * @param string $category of the tags
+     * @param string $direction Either 'future' or 'past'
+     * @param string|int $category Either 'all' or a category ID
      * @return void
      */
     public function index($direction = 'future', $category = 'all')
     {
-        if ($direction != 'future' && $direction != 'past') {
+        // Filters
+        if (!in_array($direction, ['future', 'past'])) {
             $direction = 'future';
         }
         $filters = compact('direction');
         if ($category != 'all') {
             $filters['categories'] = $category;
         }
+
         $tags = $this->Tags->getWithCounts($filters, 'alpha');
+
+        // Create separate sub-lists of tags according to what character they start with
         $tagsByFirstLetter = [];
         foreach ($tags as $tag) {
             $firstLetter = ctype_alpha($tag['name'][0]) ? $tag['name'][0] : 'nonalpha';
             $tagsByFirstLetter[$firstLetter][$tag['name']] = $tag;
         }
+
+        // Generate the page title, specifying direction and (if applicable) category
         $directionAdjective = ($direction == 'future' ? 'upcoming' : 'past');
-        $titleForLayout = 'Tags (';
-        $titleForLayout .= ucfirst($directionAdjective);
+        $titleForLayout = 'Tags (' . ucfirst($directionAdjective) . ' Events)';
         $this->loadModel('Categories');
-        if ($category != 'all' && $categoryName = $this->Categories->getName($category)) {
-            $titleForLayout .= ' ' . str_replace(' Events', '', ucwords($categoryName));
+        $categoryName = $category == 'all' ? false : $this->Categories->getName($category);
+        if ($categoryName) {
+            $categoryName = str_replace(' Events', '', ucwords($categoryName));
+            $titleForLayout = str_replace(' Events', " $categoryName Events", $titleForLayout);
         }
-        $titleForLayout .= ' Events)';
+
+        // Create a function for determining each tag's individual font size in the cloud
+        $maxCount = max(Hash::extract($tags, '{s}.count'));
+        $calculateFontSize = function ($tagCount) use ($maxCount) {
+            $minFontSize = 75;
+            $maxFontSize = 150;
+            $fontSizeRange = $maxFontSize - $minFontSize;
+            $fontSize = log($maxCount) == 0
+                ? log($tagCount) / 1 * $fontSizeRange + $minFontSize
+                : log($tagCount) / log($maxCount) * $fontSizeRange + $minFontSize;
+
+            return round($fontSize, 1);
+        };
+
         $this->set(compact(
-            'titleForLayout',
-            'tags',
-            'tagsByFirstLetter',
+            'calculateFontSize',
+            'category',
             'direction',
             'directionAdjective',
-            'category'
+            'tags',
+            'tagsByFirstLetter',
+            'titleForLayout'
         ));
         $this->set([
             'categories' => $this->Categories->find('list')->toArray(),
