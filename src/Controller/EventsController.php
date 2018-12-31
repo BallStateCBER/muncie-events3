@@ -733,9 +733,7 @@ class EventsController extends AppController
      */
     public function index($nextStartDate = null)
     {
-        if ($nextStartDate == null) {
-            $nextStartDate = date('Y-m-d');
-        }
+        $nextStartDate = $nextStartDate ?? date('Y-m-d');
         $endDate = strtotime($nextStartDate . ' + 2 weeks');
         $events = $this->Events->getStartEndEvents($nextStartDate, $endDate, null);
         $this->indexEvents($events);
