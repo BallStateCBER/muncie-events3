@@ -18,6 +18,7 @@ $this->Js->buffer("setupSidebar();");
                 <li>
                     <?= $this->Html->link('Approve Events', [
                         'plugin' => false,
+                        'prefix' => 'admin',
                         'controller' => 'events',
                         'action' => 'moderate'
                     ]) ?>
@@ -30,6 +31,7 @@ $this->Js->buffer("setupSidebar();");
                 <li>
                     <?= $this->Html->link('Moderate New Users', [
                         'plugin' => false,
+                        'prefix' => 'admin',
                         'controller' => 'users',
                         'action' => 'moderate'
                     ]) ?>
@@ -42,6 +44,7 @@ $this->Js->buffer("setupSidebar();");
                 <li>
                     <?= $this->Html->link('Manage Tags', [
                         'plugin' => false,
+                        'prefix' => 'admin',
                         'controller' => 'tags',
                         'action' => 'manage'
                     ]) ?>
