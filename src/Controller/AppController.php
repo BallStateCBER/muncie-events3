@@ -236,7 +236,8 @@ class AppController extends Controller
             $event = $this->Events->setEasternTimes($event);
             $dates[] = $event->date->format('Y-m-d');
         }
-        // are there multiple events happening on a certain date?
+
+        // Are there multiple events happening on a certain date?
         $multipleDates = false;
         if (isset($dates)) {
             if (count(array_unique($dates)) < count($dates)) {
