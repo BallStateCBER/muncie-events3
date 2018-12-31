@@ -344,14 +344,13 @@ class AppController extends Controller
     {
         $locations = $this->Events->getUpcomingLocationsWithSlugs();
         $upcomingTags = $this->Tags->getUpcoming();
-        $upcomingEventsByCategory = $this->Events->getAllUpcomingEventCounts();
 
         $categories = $this->getCategoriesForSidebar();
         $populatedDates = $this->getPopulatedDates();
         $dayLinks = $this->getDayLinksForHeader($populatedDates);
 
         return [
-            'sidebarVars' => compact('locations', 'upcomingTags', 'upcomingEventsByCategory'),
+            'sidebarVars' => compact('locations', 'upcomingTags'),
             'headerVars' => compact('categories', 'populatedDates', 'dayLinks')
         ];
     }
@@ -363,6 +362,7 @@ class AppController extends Controller
      */
     private function getCategoriesForSidebar()
     {
+        $upcomingEventsByCategory = $this->Events->getAllUpcomingEventCounts();
         $categories = $this->Categories->find('all', [
             'order' => ['weight' => 'ASC']
         ])->toArray();
@@ -375,7 +375,7 @@ class AppController extends Controller
                 $category['slug']
             ]);
             $categoryId = $category['id'];
-            $category['upcomingEventsCount'] = $sidebarVars['upcomingEventsByCategory'][$categoryId] ?? 0;
+            $category['upcomingEventsCount'] = $upcomingEventsByCategory[$categoryId] ?? 0;
             $category['upcomingEventsTitle'] = sprintf(
                 '%s upcoming %s',
                 $category['upcomingEventsCount'],
