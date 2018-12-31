@@ -350,8 +350,8 @@ class AppController extends Controller
         $dayLinks = $this->getDayLinksForHeader($populatedDates);
 
         return [
-            'sidebarVars' => compact('locations', 'upcomingTags'),
-            'headerVars' => compact('categories', 'populatedDates', 'dayLinks')
+            'sidebarVars' => compact('locations', 'upcomingTags', 'categories'),
+            'headerVars' => compact('populatedDates', 'dayLinks')
         ];
     }
 

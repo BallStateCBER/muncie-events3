@@ -56,11 +56,11 @@ $this->Js->buffer("setupSidebar();");
         </div>
     <?php endif; ?>
 
-    <?php if (isset($headerVars['categories'])): ?>
+    <?php if (isset($sidebarVars['categories'])): ?>
         <div class="categories">
             <h2>Categories</h2>
             <ul>
-                <?php foreach ($headerVars['categories'] as $category): ?>
+                <?php foreach ($sidebarVars['categories'] as $category): ?>
                     <li>
                         <a href="<?= $category['url'] ?>" class="with_icon">
                             <span class="category_name"><?= $category['name'] ?></span>
