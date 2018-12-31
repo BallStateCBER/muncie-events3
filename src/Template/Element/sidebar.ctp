@@ -1,11 +1,14 @@
 <?php
 /**
- * @var \App\View\AppView $this
  * @var \App\Model\Entity\Category $category
+ * @var \App\View\AppView $this
+ * @var array $headerVars
+ * @var array $sidebarVars
+ * @var int $recentUsersCount
+ * @var int $unapprovedCount
  */
-use Cake\Routing\Router;
 
-$loggedIn = (boolean) $this->request->getSession()->read('Auth.User.id');
+$loggedIn = (bool)$this->request->getSession()->read('Auth.User.id');
 $userRole = $this->request->getSession()->read('Auth.User.role');
 $this->Js->buffer("setupSidebar();");
 ?>
@@ -59,25 +62,14 @@ $this->Js->buffer("setupSidebar();");
             <ul>
                 <?php foreach ($headerVars['categories'] as $category): ?>
                     <li>
-                        <a href="<?= Router::url(['plugin' => false, 'prefix' => false, 'controller' => 'events', 'action' => 'category', $category->slug]) ?>" class="with_icon">
-                            <span class="category_name"><?php
-                                echo $category->name;
-                            ?></span>
-                            <?php
-                                $categoryId = $category->id;
-                                if (isset($sidebarVars['upcomingEventsByCategory'][$categoryId])) {
-                                    $upcomingEventsCount = $sidebarVars['upcomingEventsByCategory'][$categoryId];
-                                } else {
-                                    $upcomingEventsCount = 0;
-                                }
-                                if ($upcomingEventsCount):
-                                    $title = $upcomingEventsCount.' upcoming '.__n('event', 'events', $upcomingEventsCount);
-                            ?>
-                                <span class="upcoming_events_count" title="<?= $title ?>">
-                                    <?= $upcomingEventsCount ?>
+                        <a href="<?= $category['url'] ?>" class="with_icon">
+                            <span class="category_name"><?= $category['name'] ?></span>
+                            <?php if ($category['upcomingEventsCount']): ?>
+                                <span class="upcoming_events_count" title="<?= $category['upcomingEventsTitle'] ?>">
+                                    <?= $category['upcomingEventsCount'] ?>
                                 </span>
                             <?php endif; ?>
-                            <?= $this->Icon->category($category->name) ?>
+                            <?= $this->Icon->category($category['name']) ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -92,10 +84,10 @@ $this->Js->buffer("setupSidebar();");
             </h2>
             <?php if (count($sidebarVars['locations']) > 0): ?>
                 <form id="sidebar_select_location">
-                    <label class="sr-only" for="locations">
+                    <label class="sr-only" for="sidebar-locations">
                         Select a location
                     </label>
-                    <select class='form-control' name="locations">
+                    <select class='form-control' name="locations" id="sidebar-locations">
                         <option value="">
                             Select a location...
                         </option>
@@ -167,5 +159,4 @@ $this->Js->buffer("setupSidebar();");
             on your website.
         </p>
     </div>
-
 </div>

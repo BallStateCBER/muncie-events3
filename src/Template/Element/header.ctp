@@ -4,7 +4,9 @@
  */
 ?>
 <nav class="navbar navbar-toggleable-md navbar-inverse header">
-    <button class="navbar-toggler navbar-toggler-left" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler navbar-toggler-left" type="button" data-toggle="collapse"
+            data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <h1>
@@ -15,18 +17,18 @@
     <ul class="navbar-nav" id="med-nav">
         <li class="navbar-item">
             <ul id="mid-nav" class="navbar-nav">
-                <?= $this->element('header/links_secondary'); ?>
+                <?= $this->element('header/links_secondary') ?>
             </ul>
         </li>
     </ul>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div>
             <div class="header-nav primary-nav">
-                <?= $this->element('header/links_primary'); ?>
+                <?= $this->element('header/links_primary') ?>
             </div>
             <div class="header-nav">
                 <ul id="res-nav" class="navbar-nav">
-                    <?= $this->element('header/links_secondary'); ?>
+                    <?= $this->element('header/links_secondary') ?>
                 </ul>
             </div>
         </div>
@@ -34,10 +36,10 @@
     <ul class="navbar-nav" id="tagline-lg">
         <li class="navbar-item">
             <a class="navbar-brand logo">
-                <?= $this->element('header/tagline'); ?>
+                <?= $this->element('header/tagline') ?>
             </a>
             <br />
         </li>
     </ul>
-    <?= $this->element('header/search'); ?>
+    <?= $this->element('header/search') ?>
 </nav>

@@ -1,62 +1,36 @@
 <?php
 /**
  * @var \App\View\AppView $this
+ * @var array $headerVars
+ * @var array $populated
+ * @var callable $getActive
  */
 ?>
 <ul class="navbar-nav">
-    <li class="<?= (($this->request->getParam('controller') == 'Events') && ($this->request->getParam('action') == 'index')) ? 'active ' : '' ?>nav-item">
-        <?= $this->Html->link('Home', ['plugin' => false, 'prefix' => false, 'controller' => 'Events', 'action' => 'index'], ['class' => 'nav-link']) ?>
+    <li class="<?= $getActive('Events', 'index') ?> nav-item">
+        <?= $this->Html->link(
+            'Home',
+            [
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Events',
+                'action' => 'index'
+            ],
+            ['class' => 'nav-link'])
+        ?>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="date_picker_toggler" data-toggle="collapse" href="#header_nav_datepicker" aria-controls="header_nav_datepicker">Go to Date...</a>
-        <?php
-            if (!isset($default)) {
-                $default = date('m/d/Y');
-            }
-        ?>
+        <a class="nav-link" id="date_picker_toggler" data-toggle="collapse" href="#header_nav_datepicker"
+           aria-controls="header_nav_datepicker">Go to Date...</a>
         <div id="header_nav_datepicker" class="collapse" aria-labelledby="date_picker_toggler">
             <div>
-                <?php
-                $dayLinks = [];
-                    foreach ($headerVars['populatedDates'] as $date) {
-                        $calendarDate = $date[2] . '-' . $date[3] . '-' . $date[4];
-                        if ($date[4] . '-' . $date[2] . '-' . $date[3] == date('Y-m-d')) {
-                            $dayLinks[] = $this->Html->link('Today', [
-                                'plugin' => false,
-                                'prefix' => false,
-                                'controller' => 'events',
-                                'action' => 'today'
-                            ]);
-                            continue;
-                        }
-                        if ($date[4] . '-' . $date[2] . '-' . $date[3] == date('Y-m-d', strtotime('Tomorrow'))) {
-                            $dayLinks[] = $this->Html->link('Tomorrow', [
-                                'plugin' => false,
-                                'prefix' => false,
-                                'controller' => 'events',
-                                'action' => 'tomorrow'
-                            ]);
-                            continue;
-                        }
-                        $dayLinks[] = $this->Html->link($date[0].', '.$date[1].' '.$date[3], [
-                            'plugin' => false,
-                            'prefix' => false,
-                            'controller' => 'events',
-                            'action' => 'day',
-                            $date[2],
-                            $date[3],
-                            $date[4]
-                        ]);
-                        if (count($dayLinks) == 7) {
-                            break;
-                        }
-                    }
-                ?>
-                <?php if (!empty($dayLinks)): ?>
+                <?php if (!empty($headerVars['dayLinks'])): ?>
                     <ul>
-                        <?php foreach ($dayLinks as $dayLink): ?>
+                        <?php foreach ($headerVars['dayLinks'] as $dayLink): ?>
                             <li>
-                                <?= $dayLink ?>
+                                <a href="<?= $dayLink['url'] ?>">
+                                    <?= $dayLink['label'] ?>
+                                </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -65,11 +39,29 @@
             </div>
         </div>
     </li>
-    <li class="<?= (($this->request->getParam('controller') == 'Events') && ($this->request->getParam('action') == 'add')) ? 'active ' : '' ?>nav-item">
-        <?= $this->Html->link('Add Event', ['plugin' => false, 'prefix' => false, 'controller' => 'Events', 'action' => 'add'], ['class' => 'nav-link']) ?>
+    <li class="<?= $getActive('Events', 'add') ?> nav-item">
+        <?= $this->Html->link(
+            'Add Event',
+            [
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Events',
+                'action' => 'add'
+            ],
+            ['class' => 'nav-link']
+        ) ?>
     </li>
-    <li class="<?= (($this->request->getParam('controller') == 'Widgets') && ($this->request->getParam('action') == 'index')) ? 'active ' : '' ?>nav-item">
-        <?= $this->Html->link('Widgets', ['plugin' => false, 'prefix' => false, 'controller' => 'Widgets', 'action' => 'index'], ['class' => 'nav-link']) ?>
+    <li class="<?= $getActive('Widgets', 'index') ?> nav-item">
+        <?= $this->Html->link(
+            'Widgets',
+            [
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Widgets',
+                'action' => 'index'
+            ],
+            ['class' => 'nav-link']
+        ) ?>
     </li>
 </ul>
 <?php

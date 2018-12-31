@@ -196,18 +196,6 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
 
-        $categories = $this->Categories->find('all', [
-           'order' => ['weight' => 'ASC']
-        ])->toArray();
-
-        $results = $this->Events->getFutureEvents();
-        $populatedDates = [];
-        foreach ($results as $result) {
-            if (!in_array($result, $populatedDates)) {
-                $populatedDates[] = $result;
-            }
-        }
-
         $results = $this->Events->getPopulatedDates();
         $populated = [];
         foreach ($results as $result) {
@@ -215,24 +203,23 @@ class AppController extends Controller
             $populated["$month-$year"][] = $day;
         }
 
-        $fullBaseUrl = Configure::read('App.fullBaseUrl');
-
         if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
+            $this->set($this->getLayoutVars());
             $this->set([
-                'headerVars' => [
-                    'categories' => $categories,
-                    'populatedDates' => $populatedDates
-                ],
                 'populated' => $populated,
-                'sidebarVars' => [
-                    'locations' => $this->Events->getUpcomingLocationsWithSlugs(),
-                    'upcomingTags' => $this->Tags->getUpcoming(),
-                    'upcomingEventsByCategory' => $this->Events->getAllUpcomingEventCounts()
-                ],
                 'unapprovedCount' => $this->Events->getUnapproved(),
-                'recentUsersCount' => $this->Users->getRecentUsersCount()
+                'recentUsersCount' => $this->Users->getRecentUsersCount(),
+                'getActive' => function ($controller, $action) {
+                    if ($this->request->getParam('controller') != $controller) {
+                        return null;
+                    }
+                    if ($this->request->getParam('action') != $action) {
+                        return null;
+                    }
+                    return 'active';
+                },
+                'fullBaseUrl' => Configure::read('App.fullBaseUrl')
             ]);
-            $this->set(compact('fullBaseUrl'));
         }
     }
 
@@ -346,5 +333,135 @@ class AppController extends Controller
         );
 
         return $events;
+    }
+
+    /**
+     * Returns variables used in the sidebar and header
+     *
+     * @return array
+     */
+    private function getLayoutVars()
+    {
+        $locations = $this->Events->getUpcomingLocationsWithSlugs();
+        $upcomingTags = $this->Tags->getUpcoming();
+        $upcomingEventsByCategory = $this->Events->getAllUpcomingEventCounts();
+
+        $categories = $this->getCategoriesForSidebar();
+        $populatedDates = $this->getPopulatedDates();
+        $dayLinks = $this->getDayLinksForHeader($populatedDates);
+
+        return [
+            'sidebarVars' => compact('locations', 'upcomingTags', 'upcomingEventsByCategory'),
+            'headerVars' => compact('categories', 'populatedDates', 'dayLinks')
+        ];
+    }
+
+    /**
+     * Returns an array of categories and extra information used to display them in the sidebar
+     *
+     * @return array
+     */
+    private function getCategoriesForSidebar()
+    {
+        $categories = $this->Categories->find('all', [
+            'order' => ['weight' => 'ASC']
+        ])->toArray();
+        foreach ($categories as &$category) {
+            $category['url'] = Router::url([
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'events',
+                'action' => 'category',
+                $category['slug']
+            ]);
+            $categoryId = $category['id'];
+            $category['upcomingEventsCount'] = $sidebarVars['upcomingEventsByCategory'][$categoryId] ?? 0;
+            $category['upcomingEventsTitle'] = sprintf(
+                '%s upcoming %s',
+                $category['upcomingEventsCount'],
+                __n('event', 'events', $category['upcomingEventsCount'])
+            );
+        }
+
+        return $categories;
+    }
+
+    /**
+     * Returns an array of dates that contain events
+     *
+     * @return array
+     */
+    private function getPopulatedDates()
+    {
+        $results = $this->Events->getFutureEvents();
+        $populatedDates = [];
+        foreach ($results as $result) {
+            if (!in_array($result, $populatedDates)) {
+                $populatedDates[] = $result;
+            }
+        }
+
+        return $populatedDates;
+    }
+
+    /**
+     * Returns a maximum of seven links to the soonest dates with upcoming events
+     *
+     * @param array $populatedDates Array of populated dates
+     * @return array
+     */
+    private function getDayLinksForHeader($populatedDates)
+    {
+        $dayLinks = [];
+        foreach ($populatedDates as $date) {
+            $dateStringYMD = $date[4] . '-' . $date[2] . '-' . $date[3];
+            if ($dateStringYMD == date('Y-m-d')) {
+                $dayLinks[] = [
+                    'label' => 'Today',
+                    'url' => Router::url([
+                        'plugin' => false,
+                        'prefix' => false,
+                        'controller' => 'events',
+                        'action' => 'today'
+                    ])
+                ];
+                continue;
+            }
+
+            if ($dateStringYMD == date('Y-m-d', strtotime('Tomorrow'))) {
+                $dayLinks[] = [
+                    'label' => 'Tomorrow',
+                    'url' => Router::url([
+                        'plugin' => false,
+                        'prefix' => false,
+                        'controller' => 'events',
+                        'action' => 'tomorrow'
+                    ])
+                ];
+                continue;
+            }
+            $dayLinks[] = [
+                'label' => sprintf(
+                    '%s, %s %s',
+                    $date[0],
+                    $date[1],
+                    $date[3]
+                ),
+                'url' => Router::url([
+                    'plugin' => false,
+                    'prefix' => false,
+                    'controller' => 'events',
+                    'action' => 'day',
+                    $date[2],
+                    $date[3],
+                    $date[4]
+                ])
+            ];
+            if (count($dayLinks) == 7) {
+                break;
+            }
+        }
+
+        return $dayLinks;
     }
 }

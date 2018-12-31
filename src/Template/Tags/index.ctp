@@ -118,7 +118,14 @@ use Cake\Utility\Text; ?>
                                     );
                                 ?>
                             <?php else: ?>
-                                <span title="No tags for <?= $directionAdjective ?> events beginning with <?= strtoupper($letter) ?>">
+                                <?php
+                                    $title = sprintf(
+                                        'No tags for %s events beginning with %s',
+                                        $directionAdjective,
+                                        strtoupper($letter)
+                                    );
+                                ?>
+                                <span title="<?= $title ?>">
                                      <?= strtoupper($letter) ?>
                                 </span>
                             <?php endif; ?>
@@ -142,11 +149,19 @@ use Cake\Utility\Text; ?>
                 [
                     'controller' => 'events',
                     'action' => 'tag',
-                    'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
+                    'slug' => sprintf(
+                        '%s_%s',
+                        $tag['id'],
+                        Text::slug($tag['name'])
+                    ),
                     'direction' => $direction
                 ],
                 [
-                    'title' => $tag['count'] . ' ' . __n('event', 'events', $tag['count']),
+                    'title' => sprintf(
+                        '%s %s',
+                        $tag['count'],
+                        __n('event', 'events', $tag['count'])
+                    ),
                     'style' => 'font-size: ' . $calculateFontSize($tag['count']) . '%'
                 ]
             ) ?>
@@ -164,7 +179,11 @@ use Cake\Utility\Text; ?>
                         [
                             'controller' => 'events',
                             'action' => 'tag',
-                            'slug' => $tag['id'] . '_' . Text::slug($tag['name']),
+                            'slug' => sprintf(
+                                '%s_%s',
+                                $tag['id'],
+                                Text::slug($tag['name'])
+                            ),
                             'direction' => $direction
                         ]
                     ) ?>
