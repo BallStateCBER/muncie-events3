@@ -59,7 +59,7 @@ $this->Js->buffer("setupSidebar();");
             <ul>
                 <?php foreach ($headerVars['categories'] as $category): ?>
                     <li>
-                        <a href="<?= Router::url(['controller' => 'events', 'action' => 'category', $category->slug]) ?>" class="with_icon">
+                        <a href="<?= Router::url(['plugin' => false, 'prefix' => false, 'controller' => 'events', 'action' => 'category', $category->slug]) ?>" class="with_icon">
                             <span class="category_name"><?php
                                 echo $category->name;
                             ?></span>
@@ -124,9 +124,10 @@ $this->Js->buffer("setupSidebar();");
             <?= $this->Html->link(
                 'See all',
                 [
+                    'plugin' => false,
+                    'prefix' => false,
                     'controller' => 'Tags',
-                    'action' => 'index',
-                    'plugin' => false
+                    'action' => 'index'
                 ],
                 ['class' => 'see_all'])
             ?>
@@ -148,7 +149,7 @@ $this->Js->buffer("setupSidebar();");
             Mailing List
         </h2>
         <p>
-            <?= $this->Html->link('Join the Mailing List', ['plugin' => false, 'controller' => 'mailing_list', 'action' => 'join']) ?>
+            <?= $this->Html->link('Join the Mailing List', ['plugin' => false, 'prefix' => false, 'controller' => 'mailing_list', 'action' => 'join']) ?>
             and get daily or weekly emails about all upcoming events or only the categories
             that you're interested in.
         </p>
@@ -161,7 +162,7 @@ $this->Js->buffer("setupSidebar();");
         <p>
             Join our event promotion network by displaying a free
             <strong>
-                <?= $this->Html->link('custom calendar widget', ['plugin' => false, 'controller' => 'widgets', 'action' => 'index']) ?>
+                <?= $this->Html->link('custom calendar widget', ['plugin' => false, 'prefix' => false, 'controller' => 'widgets', 'action' => 'index']) ?>
             </strong>
             on your website.
         </p>

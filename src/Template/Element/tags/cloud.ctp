@@ -41,6 +41,8 @@ use Cake\Utility\Text;
                             $tag_info['name'] .
                         '</li>',
                         [
+                            'plugin' => false,
+                            'prefix' => false,
                             'controller' => 'events',
                             'action' => 'tag',
                             'slug' => $tag_info['id'] . '_' . Text::slug($tag_info['name'])
