@@ -716,15 +716,25 @@ class EventsTable extends Table
      */
     public function getDaylightSavingOffsetPositive($date)
     {
-        $dst = '';
         if (date('I', strtotime($date)) == 1) {
-            $dst = ' + 4 hours';
+            return ' + 4 hours';
         }
         if (date('I', strtotime($date)) == 0) {
-            $dst = ' + 5 hours';
+            return ' + 5 hours';
         }
+    }
 
-        return $dst;
+    /**
+     * Returns a negative UTC offset for Muncie's timezone for the provided date
+     *
+     * @param string $date A strtotime() parsable date string
+     * @return string
+     */
+    public function getDaylightSavingOffsetNegative($date)
+    {
+        $offset = $this->getDaylightSavingOffsetPositive($date);
+
+        return str_replace('+', '-', $offset);
     }
 
     /**
@@ -930,25 +940,6 @@ class EventsTable extends Table
         }
 
         return $filters;
-    }
-
-    /**
-     * Returns a negative UTC offset for Muncie's timezone for the provided date
-     *
-     * @param string $date A strtotime() parsable date string
-     * @return string
-     */
-    public function getDaylightSavingOffsetNegative($date)
-    {
-        $dst = '';
-        if (date('I', strtotime($date)) == 1) {
-            $dst = ' - 4 hours';
-        }
-        if (date('I', strtotime($date)) == 0) {
-            $dst = ' - 5 hours';
-        }
-
-        return $dst;
     }
 
     /**
