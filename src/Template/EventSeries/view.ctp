@@ -49,7 +49,7 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
             <tbody>
                 <?php foreach ($events as $key => $event): ?>
                     <?php
-                        $dst = $this->Events->setDaylightSavings($event->start->format('Y-m-d'));
+                        $dst = $this->Events->getDaylightSavingOffsetNegative($event->start->format('Y-m-d'));
                     ?>
                     <tr>
                         <td>

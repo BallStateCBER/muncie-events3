@@ -56,7 +56,7 @@ use Cake\Routing\Router;
                 ]
             ); ?>
             <?php
-                $dst = $this->Events->getDaylightSavings($event->start->format('Y-m-d'));
+                $dst = $this->Events->getDaylightSavingOffsetPositive($event->start->format('Y-m-d'));
                 $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
 
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values

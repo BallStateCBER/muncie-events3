@@ -114,7 +114,7 @@ class EventsControllerTest extends ApplicationTest
             ->firstOrFail();
 
         $this->assertEquals(0, $event['published']);
-        $dst = $this->Events->getDaylightSavings(date('Y-m-d'));
+        $dst = $this->Events->getDaylightSavingOffsetPositive(date('Y-m-d'));
         $this->assertEquals(
             $event['start']->format('Y-m-d H:i:s'),
             date('Y-m-d H:i:s', strtotime("Today 00:00:00$dst"))

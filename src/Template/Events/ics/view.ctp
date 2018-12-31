@@ -6,7 +6,7 @@
 use App\Model\Table\EventsTable;
 
 $this->Events = new EventsTable();
-$dst = $this->Events->getDaylightSavings($event->start->format('Y-m-d'));
+$dst = $this->Events->getDaylightSavingOffsetPositive($event->start->format('Y-m-d'));
 
 $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
 $startTime = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);

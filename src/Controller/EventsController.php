@@ -187,7 +187,7 @@ class EventsController extends AppController
         }
         if ($this->request->getParam('action') == 'edit') {
             $today = $event->start->format('Y-m-d H:i:s');
-            $dst = $this->Events->setDaylightSavings($today);
+            $dst = $this->Events->getDaylightSavingOffsetNegative($today);
             $event->date = date('m/d/Y', strtotime($today . $dst));
             $start = date('h:i a', strtotime($event->start->format('h:i a') . $dst));
             $event->time_start = $start;
@@ -643,7 +643,7 @@ class EventsController extends AppController
         $event = $this->Events->get($eventId, [
             'contain' => ['EventSeries']
         ]);
-        $dst = $this->Events->setDaylightSavings($dateString);
+        $dst = $this->Events->getDaylightSavingOffsetNegative($dateString);
         $timeStart = date_format($event->start, 'H:i:s');
         $event->time_start = date('h:i a', strtotime($timeStart . $dst));
         $event->start = $dates;
