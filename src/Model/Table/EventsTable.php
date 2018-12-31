@@ -944,7 +944,7 @@ class EventsTable extends Table
     /**
      * setEasternTimes method
      *
-     * @param \Cake\Datasource\EntityInterface $event to convert
+     * @param Event $event to convert
      * @return \Cake\Datasource\EntityInterface
      */
     public function setEasternTimes($event)
