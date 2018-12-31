@@ -443,8 +443,10 @@ class EventsTable extends Table
      * Returns an array of no fewer than seven events within 128 weeks of $endDate if possible, or fewer than seven
      * events if no more could be found within 128 weeks of $endDate
      *
-     * @param string $nextStartDate The date or datetime string immediately before the earliest date of results if $options is empty, or the earliest date of the results if $options is not
-     * @param string $endDate The date or datettime string of the last day of results, or the day after the last day of results if $options is not empty
+     * @param string $nextStartDate The date or datetime string immediately before the earliest date of results if
+     *     $options is empty, or the earliest date of the results if $options is not
+     * @param string $endDate The date or datettime string of the last day of results, or the day after the last day
+     *     of results if $options is not empty
      * @param array $options An array of filter keys and values, such as 'location' => 'Location Name'
      * @return array $events
      */
