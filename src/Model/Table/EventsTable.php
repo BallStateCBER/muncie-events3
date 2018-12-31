@@ -719,9 +719,8 @@ class EventsTable extends Table
         if (date('I', strtotime($date)) == 1) {
             return ' + 4 hours';
         }
-        if (date('I', strtotime($date)) == 0) {
-            return ' + 5 hours';
-        }
+
+        return ' + 5 hours';
     }
 
     /**
