@@ -224,10 +224,9 @@ class AppController extends Controller
     }
 
     /**
-     * to index events
-     * function placed in AppController so as to be shared by all controllers
+     * Sets view variables needed to display an index of events
      *
-     * @param array|\Cake\ORM\ResultSet $events that need indexed
+     * @param array|\Cake\ORM\ResultSet $events Collection of events to display
      * @return void
      */
     public function indexEvents($events)
