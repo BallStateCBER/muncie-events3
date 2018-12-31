@@ -6,18 +6,11 @@
 ?>
 <?php if ($this->request->getSession()->read('Auth.User')): ?>
     <li class="nav-item">
-        <?php #if ($facebook_user):?>
-            <?php #echo $this->Facebook->disconnect([
-                #'redirect' => ['controller' => 'Users', 'action' => 'logout'],
-                #'label' => 'Logout'
-        #    ]);?>
-        <?php #else:?>
-            <?= $this->Html->link(
-                'Log out',
-                ['plugin' => false, 'prefix' => false, 'controller' => 'Users', 'action' => 'logout'],
-                ['class'=>'nav-link']
-            ) ?>
-        <?php #endif;?>
+        <?= $this->Html->link(
+            'Log out',
+            ['plugin' => false, 'prefix' => false, 'controller' => 'Users', 'action' => 'logout'],
+            ['class'=>'nav-link']
+        ) ?>
     </li>
     <li class="<?= $getActive('Users', 'account') ?> nav-item">
         <?= $this->Html->link(
