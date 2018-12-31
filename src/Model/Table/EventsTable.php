@@ -250,7 +250,7 @@ class EventsTable extends Table
      */
     public function getEventsOnDay($year, $month, $day, $filters = null)
     {
-        $dst = $this->getDaylightSavings(date('Y-m-d'));
+        $dst = $this->getDaylightSavingOffsetPositive(date('Y-m-d'));
         $today = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst"));
         $tomorrow = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst + 1 day"));
         $events = $this
@@ -310,11 +310,11 @@ class EventsTable extends Table
         }
 
         $params = ['Events.published' => 1];
-        $dst = $this->getDaylightSavings($nextStartDate);
+        $dst = $this->getDaylightSavingOffsetPositive($nextStartDate);
         $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
 
         $newEnd = date('Y-m-d H:i:s', $endDate);
-        $dst = $this->getDaylightSavings($newEnd);
+        $dst = $this->getDaylightSavingOffsetPositive($newEnd);
         $newEnd = date('Y-m-d H:i:s', strtotime($newEnd . $dst));
         $params[] = ['start <' => $newEnd];
 
@@ -709,12 +709,12 @@ class EventsTable extends Table
     }
 
     /**
-     * getDaylightSavings method
+     * Returns a positive UTC offset for Muncie's timezone for the provided date
      *
-     * @param string $date date
-     * @return string $dst
+     * @param string $date A strtotime() parsable date string
+     * @return string
      */
-    public function getDaylightSavings($date)
+    public function getDaylightSavingOffsetPositive($date)
     {
         $dst = '';
         if (date('I', strtotime($date)) == 1) {
@@ -844,7 +844,7 @@ class EventsTable extends Table
         $dates = [];
         foreach ($dateResults as $result) {
             if (isset($result['DISTINCT Events']['start'])) {
-                $dst = $this->setDaylightSavings($result['DISTINCT Events']['start']);
+                $dst = $this->getDaylightSavingOffsetNegative($result['DISTINCT Events']['start']);
                 $dates[] = date('Y-m-d', strtotime($result['DISTINCT Events']['start'] . $dst));
             }
         }
@@ -933,12 +933,12 @@ class EventsTable extends Table
     }
 
     /**
-     * getDaylightSavings method
+     * Returns a negative UTC offset for Muncie's timezone for the provided date
      *
-     * @param string $date date
-     * @return string $dst
+     * @param string $date A strtotime() parsable date string
+     * @return string
      */
-    public function setDaylightSavings($date)
+    public function getDaylightSavingOffsetNegative($date)
     {
         $dst = '';
         if (date('I', strtotime($date)) == 1) {
@@ -960,11 +960,11 @@ class EventsTable extends Table
     public function setEasternTimes($event)
     {
         $start = $event->start->format('Y-m-d H:i:s');
-        $dst = $this->setDaylightSavings($start);
+        $dst = $this->getDaylightSavingOffsetNegative($start);
         $event->start = new Time(date('Y-m-d H:i:s', strtotime($start . ' ' . $dst)));
         if ($event->end) {
             $end = $event->end->format('Y-m-d H:i:s');
-            $dst = $this->setDaylightSavings($end);
+            $dst = $this->getDaylightSavingOffsetNegative($end);
             $event->end = new Time(date('Y-m-d H:i:s', strtotime($end . ' ' . $dst)));
         }
 
@@ -981,7 +981,7 @@ class EventsTable extends Table
      */
     public function setEndUtc($date, $end, $start)
     {
-        $dst = $this->getDaylightSavings($date);
+        $dst = $this->getDaylightSavingOffsetPositive($date);
         $dateStr = $date . ' ' . $end['hour'] . ':' . $end['minute'] . ' ' . $end['meridian'] . $dst;
         $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
@@ -1001,7 +1001,7 @@ class EventsTable extends Table
      */
     public function setStartUtc($date, $start)
     {
-        $dst = $this->getDaylightSavings($date);
+        $dst = $this->getDaylightSavingOffsetPositive($date);
         $dateStr = $date . ' ' . $start['hour'] . ':' . $start['minute'] . ' ' . $start['meridian'] . $dst;
         $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
