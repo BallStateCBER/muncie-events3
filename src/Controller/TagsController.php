@@ -151,6 +151,10 @@ class TagsController extends AppController
             }
         }
 
-        $this->viewBuilder()->setLayout('blank');
+        $this->set([
+            '_serialize' => ['tags'],
+            'tags' => $tags
+        ]);
+        $this->viewBuilder()->setClassName('Json');
     }
 }
