@@ -298,20 +298,20 @@ class EventsTable extends Table
     /**
      * Retrieves events from the database within the specified dates and modified by $options
      *
-     * @param string $nextStartDate Earliest date for returned events (YYYY-MM-DD)
+     * @param string $startDate Earliest date for returned events (YYYY-MM-DD)
      * @param string $endDate Latest date for returned events (YYYY-MM-DD)
      * @param array $options Filters and other options
      * @return array
      */
-    public function getFilteredEvents($nextStartDate, $endDate, $options = [])
+    public function getFilteredEvents($startDate, $endDate, $options = [])
     {
         if (!$options) {
-            return $this->getRangeEvents($nextStartDate, $endDate);
+            return $this->getRangeEvents($startDate, $endDate);
         }
 
         $params = ['Events.published' => 1];
-        $dst = $this->getDaylightSavingOffsetPositive($nextStartDate);
-        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($nextStartDate . $dst))];
+        $dst = $this->getDaylightSavingOffsetPositive($startDate);
+        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($startDate . $dst))];
 
         $newEnd = date('Y-m-d H:i:s', $endDate);
         $dst = $this->getDaylightSavingOffsetPositive($newEnd);
@@ -418,25 +418,25 @@ class EventsTable extends Table
     }
 
     /**
-     * getRangeEvents method
+     * Returns all published events in the given range of dates
      *
-     * @param string $nextStartDate to begin
-     * @param string $endDate to end
-     * @return array $events
+     * @param string $nextStartDate Earliest date for returned events (YYYY-MM-DD)
+     * @param string $endDate Latest date for returned events (YYYY-MM-DD)
+     * @return array
      */
     public function getRangeEvents($nextStartDate, $endDate)
     {
-        $events = $this
+        return $this
             ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'ASC']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['start' => 'ASC']
             ])
-            ->where(['date >' => $nextStartDate])
-            ->andwhere(['date <=' => $endDate])
-            ->andWhere(["Events.published" => 1])
+            ->where([
+                'date >' => $nextStartDate,
+                'date <=' => $endDate,
+                'published' => 1
+            ])
             ->toArray();
-
-        return $events;
     }
 
     /**
