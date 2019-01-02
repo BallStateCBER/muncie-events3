@@ -309,14 +309,11 @@ class EventsTable extends Table
             return $this->getRangeEvents($startDate, $endDate);
         }
 
-        $params = ['Events.published' => 1];
-        $dst = $this->getDaylightSavingOffsetPositive($startDate);
-        $params[] = ['start >=' => date('Y-m-d H:i:s', strtotime($startDate . $dst))];
-
-        $newEnd = date('Y-m-d H:i:s', $endDate);
-        $dst = $this->getDaylightSavingOffsetPositive($newEnd);
-        $newEnd = date('Y-m-d H:i:s', strtotime($newEnd . $dst));
-        $params[] = ['start <' => $newEnd];
+        $params = [
+            'Events.published' => 1,
+            'Events.date >=' => $startDate,
+            'Events.date <=' => $endDate
+        ];
 
         foreach ($options as $param => $value) {
             if ($value != null) {
@@ -420,11 +417,11 @@ class EventsTable extends Table
     /**
      * Returns all published events in the given range of dates
      *
-     * @param string $nextStartDate Earliest date for returned events (YYYY-MM-DD)
+     * @param string $startDate Earliest date for returned events (YYYY-MM-DD)
      * @param string $endDate Latest date for returned events (YYYY-MM-DD)
      * @return array
      */
-    public function getRangeEvents($nextStartDate, $endDate)
+    public function getRangeEvents($startDate, $endDate)
     {
         return $this
             ->find('all', [
@@ -432,9 +429,9 @@ class EventsTable extends Table
                 'order' => ['start' => 'ASC']
             ])
             ->where([
-                'date >' => $nextStartDate,
-                'date <=' => $endDate,
-                'published' => 1
+                'Events.date >=' => $startDate,
+                'Events.date <=' => $endDate,
+                'Events.published' => 1
             ])
             ->toArray();
     }
