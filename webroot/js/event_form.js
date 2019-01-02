@@ -196,9 +196,6 @@ function setupLocationAutocomplete() {
 		},
 		delay: 0,
 		minLength: 1,
-		response: function() {
-			$('#tag_autosuggest_loading').hide();
-		},
 		focus: function() {
 			// prevent value inserted on focus
             return false;
