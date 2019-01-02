@@ -111,7 +111,7 @@ function setupTagManager() {
             }
         }).autocomplete({
             // '/0/0' includes unlisted and unselectable tags
-            source: '/tags/auto_complete/0/0',
+            source: '/tags/auto-complete/0/0',
             search: function() {
                 var term = extractLast(this.value);
             },
