@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\Http\Exception\InternalErrorException;
 use Cake\ORM\Entity;
+use Cake\ORM\TableRegistry;
 
 /**
  * Event Entity
@@ -88,7 +89,7 @@ class Event extends Entity
     }
 
     /**
-     * Sets the event to approved and published if $user (the user submitting the form) is an administrator
+     * Sets the event to approved if $user (the user submitting the form) is an administrator
      *
      * @param array $user The user submitting the form (not necessarily the original event author)
      * @return void
@@ -101,8 +102,57 @@ class Event extends Entity
                 throw new InternalErrorException('Cannot approve event. Administrator ID unknown.');
             }
             $this->approved_by = $user['id'];
+        }
+    }
+
+    /**
+     * Sets the event to approved and published if $user (the user submitting the form) is an administrator
+     *
+     * @param array $user The user submitting the form (not necessarily the original event author)
+     * @return void
+     * @throws InternalErrorException
+     */
+    public function autoPublish($user)
+    {
+        if ($this->userIsAutoPublishable($user)) {
             $this->published = true;
         }
+    }
+
+    /**
+     * Returns TRUE if the specified user should have their events automatically published
+     *
+     * @param array $user Array of user record info, empty for anonymous users
+     * @return bool
+     */
+    private function userIsAutoPublishable($user)
+    {
+        if (!isset($user['id'])) {
+            return false;
+        }
+
+        if (isset($user['role']) && $user['role'] == 'admin') {
+            true;
+        }
+
+        // Users who have submitted events that were published by admins have all subsequent events auto-published
+        return $this->userHasPublished($user['id']);
+    }
+
+    /**
+     * Returns TRUE if the user with the specified ID has any associated published events
+     *
+     * @param int $userId User ID
+     * @return bool
+     */
+    private function userHasPublished($userId)
+    {
+        $eventsTable = TableRegistry::getTableLocator()->get('Events');
+
+        return $eventsTable->exists([
+            'published' => true,
+            'user_id' => $userId
+        ]);
     }
 
     /**

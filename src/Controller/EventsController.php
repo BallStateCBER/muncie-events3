@@ -330,7 +330,8 @@ class EventsController extends AppController
          * @var EventSeries $series
          */
         $event = $this->Events->newEntity();
-        $userId = $this->Auth->user('id');
+        $user = $this->Auth->user();
+        $userId = $user['id'];
         $autoPublish = $this->Users->getAutoPublish($userId);
 
         // Prepare form
@@ -356,7 +357,8 @@ class EventsController extends AppController
                 $dates = explode(',', $this->request->getData('date'));
                 if (count($dates) < 2) {
                     $event = $this->Events->patchEntity($event, $data);
-                    $event->autoApprove($this->Auth->user());
+                    $event->autoApprove($user);
+                    $event->autoPublish($user);
                     $event->user_id = $userId;
                     $this->setCustomTags($event);
                     $data['date'] = $dates[0];
@@ -393,7 +395,8 @@ class EventsController extends AppController
                     $error = false;
                     foreach ($dates as $date) {
                         $event = $this->Events->newEntity($data);
-                        $event->autoApprove($this->Auth->user());
+                        $event->autoApprove($user);
+                        $event->autoPublish($user);
                         $this->setCustomTags($event);
                         $data['date'] = $date;
                         $event->setDatesAndTimes($data);
@@ -587,7 +590,9 @@ class EventsController extends AppController
             }
 
             $event = $this->Events->patchEntity($event, $data);
-            $event->autoApprove($this->Auth->user());
+            $user = $this->Auth->user();
+            $event->autoApprove($user);
+            $event->autoPublish($user);
             $this->setCustomTags($event);
             $event->setDatesAndTimes($data);
             $this->setImageData($event);
