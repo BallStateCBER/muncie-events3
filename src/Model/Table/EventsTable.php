@@ -296,12 +296,12 @@ class EventsTable extends Table
     }
 
     /**
-     * getFilteredEvents method
+     * Retrieves events from the database within the specified dates and modified by $options
      *
-     * @param string $nextStartDate to begin
-     * @param string $endDate to end
-     * @param array $options for filtering events
-     * @return array $events
+     * @param string $nextStartDate Earliest date for returned events (YYYY-MM-DD)
+     * @param string $endDate Latest date for returned events (YYYY-MM-DD)
+     * @param array $options Filters and other options
+     * @return array
      */
     public function getFilteredEvents($nextStartDate, $endDate, $options = [])
     {
