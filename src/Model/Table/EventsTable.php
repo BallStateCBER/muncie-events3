@@ -2,7 +2,10 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Http\Exception\InternalErrorException;
 use Cake\I18n\Time;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -305,94 +308,48 @@ class EventsTable extends Table
      */
     public function getFilteredEvents($startDate, $endDate, $options = [])
     {
-        if (!$options) {
-            return $this->getRangeEvents($startDate, $endDate);
+        $query = $this
+            ->find('all')
+            ->contain([
+                'Users',
+                'Categories',
+                'EventSeries',
+                'Images',
+                'Tags'
+            ])
+            ->order([
+                'date' => 'ASC',
+                'start' => 'ASC'
+            ])
+            ->where([
+                'Events.date >=' => $startDate,
+                'Events.date <=' => $endDate,
+                'Events.published' => 1
+            ]);
+
+        if (isset($options['category_id'])) {
+            $query->find('inCategory', [
+                'category_id' => $options['category_id']
+            ]);
         }
 
-        $params = [
-            'Events.published' => 1,
-            'Events.date >=' => $startDate,
-            'Events.date <=' => $endDate
-        ];
-
-        foreach ($options as $param => $value) {
-            if ($value != null) {
-                $categories = '';
-                if ($param == 'category' || $param == 'category_id') {
-                    $cats = explode(',', $value);
-                    foreach ($cats as $cat) {
-                        $categories .= "category_id = $cat OR ";
-                    }
-                    $categories = substr($categories, 0, -4);
-                    $categories = '(' . $categories;
-                    $categories .= ')';
-                    $params[] = $categories;
-                }
-
-                if ($param == 'location') {
-                    $params[] = ['location' => $value];
-                }
-
-                if ($param == 'tags_included') {
-                    $tagsIncluded = '';
-                    $tags = explode(',', $value);
-                    foreach ($tags as $tagName) {
-                        $tag = $this->Tags->find()
-                            ->where(['name' => $tagName])
-                            ->first();
-
-                        $eventTags = $this->EventsTags->find()
-                            ->where(['tag_id' => $tag['id']]);
-
-                        foreach ($eventTags as $eventTag) {
-                            if (!$eventTag) {
-                                continue;
-                            }
-                            $tagsIncluded .= "Events.id = $eventTag->event_id OR ";
-                        }
-                    }
-                    $tagsIncluded = substr($tagsIncluded, 0, -4);
-                    $tagsIncluded = '(' . $tagsIncluded;
-                    $tagsIncluded .= ')';
-                    if ($tagsIncluded == '()') {
-                        continue;
-                    }
-
-                    $params[] = $tagsIncluded;
-                }
-
-                if ($param == 'tags_excluded') {
-                    $tagsExcluded = '';
-                    $tags = explode(',', $value);
-                    foreach ($tags as $tagName) {
-                        $tag = $this->Tags->find()
-                            ->where(['name' => $tagName])
-                            ->first();
-
-                        $eventTags = $this->EventsTags->find()
-                            ->where(['tag_id' => $tag['id']]);
-
-                        foreach ($eventTags as $eventTag) {
-                            $tagsExcluded .= "Events.id != $eventTag->event_id AND ";
-                        }
-                    }
-                    $tagsExcluded = substr($tagsExcluded, 0, -4);
-                    $tagsExcluded = '(' . $tagsExcluded;
-                    $tagsExcluded .= ')';
-                    if ($tagsExcluded == '()') {
-                        continue;
-                    }
-
-                    $params[] = $tagsExcluded;
-                }
-            }
+        if (isset($options['location'])) {
+            $query->where(['location' => $options['location']]);
         }
-        $events = $this->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'conditions' => $params
-        ])->order(['start' => 'ASC'])->toArray();
 
-        return $events;
+        if (isset($options['tags_included'])) {
+            $query->find('withTagsByName', [
+                'tag_names' => $options['tags_included']
+            ]);
+        }
+
+        if (isset($options['tags_excluded'])) {
+            $query->find('withoutTagsByName', [
+                'tag_names' => $options['tags_excluded']
+            ]);
+        }
+
+        return $query->toArray();
     }
 
     /**
@@ -412,28 +369,6 @@ class EventsTable extends Table
             ->toArray();
 
         return $events;
-    }
-
-    /**
-     * Returns all published events in the given range of dates
-     *
-     * @param string $startDate Earliest date for returned events (YYYY-MM-DD)
-     * @param string $endDate Latest date for returned events (YYYY-MM-DD)
-     * @return array
-     */
-    public function getRangeEvents($startDate, $endDate)
-    {
-        return $this
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => 'ASC']
-            ])
-            ->where([
-                'Events.date >=' => $startDate,
-                'Events.date <=' => $endDate,
-                'Events.published' => 1
-            ])
-            ->toArray();
     }
 
     /**
@@ -995,5 +930,71 @@ class EventsTable extends Table
         $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
 
         return $retval;
+    }
+
+    /**
+     * Limits a query to only events matching the specified category (or categories)
+     *
+     * @param Query $query Query object
+     * @param array $options Array including 'category_id' key
+     * @return Query
+     * @throws InternalErrorException
+     */
+    public function findInCategory(Query $query, array $options)
+    {
+        if (!isset($options['category_id'])) {
+            throw new InternalErrorException('category_id parameter is missing');
+        }
+        $categoryIds = is_array($options['category_id']) ? $options['category_id'] : [$options['category_id']];
+
+        return $query->where(function (QueryExpression $exp) use ($categoryIds) {
+            return $exp->in('category_id', $categoryIds);
+        });
+    }
+
+    /**
+     * Modifies a query to return only events that match the tags specified by name
+     *
+     * @param Query $query Query object
+     * @param array $options Options array, necessarily containing a 'tag_names' key
+     * @return Query
+     * @throws InternalErrorException
+     */
+    public function findWithTagsByName(Query $query, array $options)
+    {
+        if (!isset($options['tag_names'])) {
+            throw new InternalErrorException('tag_names parameter is missing');
+        }
+
+        $tagNames = $options['tag_names'];
+
+        return $query->matching('Tags', function (Query $q) use ($tagNames) {
+            return $q->where(function (QueryExpression $exp) use ($tagNames) {
+                return $exp->in('Tags.name', $tagNames);
+            });
+        });
+    }
+
+    /**
+     * Modifies a query to return only events that do NOT match the tags specified by name
+     *
+     * @param Query $query Query object
+     * @param array $options Options array, necessarily containing a 'tag_names' key
+     * @return Query
+     * @throws InternalErrorException
+     */
+    public function findWithoutTagsByName(Query $query, array $options)
+    {
+        if (!isset($options['tag_names'])) {
+            throw new InternalErrorException('tag_names parameter is missing');
+        }
+
+        $tagNames = $options['tag_names'];
+
+        return $query->notMatching('Tags', function (Query $q) use ($tagNames) {
+            return $q->where(function (QueryExpression $exp) use ($tagNames) {
+                return $exp->in('Tags.name', $tagNames);
+            });
+        });
     }
 }
