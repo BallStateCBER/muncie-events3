@@ -110,8 +110,18 @@ function setupTagManager() {
                 event.preventDefault();
             }
         }).autocomplete({
-            // '/0/0' includes unlisted and unselectable tags
-            source: '/tags/auto-complete/0/0',
+            source: function(request, response) {
+                $.ajax({
+                    url: '/tags/auto-complete/0/0', // '/0/0' includes unlisted and unselectable tags
+                    dataType: 'json',
+                    data: {
+                        term: extractLast(request.term)
+                    },
+                    success: function( data ) {
+                        response(data.tags);
+                    }
+                });
+            },
             search: function() {
                 var term = extractLast(this.value);
             },

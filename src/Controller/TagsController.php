@@ -135,19 +135,11 @@ class TagsController extends AppController
                     $results = $results->andWhere(['id !=' => $tag]);
                 }
             }
-            $x = 1;
             foreach ($results as $result) {
                 $tags[$result->id] = [
                     'label' => $result->name,
                     'value' => $result->id
                 ];
-
-                $tag = [
-                    'label' => $result->name,
-                    'value' => $result->id
-                ];
-                $this->set([$x => $tag]);
-                $x = $x + 1;
             }
         }
 

@@ -205,9 +205,16 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/auto-complete', {
-                    term: extractLast(request.term)
-                }, response);
+                $.ajax({
+                    url: '/tags/auto-complete',
+                    dataType: 'json',
+                    data: {
+                        term: extractLast(request.term)
+                    },
+                    success: function( data ) {
+                        response(data.tags);
+                    }
+                });
             },
             delay: 0,
             search: function() {
@@ -247,9 +254,16 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.getJSON('/tags/auto-complete', {
-                    term: extractLast(request.term)
-                }, response);
+                $.ajax({
+                    url: '/tags/auto-complete',
+                    dataType: 'json',
+                    data: {
+                        term: extractLast(request.term)
+                    },
+                    success: function( data ) {
+                        response(data.tags);
+                    }
+                });
             },
             delay: 0,
             search: function() {
