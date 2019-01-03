@@ -31,7 +31,7 @@ class RemoveTimeStartAndEnd extends AbstractMigration
         $table = $this->table('events');
         $table
             ->addColumn('time_start', 'time', ['after' => 'date', 'default' => '00:00:00'])
-            ->addColumn('time_end', 'time', ['after' => 'time_start', 'default' => '00:00:00'])
+            ->addColumn('time_end', 'time', ['after' => 'time_start', 'default' => '00:00:00', 'null' => true])
             ->save();
 
         $stmt = $this->query("SELECT * FROM events");
