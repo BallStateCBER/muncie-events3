@@ -1,5 +1,7 @@
 /*jshint loopfunc:true */
 var TagManager = {
+    tagAutoSuggestionRequest: null,
+
     /**
      * @param data An array of tag objects
      * @param container $('#container_id')
@@ -205,7 +207,11 @@ var TagManager = {
             }
         }).autocomplete({
             source: function(request, response) {
-                $.ajax({
+                if (TagManager.tagAutoSuggestionRequest) {
+                    TagManager.tagAutoSuggestionRequest.abort();
+                }
+
+                TagManager.tagAutoSuggestionRequest = $.ajax({
                     url: '/tags/auto-complete',
                     dataType: 'json',
                     data: {
@@ -226,6 +232,7 @@ var TagManager = {
             },
             response: function() {
                 $(selector).siblings('img.loading').hide();
+                TagManager.tagAutoSuggestionRequest = null;
             },
             focus: function() {
                 return false;
