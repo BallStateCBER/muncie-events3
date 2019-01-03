@@ -123,15 +123,6 @@ class AppController extends Controller
                 'blackHoleCallback' => 'forceSSL',
                 'validatePost' => false
             ]);
-            /*if (!in_array($this->request->getParam('action'), $this->autoComplete)) {
-                $this->loadComponent('AkkaFacebook.Graph', [
-                    'app_id' => '496726620385625',
-                    'app_secret' => '8c2bca1961dbf8c8bb92484d9d2dd318',
-                    'app_scope' => 'email,public_profile', // https://developers.facebook.com/docs/facebook-login/permissions/v2.4
-                    'redirect_url' => Router::url(['controller' => 'Users', 'action' => 'login'], true), // This should be enabled by default
-                    'post_login_redirect' => '/', //ie. Router::url(['controller' => 'Users', 'action' => 'account'], TRUE)
-                ]);
-            }*/
         }
 
         $this->loadModel('Categories');
