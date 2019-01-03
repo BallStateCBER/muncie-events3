@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use App\Model\Entity\Event;
 use App\Model\Entity\User;
 use Cake\Controller\Component\AuthComponent;
+use Cake\Database\Expression\QueryExpression;
 
 /**
  * Events Controller
@@ -99,7 +100,9 @@ class EventsController extends AppController
             ])
             ->where([
                 'OR' => [
-                    ['Events.approved_by' => null],
+                    function (QueryExpression $exp) {
+                        return $exp->isNull('Events.approved_by');
+                    },
                     ['Events.published' => '0']
                 ]
             ])
