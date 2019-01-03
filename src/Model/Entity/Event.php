@@ -19,8 +19,8 @@ use Cake\ORM\TableRegistry;
  * @property int $category_id
  * @property int|null $series_id
  * @property \Cake\I18n\FrozenDate $date
- * @property \Cake\I18n\FrozenTime $start
- * @property \Cake\I18n\FrozenTime|null $end
+ * @property \Cake\I18n\FrozenTime $time_start
+ * @property \Cake\I18n\FrozenTime|null $time_end
  * @property string $age_restriction
  * @property string $cost
  * @property string $source
