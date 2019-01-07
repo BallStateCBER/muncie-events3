@@ -213,7 +213,6 @@ class UsersController extends AppController
                 return null;
             }
             $user = $this->Users->patchEntity($user, $this->request->getData());
-            $user['email'] = strtolower($user['email']);
 
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Success! You have been registered.'));

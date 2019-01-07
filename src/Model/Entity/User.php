@@ -54,4 +54,15 @@ class User extends Entity
 
         return (new DefaultPasswordHasher)->hash($password);
     }
+
+    /**
+     * Ensures that email addresses are always in lowercase
+     *
+     * @param string $email Email address
+     * @return string
+     */
+    protected function _getEmail($email)
+    {
+        return strtolower($email);
+    }
 }
