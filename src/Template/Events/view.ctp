@@ -31,9 +31,9 @@ use Cake\Utility\Text;
                 <td>
                     <?= $this->Html->link(
                        $event->location, [
-                           'controller' => 'events',
+                           'controller' => 'Events',
                            'action' => 'location',
-                           $event->location
+                           $event->location_slug
                        ]
                     ); ?>
                     <?php if ($event->location_details): ?>
