@@ -115,7 +115,7 @@ class UsersController extends AppController
     }
 
     /**
-     * view for users
+     * A user's profile page, listing their submitted events
      *
      * @param int|null $id of the user
      * @return void
@@ -128,14 +128,17 @@ class UsersController extends AppController
 
         $eventCount = $this->Events
             ->find('all', [
-            'conditions' => ['user_id' => $id]
+                'conditions' => ['user_id' => $id]
             ])
             ->count();
 
         $events = $this->Events
             ->find('all', [
-            'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'DESC']
+                'contain' => ['Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => [
+                    'date' => 'DESC',
+                    'time_start' => 'DESC'
+                ]
             ])
             ->where([
                 'Events.user_id =' => $id

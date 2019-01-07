@@ -217,8 +217,8 @@ class MailingListTableTest extends TestCase
         $this->CategoriesMailingList->save($link);
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['start >=' => date('Y-m-d H:i:s')])
-            ->andWhere(['start <=' => date('Y-m-d H:i:s', strtotime('+1 week'))])
+            ->where(['date >=' => date('Y-m-d')])
+            ->andWhere(['date <=' => date('Y-m-d', strtotime('+1 week'))])
             ->toArray();
         $events = $this->MailingList->filterEvents($mailingListWeekly, $events);
         foreach ($events as $event) {
@@ -299,15 +299,11 @@ class MailingListTableTest extends TestCase
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['start =' => date('Y-m-d H:i:s')])
+            ->where(['date =' => date('Y-m-d')])
             ->toArray();
         $sendDaily = $this->MailingList->sendDaily($mailingListDaily, $events);
-        if (!$events) {
-            $this->assertEquals($sendDaily[0], false);
-        }
-        if ($events) {
-            $this->assertEquals($sendDaily[0], true);
-        }
+        $this->assertEquals($sendDaily[0], !empty($events));
+
         $this->MailingList->delete($mailingListDaily);
     }
 
@@ -323,8 +319,8 @@ class MailingListTableTest extends TestCase
             ->first();
         $events = $this->Events->find()
             ->contain(['Categories', 'EventSeries', 'Images', 'Tags', 'Users'])
-            ->where(['start >=' => date('Y-m-d H:i:s')])
-            ->andWhere(['start <=' => date('Y-m-d H:i:s', strtotime('+1 week'))])
+            ->where(['date >=' => date('Y-m-d')])
+            ->andWhere(['date <=' => date('Y-m-d', strtotime('+1 week'))])
             ->toArray();
         $sendWeekly = $this->MailingList->sendWeekly($mailingListWeekly, $events);
         $this->assertEquals($sendWeekly[0], true);

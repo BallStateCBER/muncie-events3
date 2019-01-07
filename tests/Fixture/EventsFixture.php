@@ -30,8 +30,8 @@ class EventsFixture extends TestFixture
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 23:59:59')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 23:59:59'))
+                'time_start' => date('H:i:s', strtotime('Today 23:59:59')),
+                'time_end' => date('H:i:s', strtotime('Today 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -47,8 +47,8 @@ class EventsFixture extends TestFixture
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('+1 day 23:59:59')),
-                'end' => date('Y-m-d H:i:s', strtotime('+1 day 23:59:59'))
+                'time_start' => date('H:i:s', strtotime('+1 day 23:59:59')),
+                'time_end' => date('H:i:s', strtotime('+1 day 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Series',
@@ -64,8 +64,8 @@ class EventsFixture extends TestFixture
                 'approved_by' => null,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('+1 week 23:59:59')),
-                'end' => date('Y-m-d H:i:s', strtotime('+1 week 23:59:59'))
+                'time_start' => date('H:i:s', strtotime('+1 week 23:59:59')),
+                'time_end' => date('H:i:s', strtotime('+1 week 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event Regular',
@@ -81,8 +81,8 @@ class EventsFixture extends TestFixture
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('Today 23:59:59')),
-                'end' => date('Y-m-d H:i:s', strtotime('Today 23:59:59'))
+                'time_start' => date('H:i:s', strtotime('Today 23:59:59')),
+                'time_end' => date('H:i:s', strtotime('Today 23:59:59'))
             ],
             [
                 'title' => 'Placeholder Event From Long Ago',
@@ -98,8 +98,8 @@ class EventsFixture extends TestFixture
                 'approved_by' => 1,
                 'created' => date('Y-m-d', strtotime('Today')),
                 'modified' => date('Y-m-d', strtotime('Today')),
-                'start' => date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59')),
-                'end' => date('Y-m-d H:i:s', strtotime('-2 weeks 23:59:59'))
+                'time_start' => date('H:i:s', strtotime('-2 weeks 23:59:59')),
+                'time_end' => date('H:i:s', strtotime('-2 weeks 23:59:59'))
             ]
         ];
     }
@@ -127,8 +127,8 @@ class EventsFixture extends TestFixture
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'approved_by' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
-        'start' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'end' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'time_start' => ['type' => 'time', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'time_end' => ['type' => 'time', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_indexes' => [
             'person_id' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
             'category_id' => ['type' => 'index', 'columns' => ['category_id'], 'length' => []],

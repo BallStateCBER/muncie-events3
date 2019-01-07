@@ -243,33 +243,29 @@ class EventsTable extends Table
     }
 
     /**
-     * getEventsOnDay method
+     * Returns an array of published events taking place on the specified day
      *
-     * @param string $year of Events
-     * @param string $month of Events
-     * @param string $day of Events
-     * @param array $filters of Events
-     * @return Event[] $events
+     * @param string $year A four-digit year
+     * @param string $month A two-digit month
+     * @param string $day A two-digit day
+     * @param array $conditions Additional conditions to apply to query
+     * @return Event[]
      */
-    public function getEventsOnDay($year, $month, $day, $filters = null)
+    public function getEventsOnDay($year, $month, $day, $conditions = [])
     {
-        $dst = $this->getDaylightSavingOffsetPositive(date('Y-m-d'));
-        $today = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst"));
-        $tomorrow = date('Y-m-d H:i:s', strtotime("$year-$month-$day $dst + 1 day"));
-        $events = $this
+        $defaultConditions = [
+            'date' => "$year-$month-$day",
+            'Events.published' => 1
+        ];
+        $conditions = array_merge($defaultConditions, $conditions);
+
+        return $this
             ->find('all', [
-            'conditions' => [
-                'start >' => $today,
-                'start <' => $tomorrow,
-                'Events.published' => 1,
-                $filters
-            ],
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'ASC']
+                'conditions' => $conditions,
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => ['time_start' => 'ASC']
             ])
             ->toArray();
-
-        return $events;
     }
 
     /**
@@ -319,7 +315,7 @@ class EventsTable extends Table
             ])
             ->order([
                 'date' => 'ASC',
-                'start' => 'ASC'
+                'time_start' => 'ASC'
             ])
             ->where([
                 'Events.date >=' => $startDate,
@@ -362,8 +358,11 @@ class EventsTable extends Table
     {
         $events = $this
             ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'ASC']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => [
+                    'date' => 'ASC',
+                    'time_start' => 'ASC'
+                ]
             ])
             ->where(['date >=' => date('Y-m-d', strtotime($yearMonth))])
             ->toArray();
@@ -399,16 +398,19 @@ class EventsTable extends Table
     }
 
     /**
-     * getUpcomingEvents method
+     * Returns events happening on and after today
      *
-     * @return array $events
+     * @return array
      */
     public function getUpcomingEvents()
     {
         $events = $this
             ->find('all', [
-            'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-            'order' => ['start' => 'ASC']
+                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
+                'order' => [
+                    'date' => 'ASC',
+                    'time_start' => 'ASC'
+                ]
             ])
             ->where(['date >=' => date('Y-m-d')])
             ->toArray();
@@ -494,7 +496,7 @@ class EventsTable extends Table
         $locations
             ->select(['location'])
             ->where(['date >=' => date('Y-m-d')])
-            ->order(['start' => 'ASC'])
+            ->order(['date' => 'ASC'])
             ->group(['location'])
             ->toArray();
         $retval = [];
@@ -679,7 +681,7 @@ class EventsTable extends Table
     {
         $results = $this->find()
             ->select('id')
-            ->where(['Events.start <' => date('Y-m-d H:i:s')])
+            ->where(['Events.time_start <' => date('H:i:s')])
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
@@ -698,7 +700,7 @@ class EventsTable extends Table
     {
         $results = $this->find()
             ->select('id')
-            ->where(['Events.start >=' => date('Y-m-d H:i:s')])
+            ->where(['Events.time_start >=' => date('H:i:s')])
             ->toArray();
         $retval = [];
         foreach ($results as $result) {
@@ -711,22 +713,24 @@ class EventsTable extends Table
     /**
      * getFutureEvents method
      *
-     * @return array $evDates
+     * @return array
      */
-    public function getFutureEvents()
+    public function getFuturePopulatedDates()
     {
         $results = $this->find()
-            ->select('Events.start')
-            ->distinct('Events.start')
-            ->where(['Events.start >=' => date('Y-m-d H:i:s')])
+            ->select('Events.date')
+            ->distinct('Events.date')
+            ->where(['Events.date >=' => date('H:i:s')])
             ->toArray();
-        $events = [];
         $evDates = [];
         foreach ($results as $result) {
-            $events[] = $result->start;
-        }
-        foreach ($events as $event) {
-            $evDates[] = [$event->format('l'), $event->format('M'), $event->format('m'), $event->format('d'), $event->format('Y')];
+            $evDates[] = [
+                $result->time_start->format('l'),
+                $result->time_start->format('M'),
+                $result->time_start->format('m'),
+                $result->time_start->format('d'),
+                $result->time_start->format('Y')
+            ];
         }
 
         return $evDates;
@@ -764,18 +768,17 @@ class EventsTable extends Table
     {
         $findParams = [
             'conditions' => ['published' => 1],
-            'fields' => ['DISTINCT Events.start'],
-            'contain' => [],
-            'order' => ['start ASC']
+            'fields' => ['DISTINCT Events.date'],
+            'order' => ['Events.date ASC']
         ];
 
         // Apply optional month/year limits
         if ($month && $year) {
             $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-            $findParams['conditions']['Events.start LIKE'] = "$year-$month-%";
+            $findParams['conditions']['Events.time_start LIKE'] = "$year-$month-%";
             $findParams['limit'] = 31;
         } elseif ($year) {
-            $findParams['conditions']['Events.start LIKE'] = "$year-%";
+            $findParams['conditions']['Events.time_start LIKE'] = "$year-%";
         }
 
         // Apply optional filters
@@ -786,10 +789,7 @@ class EventsTable extends Table
         $dateResults = $this->find('all', $findParams)->toArray();
         $dates = [];
         foreach ($dateResults as $result) {
-            if (isset($result['DISTINCT Events']['start'])) {
-                $dst = $this->getDaylightSavingOffsetNegative($result['DISTINCT Events']['start']);
-                $dates[] = date('Y-m-d', strtotime($result['DISTINCT Events']['start'] . $dst));
-            }
+            $dates[] = date('Y-m-d', strtotime($result['DISTINCT Events']['date']));
         }
 
         return $dates;
@@ -873,63 +873,6 @@ class EventsTable extends Table
         }
 
         return $filters;
-    }
-
-    /**
-     * setEasternTimes method
-     *
-     * @param Event $event to convert
-     * @return \Cake\Datasource\EntityInterface
-     */
-    public function setEasternTimes($event)
-    {
-        $start = $event->start->format('Y-m-d H:i:s');
-        $dst = $this->getDaylightSavingOffsetNegative($start);
-        $event->start = new Time(date('Y-m-d H:i:s', strtotime($start . ' ' . $dst)));
-        if ($event->end) {
-            $end = $event->end->format('Y-m-d H:i:s');
-            $dst = $this->getDaylightSavingOffsetNegative($end);
-            $event->end = new Time(date('Y-m-d H:i:s', strtotime($end . ' ' . $dst)));
-        }
-
-        return $event;
-    }
-
-    /**
-     * setEndUtc method
-     *
-     * @param string $date to set
-     * @param string $end to set
-     * @param string $start to compare
-     * @return string $retval
-     */
-    public function setEndUtc($date, $end, $start)
-    {
-        $dst = $this->getDaylightSavingOffsetPositive($date);
-        $dateStr = $date . ' ' . $end['hour'] . ':' . $end['minute'] . ' ' . $end['meridian'] . $dst;
-        $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
-
-        if ($end < $start) {
-            $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr . "+1 day")));
-        }
-
-        return $retval;
-    }
-
-    /**
-     * setStartUtc method
-     *
-     * @param string $date to set
-     * @param array $start to set
-     * @return string $retval
-     */
-    public function setStartUtc($date, $start)
-    {
-        $dst = $this->getDaylightSavingOffsetPositive($date);
-        $dateStr = $date . ' ' . $start['hour'] . ':' . $start['minute'] . ' ' . $start['meridian'] . $dst;
-        $retval = new Time(date('Y-m-d H:i:s', strtotime($dateStr)));
-
-        return $retval;
     }
 
     /**

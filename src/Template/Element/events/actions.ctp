@@ -29,7 +29,7 @@ use Cake\Routing\Router;
     <div class="export_options_container">
         <?php $alt = 'Export to another calendar application';
             echo $this->Html->link(
-            $this->Html->image('/img/icons/calendar--arrow.png').'Export',
+            $this->Html->image('/img/icons/calendar--arrow.png') . 'Export',
             "#" . $event['id'] . "_options",
             [
                 'escape' => false,
@@ -38,9 +38,9 @@ use Cake\Routing\Router;
                 'id' => 'export_event_'.$event['id'],
                 'class' => 'export_options_toggler',
                 'aria-expanded' => 'false',
-                'aria-controls' => $event['id'].'_options',
+                'aria-controls' => $event['id'] . '_options',
                 'data-toggle' => 'collapse',
-                'data-target' => '#'.$event['id'].'_options'
+                'data-target' => '#'.$event['id'] . '_options'
             ]
         ); ?>
         <div class="export_options collapse" id="<?= $event['id'] ?>_options">
@@ -56,18 +56,18 @@ use Cake\Routing\Router;
                 ]
             ); ?>
             <?php
-                $dst = $this->Events->getDaylightSavingOffsetPositive($event->start->format('Y-m-d'));
-                $date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
+                $dst = $this->Events->getDaylightSavingOffsetPositive($event->date->format('Y-m-d'));
+                $date = strtotime($event->time_start->i18nFormat('yyyyMMddHHmmss') . $dst);
 
                 // Determine UTC "YYYYMMDDTHHMMSS" start/end values
-                $start = date('Ymd', $date).'T'.date('His', $date).'Z';
+                $start = date('Ymd', $date) . 'T'.date('His', $date) . 'Z';
 
                 $endStamp = $date;
-                if ($event->end) {
-                    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
+                if ($event->time_end) {
+                    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss') . $dst);
                     $endStamp = $endTime;
                 }
-                $end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';
+                $end = date('Ymd', $date) . 'T' . date('His', $endStamp) . 'Z';
 
                 // Clean up and truncate description
                 $description = $event['description'];
@@ -95,13 +95,13 @@ use Cake\Routing\Router;
                 if ($event['location_details']) {
                     $location .= ', '.$event['location_details'];
                 }
-                $location .= ' ('.$address.')';
+                $location .= ' (' . $address . ')';
 
                 $google_cal_url = 'http://www.google.com/calendar/event?action=TEMPLATE';
-                $google_cal_url .= '&text='.urlencode($event['title']);
-                $google_cal_url .= '&dates='.$start.'/'.$end;
-                $google_cal_url .= '&details='.urlencode($description);
-                $google_cal_url .= '&location='.urlencode($location);
+                $google_cal_url .= '&text=' . urlencode($event['title']);
+                $google_cal_url .= '&dates=' . $start . '/' . $end;
+                $google_cal_url .= '&details=' . urlencode($description);
+                $google_cal_url .= '&location=' . urlencode($location);
                 $google_cal_url .= '&trp=false';
                 $google_cal_url .= '&sprop=Muncie%20Events';
                 $google_cal_url .= '&sprop=name:http%3A%2F%2Fmuncieevents.com';
@@ -109,29 +109,29 @@ use Cake\Routing\Router;
                 echo $this->Html->link(
                     'Google',
                     $google_cal_url,
-                    [
-                        'title' => 'Add to Google Calendar'
-                    ]
+                    ['title' => 'Add to Google Calendar']
                 );
             ?>
             <?php echo $this->Html->link(
                 'Outlook',
                 [
-                    'controller' => 'events',
+                    'plugin' => false,
+                    'prefix' => false,
+                    'controller' => 'Events',
                     'action' => 'ics',
                     $event['id']
                 ],
-                [
-                    'title' => 'Add to Microsoft Outlook'
-                ]
+                ['title' => 'Add to Microsoft Outlook']
             ); ?>
         </div>
     </div>
     <?php if ($userRole == 'admin' && !$event['approved_by']): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/tick.png', ['alt' => 'Approve this event']).'Approve',
+            $this->Html->image('/img/icons/tick.png', ['alt' => 'Approve this event']) . 'Approve',
             [
-                'controller' => 'events',
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Events',
                 'action' => 'approve',
                 'id' => $event['id']
             ],
@@ -140,24 +140,28 @@ use Cake\Routing\Router;
     <?php endif; ?>
     <?php if ($canEdit): ?>
         <?php echo $this->Html->link(
-            $this->Html->image('/img/icons/pencil.png', ['alt' => 'Edit this event']).'Edit',
+            $this->Html->image('/img/icons/pencil.png', ['alt' => 'Edit this event']) . 'Edit',
             [
-                'controller' => 'events',
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Events',
                 'action' => 'edit',
                 'id' => $event['id']
             ],
             ['escape' => false]
         ); ?>
         <?php echo $this->Form->postLink(
-            $this->Html->image('/img/icons/cross.png', ['alt' => 'Delete this event']).'Delete',
+            $this->Html->image('/img/icons/cross.png', ['alt' => 'Delete this event']) . 'Delete',
             [
-                'controller' => 'events',
+                'plugin' => false,
+                'prefix' => false,
+                'controller' => 'Events',
                 'action' => 'delete',
                 'id' => $event['id']
             ],
             [
-                    'confirm' => 'Are you sure you want to delete this event?',
-                    'escape' => false
+                'confirm' => 'Are you sure you want to delete this event?',
+                'escape' => false
             ]
         ); ?>
     <?php endif; ?>

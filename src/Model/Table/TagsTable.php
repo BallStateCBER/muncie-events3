@@ -310,7 +310,7 @@ class TagsTable extends Table
             $conditions = ['Events.published' => 1];
             if (in_array($filter['direction'], ['future', 'past'])) {
                 $dateComparison = $filter['direction'] == 'future' ? '>=' : '<';
-                $conditions["Events.start $dateComparison"] = date('Y-m-d H:i:s');
+                $conditions["Events.time_start $dateComparison"] = date('Y-m-d H:i:s');
             }
             if (isset($filter['categories'])) {
                 $conditions['Events.category_id'] = $filter['categories'];

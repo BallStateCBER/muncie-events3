@@ -21,7 +21,7 @@ use Cake\Utility\Text;
             <tr>
                 <th>When</th>
                 <td>
-                    <?= $this->Calendar->date($event->start) ?>
+                    <?= $this->Calendar->date($event->time_start) ?>
                     <br />
                     <?= $this->Calendar->time($event) ?>
                 </td>

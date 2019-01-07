@@ -96,7 +96,7 @@ class EventsController extends AppController
         $unapproved = $this->Events
             ->find('all', [
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => 'ASC']
+                'order' => ['created' => 'ASC']
             ])
             ->where([
                 'OR' => [
@@ -111,8 +111,6 @@ class EventsController extends AppController
          * and remove all but the first */
         $identicalSeries = [];
         foreach ($unapproved as $k => $event) {
-            /** @var Event $event */
-            $event = $this->Events->setEasternTimes($event);
             $event['location_new'] = 1;
             $loc = $this->Events->find()
                 ->where(['location' => $event['location']])

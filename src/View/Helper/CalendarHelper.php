@@ -66,22 +66,22 @@ class CalendarHelper extends Helper
     }
 
     /**
-     * format time of event
+     * Returns a string describing the start time or time span of this event
      *
-     * @param array $event which needs its time formatted
+     * @param array $event An event entity in array form
      * @return string
      */
     public function eventTime($event)
     {
         $this->Events = new EventsTable();
-        $startStamp = $event['start'];
+        $startStamp = $event['time_start'];
         if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
             $retval = date('ga', strtotime($startStamp));
         } else {
             $retval = date('g:ia', strtotime($startStamp));
         }
-        if ($event['end']) {
-            $endStamp = $event['end'];
+        if ($event['time_end']) {
+            $endStamp = $event['time_end'];
             if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
                 $retval .= ' to ' . date('ga', strtotime($endStamp));
             }
@@ -136,9 +136,9 @@ class CalendarHelper extends Helper
      */
     public function time($event)
     {
-        $retval = date('g:ia', strtotime($event['start']));
-        if ($event['end']) {
-            $retval .= ' to ' . date('g:ia', strtotime($event['end']));
+        $retval = date('g:ia', strtotime($event['time_start']));
+        if ($event['time_end']) {
+            $retval .= ' to ' . date('g:ia', strtotime($event['time_end']));
         }
 
         return $retval;

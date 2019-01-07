@@ -30,7 +30,7 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
     <?php
         $dividedEvents = ['upcoming' => [], 'past' => []];
         foreach ($eventSeries->events as $key => $event) {
-            if (date('Y-m-d', strtotime($event->start)) < date('Y-m-d')) {
+            if (date('Y-m-d', strtotime($event->date)) < date('Y-m-d')) {
                 $dividedEvents['past'][] = $event;
             } else {
                 $dividedEvents['upcoming'][] = $event;
@@ -49,20 +49,22 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
             <tbody>
                 <?php foreach ($events as $key => $event): ?>
                     <?php
-                        $dst = $this->Events->getDaylightSavingOffsetNegative($event->start->format('Y-m-d'));
+                        $dst = $this->Events->getDaylightSavingOffsetNegative($event->date->format('Y-m-d'));
                     ?>
                     <tr>
                         <td>
-                            <?= date('M j, Y', strtotime($event->start . $dst)) ?>
+                            <?= date('M j, Y', strtotime($event->date . $dst)) ?>
                         </td>
                         <td>
-                            <?= date('g:ia', strtotime($event->start . $dst)) ?>
+                            <?= date('g:ia', strtotime($event->time_start . $dst)) ?>
                         </td>
                         <td>
                             <?= $this->Html->link(
                                 $event['title'],
                                 [
-                                    'controller' => 'events',
+                                    'plugin' => false,
+                                    'prefix' => false,
+                                    'controller' => 'Events',
                                     'action' => 'view',
                                     'id' => $event->id
                                 ]
@@ -80,7 +82,9 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
             <?= $this->Html->link(
                 $eventSeries->user['name'],
                 [
-                    'controller' => 'users',
+                    'plugin' => false,
+                    'prefix' => false,
+                    'controller' => 'Users',
                     'action' => 'view',
                     'id' => $eventSeries->user['id']
                 ]

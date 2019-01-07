@@ -79,8 +79,12 @@ class EventSeriesController extends AppController
             return $this->redirect(['controller' => 'events', 'action' => 'index']);
         }
         $eventSeries = $this->EventSeries->get($id, [
-            'contain' => ['events' => [
-                'sort' => ['start' => 'ASC']
+            'contain' => [
+                'Events' => [
+                    'sort' => [
+                        'date' => 'ASC',
+                        'time_start' => 'ASC'
+                    ]
                 ]
             ]
         ]);
@@ -122,12 +126,14 @@ class EventSeriesController extends AppController
                 }
 
                 $eventSeries->events[$x] = $this->Events->get($event['id']);
-                $eventSeries->events[$x]->start = new Time(implode('-', $event['date']));
+                $timeString = sprintf(
+                     '%s:%s %s',
+                    $event['time_start']['hour'],
+                    $event['time_start']['minute'],
+                    $event['time_start']['meridian']
+                );
                 $eventSeries->events[$x]->time_start = new Time(
-                    date(
-                        'H:i',
-                        strtotime($event['time_start']['hour'] . ':' . $event['time_start']['minute'] . ' ' . $event['time_start']['meridian'])
-                    )
+                    date('H:i', strtotime($timeString))
                 );
                 $eventSeries->events[$x]->title = $event['title'] ?: $eventSeries->events[$x]->title;
 

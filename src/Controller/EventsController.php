@@ -186,19 +186,19 @@ class EventsController extends AppController
             $defaultDate = 0; // Today
         }
         if ($this->request->getParam('action') == 'edit') {
-            $today = $event->start->format('Y-m-d H:i:s');
+            $today = $event->date->format('Y-m-d');
             $dst = $this->Events->getDaylightSavingOffsetNegative($today);
             $event->date = date('m/d/Y', strtotime($today . $dst));
-            $start = date('h:i a', strtotime($event->start->format('h:i a') . $dst));
+            $start = date('h:i a', strtotime($event->time_start->format('h:i a') . $dst));
             $event->time_start = $start;
-            if ($event->end) {
-                $end = date('h:i a', strtotime($event->end->format('h:i a') . $dst));
+            if ($event->time_end) {
+                $end = date('h:i a', strtotime($event->time_end->format('h:i a') . $dst));
                 $event->time_end = $end;
             }
         }
         if ($this->request->getParam('action') == 'editSeries') {
             $dateFieldValues = [];
-            foreach ($event->start as $date) {
+            foreach ($event->time_start as $date) {
                 list($year, $month, $day) = explode('-', $date);
                 if (!isset($defaultDate)) {
                     $defaultDate = "$month/$day/$year";
@@ -220,25 +220,6 @@ class EventsController extends AppController
     }
 
     /**
-     * setDatesAndTimes method
-     *
-     * @param Event|\Cake\Datasource\EntityInterface $event to set
-     * @return Event|\Cake\Datasource\EntityInterface
-     */
-    private function setDatesAndTimes($event)
-    {
-        $event->start = $this->Events->setStartUtc($event['date'], $event['time_start']);
-        if (isset($event['time_end'])) {
-            $event->end = $this->Events->setEndUtc($event['date'], $event['time_end'], $event->start);
-        } else {
-            $event->end = null;
-        }
-        $event->date = date('Y-m-d', strtotime($event['date']));
-
-        return $event;
-    }
-
-    /**
      * Sets various variables used in the event form
      *
      * @param Event|\Cake\Datasource\EntityInterface $event Event entity
@@ -255,7 +236,7 @@ class EventsController extends AppController
             $hasEndTime = isset($event['time_end']);
         } elseif ($this->request->getParam('action') == 'edit') {
             $hasSeries = isset($event['series_id']);
-            $hasEndTime = isset($event['time_end']) && $event['end'];
+            $hasEndTime = isset($event['time_end']) && $event['time_end'];
         }
 
         $userId = $this->Auth->user('id');
@@ -361,8 +342,7 @@ class EventsController extends AppController
                     $event->autoPublish($user);
                     $event->user_id = $userId;
                     $this->setCustomTags($event);
-                    $data['date'] = $dates[0];
-                    $event->setDatesAndTimes($data);
+                    $event->date = date('Y-m-d', strtotime($dates[0]));
                     $saved = $this->Events->save($event, [
                         'associated' => ['Images', 'Tags']
                     ]);
@@ -398,8 +378,7 @@ class EventsController extends AppController
                         $event->autoApprove($user);
                         $event->autoPublish($user);
                         $this->setCustomTags($event);
-                        $data['date'] = $date;
-                        $event->setDatesAndTimes($data);
+                        $event->date = date('Y-m-d', strtotime($date));
                         $this->setImageData($event);
                         $event->series_id = $series->id;
                         $eventSaved = $this->Events->save($event, [
@@ -594,7 +573,7 @@ class EventsController extends AppController
             $event->autoApprove($user);
             $event->autoPublish($user);
             $this->setCustomTags($event);
-            $event->setDatesAndTimes($data);
+            $this->date = date('Y-m-d', strtotime($data['date']));
             $this->setImageData($event);
             $saved = $this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
@@ -636,7 +615,10 @@ class EventsController extends AppController
         $events = $this->Events->find()
             ->where(['series_id' => $seriesId])
             ->contain(['EventSeries'])
-            ->order(['start' => 'ASC'])
+            ->order([
+                'date' => 'ASC',
+                'time_start' => 'ASC'
+            ])
             ->toArray();
         $dates = [];
         $dateString = '';
@@ -649,9 +631,9 @@ class EventsController extends AppController
             'contain' => ['EventSeries']
         ]);
         $dst = $this->Events->getDaylightSavingOffsetNegative($dateString);
-        $timeStart = date_format($event->start, 'H:i:s');
+        $timeStart = date_format($event->time_start, 'H:i:s');
         $event->time_start = date('h:i a', strtotime($timeStart . $dst));
-        $event->start = $dates;
+        $event->time_start = $dates;
         $this->setEventFormVars($event);
         $this->Flash->error('Warning: All events in this series will be overwritten.');
         $categories = $this->Categories->find('list');
@@ -692,9 +674,9 @@ class EventsController extends AppController
                 $event->title = $this->request->getData('title');
                 $this->setCustomTags($event);
                 $event['date'] = $date;
-                $event = $this->setDatesAndTimes($event);
                 if ($this->Events->save($event, [
-                    'associated' => ['EventSeries', 'Images', 'Tags']])) {
+                    'associated' => ['EventSeries', 'Images', 'Tags']
+                ])) {
                     $this->Flash->success("Event '$event->title' has been saved.");
                     continue;
                 }
@@ -754,9 +736,8 @@ class EventsController extends AppController
     public function location($slug = null, $direction = null)
     {
         $dir = $direction == 'past' ? 'ASC' : 'DESC';
-        $date = $direction == 'past' ? '<' : '>=';
-        $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
-        $oppDate = $direction == 'past' ? '>=' : '<';
+        $comparison = $direction == 'past' ? '<' : '>=';
+        $comparisonReverse = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
         $direction = ucwords($direction);
 
@@ -764,30 +745,31 @@ class EventsController extends AppController
             ->find('all', [
                 'conditions' => [
                     'location_slug' => $slug,
-                    "start $date" => date('Y-m-d H:i:s'),
+                    "date $comparison" => date('Y-m-d'),
                     'Events.published' => 1
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => $dir]
+                'order' => [
+                    'date' => $dir,
+                    'time_start' => $dir
+                ]
             ]);
         $listing = $this->paginate($listing)->toArray();
         $location = $this->Events->getLocationFromSlug($slug);
         $this->indexEvents($listing);
         $count = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => $dir]
+            ->find('all')
+            ->where([
+                'location_slug' => $slug,
+                "Events.date $comparison" => date('Y-m-d')
             ])
-            ->where(['location_slug' => $slug])
-            ->andWhere(["Events.start $date" => date('Y-m-d H:i:s')])
             ->count();
         $oppCount = $this->Events
-            ->find('all', [
-                'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => $oppDir]
+            ->find('all')
+            ->where([
+                'location_slug' => $slug,
+                "Events.date $comparisonReverse" => date('Y-m-d')
             ])
-            ->where(['location_slug' => $slug])
-            ->andWhere(["Events.start $oppDate" => date('Y-m-d H:i:s')])
             ->count();
         $this->set(compact('count', 'direction', 'location', 'oppCount', 'opposite'));
         $this->set('multipleDates', true);
@@ -812,11 +794,14 @@ class EventsController extends AppController
         $events = $this->Events
             ->find('all', [
                 'conditions' => [
-                    'MONTH(start)' => $month,
-                    'YEAR(start)' => $year
+                    'MONTH(date)' => $month,
+                    'YEAR(date)' => $year
                 ],
                 'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags'],
-                'order' => ['start' => 'asc']
+                'order' => [
+                    'date' => 'ASC',
+                    'time_start' => 'ASC'
+                ]
             ])
             ->toArray();
         if ($events) {
@@ -867,9 +852,9 @@ class EventsController extends AppController
         $filter = $this->request->getQuery();
         // Determine the direction (past or upcoming)
         $direction = $filter['direction'];
-        $dateQuery = ($direction == 'upcoming') ? 'start >=' : 'start <';
+        $dateQuery = ($direction == 'upcoming') ? 'date >=' : 'date <';
         if ($direction == 'all') {
-            $dateQuery = 'start !=';
+            $dateQuery = 'date !=';
         };
         $dir = ($direction == 'upcoming') ? 'ASC' : 'DESC';
         $dateWhen = ($direction == 'all') ? '1900-01-01 00:00:00' : date('Y-m-d H:i:s');
@@ -878,7 +863,10 @@ class EventsController extends AppController
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
         ])
             ->where([$dateQuery => $dateWhen])
-            ->order(['start' => $dir]);
+            ->order([
+                'date' => $dir,
+                'time_start' => $dir
+            ]);
         $events = $this->paginate($events)->toArray();
         if ($events) {
             $this->indexEvents($events);
@@ -1057,9 +1045,8 @@ class EventsController extends AppController
         }
 
         $dir = $direction == 'past' ? 'ASC' : 'DESC';
-        $date = $direction == 'past' ? '<' : '>=';
-        $oppDir = $direction == 'past' ? 'DESC' : 'ASC';
-        $oppDate = $direction == 'past' ? '>=' : '<';
+        $comparison = $direction == 'past' ? '<' : '>=';
+        $comparisonReverse = $direction == 'past' ? '>=' : '<';
         $opposite = $direction == 'past' ? 'upcoming' : 'past';
         $direction = ucwords($direction);
 
@@ -1074,29 +1061,34 @@ class EventsController extends AppController
         if (empty($tag)) {
             $this->Flash->error("Sorry, but we couldn't find that tag ($slug)");
 
-            return;
+            return null;
         }
         $eventId = $this->Events->getIdsFromTag($tagId);
         $listing = $this->Events->find()
-            ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.start $date" => date('Y-m-d')])
-            ->andWhere(['Events.published' => 1])
+            ->where([
+                'Events.id IN' => $eventId,
+                "Events.time_start $comparison" => date('Y-m-d'),
+                'Events.published' => 1
+            ])
             ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['start' => $dir]);
+            ->order([
+                'date' => $dir,
+                'time_start' => $dir
+            ]);
         $listing = $this->paginate($listing)->toArray();
 
         $this->indexEvents($listing);
         $count = $this->Events->find()
-            ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.start $date" => date('Y-m-d')])
-            ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['start' => $dir])
+            ->where([
+                'Events.id IN' => $eventId,
+                "Events.date $comparison" => date('Y-m-d')
+            ])
             ->count();
         $oppCount = $this->Events->find()
-            ->where(['Events.id IN' => $eventId])
-            ->andWhere(["Events.start $oppDate" => date('Y-m-d')])
-            ->contain(['Users', 'Categories', 'EventSeries', 'Images', 'Tags'])
-            ->order(['start' => $oppDir])
+            ->where([
+                'Events.id IN' => $eventId,
+                "Events.date $comparisonReverse" => date('Y-m-d')
+            ])
             ->count();
         $this->set(compact('count', 'direction', 'eventId', 'oppCount', 'opposite', 'slug', 'tag'));
         $this->set([
@@ -1141,7 +1133,6 @@ class EventsController extends AppController
         $event = $this->Events->get($id, [
             'contain' => ['Users', 'Categories', 'EventSeries', 'Images', 'Tags']
         ]);
-        $event = $this->Events->setEasternTimes($event);
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', $event['title']);

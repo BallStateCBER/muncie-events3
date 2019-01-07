@@ -222,9 +222,8 @@ class AppController extends Controller
      */
     public function indexEvents($events)
     {
+        $dates = [];
         foreach ($events as $event) {
-            /** @var \App\Model\Entity\Event $event */
-            $event = $this->Events->setEasternTimes($event);
             $dates[] = $event->date->format('Y-m-d');
         }
 
@@ -385,7 +384,7 @@ class AppController extends Controller
      */
     private function getPopulatedDates()
     {
-        $results = $this->Events->getFutureEvents();
+        $results = $this->Events->getFuturePopulatedDates();
         $populatedDates = [];
         foreach ($results as $result) {
             if (!in_array($result, $populatedDates)) {

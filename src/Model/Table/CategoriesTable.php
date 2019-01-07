@@ -113,7 +113,7 @@ class CategoriesTable extends Table
                         return $exp->isNotNull('approved_by');
                     },
                     'category_id' => $categoryId,
-                    "Events.start $dateComparison" => date('Y-m-d H:i:s')
+                    "Events.date $dateComparison" => date('Y-m-d')
                 ])
                 ->limit(1);
             if (!$result->isEmpty()) {

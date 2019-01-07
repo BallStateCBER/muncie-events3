@@ -116,8 +116,8 @@ class EventsControllerTest extends ApplicationTest
         $this->assertEquals(0, $event['published']);
         $dst = $this->Events->getDaylightSavingOffsetPositive(date('Y-m-d'));
         $this->assertEquals(
-            $event['start']->format('Y-m-d H:i:s'),
-            date('Y-m-d H:i:s', strtotime("Today 00:00:00$dst"))
+            $event['time_start']->format('H:i:s'),
+            date('H:i:s', strtotime("Today 00:00:00$dst"))
         );
         foreach ($event['tags'] as $tag) {
             $this->assertEquals(1, $tag['id']);
@@ -586,7 +586,7 @@ class EventsControllerTest extends ApplicationTest
         $this->assertEquals('market', $filter['filter']);
         $this->assertEquals('upcoming', $filter['direction']);
         // dateQuery & directionAdjective are constant with $filter->direction
-        $this->assertEquals('start >=', $this->viewVariable('dateQuery'));
+        $this->assertEquals('date >=', $this->viewVariable('dateQuery'));
         $this->assertEquals('upcoming', $this->viewVariable('directionAdjective'));
     }
 }

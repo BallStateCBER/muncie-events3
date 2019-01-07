@@ -6,19 +6,19 @@
 use App\Model\Table\EventsTable;
 
 $this->Events = new EventsTable();
-$dst = $this->Events->getDaylightSavingOffsetPositive($event->start->format('Y-m-d'));
+$dst = $this->Events->getDaylightSavingOffsetPositive($event->date->format('Y-m-d'));
 
-$date = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
-$startTime = strtotime($event->start->i18nFormat('yyyyMMddHHmmss') . $dst);
-if ($event->end) {
-    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
+$date = strtotime($event->date->i18nFormat('yyyyMMddHHmmss') . $dst);
+$startTime = strtotime($event->time_start->i18nFormat('yyyyMMddHHmmss') . $dst);
+if ($event->time_end) {
+    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss') . $dst);
 }
 
 $start = date('Ymd', $date).'T'.date('His', $startTime).'Z';
 
 $endStamp = $startTime;
-if ($event->end) {
-    $endTime = strtotime($event->end->i18nFormat('yyyyMMddHHmmss') . $dst);
+if ($event->time_end) {
+    $endTime = strtotime($event->time_end->i18nFormat('yyyyMMddHHmmss') . $dst);
     $endStamp = $endTime;
 }
 $end = date('Ymd', $date).'T'.date('His', $endStamp).'Z';

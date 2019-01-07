@@ -154,20 +154,4 @@ class Event extends Entity
             'user_id' => $userId
         ]);
     }
-
-    /**
-     * Sets the start, end, and date properties
-     *
-     * @param array $data Results of request->data() from an event form page
-     * @return void
-     */
-    public function setDatesAndTimes($data)
-    {
-        $time = new \App\Time\Time();
-        $this->start = $time->getStartUtc($data['date'], $data['time_start']);
-        $this->end = isset($data['time_end']) ?
-            $time->getEndUtc($data['date'], $data['time_end'], $data['time_start']) :
-            null;
-        $this->date = date('Y-m-d', strtotime($data['date']));
-    }
 }

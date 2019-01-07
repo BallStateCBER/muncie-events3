@@ -668,10 +668,10 @@ class WidgetsController extends AppController
         $datesForJson = [];
 
         foreach ($events as $event) {
-            $thisMonth = date('m', strtotime($event->start));
-            $thisYear = date('Y', strtotime($event->start));
+            $thisMonth = date('m', strtotime($event->date));
+            $thisYear = date('Y', strtotime($event->date));
             if ($thisMonth == $month && $thisYear == $year) {
-                $date = date('Y-m-d', strtotime($event->start));
+                $date = date('Y-m-d', strtotime($event->date));
                 $eventsForJson[$date] = [
                     'heading' => 'Events on ' . date('F j, Y', (strtotime($date))),
                     'events' => []
@@ -682,10 +682,10 @@ class WidgetsController extends AppController
                     'category_name' => $event->category['name'],
                     'category_icon_class' => 'icon-' . strtolower(str_replace(' ', '-', $event->category['name'])),
                     'url' => Router::url(['controller' => 'Events', 'action' => 'view', 'id' => $event->id]),
-                    'date' => $event->start->format('Y-m-d'),
-                    'time' => $event->start->format('g:ia')
+                    'date' => $event->date->format('Y-m-d'),
+                    'time' => $event->time_start->format('g:ia')
                 ];
-                $datesForJson[] = $event->start->format('Y-m-d');
+                $datesForJson[] = $event->date->format('Y-m-d');
             }
         }
         $datesForJson = array_unique($datesForJson);
@@ -779,7 +779,6 @@ class WidgetsController extends AppController
 
             return null;
         }
-        $event = $this->Events->setEasternTimes($event);
         $this->viewBuilder()->setLayout('Widgets' . DS . 'feed');
         $this->set([
             'event' => $event
