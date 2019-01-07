@@ -333,7 +333,9 @@ function loadMoreEvents() {
         },
         success: function(data) {
             $('#event_accordion_loading_indicator').hide();
-            $('#event_accordion').append(data);
+            var accordion = $('#event_accordion');
+            accordion.append(data);
+            accordion.find('h1.page_title').remove();
             muncieEventsImagePopups.prepare();
         },
         error: function() {
