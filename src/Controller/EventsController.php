@@ -8,6 +8,7 @@ use App\Model\Entity\Image;
 use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Slack;
+use Cake\I18n\FrozenTime;
 
 /**
  * Events Controller
@@ -311,6 +312,8 @@ class EventsController extends AppController
          * @var EventSeries $series
          */
         $event = $this->Events->newEntity();
+        $event->time_start = new FrozenTime('12:00pm');
+        $event->time_end = new FrozenTime('1:00pm');
         $user = $this->Auth->user();
         $userId = $user['id'];
         $autoPublish = $this->Users->getAutoPublish($userId);
