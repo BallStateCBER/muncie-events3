@@ -725,11 +725,11 @@ class EventsTable extends Table
         $evDates = [];
         foreach ($results as $result) {
             $evDates[] = [
-                $result->time_start->format('l'),
-                $result->time_start->format('M'),
-                $result->time_start->format('m'),
-                $result->time_start->format('d'),
-                $result->time_start->format('Y')
+                $result->date->format('l'),
+                $result->date->format('M'),
+                $result->date->format('m'),
+                $result->date->format('d'),
+                $result->date->format('Y')
             ];
         }
 
