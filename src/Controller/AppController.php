@@ -207,6 +207,7 @@ class AppController extends Controller
                     if ($this->request->getParam('action') != $action) {
                         return null;
                     }
+
                     return 'active';
                 },
                 'fullBaseUrl' => Configure::read('App.fullBaseUrl')

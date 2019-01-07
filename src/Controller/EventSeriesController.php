@@ -127,7 +127,7 @@ class EventSeriesController extends AppController
 
                 $eventSeries->events[$x] = $this->Events->get($event['id']);
                 $timeString = sprintf(
-                     '%s:%s %s',
+                    '%s:%s %s',
                     $event['time_start']['hour'],
                     $event['time_start']['minute'],
                     $event['time_start']['meridian']
