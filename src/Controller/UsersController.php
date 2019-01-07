@@ -215,14 +215,6 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower($user['email']);
 
-            // Is there a previous user associated?
-            $prevUser = $this->Users->getIdFromEmail($user['email']);
-            if ($prevUser) {
-                $this->Flash->error('There is already a user with this email address.');
-
-                return null;
-            }
-
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Success! You have been registered.'));
                 $this->Auth->setUser($user);
