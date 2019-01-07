@@ -48,78 +48,78 @@ Router::extensions(['ics']);
 
 Router::scope('/', function (RouteBuilder $routes) {
     // Home
-    $routes->connect('/', ['controller' => 'events', 'action' => 'index']);
+    $routes->connect('/', ['controller' => 'Events', 'action' => 'index']);
 
     // Categories
     Router::connect(
         "/:slug/",
-        ['controller' => 'events', 'action' => 'category'],
+        ['controller' => 'Events', 'action' => 'category'],
         ['pass' => ['slug']]
     );
 
     // viewing events
     Router::connect(
         "event/:id",
-        ['controller' => 'events', 'action' => 'view'],
+        ['controller' => 'Events', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
     // events actions
     foreach (['approve', 'delete', 'edit', 'edit_series', 'location', 'publish'] as $action) {
         Router::connect(
             "/event/$action/:id",
-            ['controller' => 'events', 'action' => $action],
+            ['controller' => 'Events', 'action' => $action],
             ['id' => '[0-9]+', 'pass' => ['id']]
         );
     }
     // location index
-    $routes->connect('/past_locations', ['controller' => 'events', 'action' => 'past_locations']);
+    $routes->connect('/past_locations', ['controller' => 'Events', 'action' => 'past_locations']);
 
     // viewing locations indexes
     $routes->connect(
         '/location/*',
-        ['controller' => 'events', 'action' => 'location']
+        ['controller' => 'Events', 'action' => 'location']
     );
 
     // viewing locations indexes
     $routes->connect(
         '/location/:location/:direction*',
-        ['controller' => 'events', 'action' => 'location'],
+        ['controller' => 'Events', 'action' => 'location'],
         ['pass' => ['slug', 'direction']]
     );
 
     // viewing event series
     Router::connect(
         "event_series/:id",
-        ['controller' => 'eventSeries', 'action' => 'view'],
+        ['controller' => 'EventSeries', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
     // eventseries actions
     Router::connect(
         "/event_series/edit/:id",
-        ['controller' => 'eventSeries', 'action' => 'edit'],
+        ['controller' => 'EventSeries', 'action' => 'edit'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
     // pages
     $pages = ['about', 'contact', 'terms'];
     foreach ($pages as $page) {
-        $routes->connect('/' . $page, ['controller' => 'pages', 'action' => $page]);
+        $routes->connect('/' . $page, ['controller' => 'Pages', 'action' => $page]);
     }
 
     // search
-    $routes->connect('/search', ['controller' => 'events', 'action' => 'search']);
+    $routes->connect('/search', ['controller' => 'Events', 'action' => 'search']);
 
     // Tag
     Router::connect(
         "/tag/:slug/:direction",
-        ['controller' => 'events', 'action' => 'tag'],
+        ['controller' => 'Events', 'action' => 'tag'],
         ['pass' => ['slug', 'direction']]
     );
     // Tag
     Router::connect(
         "/tag/:slug",
-        ['controller' => 'events', 'action' => 'tag'],
+        ['controller' => 'Events', 'action' => 'tag'],
         ['pass' => ['slug']]
     );
 
@@ -132,19 +132,19 @@ Router::scope('/', function (RouteBuilder $routes) {
     // user actions
     $userActions = ['account', 'login', 'logout', 'register'];
     foreach ($userActions as $action) {
-        $routes->connect('/' . $action, ['controller' => 'users', 'action' => $action]);
+        $routes->connect('/' . $action, ['controller' => 'Users', 'action' => $action]);
     }
 
     // viewing users
     Router::connect(
         "user/:id/*",
-        ['controller' => 'users', 'action' => 'view'],
+        ['controller' => 'Users', 'action' => 'view'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
     // widgets
-    $routes->connect('/widgets', ['controller' => 'widgets', 'action' => 'index']);
-    Router::scope('/widgets/customize', ['controller' => 'widgets'], function (RouteBuilder $routes) {
+    $routes->connect('/widgets', ['controller' => 'Widgets', 'action' => 'index']);
+    Router::scope('/widgets/customize', ['controller' => 'Widgets'], function (RouteBuilder $routes) {
         $routes->connect('/feed', ['action' => 'customizeFeed']);
         $routes->connect('/month', ['action' => 'customizeMonth']);
     });
@@ -152,7 +152,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     // downloadable content
     Router::connect(
         "/event/:id.ics",
-        ['controller' => 'events',
+        ['controller' => 'Events',
         'action' => 'ics'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
@@ -177,11 +177,11 @@ Router::scope('/', function (RouteBuilder $routes) {
 });
 
 Router::prefix('admin', function (RouteBuilder $routes) {
-    $routes->connect('/moderate', ['controller' => 'events', 'action' => 'moderate']);
+    $routes->connect('/moderate', ['controller' => 'Events', 'action' => 'moderate']);
 
     $routes->connect(
         '/event/approve/:id',
-        ['controller' => 'events', 'action' => 'approve'],
+        ['controller' => 'Events', 'action' => 'approve'],
         ['id' => '[0-9]+', 'pass' => ['id']]
     );
 
