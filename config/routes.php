@@ -51,11 +51,27 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/', ['controller' => 'Events', 'action' => 'index']);
 
     // Categories
-    Router::connect(
-        "/:slug/",
-        ['controller' => 'Events', 'action' => 'category'],
-        ['pass' => ['slug']]
-    );
+    $categories = [
+        'music',
+        'art',
+        'theater',
+        'film',
+        'activism',
+        'general',
+        'education',
+        'government',
+        'sports',
+        'religion'
+    ];
+    $routes
+        ->connect(
+            "/:slug/",
+            ['controller' => 'Events', 'action' => 'category']
+        )
+        ->setPass(['slug'])
+        ->setPatterns([
+            'slug' => implode('|', $categories)
+        ]);
 
     // viewing events
     Router::connect(
