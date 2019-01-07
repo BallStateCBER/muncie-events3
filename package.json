@@ -23,7 +23,9 @@
     "through2": "^2.0.3",
     "uglify-js": "^3.0.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp-phpcbf": "^0.1.2"
+  },
   "repository": {
     "type": "",
     "url": ""

@@ -7,6 +7,8 @@ var stylish = require('jshint-stylish');
 var phpcs = require('gulp-phpcs');
 var phpunit = require('gulp-phpunit');
 var _ = require('lodash');
+var phpcbf = require('gulp-phpcbf');
+var gutil = require('gulp-util');
 
 function customNotify(message) {
 	return notify({
@@ -53,6 +55,17 @@ gulp.task('php_unit', function() {
         .pipe(phpunit('', {notify: true}))
         .on('error', notify.onError(testNotification('fail', 'phpunit')))
         .pipe(notify(testNotification('pass', 'php_unit')));
+});
+
+gulp.task('phpcbf', function () {
+  return gulp.src(['src/**/*.php', 'config/*.php', 'tests/*.php', 'tests/**/*.php'])
+    .pipe(phpcbf({
+      bin: 'phpcbf',
+      standard: '.\\vendor\\cakephp\\cakephp-codesniffer\\CakePHP',
+      warningSeverity: 0
+    }))
+    .on('error', gutil.log)
+    .pipe(gulp.dest('src'));
 });
 
 
