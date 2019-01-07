@@ -215,16 +215,7 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $this->request->getData());
             $user['email'] = strtolower($user['email']);
 
-            // validation things:
-            // is this email a valid email?
-            $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
-            $validEmail = preg_match($regex, $user['email']);
-            if (!$validEmail) {
-                $this->Flash->error("That's not a valid email address. Please enter a valid email address.");
-
-                return null;
-            }
-            // is there a previous user associated?
+            // Is there a previous user associated?
             $prevUser = $this->Users->getIdFromEmail($user['email']);
             if ($prevUser) {
                 $this->Flash->error('There is already a user with this email address.');
