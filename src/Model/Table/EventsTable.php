@@ -112,8 +112,11 @@ class EventsTable extends Table
             ->requirePresence('date', 'create');
 
         $validator
-            ->date('time_end')
-            ->allowEmptyDate('time_end');
+            ->time('time_start');
+
+        $validator
+            ->time('time_end')
+            ->allowEmptyTime('time_end');
 
         $validator
             ->requirePresence('location', 'create')
