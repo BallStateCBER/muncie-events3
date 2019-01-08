@@ -3,12 +3,13 @@ namespace App\Controller;
 
 use App\Model\Entity\Category;
 use App\Model\Entity\Event;
-use App\Model\Entity\EventSeries;
 use App\Model\Entity\Image;
 use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Slack;
+use Cake\I18n\FrozenDate;
 use Cake\I18n\FrozenTime;
+use Cake\ORM\TableRegistry;
 
 /**
  * Events Controller
@@ -262,7 +263,7 @@ class EventsController extends AppController
      * @param Event|\Cake\Datasource\EntityInterface $event Event entity
      * @return void
      */
-    private function setImageData($event)
+    private function saveImageData($event)
     {
         $place = 0;
         $imageData = $this->request->getData('data.Image');
@@ -307,16 +308,12 @@ class EventsController extends AppController
      */
     public function add()
     {
-        /**
-         * @var Event $event
-         * @var EventSeries $series
-         */
+        /**  @var Event $event */
         $event = $this->Events->newEntity();
         $event->time_start = new FrozenTime('12:00pm');
         $event->time_end = new FrozenTime('1:00pm');
         $user = $this->Auth->user();
-        $userId = $user['id'];
-        $autoPublish = $this->Users->getAutoPublish($userId);
+        $autoPublish = $this->Users->getAutoPublish($user['id']);
 
         // Prepare form
         $this->setEventFormVars($event);
@@ -327,102 +324,26 @@ class EventsController extends AppController
             'titleForLayout' => 'Submit an Event',
         ]);
 
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            if (!$this->passedBotDetection()) {
-                $this->Flash->error('Please log in or check your Recaptcha box.');
-
-                return null;
-            }
-
-            $data = $this->request->getData();
-            if (!$this->request->getData('tags')) {
-                $data['tags'] = [];
-            }
-            if (!$this->request->getData('has_end_time')) {
-                $data['time_end'] = null;
-            }
-
-            // Single event
-            $dates = explode(',', $this->request->getData('date'));
-            if (count($dates) < 2) {
-                $event = $this->Events->patchEntity($event, $data);
-                $event->autoApprove($user);
-                $event->autoPublish($user);
-                $event->user_id = $userId;
-                $this->setCustomTags($event);
-                $event->date = date('Y-m-d', strtotime($dates[0]));
-                $saved = $this->Events->save($event, [
-                    'associated' => ['Images', 'Tags']
-                ]);
-                if ($saved) {
-                    $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
-                    $this->Flash->success($msg);
-                    $this->sendSlackNotification('event', $event->id);
-
-                    return $this->redirectAfterAdd($autoPublish, $event->id);
-                }
-
-            // Event series
-            } else {
-                $series = $this->Events->EventSeries->newEntity($data);
-                $series->title = $data['title'];
-                $series->user_id = $userId;
-                $series->published = ($this->Auth->user('role') == 'admin') ? 1 : 0;
-                $series->created = date('Y-m-d');
-                $series->modified = date('Y-m-d');
-                $seriesSaved = $this->Events->EventSeries->save($series);
-                $seriesErrorMsg = 'There was an error submitting your event series. Please correct any error ' .
-                    'messages indicated below and contact an administrator if you need assistance.';
-                if (!$seriesSaved) {
-                    $this->Flash->error($seriesErrorMsg);
-
-                    return null;
-                }
-
-                $firstEventId = null;
-                $error = false;
-                foreach ($dates as $date) {
-                    $event = $this->Events->newEntity($data);
-                    $event->autoApprove($user);
-                    $event->autoPublish($user);
-                    $this->setCustomTags($event);
-                    $event->date = date('Y-m-d', strtotime($date));
-                    $this->setImageData($event);
-                    $event->series_id = $series->id;
-                    $eventSaved = $this->Events->save($event, [
-                        'associated' => ['EventSeries', 'Images', 'Tags']
-                    ]);
-                    if (!$eventSaved) {
-                        $this->Flash->error($seriesErrorMsg);
-                        $error = true;
-                        break;
-                    }
-                    if (!$firstEventId) {
-                        $firstEventId = $event->id;
-                    }
-                }
-
-                if ($error) {
-                    $this->Flash->error($seriesErrorMsg);
-                    $this->Events->EventSeries->delete($seriesSaved);
-                } else {
-                    $msg = 'Your event series has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
-                    $this->Flash->success($msg);
-                    $this->sendSlackNotification('series', $series->id);
-
-                    return $this->redirectAfterAdd($autoPublish, $firstEventId);
-                }
-            }
-
-            // if neither a single event nor multiple-event series can be saved
-            if (!$this->Events->save($event)) {
-                $msg = 'The event could not be submitted. Please correct any errors and try again. If you need ' .
-                    'assistance, please contact an administrator.';
-                $this->Flash->error($msg);
-            }
+        if (!$this->request->is(['patch', 'post', 'put'])) {
+            return null;
         }
 
-        return null;
+        if (!$this->passedBotDetection()) {
+            $this->Flash->error('Please log in or check your Recaptcha box.');
+
+            return null;
+        }
+
+        $data = $this->request->getData() + [
+            'tags' => [],
+            'time_end' => null
+        ];
+        $dates = explode(',', $this->request->getData('date'));
+        if (count($dates) < 2) {
+            return $this->addSingleEvent($data);
+        }
+
+        return $this->addEventSeries($data);
     }
 
     /**
@@ -579,7 +500,7 @@ class EventsController extends AppController
             $event->autoPublish($user);
             $this->setCustomTags($event);
             $this->date = date('Y-m-d', strtotime($data['date']));
-            $this->setImageData($event);
+            $this->saveImageData($event);
             $saved = $this->Events->save($event, [
                 'associated' => ['EventSeries', 'Images', 'Tags']
             ]);
@@ -1141,5 +1062,105 @@ class EventsController extends AppController
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
         $this->set('titleForLayout', $event['title']);
+    }
+
+    /**
+     * Processes request data and adds a single event (not connected to a series)
+     *
+     * @param array $data Request data
+     * @return \Cake\Http\Response|null
+     */
+    private function addSingleEvent(array $data)
+    {
+        $user = $user = $this->Auth->user();
+        $data['user_id'] = $user['id'];
+        $dates = explode(',', $this->request->getData('date'));
+        $data['date'] = new FrozenDate($dates[0]);
+        $event = $this->Events->newEntity($data);
+        $event->autoApprove($user);
+        $event->autoPublish($user);
+        $this->setCustomTags($event);
+        $saved = (bool)$this->Events->save($event, [
+            'associated' => ['Images', 'Tags']
+        ]);
+        if (!$saved) {
+            $msg = 'The event could not be submitted. Please correct any errors and try again. If you need ' .
+                'assistance, please contact an administrator.';
+            $this->Flash->error($msg);
+
+            return null;
+        }
+
+        // Notify
+        $autoPublish = $this->Users->getAutoPublish($user['id']);
+        $msg = 'Your event has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+        $this->Flash->success($msg);
+        $this->sendSlackNotification('event', $event->id);
+
+        return $this->redirectAfterAdd($autoPublish, $event->id);
+    }
+
+    private function addEventSeries($data)
+    {
+        // Create empty series
+        $seriesTable = TableRegistry::getTableLocator()->get('EventSeries');
+        $user = $user = $this->Auth->user();
+        $series = $seriesTable->newEntity([
+            'title' => $data['title'],
+            'user_id' => $user['id'],
+            'published' => (new Event())->userIsAutoPublishable($this->Auth->user())
+        ]);
+        $seriesErrorMsg = 'There was an error submitting your event series. Please correct any error ' .
+            'messages indicated below and contact an administrator if you need assistance.';
+        if ($series->hasErrors()) {
+            $this->Flash->error($seriesErrorMsg);
+
+            return null;
+        }
+
+        // Create events
+        $firstEventId = null;
+        $events = [];
+        $dates = explode(',', $this->request->getData('date'));
+        foreach ($dates as $date) {
+            $data['date'] = new FrozenDate($date);
+            $event = $this->Events->newEntity($data);
+            $event->autoApprove($user);
+            $event->autoPublish($user);
+            $this->setCustomTags($event);
+            if ($event->hasErrors()) {
+                $seriesErrorMsg .= ' Details: ' . print_r($event->getErrors(), true);
+                $this->Flash->error($seriesErrorMsg);
+
+                return null;
+            }
+            $events[] = $event;
+        }
+
+        // Save series
+        $this->Events->EventSeries->save($series);
+
+        // Save events
+        foreach ($events as $event) {
+            /** @var Event $event */
+            $event = $this->Events->patchEntity($event, [
+                'series_id' => $series->id
+            ]);
+            $this->Events->save($event, [
+                'associated' => ['EventSeries', 'Images', 'Tags']
+            ]);
+            if (!$firstEventId) {
+                $firstEventId = $event->id;
+            }
+            $this->saveImageData($event);
+        }
+
+        // Notify
+        $autoPublish = $this->Users->getAutoPublish($user['id']);
+        $msg = 'Your event series has been ' . ($autoPublish ? 'posted' : 'submitted for publishing');
+        $this->Flash->success($msg);
+        $this->sendSlackNotification('series', $series->id);
+
+        return $this->redirectAfterAdd($autoPublish, $firstEventId);
     }
 }

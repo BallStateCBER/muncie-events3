@@ -125,7 +125,7 @@ class Event extends Entity
      * @param array $user Array of user record info, empty for anonymous users
      * @return bool
      */
-    private function userIsAutoPublishable($user)
+    public function userIsAutoPublishable($user)
     {
         if (!isset($user['id'])) {
             return false;
