@@ -8,9 +8,19 @@
  */
 use Cake\Utility\Inflector;
 
+$varsToDisplay = [
+    'title',
+    'description',
+    'location',
+    'location_details',
+    'address',
+    'age_restriction',
+    'cost',
+    'source'
+];
 ?>
 <h1 class="page_title">
-    <?= $titleForLayout; ?>
+    <?= $titleForLayout ?>
 </h1>
 <div id="moderate_events">
     <?php if (empty($unapproved)): ?>
@@ -41,14 +51,23 @@ use Cake\Utility\Inflector;
                     <ul class="actions">
                         <li>
                             <?php
-                                $url = ['controller' => 'events', 'action' => 'approve'];
+                                $url = [
+                                    'prefix' => 'admin',
+                                    'controller' => 'Events',
+                                    'action' => 'approve'
+                                ];
                                 if ($isSeries) {
                                     $url = array_merge($url, $seriesPartEventIds);
                                 } else {
                                     $url[] = $eventId;
                                 }
+                                $img = $this->Html->image(
+                                    'icons/tick.png',
+                                    ['alt' => 'Approve']
+                                );
+                                $label =  $img . 'Approve' . ($published ? '' : ' and publish');
                                 echo $this->Html->link(
-                                    $this->Html->image('icons/tick.png', ['alt' => 'Approve']).'Approve'.($published ? '' : ' and publish'),
+                                    $label,
                                     $url,
                                     ['escape' => false]
                                 );
@@ -57,31 +76,40 @@ use Cake\Utility\Inflector;
                         <li>
                             <?php
                                 if ($isSeries && $count > 1) {
-                                    $confirm = 'You will only be editing this event, and not the '.($count - 1).' other '.__n('event', 'events', ($count - 1)).' in this series.';
+                                    $confirm = sprintf(
+                                        'You will only be editing this event, and not the %n other %s in this series.',
+                                        ($count - 1),
+                                        __n('event', 'events', ($count - 1))
+                                    );
                                 } else {
                                     $confirm = false;
                                 }
+                                $label = $this->Html->image('icons/pencil.png', ['alt' => 'Edit']) . 'Edit';
                                 echo $this->Html->link(
-                                    $this->Html->image('icons/pencil.png', ['alt' => 'Edit']).'Edit',
+                                    $label,
                                     [
-                                        'controller' => 'events',
+                                        'controller' => 'Events',
                                         'action' => 'edit',
                                         'id' => $eventId
                                     ],
-                                    ['escape' => false, 'confirm' => $confirm]
+                                    [
+                                        'escape' => false,
+                                        'confirm' => $confirm
+                                    ]
                                 );
                             ?>
                         </li>
                         <li>
                             <?php
-                                $url = ['controller' => 'events', 'action' => 'delete'];
+                                $url = [
+                                    'controller' => 'Events',
+                                    'action' => 'delete'
+                                ];
                                 if ($isSeries && $count > 1) {
                                     $url = array_merge($url, $seriesPartEventIds);
-                                    if ($countSeriesParts > 1) {
-                                        $confirm = "All $count events in this part of the series will be deleted.";
-                                    } else {
-                                        $confirm = "All events in this series will be deleted.";
-                                    }
+                                    $confirm = ($countSeriesParts > 1)
+                                        ? "All $count events in this part of the series will be deleted."
+                                        : 'All events in this series will be deleted.';
                                     $confirm .= ' Are you sure?';
                                 } else {
                                     $url[] = $eventId;
@@ -90,7 +118,10 @@ use Cake\Utility\Inflector;
                                 echo $this->Form->postLink(
                                     $this->Html->image('icons/cross.png', ['alt' => 'Delete']) . 'Delete',
                                     $url,
-                                    ['escape' => false, 'confirm' => $confirm]
+                                    [
+                                        'escape' => false,
+                                        'confirm' => $confirm
+                                    ]
                                 );
                             ?>
                         </li>
@@ -109,12 +140,12 @@ use Cake\Utility\Inflector;
                                     Series
                                 </th>
                                 <td>
-                                    <?= $event->event_series['title']; ?>
-                                    (<?= $count.__n(' event', ' events', $count); ?>)
+                                    <?= $event->event_series['title'] ?>
+                                    (<?= $count . __n(' event', ' events', $count) ?>)
                                     <?php if ($countSeriesParts > 1 && $created != $modified): ?>
                                         <br />
                                         <strong>
-                                            <?= __n('This event has', 'These events have', $count); ?>
+                                            <?= __n('This event has', 'These events have', $count) ?>
                                             been edited since being posted.
                                         </strong>
                                     <?php endif ?>
@@ -126,12 +157,13 @@ use Cake\Utility\Inflector;
                                 Submitted
                             </th>
                             <td>
-                                <?= date('M j, Y g:ia', strtotime($created)); ?>
+                                <?= date('M j, Y g:ia', strtotime($created)) ?>
                                 <?php if ($event->user['id']): ?>
-                                    by <?= $this->Html->link(
+                                    by
+                                    <?= $this->Html->link(
                                         $event->user['name'],
                                         ['controller' => 'users', 'action' => 'view', 'id' => $event->user['id']]
-                                    ); ?>
+                                    ) ?>
                                 <?php else: ?>
                                     anonymously
                                 <?php endif; ?>
@@ -143,7 +175,7 @@ use Cake\Utility\Inflector;
                                     Updated
                                 </th>
                                 <td>
-                                    <?= date('M j, Y g:ia', strtotime($modified)); ?>
+                                    <?= date('M j, Y g:ia', strtotime($modified)) ?>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -152,8 +184,8 @@ use Cake\Utility\Inflector;
                                 Date
                             </th>
                             <td>
-                                <?= date('M j, Y', strtotime($event->date)); ?>
-                                <?= $this->Calendar->time($event); ?>
+                                <?= date('M j, Y', strtotime($event->date)) ?>
+                                <?= $this->Calendar->time($event) ?>
                             </td>
                         </tr>
                         <tr>
@@ -161,20 +193,23 @@ use Cake\Utility\Inflector;
                                 Category
                             </th>
                             <td>
-                                <?= $event->category['name']; ?>
+                                <?= $event->category['name'] ?>
                             </td>
                         </tr>
-                        <?php $varsToDisplay = ['title', 'description', 'location', 'location_details', 'address', 'age_restriction', 'cost', 'source']; ?>
                         <?php foreach ($varsToDisplay as $var): ?>
                             <?php if (!empty($event->$var)): ?>
                                 <tr>
                                     <th>
-                                        <?= Inflector::humanize($var); ?>
+                                        <?= Inflector::humanize($var) ?>
                                     </th>
                                     <td>
-                                        <?= $event->$var; ?>
+                                        <?= $event->$var ?>
                                         <?php if ($var == 'location' && $event['location_new'] == 1): ?>
-                                            <br /><b style="color:#c70000;">Note: this is a new location. Please review to make sure that the location name, address, and details are correct!</b>
+                                            <br />
+                                            <strong style="color:#c70000;">
+                                                Note: this is a new location. Please review to make sure that the
+                                                location name, address, and details are correct!
+                                            </strong>
                                         <?php endif ?>
                                     </td>
                                 </tr>
@@ -202,9 +237,9 @@ use Cake\Utility\Inflector;
                                         <?= $this->Calendar->thumbnail('tiny', [
                                             'filename' => $image->filename,
                                             'caption' => $image->caption,
-                                            'group' => 'unapproved_event_'.$event->id,
+                                            'group' => 'unapproved_event_' . $event->id,
                                             'alt' => $image->caption
-                                        ]); ?>
+                                        ]) ?>
                                     <?php endforeach; ?>
                                 </td>
                             </tr>
