@@ -48,15 +48,12 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
         <table>
             <tbody>
                 <?php foreach ($events as $key => $event): ?>
-                    <?php
-                        $dst = $this->Events->getDaylightSavingOffsetNegative($event->date->format('Y-m-d'));
-                    ?>
                     <tr>
                         <td>
-                            <?= date('M j, Y', strtotime($event->date . $dst)) ?>
+                            <?= $this->Calendar->date($event) ?>
                         </td>
                         <td>
-                            <?= date('g:ia', strtotime($event->time_start . $dst)) ?>
+                            <?= $this->Calendar->time($event) ?>
                         </td>
                         <td>
                             <?= $this->Html->link(
