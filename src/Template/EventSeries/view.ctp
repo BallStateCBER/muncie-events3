@@ -49,10 +49,10 @@ $canEdit = $userId && ($userRole == 'admin' || $userId == $eventSeries['user_id'
             <tbody>
                 <?php foreach ($events as $key => $event): ?>
                     <tr>
-                        <td>
+                        <td class="date">
                             <?= $this->Calendar->date($event) ?>
                         </td>
-                        <td>
+                        <td class="time">
                             <?= $this->Calendar->time($event) ?>
                         </td>
                         <td>
