@@ -4,7 +4,6 @@ namespace App\Model\Table;
 use App\Model\Entity\Event;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Http\Exception\InternalErrorException;
-use Cake\I18n\Time;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
