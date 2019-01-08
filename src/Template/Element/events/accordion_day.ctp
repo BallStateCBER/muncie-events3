@@ -32,7 +32,7 @@ $url = Router::url([
             <?= $event->title; ?>
         </span>
         <span class="when">
-            <?= $this->Calendar->eventTime($event); ?>
+            <?= $this->Calendar->time($event); ?>
             @
         </span>
         <span class="where">

@@ -4,6 +4,8 @@ namespace App\View\Helper;
 use App\Model\Entity\Event;
 use App\Model\Table\EventsTable;
 use Cake\Core\Configure;
+use Cake\I18n\FrozenDate;
+use Cake\I18n\FrozenTime;
 use Cake\Utility\Text;
 use Cake\View\Helper;
 
@@ -67,31 +69,6 @@ class CalendarHelper extends Helper
     }
 
     /**
-     * Returns a string describing the start time or time span of this event
-     *
-     * @param array $event An event entity in array form
-     * @return string
-     */
-    public function eventTime($event)
-    {
-        $this->Events = new EventsTable();
-        $startStamp = $event['time_start'];
-        if (substr($startStamp->i18nFormat(), -5, 2) == '00') {
-            $retval = date('ga', strtotime($startStamp));
-        } else {
-            $retval = date('g:ia', strtotime($startStamp));
-        }
-        if ($event['time_end']) {
-            $endStamp = $event['time_end'];
-            if (substr($endStamp->i18nFormat(), -5, 2) == '00') {
-                $retval .= ' to ' . date('ga', strtotime($endStamp));
-            }
-        }
-
-        return $retval;
-    }
-
-    /**
      * Returns a linked list of tags
      *
      * @param array $event for these tags
@@ -130,19 +107,34 @@ class CalendarHelper extends Helper
     }
 
     /**
-     * Returns a formatted version of the time of the provided event
+     * Returns a string describing the start time (and end time, if applicable) of this event
      *
      * @param Event $event Event entity
      * @return string
      */
     public function time($event)
     {
-        $retval = date('g:ia', strtotime($event->time_start));
-        if ($event->time_end) {
-            $retval .= ' to ' . date('g:ia', strtotime($event->time_end));
+        $start = $event->time_start;
+        $end = $event->time_end;
+        $retval = $start->format($this->getTimeFormat($start));
+        if ($end) {
+            $retval .= ' to ' . $end->format($this->getTimeFormat($end));
         }
 
         return $retval;
+    }
+
+    /**
+     * Returns a time formatting string that leaves off the ":00" for times at the top of each hour, e.g. 4pm or 4:30pm
+     *
+     * @param FrozenTime $time Time object
+     * @return string
+     */
+    private function getTimeFormat($time)
+    {
+        $isOnHour = substr($time->i18nFormat(), -5, 2) == '00';
+
+        return $isOnHour ? 'ga' : 'g:ia';
     }
 
     /**
