@@ -103,13 +103,15 @@ class EventsTable extends Table
      */
     public function validationDefault(Validator $validator)
     {
+        $never = function () {
+            return false;
+        };
         $validator
-            ->requirePresence('title', 'create')
-            ->minLength('title', 1);
+            ->allowEmptyString('title', $never);
 
         $validator
             ->date('date')
-            ->requirePresence('date', 'create');
+            ->allowEmptyDate('date', $never);
 
         $validator
             ->time('time_start');
@@ -119,16 +121,13 @@ class EventsTable extends Table
             ->allowEmptyTime('time_end');
 
         $validator
-            ->requirePresence('location', 'create')
-            ->minLength('location', 1);
+            ->allowEmptyString('location', $never);
 
         $validator
-            ->requirePresence('description', 'create')
-            ->minLength('description', 1);
+            ->allowEmptyString('description', $never);
 
         $validator
             ->integer('category_id')
-            ->requirePresence('category_id')
             ->greaterThan('category_id', 0);
 
         return $validator;
