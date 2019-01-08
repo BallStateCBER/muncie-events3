@@ -1,5 +1,5 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\Model\Table;
 
 use Cake\TestSuite\TestCase;
 
