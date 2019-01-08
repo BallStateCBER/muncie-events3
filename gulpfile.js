@@ -90,7 +90,7 @@ gulp.task('js_lint', function () {
  *    LESS    *
  **************/
 var srcLessFiles = [
-    'webroot/less/style.less'
+    'webroot/css/style.less'
 ];
 
 gulp.task('less', function () {
