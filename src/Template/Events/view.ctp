@@ -6,7 +6,6 @@
  * @var \App\Model\Entity\Image $image
  */
 use Cake\Utility\Text;
-
 ?>
 <h1 class="page_title">
     <?= $event->title; ?>
@@ -21,7 +20,7 @@ use Cake\Utility\Text;
             <tr>
                 <th>When</th>
                 <td>
-                    <?= $this->Calendar->date($event->date) ?>
+                    <?= $this->Calendar->date($event) ?>
                     <br />
                     <?= $this->Calendar->time($event) ?>
                 </td>

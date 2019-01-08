@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Helper;
 
+use App\Model\Entity\Event;
 use App\Model\Table\EventsTable;
 use Cake\Core\Configure;
 use Cake\Utility\Text;
@@ -120,25 +121,25 @@ class CalendarHelper extends Helper
     /**
      * Returns a formatted version of the date of the provided event
      *
-     * @param array $date needing formatted
+     * @param Event $event Event entity
      * @return string
      */
-    public function date($date)
+    public function date($event)
     {
-        return date('l, F j, Y', strtotime($date));
+        return $event->date->format('l, F j, Y');
     }
 
     /**
      * Returns a formatted version of the time of the provided event
      *
-     * @param array $event which needs formatted
+     * @param Event $event Event entity
      * @return string
      */
     public function time($event)
     {
-        $retval = date('g:ia', strtotime($event['time_start']));
-        if ($event['time_end']) {
-            $retval .= ' to ' . date('g:ia', strtotime($event['time_end']));
+        $retval = date('g:ia', strtotime($event->time_start));
+        if ($event->time_end) {
+            $retval .= ' to ' . date('g:ia', strtotime($event->time_end));
         }
 
         return $retval;
