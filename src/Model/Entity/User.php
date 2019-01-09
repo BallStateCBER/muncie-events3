@@ -15,6 +15,7 @@ use Cake\ORM\Entity;
  * @property int|null $mailing_list_id
  * @property int $facebook_id
  * @property string|null $api_key
+ * @property string|null $token
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  * @property \App\Model\Entity\MailingList $mailing_list
