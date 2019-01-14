@@ -151,6 +151,10 @@ Router::scope('/', function (RouteBuilder $routes) {
         $routes->connect('/' . $action, ['controller' => 'Users', 'action' => $action]);
     }
 
+    /* Note the underlined, rather than dashed, path. If this legacy style is updated, the Muncie Events API must be
+     * updated to send correctly-formatted links */
+    $routes->connect('/reset_password/*', ['controller' => 'Users', 'action' => 'resetPassword']);
+
     // viewing users
     Router::connect(
         "user/:id/*",
