@@ -1072,7 +1072,7 @@ class EventsController extends AppController
      */
     private function addSingleEvent(array $data)
     {
-        $user = $user = $this->Auth->user();
+        $user = $this->Auth->user();
         $data['user_id'] = $user['id'];
         $dates = explode(',', $this->request->getData('date'));
         $data['date'] = new FrozenDate($dates[0]);
